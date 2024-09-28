@@ -1,0 +1,119 @@
+{
+  "categorieRecette": [
+    {
+      "name": "Salaire",
+      "color": "hsl(var(--chart-1))"
+    },
+    {
+      "name": "Remboursement",
+      "color": "hsl(var(--chart-2))"
+    },
+    {
+      "name": "Virement reçu",
+      "color": "hsl(var(--chart-3))"
+    },
+    {
+      "name": "Chèque reçu",
+      "color": "hsl(var(--chart-4))"
+    },
+    {
+      "name": "Dépôt d'argent",
+      "color": "hsl(var(--chart-5))"
+    },
+    {
+      "name": "Autre",
+      "color": "hsl(var(--chart-6))"
+    }
+  ],
+  "categorieDepense": [
+    {
+      "name": "Bar/Boite",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-1))"
+    },
+    {
+      "name": "Resto",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-2))"
+    },
+    {
+      "name": "Santé",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-3))"
+    },
+    {
+      "name": "Activité",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-4))"
+    },
+    {
+      "name": "Véhicule",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-5))"
+    },
+    {
+      "name": "Coiffeur",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-6))"
+    },
+    {
+      "name": "Shopping",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-7))"
+    },
+    {
+      "name": "Alimentation",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-8))"
+    },
+    {
+      "name": "Abonnement",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-9))"
+    },
+    {
+      "name": "Divers",
+      "categorie": "Fixe",
+      "color": "hsl(var(--chart-10))"
+    },
+    {
+      "name": "Achat",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-11))"
+    },
+    {
+      "name": "Voyage",
+      "categorie": "Loisir",
+      "color": "hsl(var(--chart-12))"
+    }
+  ],
+  "categorieAbonnement": [
+    {
+      "name": "Netflix"
+    },
+    {
+      "name": "Bein Sport"
+    },
+    {
+      "name": "Icloud"
+    },
+    {
+      "name": "Forfait"
+    },
+    {
+      "name": "Basic Fit"
+    },
+    {
+      "name": "Spotify"
+    },
+    {
+      "name": "Banque"
+    },
+    {
+      "name": "Xbox Live"
+    },
+    {
+      "name": "Autre"
+    }
+  ]
+}
