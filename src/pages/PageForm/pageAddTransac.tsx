@@ -1,6 +1,31 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import { Calendar } from "@/components/ui/calendar"; // Import du calendrier
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Link, useLocation } from "react-router-dom";
 import {
   categorieRecette,
@@ -22,13 +47,14 @@ import {
 } from "../../utils/operations";
 import Title from "../../composant/Text/title";
 import CardMessage from "../../composant/cardMessage";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
+import { fr } from "date-fns/locale";
+
+// Schema de validation pour la date
+const FormSchema = z.object({
+  date: z.date({
+    required_error: "Une date est requise.",
+  }),
+});
 
 export default function PageAddTransac(props: any) {
   const userInfo = infoUser();
@@ -40,9 +66,15 @@ export default function PageAddTransac(props: any) {
 
   const suggestions = getTitleOfTransactionsByType(props.type);
 
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      date: new Date(), // Valeur par défaut à la date actuelle
+    },
+  });
+
   const [selectedTitre, setSelectedTitre] = useState("");
   const [selectedCategorie, setSelectedCategorie] = useState("");
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate);
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
   const [addedOperationDate, setAddedOperationDate] = useState("");
@@ -60,14 +92,12 @@ export default function PageAddTransac(props: any) {
   useEffect(() => {
     if (selectedTitre && lastTransacByTitle) {
       setSelectedCategorie(lastTransacByTitle.categorie || "");
-      setSelectedDate(getCurrentDate);
       setSelectedDetail(lastTransacByTitle.detail || "");
       setSelectedMontant(
         Math.abs(parseFloat(lastTransacByTitle.montant)).toFixed(2) || ""
       );
     } else {
       setSelectedCategorie("");
-      setSelectedDate(getCurrentDate);
       setSelectedDetail("");
       setSelectedMontant("");
     }
@@ -85,14 +115,11 @@ export default function PageAddTransac(props: any) {
     setSelectedCategorie("");
     setSelectedDetail("");
     setSelectedMontant("");
+    form.reset(); // Réinitialiser le formulaire
   };
 
   const handleCategorie = (event: any) => {
     setSelectedCategorie(event.target.value);
-  };
-
-  const handleDateChange = (event: any) => {
-    setSelectedDate(event.target.value);
   };
 
   const handleDetail = (event: any) => {
@@ -115,7 +142,7 @@ export default function PageAddTransac(props: any) {
       type: props.type,
       categorie: selectedCategorie,
       titre: selectedTitre,
-      date: selectedDate,
+      date: form.getValues("date").toISOString().split("T")[0], // Récupérer la date sélectionnée
       detail: selectedDetail,
       montant: formatMontant(selectedMontant, props.type),
     };
@@ -127,7 +154,7 @@ export default function PageAddTransac(props: any) {
       dispatch(getTransactions() as any);
       resetForm();
 
-      const transactionDate = new Date(selectedDate);
+      const transactionDate = form.getValues("date") || new Date();
       const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
       setAddedOperationDate(formattedDate);
       setMessage(`Votre ${props.type.toLowerCase()} a été ajouté ! `);
@@ -170,47 +197,79 @@ export default function PageAddTransac(props: any) {
             ))}
           </datalist>
 
-          <select
-            id="action"
+          <Select
             value={selectedCategorie}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
-            onChange={(e) => {
-              handleCategorie(e);
+            onValueChange={(value) => {
+              setSelectedCategorie(value);
               handleInputChange();
             }}
             required
           >
-            <option disabled selected value="">
-              Entrez la catégorie
-            </option>
-            {props.type === "Dépense" &&
-              categorieD.map(({ name }) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            {props.type === "Recette" &&
-              categorieR.map(({ name }) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-          </select>
+            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900">
+              <SelectValue placeholder="Entrez la catégorie" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-100 dark:bg-zinc-900 rounded-2xl">
+              {props.type === "Dépense" &&
+                categorieD.map(({ name }) => (
+                  <SelectItem key={name} value={name} className="rounded-xl">
+                    {name}
+                  </SelectItem>
+                ))}
+              {props.type === "Recette" &&
+                categorieR.map(({ name }) => (
+                  <SelectItem key={name} value={name} className="rounded-2xl">
+                    {name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
 
-          <input
-            value={selectedDate}
-            className="w-96 h-10 px-2 bg-zinc-100 dark:bg-zinc-900 rounded-xl"
-            type="date"
-            onChange={(e) => {
-              handleDateChange(e);
-              handleInputChange();
-            }}
-            required
-          />
+          <Form {...form}>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-left font-normal"
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP", { locale: fr }) // Formatage en français
+                          ) : (
+                            <span>Choisir une date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto rounded-xl bg-zinc-100 dark:bg-zinc-900 p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date("1900-01-01")}
+                        initialFocus
+                        locale={fr}
+                        className=""
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </Form>
 
           <textarea
             value={selectedDetail}
-            className="w-96 h-10 px-2 bg-zinc-100 dark:bg-zinc-900 rounded-xl"
+            className="w-96 h-20 px-2 bg-zinc-100 dark:bg-zinc-900 rounded-xl"
             placeholder="Détails"
             maxLength={250}
             onChange={(e) => {
@@ -236,10 +295,12 @@ export default function PageAddTransac(props: any) {
           <Button
             variant="outline"
             className="rounded-xl w-1/4 bg-zinc-100 dark:bg-zinc-900 hover:border-blue-500"
+            type="submit" // Ajouter le type submit ici pour soumettre le formulaire
           >
             Soumettre la {props.type.toLowerCase()}
           </Button>
         </form>
+
         {(message || messageError) && (
           <CardMessage
             color={message ? "bg-green-500" : "bg-red-500"}
