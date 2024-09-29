@@ -26,13 +26,12 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Link, useLocation } from "react-router-dom";
 import {
   categorieRecette,
   categorieDepense,
 } from "../../../public/categories.json";
-import { Path, formatMontant, getCurrentDate } from "../../utils/fonctionnel";
-import { useState, useEffect } from "react";
+import { formatMontant } from "../../utils/fonctionnel";
+import { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import {
   addTransactions,
@@ -46,8 +45,8 @@ import {
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
 import Title from "../../composant/Text/title";
-import CardMessage from "../../composant/cardMessage";
 import { fr } from "date-fns/locale";
+import { MessageContext } from "@/context/MessageContext";
 
 // Schema de validation pour la date
 const FormSchema = z.object({
@@ -57,9 +56,10 @@ const FormSchema = z.object({
 });
 
 export default function PageAddTransac(props: any) {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const userInfo = infoUser();
-  const location = useLocation();
-  const lUrl = Path(location, 1);
 
   const categorieD = categorieSort(categorieDepense);
   const categorieR = categorieSort(categorieRecette);
@@ -77,10 +77,6 @@ export default function PageAddTransac(props: any) {
   const [selectedCategorie, setSelectedCategorie] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
-  const [addedOperationDate, setAddedOperationDate] = useState("");
-  const [addedOperationId, setAddedOperationId] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageError, setMessageError] = useState("");
 
   const dispatch = useDispatch();
 
@@ -103,23 +99,12 @@ export default function PageAddTransac(props: any) {
     }
   }, [selectedTitre, lastTransacByTitle]);
 
-  const handleInputChange = () => {
-    setMessage("");
-    setMessageError("");
-    setAddedOperationDate("");
-    setAddedOperationId("");
-  };
-
   const resetForm = () => {
     setSelectedTitre("");
     setSelectedCategorie("");
     setSelectedDetail("");
     setSelectedMontant("");
     form.reset(); // Réinitialiser le formulaire
-  };
-
-  const handleCategorie = (event: any) => {
-    setSelectedCategorie(event.target.value);
   };
 
   const handleDetail = (event: any) => {
@@ -148,19 +133,14 @@ export default function PageAddTransac(props: any) {
     };
 
     try {
-      const response = await dispatch(addTransactions(postData) as any);
-      const newOperationId = response.data._id;
-      setAddedOperationId(newOperationId);
+      await dispatch(addTransactions(postData) as any);
       dispatch(getTransactions() as any);
       resetForm();
-
-      const transactionDate = form.getValues("date") || new Date();
-      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
-      setAddedOperationDate(formattedDate);
-      setMessage(`Votre ${props.type.toLowerCase()} a été ajouté ! `);
+      showMessage(`Votre ${props.type.toLowerCase()} a été ajouté ! `, "blue");
     } catch {
-      setMessageError(
-        "Une erreur s'est produite lors de l'ajout de l'opération"
+      showMessage(
+        "Une erreur s'est produite lors de l'ajout de l'opération",
+        "red"
       );
     }
   };
@@ -187,7 +167,6 @@ export default function PageAddTransac(props: any) {
             value={selectedTitre}
             onChange={(e) => {
               handleTitre(e);
-              handleInputChange();
             }}
             required
           />
@@ -201,7 +180,6 @@ export default function PageAddTransac(props: any) {
             value={selectedCategorie}
             onValueChange={(value) => {
               setSelectedCategorie(value);
-              handleInputChange();
             }}
             required
           >
@@ -274,7 +252,6 @@ export default function PageAddTransac(props: any) {
             maxLength={250}
             onChange={(e) => {
               handleDetail(e);
-              handleInputChange();
             }}
           />
 
@@ -287,7 +264,6 @@ export default function PageAddTransac(props: any) {
             placeholder="Montant"
             onChange={(e) => {
               handleMontant(e);
-              handleInputChange();
             }}
             required
           />
@@ -300,28 +276,6 @@ export default function PageAddTransac(props: any) {
             Soumettre la {props.type.toLowerCase()}
           </Button>
         </form>
-
-        {(message || messageError) && (
-          <CardMessage
-            color={message ? "bg-green-500" : "bg-red-500"}
-            message={
-              message ? (
-                <>
-                  {message}{" "}
-                  <Link
-                    to={`/${lUrl}/${addedOperationDate}/${addedOperationId}`}
-                    className="underline transition-all hover:text-zinc-50 hover:dark:text-zinc-950"
-                  >
-                    Allez-y
-                  </Link>
-                  <span>!</span>
-                </>
-              ) : (
-                messageError
-              )
-            }
-          />
-        )}
       </section>
     </>
   );

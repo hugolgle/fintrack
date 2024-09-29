@@ -21,10 +21,8 @@ import { categorieSort } from "../../../utils/other";
 import { categorieDepense } from "../../../../public/categories.json";
 import { categorieRecette } from "../../../../public/categories.json";
 import Title from "../../../composant/Text/title";
-import CardMessage from "../../../composant/cardMessage";
 
 export default function PageTransactions(props: any) {
-  const [transactionDeleted, setTransactionDeleted] = useState(false);
   const { date } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,19 +55,6 @@ export default function PageTransactions(props: any) {
   );
 
   const titles = getTitleOfTransactionsByType(props.type);
-
-  useEffect(() => {
-    const isTransactionDeleted =
-      localStorage.getItem("transactionDeleted") === "true";
-    if (isTransactionDeleted) {
-      setTransactionDeleted(true);
-      localStorage.removeItem("transactionDeleted");
-      const timeout = setTimeout(() => {
-        setTransactionDeleted(false);
-      }, 7000);
-      return () => clearTimeout(timeout);
-    }
-  }, []);
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -345,12 +330,6 @@ export default function PageTransactions(props: any) {
                   ).length}
           </b>
         </div>
-        {transactionDeleted ? (
-          <CardMessage
-            message="Votre transaction a été supprimée avec succès"
-            color="bg-red-500"
-          />
-        ) : null}
       </section>
     </>
   );

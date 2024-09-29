@@ -24,26 +24,17 @@ import {
   getTransactions,
 } from "../../../redux/actions/transaction.action";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import PageAddRefund from "../../PageForm/pageAddRefund";
 import { categorieSort } from "../../../utils/other";
 import BtnReturn from "../../../composant/Button/btnReturn";
 import BtnAdd from "../../../composant/Button/btnAdd";
 import Title from "../../../composant/Text/title";
-import CardMessage from "../../../composant/cardMessage";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Transaction() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 7000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
 
   const categorieD = categorieSort(categorieDepense);
   const categorieR = categorieSort(categorieRecette);
@@ -125,7 +116,7 @@ export default function Transaction() {
     await dispatch(deleteTransactions(id) as any);
     navigate(-1);
     dispatch(getTransactions() as any);
-    localStorage.setItem("transactionDeleted", "true");
+    showMessage("Votre transaction a été supprimé !", "bg-red-500");
   };
 
   function removeTiret(number: any): number {
@@ -154,9 +145,9 @@ export default function Transaction() {
       montant: formatMontant(removeTiret(selectedMontant), transaction.type),
     };
     await dispatch(editTransactions(editData) as any);
-    setMessage("L'opération a été modifié avec succès !");
     dispatch(getTransactions() as any);
     setSelectedUpdate(false);
+    showMessage("L'opération a été modifié avec succès !", "bg-blue-500");
   };
 
   const typeProps =
@@ -455,9 +446,6 @@ export default function Transaction() {
             </div>
           </div>
         </div>
-        {message ? (
-          <CardMessage message={message} color="bg-green-500" />
-        ) : null}
       </section>
     </>
   );

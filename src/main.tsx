@@ -7,16 +7,20 @@ import App from "./App.tsx";
 import "./index.css";
 import "animate.css";
 import { getTransactions } from "./redux/actions/transaction.action.js";
+import { MessageProvider } from "./context/MessageContext.tsx";
+
 import { getInvestments } from "./redux/actions/investment.action.ts";
 store.dispatch(getTransactions());
 store.dispatch(getInvestments());
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <App />
-      </PersistGate>
-    </Provider>
+    <MessageProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </MessageProvider>
   </React.StrictMode>
 );

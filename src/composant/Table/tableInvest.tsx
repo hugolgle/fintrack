@@ -44,7 +44,7 @@ export default function TableauInvest(props: any) {
             {props.investments.map((investment: any) => (
               <Link
                 to={investment._id}
-                className="w-full animate-fade-up"
+                className="w-full animate-fade"
                 key={investment._id}
               >
                 <TableRow className="rounded flex my-1 h-10 flex-row items-center bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all">

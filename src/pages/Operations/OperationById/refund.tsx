@@ -5,16 +5,17 @@ import {
   getTransactions,
 } from "../../../redux/actions/transaction.action";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { deleteRefund, editRefund } from "../../../redux/actions/refund.action";
 import {
   getRefundByTransactionId,
   getTransactionById,
 } from "../../../utils/operations";
-import CardMessage from "../../../composant/cardMessage";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Refund() {
-  const [message, setMessage] = useState(""); // State for showing messages
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
 
   const { id, idRefund } = useParams();
   const refund = getRefundByTransactionId(id, idRefund);
@@ -55,9 +56,12 @@ export default function Refund() {
     };
     try {
       await dispatch(editRefund(id, refundData) as any);
-      setMessage("Le remboursement a été modifié avec succès."); // Success message
+      showMessage("Le remboursement a été modifié avec succès.", "bg-blue-500"); // Success message
     } catch (error) {
-      setMessage("Erreur lors de la modification du remboursement."); // Error message
+      showMessage(
+        "Erreur lors de la modification du remboursement.",
+        "bg-red-500"
+      ); // Error message
     }
     navigate(-1);
   };
@@ -80,9 +84,15 @@ export default function Refund() {
       await dispatch(deleteRefund(id, refund._id) as any);
       await dispatch(editTransactions(editData) as any);
       dispatch(getTransactions() as any);
-      setMessage("Le remboursement a été supprimé avec succès."); // Success message
+      showMessage(
+        "Le remboursement a été supprimé avec succès.",
+        "bg-green-500"
+      ); // Success message
     } catch (error) {
-      setMessage("Erreur lors de la suppression du remboursement."); // Error message
+      showMessage(
+        "Erreur lors de la suppression du remboursement.",
+        "bg-red-500"
+      ); // Error message
     }
     navigate(-1);
   };
@@ -152,7 +162,6 @@ export default function Refund() {
       >
         Supprimer le remboursement
       </button>
-      {message && <CardMessage message={message} color="bg-green-500" />}{" "}
     </>
   );
 }

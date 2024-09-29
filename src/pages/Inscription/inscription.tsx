@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { addUser } from "../../redux/actions/user.action";
 import Title from "../../composant/Text/title";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Inscription() {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -16,8 +20,6 @@ export default function Inscription() {
   const [prenom, setPrenom] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageError, setMessageError] = useState<string | null>(null);
 
   const handleNewUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function Inscription() {
 
     try {
       await dispatch(addUser(formData));
-      setMessage("Inscription réussie !");
+      showMessage("Inscription réussie !", "bg-green-500");
       setUsername("");
       setPassword("");
       setPseudo("");
@@ -45,7 +47,10 @@ export default function Inscription() {
       setImagePreview(null);
       navigate("/connexion");
     } catch (err) {
-      setMessageError("Erreur lors de l'inscription. Veuillez réessayer.");
+      showMessage(
+        "Erreur lors de l'inscription. Veuillez réessayer.",
+        "bg-red-500"
+      );
     }
   };
 
@@ -182,27 +187,6 @@ export default function Inscription() {
           Identifiez-vous !
         </Link>
       </div>
-
-      {(message || messageError) && (
-        <div className="absolute bottom-4 right-4 flex flex-col gap-2 animate-[fadeIn2_0.3s_ease-in-out_forwards]">
-          {message && (
-            <p className="p-4 bg-lime-900 w-60 rounded opacity-100">
-              {message}
-              <Link
-                to="/connexion"
-                className="underline transition-all hover:text-zinc-950"
-              >
-                Connectez-vous !
-              </Link>
-            </p>
-          )}
-          {messageError && (
-            <p className="p-4 bg-red-900 w-60 rounded opacity-100">
-              {messageError}
-            </p>
-          )}
-        </div>
-      )}
     </>
   );
 }

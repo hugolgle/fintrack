@@ -1,12 +1,16 @@
 // import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { infoUser } from "../../utils/users";
 import { deleteUser, editUser } from "../../redux/actions/user.action";
 import { formatDate } from "../../utils/fonctionnel";
 import Title from "../../composant/Text/title";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Profil() {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const userInfo = infoUser();
   const dispatch = useDispatch();
   // const navigate = useNavigate();
@@ -29,12 +33,10 @@ export default function Profil() {
   const [nom, setNom] = useState(userInfo?.nom ?? "");
   const [username, setUsername] = useState(userInfo?.username ?? "");
   const [pseudo, setPseudo] = useState(userInfo?.pseudo ?? "");
-  const [message, setMessage] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleInputChange = () => {
-    setMessage(null);
     setUpdate(true);
   };
 
@@ -62,10 +64,10 @@ export default function Profil() {
     try {
       await dispatch(editUser(formData) as any);
       setSelectedUpdate(false);
-      setMessage("Modification effectuée !");
+      showMessage("Modification effectuée !", "bg-blue-500");
     } catch (err) {
       console.error("Erreur lors de la modification :", err);
-      setMessage("Modification échouée !");
+      showMessage("Modification échouée !", "bg-red-500");
     }
   };
 
@@ -279,13 +281,6 @@ export default function Profil() {
             </div>
           </div>
         </div>
-        {message && (
-          <div className="absolute bottom-4 right-4 flex justify-center transition-all items-center animate-[fadeIn_7s_ease-in-out_forwards]">
-            <p className="p-4 bg-lime-900 w-60 rounded shadow-2xl shadow-black">
-              {message}
-            </p>
-          </div>
-        )}
       </section>
     </>
   );

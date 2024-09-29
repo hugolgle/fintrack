@@ -1,23 +1,10 @@
 import { Link, useParams } from "react-router-dom";
 import { formatDate, separateMillier } from "../../../utils/fonctionnel";
 import { getRefundsByTransactionId } from "../../../utils/operations";
-import { useEffect, useState } from "react";
 import BtnReturn from "../../../composant/Button/btnReturn";
 import Title from "../../../composant/Text/title";
 
 export default function BoardRefund() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 7000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
   const { id } = useParams();
   const refunds = getRefundsByTransactionId(id);
 

@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "../../components/ui/button";
-import { Link } from "react-router-dom";
 import { getCurrentDate, separateMillier } from "../../utils/fonctionnel";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { infoUser } from "../../utils/users";
 import {
@@ -13,6 +12,7 @@ import {
 import BtnReturn from "../../composant/Button/btnReturn";
 import { getAllInvestments } from "../../utils/operations";
 import Title from "../../composant/Text/title";
+import { MessageContext } from "@/context/MessageContext";
 
 interface Investment {
   titre: string;
@@ -21,6 +21,9 @@ interface Investment {
 }
 
 export default function PageAddInvest() {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const userInfo = infoUser();
   const getInvest: Investment[] = getAllInvestments(null);
   const suggestionsTitle = Array.from(
@@ -32,11 +35,6 @@ export default function PageAddInvest() {
   const [selectedTitre, setSelectedTitre] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
-  const [addedOperationDate, setAddedOperationDate] = useState("");
-  const [addedOperationId, setAddedOperationId] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageError, setMessageError] = useState("");
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -54,13 +52,6 @@ export default function PageAddInvest() {
       }
     }
   }, [selectedTitre, getInvest]);
-
-  const handleInputChange = () => {
-    setMessage("");
-    setMessageError("");
-    setAddedOperationDate("");
-    setAddedOperationId("");
-  };
 
   const resetForm = () => {
     setSelectedDetail("");
@@ -82,19 +73,14 @@ export default function PageAddInvest() {
     };
 
     try {
-      const response = await dispatch(addInvestments(postData) as any);
-      const newOperationId = response.data._id;
-      setAddedOperationId(newOperationId);
+      await dispatch(addInvestments(postData) as any);
       dispatch(getInvestments() as any);
       resetForm();
-
-      const transactionDate = new Date(selectedDate);
-      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
-      setAddedOperationDate(formattedDate);
-      setMessage("Votre investissement a été ajouté ! ");
+      showMessage("Votre investissement a été ajouté ! ", "bg-green-500");
     } catch {
-      setMessageError(
-        "Une erreur s'est produite lors de l'ajout de l'opération"
+      showMessage(
+        "Une erreur s'est produite lors de l'ajout de l'opération",
+        "bg-red-500"
       );
     }
   };
@@ -117,7 +103,6 @@ export default function PageAddInvest() {
             type="date"
             onChange={(e) => {
               setSelectedDate(e.target.value);
-              handleInputChange();
             }}
             required
           />
@@ -131,7 +116,6 @@ export default function PageAddInvest() {
             placeholder="Titre"
             onChange={(e) => {
               setSelectedTitre(e.target.value);
-              handleInputChange();
             }}
             required
           />
@@ -147,7 +131,6 @@ export default function PageAddInvest() {
             className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
             onChange={(e) => {
               setSelectedType(e.target.value);
-              handleInputChange();
             }}
             required
           >
@@ -168,7 +151,6 @@ export default function PageAddInvest() {
             maxLength={250}
             onChange={(e) => {
               setSelectedDetail(e.target.value);
-              handleInputChange();
             }}
           />
 
@@ -181,7 +163,6 @@ export default function PageAddInvest() {
             placeholder="Montant"
             onChange={(e) => {
               setSelectedMontant(e.target.value);
-              handleInputChange();
             }}
             required
           />
@@ -193,28 +174,6 @@ export default function PageAddInvest() {
             Soumettre
           </Button>
         </form>
-        {message || messageError ? (
-          <div
-            className={`fixed animate-[fadeIn2_0.3s_ease-in-out_forwards] bottom-4 right-4 flex justify-center items-center`}
-          >
-            <p
-              className={`p-4 bg-lime-900 w-60 rounded ${message ? "opacity-100" : "hidden"}`}
-            >
-              {message}{" "}
-              <Link
-                to={`/invest/operations/${addedOperationId}`}
-                className="underline transition-all hover:text-zinc-950"
-              >
-                Allez-y !
-              </Link>
-            </p>
-            <p
-              className={`p-4 bg-red-900 w-60 rounded ${messageError ? "opacity-100" : "hidden"}`}
-            >
-              {messageError}
-            </p>
-          </div>
-        ) : null}
       </section>
     </>
   );

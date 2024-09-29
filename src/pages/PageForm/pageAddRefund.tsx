@@ -7,7 +7,7 @@ import {
   getCurrentDate,
   separateMillier,
 } from "../../utils/fonctionnel";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -15,8 +15,12 @@ import {
   getTransactions,
 } from "../../redux/actions/transaction.action";
 import { addRefund } from "../../redux/actions/refund.action";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function PageAddRefund(props: any) {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const [selectedTitre, setSelectedTitre] = useState("");
 
   const [selectedDate, setSelectedDate] = useState(getCurrentDate);
@@ -24,13 +28,6 @@ export default function PageAddRefund(props: any) {
   const [selectedDetail, setSelectedDetail] = useState("");
 
   const [selectedMontant, setSelectedMontant] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageError, setMessageError] = useState("");
-
-  const handleInputChange = () => {
-    setMessage("");
-    setMessageError("");
-  };
 
   const dispatch = useDispatch();
 
@@ -86,14 +83,15 @@ export default function PageAddRefund(props: any) {
         await dispatch(editTransactions(editData) as any);
         dispatch(getTransactions() as any);
         resetForm();
-        setMessage("Votre remboursement a été ajouté ! ");
+        showMessage("Votre remboursement a été ajouté !", "bg-green-500");
       } catch {
-        setMessageError(
-          "Une erreur s'est produite lors de l'ajout du remboursement !"
+        showMessage(
+          "Une erreur s'est produite lors de l'ajout du remboursement !",
+          "bg-red-500"
         );
       }
     } else {
-      setMessageError("Erreur: montant invalide.");
+      showMessage("Erreur: montant invalide.", "bg-red-500");
     }
   };
 
@@ -113,7 +111,6 @@ export default function PageAddRefund(props: any) {
             placeholder="Titre"
             onChange={(e) => {
               handleTitre(e);
-              handleInputChange();
             }}
             required
           />
@@ -125,7 +122,6 @@ export default function PageAddRefund(props: any) {
             name=""
             onChange={(e) => {
               handleDateChange(e);
-              handleInputChange();
             }}
             required
           />
@@ -138,7 +134,6 @@ export default function PageAddRefund(props: any) {
             maxLength={250}
             onChange={(e) => {
               handleDetail(e);
-              handleInputChange();
             }}
           />
 
@@ -152,7 +147,6 @@ export default function PageAddRefund(props: any) {
             placeholder="Montant"
             onChange={(e) => {
               handleMontant(e);
-              handleInputChange();
             }}
             required
           />
@@ -164,23 +158,6 @@ export default function PageAddRefund(props: any) {
             Soumettre le remboursement
           </Button>
         </form>
-
-        {message || messageError ? (
-          <div
-            className={`fixed animate-[fadeIn2_0.3s_ease-in-out_forwards] bottom-4 right-4 flex justify-center items-center`}
-          >
-            <p
-              className={`p-4 bg-lime-900 w-60 rounded ${message ? "opacity-100" : "hidden"}`}
-            >
-              {message}
-            </p>
-            <p
-              className={`p-4 bg-red-900 w-60 rounded ${messageError ? "opacity-100" : "hidden"}`}
-            >
-              {messageError}
-            </p>
-          </div>
-        ) : null}
       </section>
     </>
   );

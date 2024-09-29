@@ -161,7 +161,12 @@ export function CamembertTdb(props: any) {
             outerRadius={80}
           >
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.fill}
+                strokeWidth={1}
+                stroke="white"
+              />
             ))}
             <Label
               content={({ viewBox }) => {

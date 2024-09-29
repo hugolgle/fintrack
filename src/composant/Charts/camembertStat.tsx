@@ -127,7 +127,12 @@ export function CamembertStat(props: any) {
               outerRadius={60}
             >
               {transformedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.fill}
+                  strokeWidth={1}
+                  stroke="white"
+                />
               ))}
             </Pie>
             <Legend

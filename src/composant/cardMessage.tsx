@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 
 function CardMessage(props: any) {
-  const [animationClass, setAnimationClass] = useState(
-    "animate__bounceInRight"
-  );
+  const [animationClass, setAnimationClass] = useState("animate__fadeInUp");
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setAnimationClass("animate__bounceOut");
-    }, 6000);
+      setAnimationClass("animate__fadeOutRight");
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);

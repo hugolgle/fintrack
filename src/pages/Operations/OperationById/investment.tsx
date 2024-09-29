@@ -8,7 +8,7 @@ import {
 import { getInvestmentById } from "../../../utils/operations";
 
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   deleteInvestments,
   editInvestments,
@@ -18,20 +18,11 @@ import {
 import BtnReturn from "../../../composant/Button/btnReturn";
 import BtnAdd from "../../../composant/Button/btnAdd";
 import Title from "../../../composant/Text/title";
-import CardMessage from "../../../composant/cardMessage";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Investment() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 7000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
 
   const { id } = useParams();
   const investment = getInvestmentById(id);
@@ -93,6 +84,7 @@ export default function Investment() {
     await dispatch(deleteInvestments(id) as any);
     navigate(-1);
     dispatch(getInvestments() as any);
+    showMessage("L'opération a été supprimé avec succès !", "bg-green-500");
   };
 
   function removeTiret(number: any): number {
@@ -109,7 +101,7 @@ export default function Investment() {
       montant: separateMillier(selectedMontant),
     };
     await dispatch(editInvestments(editData) as any);
-    setMessage("L'opération a été modifié avec succès !");
+    showMessage("L'opération a été modifié avec succès !", "bg-blue-500");
     dispatch(getInvestments() as any);
     setSelectedUpdate(false);
   };
@@ -118,7 +110,7 @@ export default function Investment() {
     await dispatch(
       soldInvestments(investment._id, selectedMontantVendu) as any
     );
-    setMessage("L'investissement a été vendu avec succès !");
+    showMessage("L'investissement a été vendu avec succès !", "bg-grenn-500");
     dispatch(getInvestments() as any);
     setSelectedUpdate(false);
   };
@@ -366,9 +358,6 @@ export default function Investment() {
             </div>
           </div>
         </div>
-        {message ? (
-          <CardMessage message={message} color="bg-green-500" />
-        ) : null}
       </section>
     </>
   );

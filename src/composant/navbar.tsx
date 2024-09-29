@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/actions/user.action";
 import { infoUser, isConnected } from "../utils/users";
@@ -14,13 +14,12 @@ import {
   PowerOff,
   WalletCards,
 } from "lucide-react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../@/components/ui/avatar";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Navbar(props: any) {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAuthenticated = isConnected();
@@ -28,12 +27,13 @@ export default function Navbar(props: any) {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
   const [selectedLogout, setSelectedLogout] = useState(false);
-  const [wrapMenu, setWrapMenu] = useState(false);
+  const [wrapMenu, setWrapMenu] = useState(true);
 
   const logout = () => {
     dispatch(logoutUser());
     navigate("/");
     setSelectedLogout(false);
+    showMessage("Vous vous êtes déconnecté !", "bg-red-500");
   };
 
   useEffect(() => {

@@ -1,12 +1,16 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/actions/user.action";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { isConnected } from "../../utils/users";
 import Title from "../../composant/Text/title";
+import { MessageContext } from "@/context/MessageContext";
 
 export default function Connexion() {
+  const messageContext = useContext(MessageContext);
+  const { showMessage } = messageContext;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
@@ -17,6 +21,11 @@ export default function Connexion() {
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     dispatch(loginUser(username, password));
+    if (messageError) {
+      showMessage(messageError, "bg-red-500");
+    } else {
+      showMessage("Vous êtes connecté !", "bg-green-500");
+    }
   };
   const isConnect = isConnected();
 
@@ -79,15 +88,6 @@ export default function Connexion() {
           Créer un compte DashCash !
         </Link>
       </div>
-      {messageError && (
-        <div className="absolute animate-[fadeIn_7s_ease-in-out_forwards] bottom-4 right-4 flex justify-center items-center">
-          <p
-            className={`p-4 bg-red-900 w-60 rounded ${messageError ? "opacity-100" : "hidden"}`}
-          >
-            {messageError}
-          </p>
-        </div>
-      )}
     </>
   );
 }
