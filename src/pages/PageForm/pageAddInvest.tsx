@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "../../../@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { Link } from "react-router-dom";
 import { getCurrentDate, separateMillier } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
@@ -10,9 +10,9 @@ import {
   addInvestments,
   getInvestments,
 } from "../../redux/actions/investment.action";
-import BtnReturn from "../../components/Button/btnReturn";
+import BtnReturn from "../../composant/Button/btnReturn";
 import { getAllInvestments } from "../../utils/operations";
-import Title from "../../components/Text/title";
+import Title from "../../composant/Text/title";
 
 interface Investment {
   titre: string;
@@ -24,7 +24,7 @@ export default function PageAddInvest() {
   const userInfo = infoUser();
   const getInvest: Investment[] = getAllInvestments(null);
   const suggestionsTitle = Array.from(
-    new Set(getInvest.map((investment) => investment.titre)),
+    new Set(getInvest.map((investment) => investment.titre))
   );
 
   const [selectedDate, setSelectedDate] = useState(getCurrentDate);
@@ -45,7 +45,7 @@ export default function PageAddInvest() {
       const lastInvestment = getInvest
         .filter((investment) => investment.titre === selectedTitre)
         .sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
 
       // Mettre à jour le champ type si un investissement est trouvé
@@ -94,7 +94,7 @@ export default function PageAddInvest() {
       setMessage("Votre investissement a été ajouté ! ");
     } catch {
       setMessageError(
-        "Une erreur s'est produite lors de l'ajout de l'opération",
+        "Une erreur s'est produite lors de l'ajout de l'opération"
       );
     }
   };

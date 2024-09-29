@@ -27,10 +27,10 @@ import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import PageAddRefund from "../../PageForm/pageAddRefund";
 import { categorieSort } from "../../../utils/other";
-import BtnReturn from "../../../components/Button/btnReturn";
-import BtnAdd from "../../../components/Button/btnAdd";
-import Title from "../../../components/Text/title";
-import CardMessage from "../../../components/cardMessage";
+import BtnReturn from "../../../composant/Button/btnReturn";
+import BtnAdd from "../../../composant/Button/btnAdd";
+import Title from "../../../composant/Text/title";
+import CardMessage from "../../../composant/cardMessage";
 
 export default function Transaction() {
   const [message, setMessage] = useState("");

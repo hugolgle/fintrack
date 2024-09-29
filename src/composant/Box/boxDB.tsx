@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { retireSpace } from "../../utils/fonctionnel";
 
 function BoxTdb(props: any) {
   return (
@@ -18,7 +19,11 @@ function BoxTdb(props: any) {
         <div className="flex flex-row gap-4 h-1/2">
           <div className="flex flex-row w-full h-full bg-zinc-600 py-3 rounded bg-opacity-15 items-center justify-evenly">
             <div className="w-full">
-              <p className="font-thin">Économie</p>
+              <p className="font-thin">
+                {retireSpace(props.montantEconomie) >= 0
+                  ? "Économie"
+                  : "Déficit"}
+              </p>
               <p className="font-thin italic text-xl">
                 {props.montantEconomie} €
               </p>

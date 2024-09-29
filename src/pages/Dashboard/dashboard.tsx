@@ -9,14 +9,14 @@ import {
   convertDate,
   convertirFormatDate,
 } from "../../utils/fonctionnel";
-import { CamembertTdb } from "../../components/Charts/camembertTdb";
+import { CamembertTdb } from "../../composant/Charts/camembertTdb";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
-import { GraphiqueTdb } from "../../components/Charts/graphiqueTdb";
+import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
 import { categorieDepense } from "../../../public/categories.json";
 import { getLastSixMonths } from "../../utils/other";
-import BoxTdb from "../../components/Box/boxDB";
-import Title from "../../components/Text/title";
+import BoxTdb from "../../composant/Box/boxDB";
+import Title from "../../composant/Text/title";
 import { Link } from "react-router-dom";
 
 export default function TableauDeBord() {
@@ -36,13 +36,13 @@ export default function TableauDeBord() {
     "Recette",
     currentDate,
     null,
-    null,
+    null
   );
   const montantDepensesMonth = calculTotalByMonth(
     "Dépense",
     currentDate,
     null,
-    null,
+    null
   );
 
   const InvestCurrentMonth = calculInvestByMonth(currentDate);
@@ -59,7 +59,7 @@ export default function TableauDeBord() {
 
   const { month: previousMonth, year: previousYear } = getPreviousMonthAndYear(
     currentMonth,
-    currentYear,
+    currentYear
   );
 
   const newPreviousMonth = String(previousMonth).padStart(2, "0");
@@ -69,18 +69,18 @@ export default function TableauDeBord() {
     "Recette",
     previousDate,
     null,
-    null,
+    null
   );
   const montantDepensesLastMonth = calculTotalByMonth(
     "Dépense",
     previousDate,
     null,
-    null,
+    null
   );
 
   const economiesCurrentMonth = calculEconomie(
     `${currentYear}`,
-    newCurrentMonth,
+    newCurrentMonth
   );
 
   const investLastMonth = calculInvestByMonth(previousDate);
@@ -145,7 +145,7 @@ export default function TableauDeBord() {
     "Dépense",
     month,
     categoriesLoisir,
-    null,
+    null
   );
 
   const total = calculTotalByMonth("Recette", month, null, null);

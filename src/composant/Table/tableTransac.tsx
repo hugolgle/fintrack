@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../@/components/ui/table";
+} from "../../components/ui/table";
 import { addSpace, formatDate, separateMillier } from "../../utils/fonctionnel";
 import { Circle, CircleCheck } from "lucide-react";
 import { useState } from "react";
@@ -14,7 +14,7 @@ import { useState } from "react";
 export default function Tableau(props: any) {
   const [selectAllRow, setSelectAllRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
-    {},
+    {}
   );
 
   const handleSelectAllRow = () => {
@@ -49,7 +49,7 @@ export default function Tableau(props: any) {
   return (
     <>
       {props.transactions && props.transactions.length > 0 ? (
-        <Table className="w-full flex flex-col px-1 ">
+        <Table className="w-full flex flex-col px-1 animate-fade">
           <TableHeader className="flex w-full items-center">
             {props.selectOpe && (
               <div className="mr-5 text-xs">
@@ -66,12 +66,12 @@ export default function Tableau(props: any) {
                 )}
               </div>
             )}
-            <TableRow className="w-full flex flex-row h-7 italic">
-              <TableHead className="w-full">ID</TableHead>
-              <TableHead className="w-full">Titre</TableHead>
-              <TableHead className="w-full">Catégorie</TableHead>
-              <TableHead className="w-full">Date</TableHead>
-              <TableHead className="w-full">Montant</TableHead>
+            <TableRow className="w-full flex h-7 italic">
+              <TableHead className="w-full text-center">ID</TableHead>
+              <TableHead className="w-full text-center">Titre</TableHead>
+              <TableHead className="w-full text-center">Catégorie</TableHead>
+              <TableHead className="w-full text-center">Date</TableHead>
+              <TableHead className="w-full text-center">Montant</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="flex flex-col justify-center items-center w-full">
@@ -94,7 +94,7 @@ export default function Tableau(props: any) {
                 )}
                 <Link to={transaction._id} className="w-full">
                   <TableRow
-                    className={`rounded flex my-1 flex-row items-center bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all animate-fade-up ${
+                    className={`rounded flex my-1 flex-row items-center h-10 bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
                       selectedRows[transaction._id]
                         ? "ring-1 ring-zinc-400"
                         : ""

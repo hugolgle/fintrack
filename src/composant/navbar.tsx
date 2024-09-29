@@ -14,6 +14,11 @@ import {
   PowerOff,
   WalletCards,
 } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../@/components/ui/avatar";
 
 export default function Navbar(props: any) {
   const navigate = useNavigate();
@@ -171,8 +176,8 @@ export default function Navbar(props: any) {
 
         <p className="text-xs text-gray-400 text-nowrap absolute bottom-2">
           {wrapMenu
-            ? "© HLG - DB v2.0.0"
-            : "© Hugo Le Galle - DashBoard v2.0.0"}
+            ? "© HLG - DC v2.0.0"
+            : "© Hugo Le Galle - DashCash v2.0.0"}
         </p>
       </div>
 

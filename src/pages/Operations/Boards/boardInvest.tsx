@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import BtnAdd from "../../../components/Button/btnAdd";
+import BtnAdd from "../../../composant/Button/btnAdd";
 import { getAllInvestments } from "../../../utils/operations";
 import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
 import { formatDateBis } from "../../../utils/fonctionnel";
-import Title from "../../../components/Text/title";
+import Title from "../../../composant/Text/title";
 
 export default function BoardInvest() {
   const getInvest = getAllInvestments(null);

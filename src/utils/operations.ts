@@ -36,7 +36,7 @@ export function getCurrentMonth() {
 
 export function getAllTransactions() {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   return transactions;
@@ -45,10 +45,10 @@ export function getAllTransactions() {
 export function getTransactionsByType(
   type: any,
   filterCategorie: any,
-  filterTitle: any,
+  filterTitle: any
 ) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   let filteredTransactions = type
@@ -57,13 +57,13 @@ export function getTransactionsByType(
 
   if (filterCategorie && filterCategorie.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction: any) =>
-      filterCategorie.includes(transaction.categorie),
+      filterCategorie.includes(transaction.categorie)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction: any) =>
-      filterTitle.includes(transaction.titre),
+      filterTitle.includes(transaction.titre)
     );
   }
 
@@ -77,7 +77,7 @@ export function getTransactionsByType(
 
 export function getTransactionById(id: any) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
   if (id) {
     return transactions.find((transaction: any) => transaction._id === id);
@@ -90,12 +90,12 @@ export function getTransactionsByMonth(
   month: any,
   type: any,
   filterCategorie: any,
-  filterTitle: any,
+  filterTitle: any
 ) {
   const targetMonth = `${month.slice(0, 4)}-${month.slice(4)}`;
 
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   let transactionsInMonth = transactions.filter((transaction: any) => {
@@ -107,19 +107,19 @@ export function getTransactionsByMonth(
 
   if (type) {
     transactionsInMonth = transactionsInMonth.filter(
-      (transaction: any) => transaction.type === type,
+      (transaction: any) => transaction.type === type
     );
   }
 
   if (filterCategorie && filterCategorie.length > 0) {
     transactionsInMonth = transactionsInMonth.filter((transaction: any) =>
-      filterCategorie.includes(transaction.categorie),
+      filterCategorie.includes(transaction.categorie)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     transactionsInMonth = transactionsInMonth.filter((transaction: any) =>
-      filterTitle.includes(transaction.titre),
+      filterTitle.includes(transaction.titre)
     );
   }
 
@@ -137,10 +137,10 @@ export function getTransactionsByYear(
   year: any,
   type: any,
   filterCategorie: any,
-  filterTitle: any,
+  filterTitle: any
 ) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   let transactionsInYear = transactions.filter((transaction: any) => {
@@ -150,19 +150,19 @@ export function getTransactionsByYear(
 
   if (type) {
     transactionsInYear = transactionsInYear.filter(
-      (transaction: any) => transaction.type === type,
+      (transaction: any) => transaction.type === type
     );
   }
 
   if (filterCategorie && filterCategorie.length > 0) {
     transactionsInYear = transactionsInYear.filter((transaction: any) =>
-      filterCategorie.includes(transaction.categorie),
+      filterCategorie.includes(transaction.categorie)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     transactionsInYear = transactionsInYear.filter((transaction: any) =>
-      filterTitle.includes(transaction.titre),
+      filterTitle.includes(transaction.titre)
     );
   }
 
@@ -179,10 +179,10 @@ export function getTransactionsByYear(
 export function getLastTransactionsByType(
   type: any,
   number: Number,
-  month: boolean,
+  month: boolean
 ) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   let filteredTransactions = transactions;
@@ -190,7 +190,7 @@ export function getLastTransactionsByType(
   // Filter by type if type is not null
   if (type !== null) {
     filteredTransactions = transactions.filter(
-      (transaction: any) => transaction.type === type,
+      (transaction: any) => transaction.type === type
     );
   }
 
@@ -216,10 +216,10 @@ export function getLastTransactionsByType(
   // Sort by createdAt date first, then by date
   filteredTransactions.sort(
     (a: any, b: any) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   filteredTransactions.sort(
-    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
   // Slice the sorted transactions to get the required number of last transactions
@@ -230,24 +230,19 @@ export function getLastTransactionsByType(
 
 export function getLastSubscribe() {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
-  // Helper function to get the start date (17th of the previous month) and end date (today)
+  // Helper function to get the start date (31 days ago) and end date (today)
   const getDateRange = () => {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
 
-    // Start date: 17th of the previous month
-    const startDate = new Date(
-      currentYear,
-      currentMonth - 1, // Last month
-      17,
-    );
+    // Start date: 31 days ago
+    const startDate = new Date();
+    startDate.setDate(currentDate.getDate() - 31);
 
-    // End date: today
-    const endDate = new Date(currentYear, currentMonth, currentDate.getDate());
+    // End date: today (current date)
+    const endDate = currentDate;
 
     return {
       startDate: startDate.toISOString().split("T")[0], // Format YYYY-MM-DD
@@ -259,7 +254,7 @@ export function getLastSubscribe() {
 
   // Step 1: Filter transactions for the category 'Abonnement'
   let filteredTransactions = transactions.filter(
-    (transaction: any) => transaction.categorie === "Abonnement",
+    (transaction: any) => transaction.categorie === "Abonnement"
   );
 
   // Step 2: Filter for transactions between the start date and end date
@@ -283,7 +278,7 @@ export function getLastSubscribe() {
 
 export function getAllInvestments(isSold: boolean | null) {
   const investments = useSelector(
-    (state: any) => state.investmentReducer || [],
+    (state: any) => state.investmentReducer || []
   );
 
   const filteredInvestments =
@@ -301,7 +296,7 @@ export function getAllInvestments(isSold: boolean | null) {
 
 export function getInvestmentsByTitle(title: any) {
   const investments = useSelector(
-    (state: any) => state.investmentReducer || [],
+    (state: any) => state.investmentReducer || []
   );
 
   if (title) {
@@ -322,7 +317,7 @@ export function getInvestmentsByTitle(title: any) {
 
 export function getInvestmentById(id: any) {
   const investments = useSelector(
-    (state: any) => state.investmentReducer || [],
+    (state: any) => state.investmentReducer || []
   );
   if (id) {
     return investments.find((investment: any) => investment._id === id);
@@ -335,11 +330,11 @@ export function getInvestmentById(id: any) {
 
 export function getRefundsByTransactionId(transactionId: any) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   const transaction = transactions.find(
-    (transaction: any) => transaction._id === transactionId,
+    (transaction: any) => transaction._id === transactionId
   );
 
   if (transaction) {
@@ -351,17 +346,17 @@ export function getRefundsByTransactionId(transactionId: any) {
 
 export function getRefundByTransactionId(transactionId: any, refundId: any) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   const transaction = transactions.find(
-    (transaction: any) => transaction._id === transactionId,
+    (transaction: any) => transaction._id === transactionId
   );
 
   if (transaction && transaction.remboursements) {
     return (
       transaction.remboursements.find(
-        (refund: any) => refund._id === refundId,
+        (refund: any) => refund._id === refundId
       ) || null
     );
   } else {
@@ -373,7 +368,7 @@ export function getRefundByTransactionId(transactionId: any, refundId: any) {
 
 export function getTitleOfTransactionsByType(type: any) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   // Calculer la date de début des deux derniers mois
@@ -387,7 +382,7 @@ export function getTitleOfTransactionsByType(type: any) {
   });
 
   const titles = filteredTransactions.map(
-    (transaction: any) => transaction.titre,
+    (transaction: any) => transaction.titre
   );
 
   // Tri des titres par ordre alphabétique
@@ -411,7 +406,7 @@ export function getTitleOfTransactionsByType(type: any) {
 
 export function getLatestTransactionByTitle(title: string, type: string) {
   const transactions = useSelector(
-    (state: any) => state.transactionReducer || [],
+    (state: any) => state.transactionReducer || []
   );
 
   let filteredTransactions = type
@@ -419,7 +414,7 @@ export function getLatestTransactionByTitle(title: string, type: string) {
     : transactions;
 
   const filteredByTitle = filteredTransactions.filter(
-    (transaction: any) => transaction.titre === title,
+    (transaction: any) => transaction.titre === title
   );
 
   if (filteredByTitle.length === 0) return null;
@@ -457,7 +452,7 @@ interface Transaction {
 export function aggregateTransactions(transactions: any) {
   const totalMontant = transactions.reduce(
     (sum: any, transaction: any) => sum + Math.abs(transaction.montant),
-    0,
+    0
   );
 
   const montantParCategorie: { [key: string]: number } = transactions.reduce(
@@ -470,7 +465,7 @@ export function aggregateTransactions(transactions: any) {
       acc[categorie] += montant;
       return acc;
     },
-    {} as { [key: string]: number },
+    {} as { [key: string]: number }
   );
 
   return Object.entries(montantParCategorie).map(([categorie, montant]) => ({

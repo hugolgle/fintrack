@@ -2,8 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { formatDate, separateMillier } from "../../../utils/fonctionnel";
 import { getRefundsByTransactionId } from "../../../utils/operations";
 import { useEffect, useState } from "react";
-import BtnReturn from "../../../components/Button/btnReturn";
-import Title from "../../../components/Text/title";
+import BtnReturn from "../../../composant/Button/btnReturn";
+import Title from "../../../composant/Text/title";
 
 export default function BoardRefund() {
   const [message, setMessage] = useState("");

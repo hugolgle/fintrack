@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Button } from "../../../@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { addUser } from "../../redux/actions/user.action";
-import Title from "../../components/Text/title";
+import Title from "../../composant/Text/title";
 
 export default function Inscription() {
   const dispatch = useDispatch();

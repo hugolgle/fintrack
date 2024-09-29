@@ -2,9 +2,9 @@ import { useState, FormEvent, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/actions/user.action";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../../../@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { isConnected } from "../../utils/users";
-import Title from "../../components/Text/title";
+import Title from "../../composant/Text/title";
 
 export default function Connexion() {
   const dispatch = useDispatch();
@@ -70,13 +70,13 @@ export default function Connexion() {
         </Button>
       </form>
       <div className="flex flex-col justify-center items-center gap-2 px-36">
-        <p className="text-xs">Nouveau sur DashBoard ?</p>
+        <p className="text-xs">Nouveau sur DashCash ?</p>
         <Link
           to="/inscription"
           className="rounded-xl bg-transparent border-2 border-zinc-700  py-2 text-sm px-4 transition-all hover:bg-zinc-300 hover:dark:bg-zinc-700"
           type="submit"
         >
-          Créer un compte DashBoard !
+          Créer un compte DashCash !
         </Link>
       </div>
       {messageError && (

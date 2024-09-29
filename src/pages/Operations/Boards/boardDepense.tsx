@@ -20,8 +20,8 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import BtnAdd from "../../../components/Button/btnAdd";
-import Title from "../../../components/Text/title";
+import BtnAdd from "../../../composant/Button/btnAdd";
+import Title from "../../../composant/Text/title";
 
 export default function BoardDepense() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
@@ -43,7 +43,7 @@ export default function BoardDepense() {
     (total: number, subscription: any) => {
       return total + parseFloat(subscription.montant);
     },
-    0,
+    0
   );
 
   const currentMonthYear = getCurrentYearAndMonth();

@@ -9,8 +9,8 @@ import {
 } from "../../utils/calcul";
 import { convertDate, months } from "../../utils/fonctionnel";
 import { infoUser } from "../../utils/users";
-import BoxStat from "../../components/Box/boxStat";
-import { CamembertStat } from "../../components/Charts/camembertStat";
+import BoxStat from "../../composant/Box/boxStat";
+import { CamembertStat } from "../../composant/Charts/camembertStat";
 import {
   getTransactionsByMonth,
   getTransactionsByYear,
@@ -19,7 +19,7 @@ import {
   categorieDepense,
   categorieRecette,
 } from "../../../public/categories.json";
-import Title from "../../components/Text/title";
+import Title from "../../composant/Text/title";
 
 export default function Statistique() {
   const getCurrentMonthAndYear = () => {
@@ -32,14 +32,14 @@ export default function Statistique() {
   const userInfo = infoUser();
   const { month: currentMonth, year: currentYear } = getCurrentMonthAndYear();
   const [selectedMonth, setSelectedMonth] = useState(
-    String(currentMonth).padStart(2, "0"),
+    String(currentMonth).padStart(2, "0")
   );
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [firstYear, setFirstYear] = useState(currentYear);
   const [filteredOperation, setFilteredOperation] = useState([]);
 
   const transactionReducer = useSelector(
-    (state: any) => state.transactionReducer,
+    (state: any) => state.transactionReducer
   );
 
   useEffect(() => {
@@ -106,13 +106,13 @@ export default function Statistique() {
     "Dépense",
     `${selectedYear}`,
     null,
-    null,
+    null
   );
   const recetteYear = calculTotalByYear(
     "Recette",
     `${selectedYear}`,
     null,
-    null,
+    null
   );
 
   const depenseMonth = calculTotalByMonth("Dépense", selectedDate, null, null);
@@ -123,19 +123,19 @@ export default function Statistique() {
   const moyenneDepenseMois = calculMoyenne(
     "Dépense",
     `${selectedYear}`,
-    nbMonth,
+    nbMonth
   );
   const moyenneRecetteMois = calculMoyenne(
     "Recette",
     `${selectedYear}`,
-    nbMonth,
+    nbMonth
   );
 
   const economieTotale = calculEconomie(`${selectedYear}`, null);
   const economieMonth = calculEconomie(`${selectedYear}`, selectedMonth);
   const moyenneEconomie = calculMoyenneEconomie(
     moyenneDepenseMois,
-    moyenneRecetteMois,
+    moyenneRecetteMois
   );
 
   return (
@@ -251,13 +251,13 @@ export default function Statistique() {
                         `${selectedYear}`,
                         "Recette",
                         null,
-                        null,
+                        null
                       )
                     : getTransactionsByMonth(
                         selectedDate,
                         "Recette",
                         null,
-                        null,
+                        null
                       )
                 }
                 categorie={categorieRecette}
@@ -293,13 +293,13 @@ export default function Statistique() {
                         `${selectedYear}`,
                         "Dépense",
                         null,
-                        null,
+                        null
                       )
                     : getTransactionsByMonth(
                         selectedDate,
                         "Dépense",
                         null,
-                        null,
+                        null
                       )
                 }
                 categorie={categorieDepense}

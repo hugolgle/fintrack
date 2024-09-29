@@ -1,26 +1,26 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { infoUser } from "../../utils/users";
 import { deleteUser, editUser } from "../../redux/actions/user.action";
 import { formatDate } from "../../utils/fonctionnel";
-import Title from "../../components/Text/title";
+import Title from "../../composant/Text/title";
 
 export default function Profil() {
   const userInfo = infoUser();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [selectedDelete, setSelectedDelete] = useState(false);
+  // const navigate = useNavigate();
+  // const [selectedDelete, setSelectedDelete] = useState(false);
 
-  const handleDeleteConfirmation = async () => {
-    const confirmed = window.confirm("Cette action est irréversible ?");
-    if (confirmed) {
-      await dispatch(deleteUser(userInfo.id) as any);
-      navigate("/");
-    } else {
-      setSelectedDelete(false);
-    }
-  };
+  // const handleDeleteConfirmation = async () => {
+  //   const confirmed = window.confirm("Cette action est irréversible ?");
+  //   if (confirmed) {
+  //     await dispatch(deleteUser(userInfo.id) as any);
+  //     navigate("/");
+  //   } else {
+  //     setSelectedDelete(false);
+  //   }
+  // };
 
   const [selectedUpdate, setSelectedUpdate] = useState(false);
   const [update, setUpdate] = useState(false);

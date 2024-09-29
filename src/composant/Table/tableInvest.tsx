@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../@/components/ui/table";
+} from "../../components/ui/table";
 import { addSpace, formatDate, separateMillier } from "../../utils/fonctionnel";
 
 export default function TableauInvest(props: any) {
@@ -17,22 +17,26 @@ export default function TableauInvest(props: any) {
       {props.investments && props.investments.length > 0 ? (
         <Table className="w-full flex flex-col px-1 ">
           <TableHeader>
-            <TableRow className="w-full flex flex-row h-7">
-              <TableHead className="w-full">ID</TableHead>
-              <TableHead className="w-full">Type</TableHead>
-              <TableHead className="w-full">Titre</TableHead>
-              <TableHead className="w-full">Date</TableHead>
+            <TableRow className="w-full flex h-7 italic">
+              <TableHead className="w-full text-center">ID</TableHead>
+              <TableHead className="w-full text-center">Type</TableHead>
+              <TableHead className="w-full text-center">Titre</TableHead>
+              <TableHead className="w-full text-center">Date</TableHead>
               {urlInvest === "all" && (
-                <TableHead className="w-full">État</TableHead>
+                <TableHead className="w-full text-center">État</TableHead>
               )}
-              <TableHead className="w-full">
+              <TableHead className="w-full text-center">
                 Montant {urlInvest === "sold" && "acheté"}
               </TableHead>
               {urlInvest === "sold" && (
-                <TableHead className="w-full">Montant vendu</TableHead>
+                <TableHead className="w-full text-center">
+                  Montant vendu
+                </TableHead>
               )}
               {urlInvest === "sold" && (
-                <TableHead className="w-full">Bénéfice/Déficit</TableHead>
+                <TableHead className="w-full text-center">
+                  Bénéfice/Déficit
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -43,7 +47,7 @@ export default function TableauInvest(props: any) {
                 className="w-full animate-fade-up"
                 key={investment._id}
               >
-                <TableRow className="rounded flex my-1 flex-row items-center bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all">
+                <TableRow className="rounded flex my-1 h-10 flex-row items-center bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all">
                   <TableCell className="w-full">
                     {investment._id.substring(4, 8)}
                   </TableCell>

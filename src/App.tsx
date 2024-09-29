@@ -1,7 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home/home";
-import Navbar from "./components/navbar";
+import Navbar from "./composant/navbar";
 import Connexion from "./pages/Connexion/connexion";
 import Profil from "./pages/Profile/profil";
 import TableauDeBord from "./pages/Dashboard/dashboard";
@@ -16,10 +16,11 @@ import PageInvestment from "./pages/Operations/PageOperations/pageInvestment";
 import Investment from "./pages/Operations/OperationById/investment";
 import Refund from "./pages/Operations/OperationById/refund";
 import BoardRefund from "./pages/Operations/Boards/boardRefund";
-import { ThemeProvider } from "./components/Theme/theme.provider";
-import PrivateRoute from "./components/privateRoute";
+import { ThemeProvider } from "./composant/Theme/theme.provider";
+import PrivateRoute from "./composant/privateRoute";
 import BoardRecette from "./pages/Operations/Boards/boardRecette";
 import BoardDepense from "./pages/Operations/Boards/boardDepense";
+import "../styles/globals.css";
 
 function App() {
   const router = createBrowserRouter([

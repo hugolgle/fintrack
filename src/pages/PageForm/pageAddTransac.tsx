@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "../../../@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import {
   categorieRecette,
@@ -15,13 +15,20 @@ import {
 } from "../../redux/actions/transaction.action";
 import { infoUser } from "../../utils/users";
 import { categorieSort } from "../../utils/other";
-import BtnReturn from "../../components/Button/btnReturn";
+import BtnReturn from "../../composant/Button/btnReturn";
 import {
   getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
-import Title from "../../components/Text/title";
-import CardMessage from "../../components/cardMessage";
+import Title from "../../composant/Text/title";
+import CardMessage from "../../composant/cardMessage";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 export default function PageAddTransac(props: any) {
   const userInfo = infoUser();

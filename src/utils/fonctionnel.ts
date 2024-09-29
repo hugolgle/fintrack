@@ -122,3 +122,11 @@ export function getCurrentYearAndMonth() {
   // Retourne la date au format AAAAMM
   return `${year}${month}`;
 }
+
+export function retireSpace(nombre: any) {
+  const nombreStr = nombre.toString();
+
+  const resultat = nombreStr.replace(/\s/g, "");
+
+  return parseFloat(resultat);
+}

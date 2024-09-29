@@ -21,7 +21,8 @@
     "paths": {
       "redux-persist/integration/react": [
         "node_modules/redux-persist/integration/react"
-      ]
+      ],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src", "@"],

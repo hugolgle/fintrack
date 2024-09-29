@@ -12,16 +12,16 @@ import {
   getTransactionsByType,
   getTitleOfTransactionsByType,
 } from "../../../utils/operations";
-import TableauTransac from "../../../components/Table/tableTransac";
-import BtnReturn from "../../../components/Button/btnReturn";
-import BtnAdd from "../../../components/Button/btnAdd";
+import TableauTransac from "../../../composant/Table/tableTransac";
+import BtnReturn from "../../../composant/Button/btnReturn";
+import BtnAdd from "../../../composant/Button/btnAdd";
 import { ChevronLeft, ChevronRight, ListCollapse } from "lucide-react";
-import BtnFilter from "../../../components/Button/btnFilter";
+import BtnFilter from "../../../composant/Button/btnFilter";
 import { categorieSort } from "../../../utils/other";
 import { categorieDepense } from "../../../../public/categories.json";
 import { categorieRecette } from "../../../../public/categories.json";
-import Title from "../../../components/Text/title";
-import CardMessage from "../../../components/cardMessage";
+import Title from "../../../composant/Text/title";
+import CardMessage from "../../../composant/cardMessage";
 
 export default function PageTransactions(props: any) {
   const [transactionDeleted, setTransactionDeleted] = useState(false);

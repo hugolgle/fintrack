@@ -13,7 +13,7 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-} from "../../../@/components/ui/chart";
+} from "../../components/ui/chart";
 import { addSpace } from "../../utils/fonctionnel";
 
 export function CamembertTdb(props: any) {

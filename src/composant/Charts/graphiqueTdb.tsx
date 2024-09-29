@@ -11,8 +11,8 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from "recharts";
-import { CardContent } from "../../../@/components/ui/card";
-import { ChartConfig } from "../../../@/components/ui/chart";
+import { CardContent } from "../../components/ui/card";
+import { ChartConfig } from "../../components/ui/chart";
 import { addSpace } from "../../utils/fonctionnel";
 
 export function GraphiqueTdb({
@@ -92,13 +92,13 @@ export function GraphiqueTdb({
   // Trouver la valeur maximale parmi les données pour ajuster l'axe Y
   const maxValue = Math.max(
     ...data.map((item) =>
-      Math.max(item.montantDepense, item.montantRecette, item.montantInvest),
-    ),
+      Math.max(item.montantDepense, item.montantRecette, item.montantInvest)
+    )
   );
   const yAxisDomain = [0, maxValue * 1.1]; // Ajuste le domaine pour éviter le débordement
   const ticks = Array.from(
     { length: 4 },
-    (_, i) => Math.ceil((maxValue * 1.1 * i) / 3 / 100) * 100,
+    (_, i) => Math.ceil((maxValue * 1.1 * i) / 3 / 100) * 100
   );
 
   // Configuration des courbes

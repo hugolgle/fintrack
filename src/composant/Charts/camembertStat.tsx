@@ -4,7 +4,7 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-} from "../../../@/components/ui/chart";
+} from "../../components/ui/chart";
 import { aggregateTransactions } from "../../utils/operations";
 import { addSpace } from "../../utils/fonctionnel";
 
@@ -49,7 +49,7 @@ const renderCustomLegend = (props: any) => {
   const { payload, topN = 5 } = props; // topN from props or default to 5
   // Tri du payload par pourcentage décroissant
   const payloadSort = payload.sort(
-    (a: any, b: any) => b.payload.pourcentage - a.payload.pourcentage,
+    (a: any, b: any) => b.payload.pourcentage - a.payload.pourcentage
   );
   // Tronquer la liste pour n'afficher que les `topN` premiers éléments
   const payloadTopN = payloadSort.slice(0, topN);
@@ -76,18 +76,18 @@ export function CamembertStat(props: any) {
   const categoryColors: { [key: string]: string } = props.categorie.reduce(
     (
       acc: { [key: string]: string },
-      category: { name: string; color: string },
+      category: { name: string; color: string }
     ) => {
       acc[category.name] = category.color;
       return acc;
     },
-    {},
+    {}
   );
 
   const chartData = aggregateTransactions(props.transactions);
   const totalAmount = chartData.reduce(
     (sum, item) => sum + parseFloat(item.montant),
-    0,
+    0
   );
 
   const transformedData = chartData.map((item) => ({
@@ -106,7 +106,7 @@ export function CamembertStat(props: any) {
         };
         return acc;
       },
-      {} as Record<string, { label: string; color: string }>,
+      {} as Record<string, { label: string; color: string }>
     ),
   };
 

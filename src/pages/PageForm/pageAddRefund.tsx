@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "../../../@/components/ui/button";
+import { Button } from "../../components/ui/button";
 
 import {
   formatMontant,
@@ -89,7 +89,7 @@ export default function PageAddRefund(props: any) {
         setMessage("Votre remboursement a été ajouté ! ");
       } catch {
         setMessageError(
-          "Une erreur s'est produite lors de l'ajout du remboursement !",
+          "Une erreur s'est produite lors de l'ajout du remboursement !"
         );
       }
     } else {

@@ -14,8 +14,8 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import BtnAdd from "../../../components/Button/btnAdd";
-import Title from "../../../components/Text/title";
+import BtnAdd from "../../../composant/Button/btnAdd";
+import Title from "../../../composant/Text/title";
 
 export default function BoardRecette() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();

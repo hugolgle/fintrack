@@ -2,15 +2,15 @@ import {
   getAllInvestments,
   getInvestmentsByTitle,
 } from "../../../utils/operations";
-import TableauInvest from "../../../components/Table/tableInvest";
+import TableauInvest from "../../../composant/Table/tableInvest";
 import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
-import BtnReturn from "../../../components/Button/btnReturn";
-import BtnAdd from "../../../components/Button/btnAdd";
+import BtnReturn from "../../../composant/Button/btnReturn";
+import BtnAdd from "../../../composant/Button/btnAdd";
 import { useParams } from "react-router-dom";
-import Title from "../../../components/Text/title";
+import Title from "../../../composant/Text/title";
 
 export default function PageInvestment() {
   const { urlInvest } = useParams<{ urlInvest: string }>();
