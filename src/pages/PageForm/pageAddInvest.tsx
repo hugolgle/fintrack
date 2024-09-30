@@ -95,7 +95,7 @@ export default function PageAddInvest() {
         </div>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center gap-5 px-36 py-10"
+          className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
           <input
             value={selectedDate}

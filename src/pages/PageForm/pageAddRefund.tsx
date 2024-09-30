@@ -100,7 +100,7 @@ export default function PageAddRefund(props: any) {
       <section className="h-full">
         <form
           onSubmit={handleAddRefund}
-          className="flex flex-col justify-center items-center gap-5 px-36 py-10"
+          className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
           <input
             className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"

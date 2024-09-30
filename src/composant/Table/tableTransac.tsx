@@ -94,7 +94,7 @@ export default function Tableau(props: any) {
                 )}
                 <Link to={transaction._id} className="w-full">
                   <TableRow
-                    className={`rounded flex my-1 flex-row items-center h-10 bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
+                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
                       selectedRows[transaction._id]
                         ? "ring-1 ring-zinc-400"
                         : ""

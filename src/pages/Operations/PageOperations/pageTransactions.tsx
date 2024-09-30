@@ -15,7 +15,7 @@ import {
 import TableauTransac from "../../../composant/Table/tableTransac";
 import BtnReturn from "../../../composant/Button/btnReturn";
 import BtnAdd from "../../../composant/Button/btnAdd";
-import { ChevronLeft, ChevronRight, ListCollapse } from "lucide-react";
+import { ChevronLeft, ChevronRight, ListCollapse, Search } from "lucide-react";
 import BtnFilter from "../../../composant/Button/btnFilter";
 import { categorieSort } from "../../../utils/other";
 import { categorieDepense } from "../../../../public/categories.json";
@@ -83,6 +83,7 @@ export default function PageTransactions(props: any) {
   const check = selectedCategories.length + selectedTitles.length;
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [clickResearch, setClickResearch] = useState(false); // Nouvel état pour activer la recherche
 
   const performSearch = (term: string) => {
     const filteredTransactions = transactions.filter((transaction: any) => {
@@ -196,13 +197,17 @@ export default function PageTransactions(props: any) {
         <div className="absolute top-0 flex flex-row w-full gap-2">
           <BtnReturn />
           <BtnAdd to={`/${typeProps}`} />
+          <Search
+            onClick={() => setClickResearch(!clickResearch)}
+            className="cursor-pointer hover:scale-110 transition-all"
+          />
           <ListCollapse
             className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
             onClick={handleSelectOpe}
           />
           <BtnFilter categories={categories} action={toggleModal} check={check}>
             {showModal && (
-              <div className="flex flex-col bg-zinc-200 dark:bg-zinc-800 rounded z-50 text-left p-2 mt-8 absolute max-h-60 overflow-scroll">
+              <div className="flex flex-col bg-zinc-200 dark:bg-zinc-800 z-50 animate-fade text-left p-2 mt-8 absolute max-h-60 overflow-auto  rounded-xl">
                 <p className="text-center font-semibold">
                   Filtrer par catégorie :
                 </p>
@@ -249,22 +254,26 @@ export default function PageTransactions(props: any) {
                 </div>
 
                 <button
-                  className="text-xs hover:bg-red-500 transition-all fixed"
                   onClick={clearFilters}
+                  className="w-full py-2 mt-4 text-white rounded-xl hover:bg-opacity-50 transition-all"
                 >
-                  Annuler
+                  Réinitialiser les filtres
                 </button>
               </div>
             )}
           </BtnFilter>
+        </div>
+
+        {clickResearch && (
           <input
-            className="rounded-xl px-2 w-32 bg-zinc-100 dark:bg-zinc-900 placeholder:text-sm"
+            className="rounded-[10px] mb-2 px-2 h-8 w-52 bg-zinc-100 animate-fade dark:bg-zinc-900 placeholder:text-sm focus:outline-none"
             type="search"
             placeholder="Rechercher"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-        </div>
+        )}
+
         <div
           className={`flex flex-row gap-4 absolute top-0 right-0 ${date === "all" ? "invisible" : ""}`}
         >

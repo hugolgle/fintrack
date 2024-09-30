@@ -13,19 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { Calendar } from "@/components/ui/calendar"; // Import du calendrier
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   categorieRecette,
   categorieDepense,
@@ -69,7 +62,7 @@ export default function PageAddTransac(props: any) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      date: new Date(), // Valeur par défaut à la date actuelle
+      date: new Date(),
     },
   });
 
@@ -104,7 +97,7 @@ export default function PageAddTransac(props: any) {
     setSelectedCategorie("");
     setSelectedDetail("");
     setSelectedMontant("");
-    form.reset(); // Réinitialiser le formulaire
+    form.reset();
   };
 
   const handleDetail = (event: any) => {
@@ -136,11 +129,14 @@ export default function PageAddTransac(props: any) {
       await dispatch(addTransactions(postData) as any);
       dispatch(getTransactions() as any);
       resetForm();
-      showMessage(`Votre ${props.type.toLowerCase()} a été ajouté ! `, "blue");
+      showMessage(
+        `Votre ${props.type.toLowerCase()} a été ajouté ! `,
+        "bg-green-500"
+      );
     } catch {
       showMessage(
         "Une erreur s'est produite lors de l'ajout de l'opération",
-        "red"
+        "bg-red-500"
       );
     }
   };
@@ -155,7 +151,7 @@ export default function PageAddTransac(props: any) {
         </div>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center gap-5 px-36 py-10"
+          className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
           <input
             className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
@@ -202,48 +198,34 @@ export default function PageAddTransac(props: any) {
             </SelectContent>
           </Select>
 
-          <Form {...form}>
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-left font-normal"
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP", { locale: fr }) // Formatage en français
-                          ) : (
-                            <span>Choisir une date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto rounded-xl bg-zinc-100 dark:bg-zinc-900 p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date("1900-01-01")}
-                        initialFocus
-                        locale={fr}
-                        className=""
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </Form>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-left font-normal"
+              >
+                {form.watch("date") ? (
+                  format(form.watch("date"), "PPP", { locale: fr })
+                ) : (
+                  <span>Choisir une date</span>
+                )}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto rounded-xl bg-zinc-100 dark:bg-[#1a1a1a] p-0"
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={form.watch("date")}
+                onSelect={(date) => form.setValue("date", date)}
+                disabled={(date) => date < new Date("1900-01-01")}
+                initialFocus
+                locale={fr}
+              />
+            </PopoverContent>
+          </Popover>
 
           <textarea
             value={selectedDetail}
@@ -271,7 +253,7 @@ export default function PageAddTransac(props: any) {
           <Button
             variant="outline"
             className="rounded-xl w-1/4 bg-zinc-100 dark:bg-zinc-900 hover:border-blue-500"
-            type="submit" // Ajouter le type submit ici pour soumettre le formulaire
+            type="submit"
           >
             Soumettre la {props.type.toLowerCase()}
           </Button>
