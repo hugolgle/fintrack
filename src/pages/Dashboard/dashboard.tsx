@@ -18,6 +18,12 @@ import { getLastSixMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
 import Title from "../../composant/Text/title";
 import { Link } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function TableauDeBord() {
   const getCurrentMonthAndYear = () => {
@@ -215,26 +221,51 @@ export default function TableauDeBord() {
       <section className="w-full">
         <Title title="Tableau de bord" />
 
-        <div className="absolute flex gap-3 top-4 left-4">
-          <Link
-            to="/depense/add"
-            className="bg-colorDepense bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-          >
-            <Plus />
-          </Link>
-          <Link
-            to="/recette/add"
-            className="bg-colorRecette bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-          >
-            <Plus />
-          </Link>
-          <Link
-            to="/invest/add"
-            className="bg-colorInvest bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-          >
-            <Plus />
-          </Link>
-        </div>
+        <TooltipProvider>
+          <div className="absolute flex gap-3 top-4 left-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/depense/add"
+                  className="bg-colorDepense bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
+                >
+                  <Plus />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+                <p>Ajouter une dépense</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/recette/add"
+                  className="bg-colorRecette bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
+                >
+                  <Plus />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+                <p>Ajouter une recette</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/invest/add"
+                  className="bg-colorInvest bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
+                >
+                  <Plus />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+                <p>Ajouter un investissement</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
             <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-xl p-4 flex flex-col gap-4">
