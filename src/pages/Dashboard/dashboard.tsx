@@ -223,7 +223,7 @@ export default function TableauDeBord() {
 
         <TooltipProvider>
           <div className="absolute flex gap-3 top-4 left-4">
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Link
                   to="/depense/add"
@@ -237,7 +237,7 @@ export default function TableauDeBord() {
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Link
                   to="/recette/add"
@@ -251,7 +251,7 @@ export default function TableauDeBord() {
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Link
                   to="/invest/add"

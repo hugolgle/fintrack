@@ -34,6 +34,9 @@ import { MessageContext } from "@/context/MessageContext";
 
 export default function Transaction() {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
   const categorieD = categorieSort(categorieDepense);

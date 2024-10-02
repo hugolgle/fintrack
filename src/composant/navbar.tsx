@@ -15,13 +15,18 @@ import {
   WalletCards,
 } from "lucide-react";
 import { MessageContext } from "@/context/MessageContext";
+import { ThunkDispatch } from "redux-thunk";
+import { AnyAction } from "redux";
 
 export default function Navbar(props: any) {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<any, any, AnyAction> = useDispatch();
   const isAuthenticated = isConnected();
 
   const location = useLocation();

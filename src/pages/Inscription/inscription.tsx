@@ -5,12 +5,17 @@ import { Button } from "../../components/ui/button";
 import { addUser } from "../../redux/actions/user.action";
 import Title from "../../composant/Text/title";
 import { MessageContext } from "@/context/MessageContext";
+import { ThunkDispatch } from "redux-thunk";
+import { AnyAction } from "redux";
 
 export default function Inscription() {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<any, any, AnyAction> = useDispatch();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState<string>("");

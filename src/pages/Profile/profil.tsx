@@ -2,13 +2,16 @@
 import { useDispatch } from "react-redux";
 import { useContext, useState } from "react";
 import { infoUser } from "../../utils/users";
-import { deleteUser, editUser } from "../../redux/actions/user.action";
+import { editUser } from "../../redux/actions/user.action";
 import { formatDate } from "../../utils/fonctionnel";
 import Title from "../../composant/Text/title";
 import { MessageContext } from "@/context/MessageContext";
 
 export default function Profil() {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
   const userInfo = infoUser();

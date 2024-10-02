@@ -50,6 +50,9 @@ const FormSchema = z.object({
 
 export default function PageAddTransac(props: any) {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
   const userInfo = infoUser();
@@ -219,8 +222,8 @@ export default function PageAddTransac(props: any) {
               <Calendar
                 mode="single"
                 selected={form.watch("date")}
-                onSelect={(date) => form.setValue("date", date)}
-                disabled={(date) => date < new Date("1900-01-01")}
+                onSelect={(date: any) => form.setValue("date", date)}
+                disabled={(date: any) => date < new Date("1900-01-01")}
                 initialFocus
                 locale={fr}
               />

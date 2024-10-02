@@ -20,7 +20,7 @@ export const loginUser = (username: any, password: any) => {
       const usersData = await response.json();
 
       const user = usersData.find(
-        (u: any) => u.username === username && u.password === password,
+        (u: any) => u.username === username && u.password === password
       );
 
       if (user) {
@@ -81,7 +81,7 @@ export const editUser = (formData: FormData) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        },
+        }
       );
 
       const updatedUserData = response.data;

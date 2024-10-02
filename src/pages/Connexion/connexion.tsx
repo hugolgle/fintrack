@@ -6,27 +6,34 @@ import { Button } from "../../components/ui/button";
 import { isConnected } from "../../utils/users";
 import Title from "../../composant/Text/title";
 import { MessageContext } from "@/context/MessageContext";
+import { ThunkDispatch } from "redux-thunk";
+import { AnyAction } from "redux";
 
 export default function Connexion() {
   const messageContext = useContext(MessageContext);
+  if (!messageContext) {
+    throw new Error("MyComponent must be used within a MessageProvider");
+  }
   const { showMessage } = messageContext;
 
-  const dispatch = useDispatch();
+  // Typage du dispatch avec ThunkDispatch
+  const dispatch: ThunkDispatch<any, any, AnyAction> = useDispatch();
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const messageError = useSelector((state) => state.userReducer?.error);
+  const messageError = useSelector((state: any) => state.userReducer?.error);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    dispatch(loginUser(username, password));
+    dispatch(loginUser(username, password)); // Dispatch de l'action asynchrone
     if (messageError) {
       showMessage(messageError, "bg-red-500");
     } else {
       showMessage("Vous êtes connecté !", "bg-green-500");
     }
   };
+
   const isConnect = isConnected();
 
   useEffect(() => {
