@@ -20,7 +20,7 @@ module.exports.setInvestments = async (req, res) => {
 
     return res.status(201).json(investment);
   } catch (error) {
-    console.error(error); // Ajoutez cette ligne pour afficher les erreurs dans la console
+    console.error(error);
     return res.status(500).json({
       message: "Erreur lors de la création de l'investissement",
       error,
@@ -64,13 +64,11 @@ module.exports.soldInvestment = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    // Assurez-vous que `montantVendu` est fourni dans la requête
     const montantVendu = parseFloat(req.body.montantVendu);
     if (isNaN(montantVendu)) {
       return res.status(400).json({ message: "Le montant vendu est invalide" });
     }
 
-    // Calcul du bénéfice
     const montantInitial = parseFloat(investment.montant);
     const benefice = montantVendu - montantInitial;
 
@@ -78,10 +76,10 @@ module.exports.soldInvestment = async (req, res) => {
       req.params.id,
       {
         montantVendu: montantVendu.toFixed(2),
-        benefice: benefice.toFixed(2), // Stockage du bénéfice calculé
+        benefice: benefice.toFixed(2),
         isSold: true,
       },
-      { new: true },
+      { new: true }
     );
 
     return res.status(200).json(updatedOperation);
@@ -106,7 +104,7 @@ module.exports.editInvestment = async (req, res) => {
     const updatedInvestment = await InvestmentModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true },
+      { new: true }
     );
 
     return res.status(200).json(updatedInvestment);
