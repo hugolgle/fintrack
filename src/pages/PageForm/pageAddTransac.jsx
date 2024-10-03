@@ -32,14 +32,13 @@ import {
 } from "../../redux/actions/transaction.action";
 import { infoUser } from "../../utils/users";
 import { categorieSort } from "../../utils/other";
-import BtnReturn from "../../composant/Button/btnReturn";
 import {
   getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
-import Title from "../../composant/Text/title";
 import { fr } from "date-fns/locale";
 import { MessageContext } from "@/context/MessageContext";
+import LayoutOperation from "../../layout/layoutOperation";
 
 // Schema de validation pour la date
 const FormSchema = z.object({
@@ -147,11 +146,11 @@ export default function PageAddTransac(props) {
   return (
     <>
       <section className="h-full">
-        <Title title={`Ajouter une ${props.type.toLowerCase()}`} />
-
-        <div className="absolute top-4 left-4">
-          <BtnReturn />
-        </div>
+        <LayoutOperation
+          title={`Ajouter une ${props.type.toLowerCase()}`}
+          pageById
+          pageAdd
+        />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"

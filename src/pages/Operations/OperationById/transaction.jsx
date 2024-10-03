@@ -27,10 +27,8 @@ import { useDispatch } from "react-redux";
 import { useContext, useState } from "react";
 import PageAddRefund from "../../PageForm/pageAddRefund";
 import { categorieSort } from "../../../utils/other";
-import BtnReturn from "../../../composant/Button/btnReturn";
-import BtnAdd from "../../../composant/Button/btnAdd";
-import Title from "../../../composant/Text/title";
 import { MessageContext } from "@/context/MessageContext";
+import LayoutOperation from "../../../layout/layoutOperation";
 
 export default function Transaction() {
   const messageContext = useContext(MessageContext);
@@ -162,48 +160,15 @@ export default function Transaction() {
 
   return (
     <>
-      <div className="w-full h-auto relative">
-        {selectedUpdate ? (
-          <>
-            <input
-              className="text-5xl animate-[pulseEdit_1s_ease-in-out_infinite] rounded-2xl text-center font-thin mb-5 bg-transparent"
-              list="title-suggestions"
-              id="title"
-              name="title"
-              maxLength={50}
-              placeholder="Titre"
-              value={selectedTitre}
-              onChange={(e) => {
-                handleTitre(e);
-                handleInputChange();
-              }}
-              required
-            />
-            <datalist id="title-suggestions">
-              {suggestions.map((suggestion, index) => (
-                <option key={index} value={suggestion} />
-              ))}
-            </datalist>
-          </>
-        ) : (
-          <Title title={transaction.titre} />
-        )}
-
-        <div
-          className={`${refundVisible ? "hidden" : "absolute top-0 flex flex-row gap-2 w-full"}`}
-        >
-          <BtnReturn />
-          <BtnAdd to={`/${typeProps}`} />
-        </div>
-        {transaction.type === "Dépense" && (
-          <button
-            className="absolute top-0 right-0 flex flex-row gap-2 cursor-pointer border-1 hover:border-blue-500 transition-all"
-            onClick={handleRefund}
-          >
-            {refundVisible ? "Revenir" : "Ajouter un remboursement"}
-          </button>
-        )}
-      </div>
+      <LayoutOperation
+        title={transaction.titre}
+        typeProps={typeProps}
+        categories={transaction.type === "Dépense" ? categorieD : categorieR}
+        pageById
+        refund
+        refundVisible={refundVisible}
+        handleRefund={handleRefund}
+      />
 
       {refundVisible && (
         <PageAddRefund
@@ -211,12 +176,39 @@ export default function Transaction() {
           montant={transaction.montant}
         />
       )}
+
       <section
         className={`${refundVisible ? "hidden" : "flex flex-row gap-4"}`}
       >
         <div className="flex flex-col w-3/4 gap-4 animate-fade">
-          <div className="h-40 p-8 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center">
-            <h2 className="text-4xl">{transaction._id}</h2>
+          <div
+            className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+          >
+            {selectedUpdate ? (
+              <>
+                <input
+                  className="text-4xl rounded-2xl text-center font-thin mb-5 bg-transparent"
+                  list="title-suggestions"
+                  id="title"
+                  name="title"
+                  maxLength={50}
+                  placeholder="Titre"
+                  value={selectedTitre}
+                  onChange={(e) => {
+                    handleTitre(e);
+                    handleInputChange();
+                  }}
+                  required
+                />
+                <datalist id="title-suggestions">
+                  {suggestions.map((suggestion, index) => (
+                    <option key={index} value={suggestion} />
+                  ))}
+                </datalist>
+              </>
+            ) : (
+              <h2 className="text-4xl">{transaction.titre}</h2>
+            )}
           </div>
           <div className="flex flex-row gap-4">
             <div

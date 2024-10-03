@@ -7,10 +7,8 @@ import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
-import BtnReturn from "../../../composant/Button/btnReturn";
-import BtnAdd from "../../../composant/Button/btnAdd";
 import { useParams } from "react-router-dom";
-import Title from "../../../composant/Text/title";
+import LayoutOperation from "../../../layout/layoutOperation";
 
 export default function PageInvestment() {
   const { urlInvest } = useParams();
@@ -49,7 +47,7 @@ export default function PageInvestment() {
   return (
     <>
       <section className="w-full relative">
-        <Title
+        <LayoutOperation
           title={`Investissements
           ${
             urlInvest === "sold"
@@ -58,12 +56,9 @@ export default function PageInvestment() {
                 ? "en cours"
                 : ""
           }`}
+          typeProps={"invest"}
+          pageTable
         />
-
-        <div className="absolute top-0 flex flex-row w-full gap-2">
-          <BtnReturn />
-          <BtnAdd to="/invest" />
-        </div>
 
         <TableauInvest investments={investissement} />
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-zinc-200 hover:opacity-0 dark:bg-zinc-800 py-3 transition-all">

@@ -14,8 +14,7 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import BtnAdd from "../../../composant/Button/btnAdd";
-import Title from "../../../composant/Text/title";
+import LayoutOperation from "../../../layout/layoutOperation";
 
 export default function BoardRecette() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
@@ -28,12 +27,11 @@ export default function BoardRecette() {
     <>
       <section className="h-full w-full">
         <div className="flex flex-col">
-          <div className="w-full relative">
-            <Title title="Recettes" />
-            <div className="absolute top-0 left-0">
-              <BtnAdd />
-            </div>
-          </div>
+          <LayoutOperation
+            title="Board recette"
+            typeProps="recette"
+            pageBoard
+          />
           <div className="flex flex-col gap-4 w-full animate-fade">
             <div className="flex flex-row w-full h-64 gap-4">
               <Link

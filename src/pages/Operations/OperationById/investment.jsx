@@ -15,10 +15,8 @@ import {
   getInvestments,
   soldInvestments,
 } from "../../../redux/actions/investment.action";
-import BtnReturn from "../../../composant/Button/btnReturn";
-import BtnAdd from "../../../composant/Button/btnAdd";
-import Title from "../../../composant/Text/title";
 import { MessageContext } from "@/context/MessageContext";
+import LayoutOperation from "../../../layout/layoutOperation";
 
 export default function Investment() {
   const messageContext = useContext(MessageContext);
@@ -118,33 +116,28 @@ export default function Investment() {
 
   return (
     <>
+      <LayoutOperation title={investment.titre} typeProps="invest" pageById />
       <section className="flex flex-col gap-4 ">
-        <div className="w-full h-auto relative">
-          {selectedUpdate ? (
-            <input
-              className="text-5xl animate-[pulseEdit_1s_ease-in-out_infinite] rounded-2xl text-center font-thin bg-transparent"
-              value={selectedTitre}
-              type="text"
-              name=""
-              onChange={(e) => {
-                handleTitre(e);
-                handleInputChange();
-              }}
-              required
-            />
-          ) : (
-            <Title title={investment.titre} />
-          )}
-          <div className="absolute top-0 flex flex-row gap-2 w-full">
-            <BtnReturn />
-            <BtnAdd to="/invest" />
-          </div>
-        </div>
-
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">
-            <div className="h-40 p-8 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center ">
-              <h2 className="text-4xl">{investment._id}</h2>
+            <div
+              className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+            >
+              {selectedUpdate ? (
+                <input
+                  className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
+                  value={selectedTitre}
+                  type="text"
+                  name=""
+                  onChange={(e) => {
+                    handleTitre(e);
+                    handleInputChange();
+                  }}
+                  placeholder="Type"
+                />
+              ) : (
+                <h2 className="text-4xl">{investment.titre}</h2>
+              )}
             </div>
 
             <div className="flex flex-row w-full gap-4">

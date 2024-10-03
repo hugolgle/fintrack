@@ -13,24 +13,15 @@ import {
   getTitleOfTransactionsByType,
 } from "../../../utils/operations";
 import TableauTransac from "../../../composant/Table/tableTransac";
-import BtnReturn from "../../../composant/Button/btnReturn";
-import BtnAdd from "../../../composant/Button/btnAdd";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CircleX,
-  ListCollapse,
-  Search,
-} from "lucide-react";
-import BtnFilter from "../../../composant/Button/btnFilter";
+import { CircleX } from "lucide-react";
 import { categorieSort } from "../../../utils/other";
 import {
   categorieDepense,
   categorieRecette,
 } from "../../../../public/categories.json";
-import Title from "../../../composant/Text/title";
 import { ModalContext } from "../../../context/ModalContext"; // Assurez-vous que le chemin est correct
 import Modal from "../../../composant/modal"; // Assurez-vous que le chemin est correct
+import LayoutOperation from "../../../layout/layoutOperation";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -189,8 +180,8 @@ export default function PageTransactions(props) {
 
   return (
     <>
-      <section className="w-full relative">
-        <Title
+      <section className="w-full">
+        <LayoutOperation
           title={`${
             date === "all"
               ? `Toutes les ${props.type.toLowerCase()}s`
@@ -198,79 +189,76 @@ export default function PageTransactions(props) {
                 ? `${props.type}s de ${date}`
                 : `${props.type}s de ${convertDate(date)}`
           }`}
+          typeProps={props.type}
+          categories={categories}
+          openModal={openModal}
+          check={check}
+          selectOpe={selectOpe}
+          setClickResearch={setClickResearch}
+          clickResearch={clickResearch}
+          handleSelectOpe={handleSelectOpe}
+          clickLastMonth={clickLastMonth}
+          clickNextMonth={clickNextMonth}
+          date={date}
+          pageTable
         />
-        <div className="absolute top-0 flex flex-row w-full gap-2">
-          <BtnReturn />
-          <BtnAdd to={`/${typeProps}`} />
-          <Search
-            onClick={() => setClickResearch(!clickResearch)}
-            className="cursor-pointer hover:scale-110 transition-all"
+        <Modal>
+          <CircleX
+            onClick={closeModal}
+            className="self-end cursor-pointer hover:scale-95 transition-all"
           />
-          <ListCollapse
-            className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
-            onClick={handleSelectOpe}
-          />
-          <BtnFilter categories={categories} action={openModal} check={check} />
-          <Modal>
-            <CircleX
-              onClick={closeModal}
-              className="self-end cursor-pointer hover:scale-95 transition-all"
-            />
-            <div className="flex flex-col gap-2">
-              <p className="text-center font-thin italic">
-                Filtrer par catégorie :
-              </p>
-              <div className="grid grid-cols-3 gap-x-2 mt-1">
-                {Array.isArray(categories) &&
-                  categories.map(({ index, name }) => (
-                    <div key={index} className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        id={name}
-                        name="categorie"
-                        value={name}
-                        checked={selectedCategories.includes(name)}
-                        onChange={(e) => handleCheckboxChange(e, "categorie")}
-                        className="cursor-pointer opacity-50"
-                      />
-                      <label htmlFor={name} className="cursor-pointer">
-                        {name}
-                      </label>
-                    </div>
-                  ))}
-              </div>
-              <p className="text-center font-thin italic">
-                Filtrer par titre :
-              </p>
-              <div className="grid grid-cols-3 gap-x-2 mt-1">
-                {Array.isArray(titles) &&
-                  titles.map((title, index) => (
-                    <div key={index} className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        id={title}
-                        name="title"
-                        value={title}
-                        checked={selectedTitles.includes(title)}
-                        onChange={(e) => handleCheckboxChange(e, "title")}
-                        className="cursor-pointer opacity-50"
-                      />
-                      <label htmlFor={title} className="cursor-pointer">
-                        {title}
-                      </label>
-                    </div>
-                  ))}
-              </div>
-
-              <button
-                onClick={clearFilters}
-                className="w-full py-2 mt-4 rounded-xl  hover:bg-zinc-300 dark:hover:bg-zinc-950 transition-all"
-              >
-                Réinitialiser les filtres
-              </button>
+          <div className="flex flex-col gap-2">
+            <p className="text-center font-thin italic">
+              Filtrer par catégorie :
+            </p>
+            <div className="grid grid-cols-3 gap-x-2 mt-1">
+              {Array.isArray(categories) &&
+                categories.map(({ index, name }) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      id={name}
+                      name="categorie"
+                      value={name}
+                      checked={selectedCategories.includes(name)}
+                      onChange={(e) => handleCheckboxChange(e, "categorie")}
+                      className="cursor-pointer opacity-50"
+                    />
+                    <label htmlFor={name} className="cursor-pointer">
+                      {name}
+                    </label>
+                  </div>
+                ))}
             </div>
-          </Modal>
-        </div>
+            <p className="text-center font-thin italic">Filtrer par titre :</p>
+            <div className="grid grid-cols-3 gap-x-2 mt-1">
+              {Array.isArray(titles) &&
+                titles.map((title, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      id={title}
+                      name="title"
+                      value={title}
+                      checked={selectedTitles.includes(title)}
+                      onChange={(e) => handleCheckboxChange(e, "title")}
+                      className="cursor-pointer opacity-50"
+                    />
+                    <label htmlFor={title} className="cursor-pointer">
+                      {title}
+                    </label>
+                  </div>
+                ))}
+            </div>
+
+            <button
+              onClick={clearFilters}
+              className="w-full py-2 mt-4 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-950 transition-all"
+            >
+              Réinitialiser les filtres
+            </button>
+          </div>
+        </Modal>
 
         {clickResearch && (
           <input
@@ -281,21 +269,6 @@ export default function PageTransactions(props) {
             onChange={handleSearchChange}
           />
         )}
-
-        <div
-          className={`flex flex-row gap-4 absolute top-0 right-0 ${date === "all" ? "invisible" : ""}`}
-        >
-          <ChevronLeft
-            className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
-            size={37.5}
-            onClick={clickLastMonth}
-          />
-          <ChevronRight
-            className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
-            size={37.5}
-            onClick={clickNextMonth}
-          />
-        </div>
 
         <TableauTransac
           transactions={searchTerm ? searchResults : transactions}
