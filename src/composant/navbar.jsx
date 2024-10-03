@@ -179,8 +179,8 @@ export default function Navbar(props) {
 
         <p className="text-xs text-gray-400 text-nowrap absolute bottom-2">
           {wrapMenu
-            ? "© HLG - DC v2.0.0"
-            : "© Hugo Le Galle - DashCash v2.0.0"}
+            ? `© HLG - DC ${import.meta.env.VITE_APP_VERSION}`
+            : `© Hugo Le Galle - DashCash ${import.meta.env.VITE_APP_VERSION}`}
         </p>
       </div>
 
