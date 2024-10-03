@@ -16,7 +16,6 @@ import PageInvestment from "./pages/Operations/PageOperations/pageInvestment";
 import Investment from "./pages/Operations/OperationById/investment";
 import Refund from "./pages/Operations/OperationById/refund";
 import BoardRefund from "./pages/Operations/Boards/boardRefund";
-import { ThemeProvider } from "./composant/Theme/theme.provider";
 import PrivateRoute from "./composant/privateRoute";
 import BoardRecette from "./pages/Operations/Boards/boardRecette";
 import BoardDepense from "./pages/Operations/Boards/boardDepense";
@@ -111,11 +110,7 @@ function App() {
     },
   ]);
 
-  return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { convertDate } from "../../../utils/fonctionnel";
 import {
@@ -15,17 +15,28 @@ import {
 import TableauTransac from "../../../composant/Table/tableTransac";
 import BtnReturn from "../../../composant/Button/btnReturn";
 import BtnAdd from "../../../composant/Button/btnAdd";
-import { ChevronLeft, ChevronRight, ListCollapse, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CircleX,
+  ListCollapse,
+  Search,
+} from "lucide-react";
 import BtnFilter from "../../../composant/Button/btnFilter";
 import { categorieSort } from "../../../utils/other";
-import { categorieDepense } from "../../../../public/categories.json";
-import { categorieRecette } from "../../../../public/categories.json";
+import {
+  categorieDepense,
+  categorieRecette,
+} from "../../../../public/categories.json";
 import Title from "../../../composant/Text/title";
+import { ModalContext } from "../../../context/ModalContext"; // Assurez-vous que le chemin est correct
+import Modal from "../../../composant/modal"; // Assurez-vous que le chemin est correct
 
 export default function PageTransactions(props) {
   const { date } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { openModal, closeModal } = useContext(ModalContext);
 
   const typeProps =
     props.type === "Dépense"
@@ -33,8 +44,8 @@ export default function PageTransactions(props) {
       : props.type === "Recette"
         ? "recette"
         : undefined;
-  const [selectOpe, setSelectOpe] = useState(false);
 
+  const [selectOpe, setSelectOpe] = useState(false);
   const handleSelectOpe = () => {
     setSelectOpe(!selectOpe);
   };
@@ -46,7 +57,6 @@ export default function PageTransactions(props) {
         ? categorieSort(categorieRecette)
         : "";
 
-  const [showModal, setShowModal] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(
     searchParams.getAll("categories")
   );
@@ -55,10 +65,6 @@ export default function PageTransactions(props) {
   );
 
   const titles = getTitleOfTransactionsByType(props.type);
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
 
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
@@ -83,7 +89,7 @@ export default function PageTransactions(props) {
   const check = selectedCategories.length + selectedTitles.length;
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [clickResearch, setClickResearch] = useState(false); // Nouvel état pour activer la recherche
+  const [clickResearch, setClickResearch] = useState(false);
 
   const performSearch = (term) => {
     const filteredTransactions = transactions.filter((transaction) => {
@@ -130,7 +136,6 @@ export default function PageTransactions(props) {
     setSelectedCategories([]);
     setSelectedTitles([]);
     setSearchParams({});
-    setShowModal(false);
   };
 
   const clickLastMonth = () => {
@@ -205,63 +210,66 @@ export default function PageTransactions(props) {
             className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
             onClick={handleSelectOpe}
           />
-          <BtnFilter categories={categories} action={toggleModal} check={check}>
-            {showModal && (
-              <div className="flex flex-col bg-zinc-200 dark:bg-zinc-800 z-50 animate-fade text-left p-2 mt-8 absolute max-h-60 overflow-auto  rounded-xl">
-                <p className="text-center font-semibold">
-                  Filtrer par catégorie :
-                </p>
-                <div className="grid grid-cols-3 gap-x-2 mt-3">
-                  {Array.isArray(categories) &&
-                    categories.map(({ name }) => (
-                      <div key={name}>
-                        <input
-                          type="checkbox"
-                          id={name}
-                          name="categorie"
-                          value={name}
-                          checked={selectedCategories.includes(name)}
-                          onChange={(e) => handleCheckboxChange(e, "categorie")}
-                          className="cursor-pointer opacity-50"
-                        />
-                        <label htmlFor={name} className="cursor-pointer">
-                          {" "}
-                          {name}
-                        </label>
-                      </div>
-                    ))}
-                </div>
-                <p className="text-center font-semibold">Filtrer par titre :</p>
-                <div className="grid grid-cols-3 gap-x-2 mt-3">
-                  {Array.isArray(titles) &&
-                    titles.map((title, index) => (
-                      <div key={index}>
-                        <input
-                          type="checkbox"
-                          id={title}
-                          name="title"
-                          value={title}
-                          checked={selectedTitles.includes(title)}
-                          onChange={(e) => handleCheckboxChange(e, "title")}
-                          className="cursor-pointer opacity-50"
-                        />
-                        <label htmlFor={title} className="cursor-pointer">
-                          {" "}
-                          {title}
-                        </label>
-                      </div>
-                    ))}
-                </div>
-
-                <button
-                  onClick={clearFilters}
-                  className="w-full py-2 mt-4 text-white rounded-xl hover:bg-opacity-50 transition-all"
-                >
-                  Réinitialiser les filtres
-                </button>
+          <BtnFilter categories={categories} action={openModal} check={check} />
+          <Modal>
+            <CircleX
+              onClick={closeModal}
+              className="self-end cursor-pointer hover:scale-95 transition-all"
+            />
+            <div className="flex flex-col gap-2">
+              <p className="text-center font-thin italic">
+                Filtrer par catégorie :
+              </p>
+              <div className="grid grid-cols-3 gap-x-2 mt-1">
+                {Array.isArray(categories) &&
+                  categories.map(({ index, name }) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        id={name}
+                        name="categorie"
+                        value={name}
+                        checked={selectedCategories.includes(name)}
+                        onChange={(e) => handleCheckboxChange(e, "categorie")}
+                        className="cursor-pointer opacity-50"
+                      />
+                      <label htmlFor={name} className="cursor-pointer">
+                        {name}
+                      </label>
+                    </div>
+                  ))}
               </div>
-            )}
-          </BtnFilter>
+              <p className="text-center font-thin italic">
+                Filtrer par titre :
+              </p>
+              <div className="grid grid-cols-3 gap-x-2 mt-1">
+                {Array.isArray(titles) &&
+                  titles.map((title, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        id={title}
+                        name="title"
+                        value={title}
+                        checked={selectedTitles.includes(title)}
+                        onChange={(e) => handleCheckboxChange(e, "title")}
+                        className="cursor-pointer opacity-50"
+                      />
+                      <label htmlFor={title} className="cursor-pointer">
+                        {title}
+                      </label>
+                    </div>
+                  ))}
+              </div>
+
+              <button
+                onClick={clearFilters}
+                className="w-full py-2 mt-4 rounded-xl  hover:bg-zinc-300 dark:hover:bg-zinc-950 transition-all"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          </Modal>
         </div>
 
         {clickResearch && (
@@ -340,6 +348,8 @@ export default function PageTransactions(props) {
           </b>
         </div>
       </section>
+
+      {/* Modal pour le filtre */}
     </>
   );
 }
