@@ -14,15 +14,9 @@ import {
   PowerOff,
   WalletCards,
 } from "lucide-react";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function Navbar(props) {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAuthenticated = isConnected();
@@ -36,7 +30,7 @@ export default function Navbar(props) {
     dispatch(logoutUser());
     navigate("/");
     setSelectedLogout(false);
-    showMessage("Vous vous êtes déconnecté !", "bg-red-500");
+    toast("Vous vous êtes déconnecté !");
   };
 
   useEffect(() => {

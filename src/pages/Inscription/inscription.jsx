@@ -4,25 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { addUser } from "../../redux/actions/user.action";
 import Title from "../../composant/Text/title";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function Inscription() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState < string > "";
-  const [password, setPassword] = useState < string > "";
-  const [pseudo, setPseudo] = useState < string > "";
-  const [nom, setNom] = useState < string > "";
-  const [prenom, setPrenom] = useState < string > "";
-  const [image, setImage] = (useState < File) | (null > null);
-  const [imagePreview, setImagePreview] = (useState < string) | (null > null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [pseudo, setPseudo] = useState("");
+  const [nom, setNom] = useState("");
+  const [prenom, setPrenom] = useState("");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleNewUser = async (e) => {
     e.preventDefault();
@@ -40,7 +34,7 @@ export default function Inscription() {
 
     try {
       await dispatch(addUser(formData));
-      showMessage("Inscription réussie !", "bg-green-500");
+      toast("Inscription réussie !");
       setUsername("");
       setPassword("");
       setPseudo("");
@@ -50,10 +44,7 @@ export default function Inscription() {
       setImagePreview(null);
       navigate("/connexion");
     } catch (err) {
-      showMessage(
-        "Erreur lors de l'inscription. Veuillez réessayer.",
-        "bg-red-500"
-      );
+      toast("Erreur lors de l'inscription. Veuillez réessayer.");
     }
   };
 

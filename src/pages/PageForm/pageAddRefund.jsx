@@ -7,7 +7,7 @@ import {
   getCurrentDate,
   separateMillier,
 } from "../../utils/fonctionnel";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -15,15 +15,9 @@ import {
   getTransactions,
 } from "../../redux/actions/transaction.action";
 import { addRefund } from "../../redux/actions/refund.action";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function PageAddRefund(props) {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const [selectedTitre, setSelectedTitre] = useState("");
 
   const [selectedDate, setSelectedDate] = useState(getCurrentDate);
@@ -59,6 +53,12 @@ export default function PageAddRefund(props) {
   const handleAddRefund = async (event) => {
     event.preventDefault();
 
+    const isValid = await form.trigger();
+    if (!isValid) {
+      toast("Veuillez remplir tous les champs requis.");
+      return;
+    }
+
     const refundData = {
       titre: selectedTitre,
       date: selectedDate,
@@ -86,15 +86,15 @@ export default function PageAddRefund(props) {
         await dispatch(editTransactions(editData));
         dispatch(getTransactions());
         resetForm();
-        showMessage("Votre remboursement a été ajouté !", "bg-green-500");
+        toast("Votre remboursement a été ajouté !");
       } catch {
-        showMessage(
+        toast(
           "Une erreur s'est produite lors de l'ajout du remboursement !",
           "bg-red-500"
         );
       }
     } else {
-      showMessage("Erreur: montant invalide.", "bg-red-500");
+      toast("Erreur: montant invalide.");
     }
   };
 

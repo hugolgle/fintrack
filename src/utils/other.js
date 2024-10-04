@@ -116,3 +116,10 @@ export function categorieSort(categories) {
     return 0;
   });
 }
+
+export function normalizeText(text) {
+  return text
+    .normalize("NFD") // Décompose les accents en caractères de base
+    .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
+    .toLowerCase(); // Convertit en minuscule
+}

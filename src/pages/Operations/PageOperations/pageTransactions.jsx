@@ -14,7 +14,7 @@ import {
 } from "../../../utils/operations";
 import TableauTransac from "../../../composant/Table/tableTransac";
 import { CircleX } from "lucide-react";
-import { categorieSort } from "../../../utils/other";
+import { categorieSort, normalizeText } from "../../../utils/other";
 import {
   categorieDepense,
   categorieRecette,
@@ -189,7 +189,7 @@ export default function PageTransactions(props) {
                 ? `${props.type}s de ${date}`
                 : `${props.type}s de ${convertDate(date)}`
           }`}
-          typeProps={props.type}
+          typeProps={normalizeText(props.type)}
           categories={categories}
           openModal={openModal}
           check={check}

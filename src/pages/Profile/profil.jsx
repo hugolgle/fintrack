@@ -1,19 +1,13 @@
 // import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { infoUser } from "../../utils/users";
 import { editUser } from "../../redux/actions/user.action";
 import { formatDate } from "../../utils/fonctionnel";
 import Title from "../../composant/Text/title";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function Profil() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const userInfo = infoUser();
   const dispatch = useDispatch();
   // const navigate = useNavigate();
@@ -67,10 +61,9 @@ export default function Profil() {
     try {
       await dispatch(editUser(formData));
       setSelectedUpdate(false);
-      showMessage("Modification effectuée !", "bg-blue-500");
+      toast("Modification effectuée !");
     } catch (err) {
-      console.error("Erreur lors de la modification :", err);
-      showMessage("Modification échouée !", "bg-red-500");
+      toast("Modification échouée !");
     }
   };
 

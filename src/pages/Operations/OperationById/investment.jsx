@@ -15,16 +15,10 @@ import {
   getInvestments,
   soldInvestments,
 } from "../../../redux/actions/investment.action";
-import { MessageContext } from "@/context/MessageContext";
 import LayoutOperation from "../../../layout/layoutOperation";
+import { toast } from "sonner";
 
 export default function Investment() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const { id } = useParams();
   const investment = getInvestmentById(id);
 
@@ -85,7 +79,7 @@ export default function Investment() {
     await dispatch(deleteInvestments(id));
     navigate(-1);
     dispatch(getInvestments());
-    showMessage("L'opération a été supprimé avec succès !", "bg-green-500");
+    toast("L'opération a été supprimé avec succès !");
   };
 
   function removeTiret(number) {
@@ -102,14 +96,14 @@ export default function Investment() {
       montant: separateMillier(selectedMontant),
     };
     await dispatch(editInvestments(editData));
-    showMessage("L'opération a été modifié avec succès !", "bg-blue-500");
+    toast("L'opération a été modifié avec succès !");
     dispatch(getInvestments());
     setSelectedUpdate(false);
   };
 
   const handleSoldConfirmation = async () => {
     await dispatch(soldInvestments(investment._id, selectedMontantVendu));
-    showMessage("L'investissement a été vendu avec succès !", "bg-grenn-500");
+    toast("L'investissement a été vendu avec succès !", "bg-grenn-500");
     dispatch(getInvestments());
     setSelectedUpdate(false);
   };

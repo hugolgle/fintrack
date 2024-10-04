@@ -11,15 +11,9 @@ import {
   getRefundByTransactionId,
   getTransactionById,
 } from "../../../utils/operations";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function Refund() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const { id, idRefund } = useParams();
   const refund = getRefundByTransactionId(id, idRefund);
   const transaction = getTransactionById(id);
@@ -59,12 +53,9 @@ export default function Refund() {
     };
     try {
       await dispatch(editRefund(id, refundData));
-      showMessage("Le remboursement a été modifié avec succès.", "bg-blue-500"); // Success message
+      toast("Le remboursement a été modifié avec succès.");
     } catch (error) {
-      showMessage(
-        "Erreur lors de la modification du remboursement.",
-        "bg-red-500"
-      ); // Error message
+      toast("Erreur lors de la modification du remboursement.");
     }
     navigate(-1);
   };
@@ -87,15 +78,9 @@ export default function Refund() {
       await dispatch(deleteRefund(id, refund._id));
       await dispatch(editTransactions(editData));
       dispatch(getTransactions());
-      showMessage(
-        "Le remboursement a été supprimé avec succès.",
-        "bg-green-500"
-      ); // Success message
+      toast("Le remboursement a été supprimé avec succès.");
     } catch (error) {
-      showMessage(
-        "Erreur lors de la suppression du remboursement.",
-        "bg-red-500"
-      ); // Error message
+      toast("Erreur lors de la suppression du remboursement.");
     }
     navigate(-1);
   };

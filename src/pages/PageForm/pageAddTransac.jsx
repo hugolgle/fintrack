@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../../components/ui/button";
 import {
@@ -24,23 +25,23 @@ import {
   categorieDepense,
 } from "../../../public/categories.json";
 import { formatMontant } from "../../utils/fonctionnel";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   addTransactions,
   getTransactions,
 } from "../../redux/actions/transaction.action";
 import { infoUser } from "../../utils/users";
-import { categorieSort } from "../../utils/other";
+import { categorieSort, normalizeText } from "../../utils/other";
 import {
   getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
 import { fr } from "date-fns/locale";
-import { MessageContext } from "@/context/MessageContext";
 import LayoutOperation from "../../layout/layoutOperation";
+import { useNavigate } from "react-router-dom"; // Corriger l'import de useNavigate
 
-// Schema de validation pour la date
+// Schéma de validation pour la date
 const FormSchema = z.object({
   date: z.date({
     required_error: "Une date est requise.",
@@ -48,12 +49,6 @@ const FormSchema = z.object({
 });
 
 export default function PageAddTransac(props) {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const userInfo = infoUser();
 
   const categorieD = categorieSort(categorieDepense);
@@ -74,6 +69,9 @@ export default function PageAddTransac(props) {
   const [selectedMontant, setSelectedMontant] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Utiliser useNavigate correctement
+  const [addedOperationDate, setAddedOperationDate] = useState("");
+  const [addedOperationId, setAddedOperationId] = useState("");
 
   const lastTransacByTitle = getLatestTransactionByTitle(
     selectedTitre,
@@ -117,29 +115,44 @@ export default function PageAddTransac(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const isValid = await form.trigger();
+    if (!isValid) {
+      toast("Veuillez remplir tous les champs requis.");
+      return;
+    }
+
     const postData = {
       user: userInfo.id,
       type: props.type,
       categorie: selectedCategorie,
       titre: selectedTitre,
-      date: form.getValues("date").toISOString().split("T")[0], // Récupérer la date sélectionnée
+      date: form.getValues("date").toISOString().split("T")[0],
       detail: selectedDetail,
       montant: formatMontant(selectedMontant, props.type),
     };
 
     try {
-      await dispatch(addTransactions(postData));
+      const response = await dispatch(addTransactions(postData));
+      const newOperationId = response.data._id;
       dispatch(getTransactions());
       resetForm();
-      showMessage(
-        `Votre ${props.type.toLowerCase()} a été ajouté ! `,
-        "bg-green-500"
+
+      const transactionDate = new Date(
+        form.getValues("date").toISOString().split("T")[0]
       );
-    } catch {
-      showMessage(
-        "Une erreur s'est produite lors de l'ajout de l'opération",
-        "bg-red-500"
-      );
+      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
+
+      toast(`Votre ${props.type.toLowerCase()} a été ajouté ! `, {
+        action: {
+          label: "Voir",
+          onClick: () =>
+            navigate(
+              `/${normalizeText(props.type)}/${formattedDate}/${newOperationId}`
+            ),
+        },
+      });
+    } catch (error) {
+      toast("Une erreur s'est produite lors de l'ajout de l'opération");
     }
   };
 

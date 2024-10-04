@@ -7,10 +7,10 @@ import App from "./App";
 import "./index.css";
 import "animate.css";
 import { getTransactions } from "./redux/actions/transaction.action";
-import { MessageProvider } from "./context/MessageContext";
 import { getInvestments } from "./redux/actions/investment.action";
 import { ModalProvider } from "./context/ModalContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { Toaster } from "@/components/ui/sonner";
 
 // Dispatch des actions pour obtenir les transactions et investissements
 store.dispatch(getTransactions());
@@ -21,13 +21,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <ModalProvider>
-        <MessageProvider>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <App />
-            </PersistGate>
-          </Provider>
-        </MessageProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+            <Toaster />
+          </PersistGate>
+        </Provider>
       </ModalProvider>
     </ThemeProvider>
   </React.StrictMode>

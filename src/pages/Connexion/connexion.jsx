@@ -5,16 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { isConnected } from "../../utils/users";
 import Title from "../../composant/Text/title";
-import { MessageContext } from "@/context/MessageContext";
-
+import { toast } from "sonner";
 export default function Connexion() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
-  // Typage du dispatch avec ThunkDispatch
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -26,9 +18,9 @@ export default function Connexion() {
     e.preventDefault();
     dispatch(loginUser(username, password));
     if (messageError) {
-      showMessage(messageError, "bg-red-500");
+      toast(messageError);
     } else {
-      showMessage("Vous êtes connecté !", "bg-green-500");
+      toast("Vous êtes connecté !");
     }
   };
 

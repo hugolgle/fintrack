@@ -24,19 +24,13 @@ import {
   getTransactions,
 } from "../../../redux/actions/transaction.action";
 import { useDispatch } from "react-redux";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import PageAddRefund from "../../PageForm/pageAddRefund";
 import { categorieSort } from "../../../utils/other";
-import { MessageContext } from "@/context/MessageContext";
 import LayoutOperation from "../../../layout/layoutOperation";
+import { toast } from "sonner";
 
 export default function Transaction() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const categorieD = categorieSort(categorieDepense);
   const categorieR = categorieSort(categorieRecette);
 
@@ -117,7 +111,7 @@ export default function Transaction() {
     await dispatch(deleteTransactions(id));
     navigate(-1);
     dispatch(getTransactions());
-    showMessage("Votre transaction a été supprimé !", "bg-red-500");
+    toast("Votre transaction a été supprimé !");
   };
 
   function removeTiret(number) {
@@ -148,7 +142,7 @@ export default function Transaction() {
     await dispatch(editTransactions(editData));
     dispatch(getTransactions());
     setSelectedUpdate(false);
-    showMessage("L'opération a été modifié avec succès !", "bg-blue-500");
+    toast("L'opération a été modifié avec succès !");
   };
 
   const typeProps =

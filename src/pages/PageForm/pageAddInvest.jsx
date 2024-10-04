@@ -2,7 +2,7 @@
 
 import { Button } from "../../components/ui/button";
 import { getCurrentDate, separateMillier } from "../../utils/fonctionnel";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { infoUser } from "../../utils/users";
 import {
@@ -12,15 +12,9 @@ import {
 import BtnReturn from "../../composant/Button/btnReturn";
 import { getAllInvestments } from "../../utils/operations";
 import Title from "../../composant/Text/title";
-import { MessageContext } from "@/context/MessageContext";
+import { toast } from "sonner";
 
 export default function PageAddInvest() {
-  const messageContext = useContext(MessageContext);
-  if (!messageContext) {
-    throw new Error("MyComponent must be used within a MessageProvider");
-  }
-  const { showMessage } = messageContext;
-
   const userInfo = infoUser();
   const getInvest = getAllInvestments(null);
   const suggestionsTitle = Array.from(
@@ -60,6 +54,12 @@ export default function PageAddInvest() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const isValid = await form.trigger();
+    if (!isValid) {
+      toast("Veuillez remplir tous les champs requis.");
+      return;
+    }
+
     const postData = {
       user: userInfo.id,
       type: selectedType,
@@ -73,12 +73,9 @@ export default function PageAddInvest() {
       await dispatch(addInvestments(postData));
       dispatch(getInvestments());
       resetForm();
-      showMessage("Votre investissement a été ajouté ! ", "bg-green-500");
+      toast("Votre investissement a été ajouté ! ");
     } catch {
-      showMessage(
-        "Une erreur s'est produite lors de l'ajout de l'opération",
-        "bg-red-500"
-      );
+      toast("Une erreur s'est produite lors de l'ajout de l'opération");
     }
   };
 
