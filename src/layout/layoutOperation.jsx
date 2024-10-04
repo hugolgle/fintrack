@@ -12,6 +12,7 @@ import {
 } from "lucide-react/dist/cjs/lucide-react";
 import { useLocation } from "react-router-dom/dist/umd/react-router-dom.development";
 import { SearchCheck } from "lucide-react";
+import BtnSearch from "../composant/Button/btnSearch";
 
 function LayoutOperation({
   title,
@@ -72,15 +73,10 @@ function LayoutOperation({
         {pageTable && (
           <>
             <div className="flex gap-8">
-              <div className="relative">
-                <input
-                  className="rounded-[10px] px-8 h-8 w-fit bg-colorSecondaryLight dark:bg-colorPrimaryDark focus:outline-none"
-                  type="search"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                />
-                <Search className="absolute left-2 top-[16px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              </div>
+              <BtnSearch
+                searchTerm={searchTerm}
+                handleSearchChange={handleSearchChange}
+              />
               {!typeProps === "invest" ||
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
