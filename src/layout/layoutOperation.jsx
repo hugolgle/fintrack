@@ -11,6 +11,7 @@ import {
   Search,
 } from "lucide-react/dist/cjs/lucide-react";
 import { useLocation } from "react-router-dom/dist/umd/react-router-dom.development";
+import { SearchCheck } from "lucide-react";
 
 function LayoutOperation({
   title,
@@ -19,8 +20,6 @@ function LayoutOperation({
   openModal,
   check,
   selectOpe,
-  setClickResearch,
-  clickResearch,
   handleSelectOpe,
   clickLastMonth,
   clickNextMonth,
@@ -32,6 +31,8 @@ function LayoutOperation({
   pageAdd,
   pageBoard,
   pageTable,
+  handleSearchChange,
+  searchTerm,
 }) {
   const location = useLocation();
 
@@ -46,10 +47,6 @@ function LayoutOperation({
         {pageById ||
           (!pageBoard && (
             <>
-              <Search
-                onClick={() => setClickResearch(!clickResearch)}
-                className="cursor-pointer hover:scale-110 transition-all"
-              />
               <ListCollapse
                 className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
                 onClick={handleSelectOpe}
@@ -73,20 +70,34 @@ function LayoutOperation({
           </button>
         )}
         {pageTable && (
-          <div
-            className={`flex gap-4 top-0 right-0 ${typeProps === "invest" || date === "all" ? "invisible" : ""}`}
-          >
-            <ChevronLeft
-              className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
-              size={37.5}
-              onClick={clickLastMonth}
-            />
-            <ChevronRight
-              className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
-              size={37.5}
-              onClick={clickNextMonth}
-            />
-          </div>
+          <>
+            <div className="flex gap-8">
+              <div className="relative">
+                <input
+                  className="rounded-[10px] px-8 h-8 w-fit bg-colorSecondaryLight dark:bg-colorPrimaryDark focus:outline-none"
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                <Search className="absolute left-2 top-[16px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              </div>
+              {!typeProps === "invest" ||
+                (date !== "all" && (
+                  <div className="flex gap-4 top-0 right-0">
+                    <ChevronLeft
+                      className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
+                      size={37.5}
+                      onClick={clickLastMonth}
+                    />
+                    <ChevronRight
+                      className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
+                      size={37.5}
+                      onClick={clickNextMonth}
+                    />
+                  </div>
+                ))}
+            </div>
+          </>
         )}
       </div>
     </div>

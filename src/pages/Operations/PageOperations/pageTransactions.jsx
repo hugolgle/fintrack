@@ -200,6 +200,8 @@ export default function PageTransactions(props) {
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
           date={date}
+          handleSearchChange={handleSearchChange}
+          searchTerm={searchTerm}
           pageTable
         />
         <Modal>
@@ -259,16 +261,6 @@ export default function PageTransactions(props) {
             </button>
           </div>
         </Modal>
-
-        {clickResearch && (
-          <input
-            className="rounded-[10px] mb-2 px-2 h-8 w-52 bg-colorSecondaryLight animate-fade dark:bg-colorPrimaryDark placeholder:text-sm focus:outline-none"
-            type="search"
-            placeholder="Rechercher"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        )}
 
         <TableauTransac
           transactions={searchTerm ? searchResults : transactions}
