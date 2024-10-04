@@ -176,7 +176,7 @@ export default function Inscription() {
         <p className="text-xs">Vous possédez déjà un compte ?</p>
         <Link
           to="/connexion"
-          className="rounded-xl bg-transparent border-2 border-zinc-700 py-2 text-sm px-4 transition-all hover:bg-zinc-300 hover:dark:bg-zinc-700"
+          className="rounded-xl bg-transparent border-2 border-zinc-700 py-2 text-sm px-4 transition-all hover:bg-zinc-200 hover:dark:bg-zinc-700"
         >
           Identifiez-vous !
         </Link>

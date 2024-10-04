@@ -92,7 +92,7 @@ export default function Tableau(props) {
                 )}
                 <Link to={transaction._id} className="w-full">
                   <TableRow
-                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
+                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-colorSecondaryLight dark:bg-colorPrimaryDark cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
                       selectedRows[transaction._id]
                         ? "ring-1 ring-zinc-400"
                         : ""
@@ -124,7 +124,7 @@ export default function Tableau(props) {
       )}
       {props.selectOpe ? (
         <>
-          <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-zinc-200 dark:bg-zinc-800 py-3 transition-all">
+          <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-colorPrimaryLight dark:bg-colorSecondaryDark py-3 transition-all">
             Total sélectionnés : <br />
             <b>{addSpace(separateMillier(montantSelect)) + " €"}</b>
             <br />

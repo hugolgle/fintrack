@@ -115,7 +115,7 @@ export default function Investment() {
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">
             <div
-              className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+              className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
             >
               {selectedUpdate ? (
                 <input
@@ -136,7 +136,7 @@ export default function Investment() {
 
             <div className="flex flex-row w-full gap-4">
               <div
-                className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+                className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
               >
                 {selectedUpdate ? (
                   <input
@@ -157,7 +157,7 @@ export default function Investment() {
             </div>
             <div className="flex flex-row w-full gap-4">
               <div
-                className={`h-40 w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+                className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
               >
                 {selectedUpdate ? (
                   <input
@@ -175,7 +175,7 @@ export default function Investment() {
                 )}
               </div>
               <div
-                className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+                className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
               >
                 {selectedUpdate ? (
                   <input
@@ -197,7 +197,7 @@ export default function Investment() {
               </div>
             </div>
             <div
-              className={`h-40 w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+              className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
             >
               {selectedUpdate ? (
                 <textarea
@@ -222,13 +222,13 @@ export default function Investment() {
 
           <div className="flex flex-col justify-between items-center w-1/4 gap-4">
             <div className="flex flex-col w-full gap-4">
-              <div className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center">
+              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Ajouter le : <br />
                   <b>{convertDateHour(investment.createdAt)}</b>
                 </p>
               </div>
-              <div className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center">
+              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Derniere modification le : <br />
                   <b>{convertDateHour(investment.updatedAt)}</b>
@@ -286,13 +286,13 @@ export default function Investment() {
                   <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                   <div className="flex gap-4">
                     <div
-                      className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                      className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                       onClick={() => handleEditConfirmation()}
                     >
                       Oui
                     </div>
                     <div
-                      className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                      className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                       onClick={() => setSelectedUpdate(false)}
                     >
                       Non
@@ -301,14 +301,14 @@ export default function Investment() {
                 </div>
               ) : selectedUpdate ? (
                 <div
-                  className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer hover:scale-95 transition-all"
+                  className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer hover:scale-95 transition-all"
                   onClick={() => setSelectedUpdate(false)}
                 >
                   Annuler
                 </div>
               ) : (
                 <div
-                  className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer hover:scale-95 transition-all"
+                  className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer hover:scale-95 transition-all"
                   onClick={() => setSelectedUpdate(true)}
                 >
                   Modifier
@@ -321,13 +321,13 @@ export default function Investment() {
                     <p className="text-sm">Êtes-vous sûr ?</p>
                     <div className="flex gap-4">
                       <div
-                        className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                        className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                         onClick={handleDeleteConfirmation}
                       >
                         Oui
                       </div>
                       <div
-                        className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                        className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                         onClick={() => setSelectedDelete(false)}
                       >
                         Non
@@ -336,7 +336,7 @@ export default function Investment() {
                   </div>
                 ) : (
                   <div
-                    className={`w-full p-8 h-32 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
+                    className={`w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
                     onClick={() => setSelectedDelete(true)}
                   >
                     Supprimer

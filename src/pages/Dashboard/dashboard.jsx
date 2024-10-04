@@ -232,7 +232,7 @@ export default function TableauDeBord() {
                   <Plus />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
                 <p>Ajouter une dépense</p>
               </TooltipContent>
             </Tooltip>
@@ -246,7 +246,7 @@ export default function TableauDeBord() {
                   <Plus />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
                 <p>Ajouter une recette</p>
               </TooltipContent>
             </Tooltip>
@@ -260,7 +260,7 @@ export default function TableauDeBord() {
                   <Plus />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-zinc-100 dark:bg-zinc-900">
+              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
                 <p>Ajouter un investissement</p>
               </TooltipContent>
             </Tooltip>
@@ -268,7 +268,7 @@ export default function TableauDeBord() {
         </TooltipProvider>
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
               <h2 className="text-3xl font-extralight italic">
                 Dernières transactions
               </h2>
@@ -292,7 +292,7 @@ export default function TableauDeBord() {
                 </tbody>
               </table>
             </div>
-            <div className="w-2/3 bg-zinc-100 dark:bg-zinc-900 rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
               <BoxTdb
                 title="Mois actuel"
                 montantDepense={montantDepensesMonth}
@@ -301,7 +301,7 @@ export default function TableauDeBord() {
                 montantInvest={InvestCurrentMonth}
               />
             </div>
-            <div className="w-2/3 bg-zinc-100 dark:bg-zinc-900 rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
               <BoxTdb
                 title="Mois dernier"
                 montantDepense={montantDepensesLastMonth}
@@ -312,7 +312,7 @@ export default function TableauDeBord() {
             </div>
           </div>
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-7/12 bg-zinc-100 dark:bg-zinc-900 rounded-xl h-full p-4 relative">
+            <div className="w-7/12 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl h-full p-4 relative">
               <h2 className="text-3xl font-extralight italic">Graphique</h2>
               <GraphiqueTdb data={dataGraph} />
               <div
@@ -320,7 +320,7 @@ export default function TableauDeBord() {
               >
                 <ChevronLeft
                   size={30}
-                  className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
+                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
                   onClick={clickLastMonthGraph}
                 />
                 <p className="text-sm italic">
@@ -329,24 +329,24 @@ export default function TableauDeBord() {
                 </p>
                 <ChevronRight
                   size={30}
-                  className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
+                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
                   onClick={clickNextMonthGraph}
                 />
               </div>
             </div>
-            <div className="w-5/12 bg-zinc-100  dark:bg-zinc-900 rounded-xl p-4">
+            <div className="w-5/12 bg-colorSecondaryLight  dark:bg-colorPrimaryDark rounded-xl p-4">
               <h2 className="text-3xl font-extralight italic">Répartitions</h2>
               <div className="flex flex-row justify-between w-full py-3 px-16">
                 <ChevronLeft
                   size={30}
                   onClick={clickLastMonth}
-                  className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
+                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
                 />
                 <p className="font-thin italic">{convertDate(month)}</p>
                 <ChevronRight
                   size={30}
                   onClick={clickNextMonth}
-                  className={`hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all ${month >= currentDate ? "invisible" : ""}`}
+                  className={`hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all ${month >= currentDate ? "invisible" : ""}`}
                 />
               </div>
               <CamembertTdb

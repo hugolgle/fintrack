@@ -12,7 +12,7 @@ const Modal = ({ children }) => {
       onClick={closeModal}
     >
       <div
-        className="rounded-2xl animate__animated animate__zoomIn bg-zinc-200 dark:bg-zinc-800 shadow-2xl p-6 max-w-lg w-full"
+        className="rounded-2xl animate__animated animate__zoomIn bg-colorPrimaryLight dark:bg-colorSecondaryDark shadow-2xl p-6 max-w-lg w-full"
         onClick={(e) => e.stopPropagation()}
       >
         {children}

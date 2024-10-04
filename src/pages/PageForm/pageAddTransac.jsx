@@ -169,7 +169,7 @@ export default function PageAddTransac(props) {
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
           <input
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             list="title-suggestions"
             id="title"
             name="title"
@@ -194,10 +194,10 @@ export default function PageAddTransac(props) {
             }}
             required
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900">
+            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
               <SelectValue placeholder="Entrez la catégorie" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-100 dark:bg-zinc-900 rounded-2xl">
+            <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
               {props.type === "Dépense" &&
                 categorieD.map(({ name }) => (
                   <SelectItem key={name} value={name} className="rounded-xl">
@@ -217,7 +217,7 @@ export default function PageAddTransac(props) {
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-left font-normal"
+                className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
               >
                 {form.watch("date") ? (
                   format(form.watch("date"), "PPP", { locale: fr })
@@ -228,7 +228,7 @@ export default function PageAddTransac(props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-auto rounded-xl bg-zinc-100 dark:bg-[#1a1a1a] p-0"
+              className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
               align="start"
             >
               <Calendar
@@ -244,7 +244,7 @@ export default function PageAddTransac(props) {
 
           <textarea
             value={selectedDetail}
-            className="w-96 h-20 px-2 bg-zinc-100 dark:bg-zinc-900 rounded-xl"
+            className="w-96 h-20 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             placeholder="Détails"
             maxLength={250}
             onChange={(e) => {
@@ -254,7 +254,7 @@ export default function PageAddTransac(props) {
 
           <input
             value={selectedMontant}
-            className="w-96 h-10 px-2 bg-zinc-100 dark:bg-zinc-900 rounded-xl"
+            className="w-96 h-10 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             type="number"
             min="0"
             step="0.01"
@@ -267,7 +267,7 @@ export default function PageAddTransac(props) {
 
           <Button
             variant="outline"
-            className="rounded-xl w-1/4 bg-zinc-100 dark:bg-zinc-900 hover:border-blue-500"
+            className="rounded-xl w-1/4 bg-colorSecondaryLight dark:bg-colorPrimaryDark hover:border-blue-500"
             type="submit"
           >
             Soumettre la {props.type.toLowerCase()}

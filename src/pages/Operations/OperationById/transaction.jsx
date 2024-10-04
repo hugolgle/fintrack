@@ -176,7 +176,7 @@ export default function Transaction() {
       >
         <div className="flex flex-col w-3/4 gap-4 animate-fade">
           <div
-            className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+            className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
           >
             {selectedUpdate ? (
               <>
@@ -206,7 +206,7 @@ export default function Transaction() {
           </div>
           <div className="flex flex-row gap-4">
             <div
-              className={`h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+              className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
             >
               {selectedUpdate ? (
                 <select
@@ -241,7 +241,7 @@ export default function Transaction() {
             </div>
 
             <div
-              className={`h-40 w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+              className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
             >
               {selectedUpdate ? (
                 <input
@@ -261,7 +261,7 @@ export default function Transaction() {
           </div>
           <div className="flex flex-row gap-4">
             <div
-              className={`min-h-40 w-full  bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "py-8"}`}
+              className={`min-h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "py-8"}`}
             >
               {selectedUpdate ? (
                 <input
@@ -298,7 +298,7 @@ export default function Transaction() {
               transaction.remboursements.length > 0 && (
                 <Link
                   to="refund/"
-                  className="min-h-40 w-full flex-col bg-zinc-100 dark:bg-zinc-900 flex items-center rounded-2xl py-8 transition-all hover:bg-opacity-80 hover:scale-95"
+                  className="min-h-40 w-full flex-col bg-colorSecondaryLight dark:bg-colorPrimaryDark flex items-center rounded-2xl py-8 transition-all hover:bg-opacity-80 hover:scale-95"
                 >
                   <p>Remboursement(s)</p>
                   <table className="w-full mt-2">
@@ -319,7 +319,7 @@ export default function Transaction() {
 
             {transaction.remboursements &&
               transaction.remboursements.length > 0 && (
-                <div className="min-h-40 w-full flex-col bg-zinc-100 dark:bg-zinc-900 flex items-center rounded-2xl py-8">
+                <div className="min-h-40 w-full flex-col bg-colorSecondaryLight dark:bg-colorPrimaryDark flex items-center rounded-2xl py-8">
                   <div className="flex flex-col">
                     <p>Montant final</p>
                     <h2 className="text-4xl">
@@ -331,7 +331,7 @@ export default function Transaction() {
           </div>
           <div className="flex flex-row gap-4">
             <div
-              className={`h-40 w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
+              className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
             >
               {selectedUpdate ? (
                 <textarea
@@ -356,14 +356,14 @@ export default function Transaction() {
         </div>
         <div className="flex flex-col w-1/4 justify-between">
           <div className="flex flex-col gap-4">
-            <div className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center">
+            <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
               <p>
                 Ajouter le : <br />
                 <b>{convertDateHour(transaction.createdAt)}</b>
               </p>
             </div>
             {transaction.updatedAt !== transaction.createdAt && (
-              <div className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center">
+              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Dernière modification le : <br />
                   <b>{convertDateHour(transaction.updatedAt)}</b>
@@ -377,13 +377,13 @@ export default function Transaction() {
                 <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                 <div className="flex gap-4">
                   <div
-                    className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                    className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                     onClick={() => handleEditConfirmation()}
                   >
                     Oui
                   </div>
                   <div
-                    className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                    className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                     onClick={() => setSelectedUpdate(false)}
                   >
                     Non
@@ -392,14 +392,14 @@ export default function Transaction() {
               </div>
             ) : selectedUpdate ? (
               <div
-                className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
                 onClick={() => setSelectedUpdate(false)}
               >
                 Annuler
               </div>
             ) : (
               <div
-                className="p-8 h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
                 onClick={() => setSelectedUpdate(true)}
               >
                 Modifier
@@ -411,13 +411,13 @@ export default function Transaction() {
                   <p className="text-sm">Êtes-vous sûr ?</p>
                   <div className="flex gap-4">
                     <div
-                      className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                      className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                       onClick={handleDeleteConfirmation}
                     >
                       Oui
                     </div>
                     <div
-                      className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                      className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                       onClick={() => setSelectedDelete(false)}
                     >
                       Non
@@ -426,7 +426,7 @@ export default function Transaction() {
                 </div>
               ) : (
                 <div
-                  className={`w-full p-8 h-32 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
+                  className={`w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
                   onClick={() => setSelectedDelete(true)}
                 >
                   Supprimer

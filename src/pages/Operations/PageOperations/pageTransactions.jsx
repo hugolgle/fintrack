@@ -253,7 +253,7 @@ export default function PageTransactions(props) {
 
             <button
               onClick={clearFilters}
-              className="w-full py-2 mt-4 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-950 transition-all"
+              className="w-full py-2 mt-4 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-950 transition-all"
             >
               Réinitialiser les filtres
             </button>
@@ -262,7 +262,7 @@ export default function PageTransactions(props) {
 
         {clickResearch && (
           <input
-            className="rounded-[10px] mb-2 px-2 h-8 w-52 bg-zinc-100 animate-fade dark:bg-zinc-900 placeholder:text-sm focus:outline-none"
+            className="rounded-[10px] mb-2 px-2 h-8 w-52 bg-colorSecondaryLight animate-fade dark:bg-colorPrimaryDark placeholder:text-sm focus:outline-none"
             type="search"
             placeholder="Rechercher"
             value={searchTerm}
@@ -275,7 +275,7 @@ export default function PageTransactions(props) {
           selectOpe={selectOpe}
         />
 
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-zinc-200 hover:opacity-0 dark:bg-zinc-800 py-3 transition-all">
+        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-zinc-900 py-3 transition-all">
           Total :{" "}
           <b>
             {date === "all"

@@ -22,7 +22,7 @@ export default function BoardRefund() {
           {refunds.map((refund) => (
             <Link
               to={`./${refund._id}`}
-              className="min-h-40 w-full flex-col bg-zinc-100 dark:bg-zinc-900 flex items-center rounded-2xl py-8 transition-all hover:bg-opacity-80 hover:scale-95"
+              className="min-h-40 w-full flex-col bg-colorSecondaryLight dark:bg-colorPrimaryDark flex items-center rounded-2xl py-8 transition-all hover:bg-opacity-80 hover:scale-95"
             >
               <p>{refund.titre}</p>
               <p>{formatDate(refund.date)}</p>

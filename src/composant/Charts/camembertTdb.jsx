@@ -102,7 +102,7 @@ export function CamembertTdb(props) {
       const objectif = data.objectif.toFixed(2);
 
       return (
-        <div className="bg-white dark:bg-black text-xs p-2 rounded-xl shadow-2xl">
+        <div className="bg-white dark:bg-zinc-900 text-xs p-2 rounded-xl shadow-2xl">
           <div className="text-left mb-1 flex items-center gap-2">
             <div
               className="w-2 h-2 rounded"

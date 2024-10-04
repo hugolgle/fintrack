@@ -3,10 +3,10 @@
   --background-color-light: rgb(255, 255, 255);
 
   --color-dark: rgb(255, 255, 255);
-  --background-color-dark: #202020;
+  --background-color-dark: #111315;
 
   --button-color-light: #f4f4f5;
-  --button-color-dark: #1a1a1a;
+  --button-color-dark: rgb(9 9 11);
 
   font-family: "GeistSans", sans-serif;
   line-height: 1.5;

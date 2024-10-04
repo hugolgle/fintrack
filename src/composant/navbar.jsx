@@ -62,17 +62,17 @@ export default function Navbar(props) {
   return (
     <section className="h-screen w-full flex">
       <div
-        className={`sidebar flex flex-col justify-between overflow-hidden rounded-r-[18px] items-center h-screen py-10 px-4 bg-zinc-100 dark:bg-zinc-900 fixed ease-linear duration-300 ${wrapMenu ? "w-1/12" : "w-1/5"}`}
+        className={`sidebar flex flex-col justify-between overflow-hidden rounded-r-[18px] items-center h-screen py-10 px-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark fixed ease-linear duration-300 ${wrapMenu ? "w-1/12" : "w-1/5"}`}
       >
         <Link
           to="/"
           className="font-logo cursor-pointer text-2xl group text-center w-auto overflow-hidden"
         >
           <div className="flex justify-center items-center cursor-pointer tracking-tight">
-            <p className="p-2 bg-transparent dark:bg-white cursor-pointer text-zinc-900 dark:text-zinc-900 group-hover:bg-zinc-900 text-nowrap group-hover:dark:bg-transparent group-hover:text-white group-hover:dark:text-white transition-all">
+            <p className="p-2 bg-transparent dark:bg-white cursor-pointer text-zinc-900 dark:text-zinc-900 group-hover:bg-colorPrimaryDark text-nowrap group-hover:dark:bg-transparent group-hover:text-white group-hover:dark:text-white transition-all">
               {wrapMenu ? "D" : "D A S H"}
             </p>
-            <p className="p-2 bg-zinc-900 dark:bg-transparent cursor-pointer text-white dark:text-white group-hover:bg-transparent text-nowrap group-hover:dark:bg-white group-hover:text-zinc-900 group-hover:dark:text-zinc-900 transition-all">
+            <p className="p-2 bg-colorPrimaryDark dark:bg-transparent cursor-pointer text-white dark:text-white group-hover:bg-transparent text-nowrap group-hover:dark:bg-white group-hover:text-zinc-900 group-hover:dark:text-zinc-900 transition-all">
               {wrapMenu ? "C" : "C A S H"}
             </p>
           </div>
@@ -82,7 +82,7 @@ export default function Navbar(props) {
         <ChevronLeft
           size={40}
           onClick={handleWrap}
-          className={`bg-zinc-200 p-2 dark:bg-zinc-800 hover:bg-opacity-50 hover:scale-105 hover:dark:bg-opacity-50 rounded-full cursor-pointer ease-linear duration-300 ${wrapMenu ? "rotate-180" : ""}`}
+          className={`bg-colorPrimaryLight p-2 dark:bg-colorSecondaryDark hover:bg-opacity-50 hover:scale-105 hover:dark:bg-opacity-50 rounded-full cursor-pointer ease-linear duration-300 ${wrapMenu ? "rotate-180" : ""}`}
         />
 
         <div
@@ -90,20 +90,20 @@ export default function Navbar(props) {
         >
           <Link
             to="/tdb"
-            className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/tdb") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+            className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/tdb") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
           >
             {wrapMenu ? <LayoutDashboard /> : "Tableau de bord"}
           </Link>
           <div className="flex flex-col">
             <Link
               to="/depense"
-              className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/depense") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+              className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/depense") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
             >
               {wrapMenu ? <WalletCards /> : "Dépenses"}
             </Link>
             <Link
               to="/recette"
-              className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/recette") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+              className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/recette") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
             >
               {wrapMenu ? <Euro /> : "Recettes"}
             </Link>
@@ -111,14 +111,14 @@ export default function Navbar(props) {
           <div className="flex flex-col">
             <Link
               to="/invest"
-              className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/invest") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+              className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/invest") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
             >
               {wrapMenu ? <HandCoins /> : "Investissements"}
             </Link>
           </div>
           <Link
             to="/stat"
-            className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/stat") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+            className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/stat") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
           >
             {wrapMenu ? <BarChart /> : "Stats"}
           </Link>
@@ -130,7 +130,7 @@ export default function Navbar(props) {
           {isAuthenticated && (
             <Link
               to="/profil"
-              className={`my-1 py-2 rounded text-nowrap ${wrapMenu ? "bg-transparent" : activeLink.startsWith("/profil") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"} hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""}`}
+              className={`my-1 py-2 rounded text-nowrap ${wrapMenu ? "bg-transparent" : activeLink.startsWith("/profil") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"} hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""}`}
             >
               {wrapMenu ? imagePp() : "Profil"}
             </Link>
@@ -139,7 +139,7 @@ export default function Navbar(props) {
           {isAuthenticated === false ? (
             <Link
               to="/connexion"
-              className={`my-1 py-2 rounded text-nowrap bg-green-500 dark:bg-green-500 hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/connexion") ? "bg-zinc-300 dark:bg-zinc-700" : "bg-zinc-200 dark:bg-zinc-800"}`}
+              className={`my-1 py-2 rounded text-nowrap bg-green-500 dark:bg-green-500 hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/connexion") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
             >
               {wrapMenu ? <Power /> : "Connexion"}
             </Link>

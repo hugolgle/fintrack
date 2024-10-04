@@ -79,7 +79,7 @@ export default function Connexion() {
         <p className="text-xs">Nouveau sur DashCash ?</p>
         <Link
           to="/inscription"
-          className="rounded-xl bg-transparent border-2 border-zinc-700  py-2 text-sm px-4 transition-all hover:bg-zinc-300 hover:dark:bg-zinc-700"
+          className="rounded-xl bg-transparent border-2 border-zinc-700  py-2 text-sm px-4 transition-all hover:bg-zinc-200 hover:dark:bg-zinc-700"
           type="submit"
         >
           Créer un compte DashCash !

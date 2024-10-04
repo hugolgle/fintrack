@@ -36,7 +36,7 @@ export default function BoardRecette() {
             <div className="flex flex-row w-full h-64 gap-4">
               <Link
                 to={currentMonth}
-                className="flex flex-col hover:scale-95 justify-between w-3/5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                className="flex flex-col hover:scale-95 justify-between w-3/5 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
               >
                 <div className="flex flex-col w-full gap-4">
                   <p className="text-4xl font-thin">
@@ -70,7 +70,7 @@ export default function BoardRecette() {
                   <Link
                     key={month.code}
                     to={month.code}
-                    className="flex flex-col-reverse hover:scale-95 justify-between w-full h-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                    className="flex flex-col-reverse hover:scale-95 justify-between w-full h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
                   >
                     <p className="text-right italic">{month.month}</p>
                     <p className="text-4xl font-thin">
@@ -86,7 +86,7 @@ export default function BoardRecette() {
                 <Link
                   key={year}
                   to={`${year}`}
-                  className=" w-1/2 relative flex flex-col items-center justify-center h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+                  className=" w-1/2 relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
                 >
                   <p className="italic absolute top-2">{year}</p>
                   <p className="text-4xl font-thin">
@@ -98,7 +98,7 @@ export default function BoardRecette() {
 
             <Link
               to="all"
-              className="w-full relative flex flex-col items-center justify-center h-32 bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-2"
+              className="w-full relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-2"
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
               <p className="text-4xl font-thin">

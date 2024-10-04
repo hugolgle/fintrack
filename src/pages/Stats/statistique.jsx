@@ -232,7 +232,7 @@ export default function Statistique() {
           </div>
           <div className="w-px bg-zinc-400 items-center my-20 dark:bg-zinc-600" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
-            <p className="font-thin text-sm text-center p-2 rounded-2xl bg-zinc-100 dark:bg-zinc-900 w-full">
+            <p className="font-thin text-sm text-center p-2 rounded-2xl bg-colorSecondaryLight dark:bg-colorPrimaryDark w-full">
               Répartitions
             </p>
             <div className="flex flex-col w-full rounded-2xl  h-auto items-center p-4 bg-opacity-15 bg-green-600">

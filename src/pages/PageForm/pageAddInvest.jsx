@@ -93,7 +93,7 @@ export default function PageAddInvest() {
         >
           <input
             value={selectedDate}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="date"
             onChange={(e) => {
               setSelectedDate(e.target.value);
@@ -104,7 +104,7 @@ export default function PageAddInvest() {
           <input
             list="title-suggestions"
             value={selectedTitre}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="text"
             maxLength={50}
             placeholder="Titre"
@@ -122,7 +122,7 @@ export default function PageAddInvest() {
 
           <select
             value={selectedType}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             onChange={(e) => {
               setSelectedType(e.target.value);
             }}
@@ -140,7 +140,7 @@ export default function PageAddInvest() {
 
           <textarea
             value={selectedDetail}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             placeholder="Détails"
             maxLength={250}
             onChange={(e) => {
@@ -150,7 +150,7 @@ export default function PageAddInvest() {
 
           <input
             value={selectedMontant}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="number"
             min="0"
             step="0.01"
@@ -163,7 +163,7 @@ export default function PageAddInvest() {
 
           <Button
             variant="outline"
-            className="rounded-xl w-1/4 bg-zinc-100 dark:bg-zinc-900 hover:border-blue-500"
+            className="rounded-xl w-1/4 bg-colorSecondaryLight dark:bg-colorPrimaryDark hover:border-blue-500"
           >
             Soumettre
           </Button>

@@ -72,7 +72,7 @@ export default function Profil() {
       <section className="flex flex-col gap-4">
         <Title title="Profil" />
         <div className="flex flex-row gap-4 animate-fade">
-          <div className="flex-col w-3/4 py-12 bg-zinc-100 dark:bg-zinc-900 flex justify-start items-center rounded-2xl gap-6">
+          <div className="flex-col w-3/4 py-12 bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl gap-6">
             <div className="relative">
               <div className="w-full"></div>
               {selectedUpdate ? (
@@ -96,7 +96,7 @@ export default function Profil() {
                   )}
                   <label
                     htmlFor="image"
-                    className="cursor-pointer mt-3 rounded-xl bg-zinc-300 dark:bg-zinc-800 py-2 px-4 hover:scale-95 transition-all"
+                    className="cursor-pointer mt-3 rounded-xl bg-zinc-200 dark:bg-colorSecondaryDark py-2 px-4 hover:scale-95 transition-all"
                   >
                     Modifier ta photo de profil
                   </label>
@@ -213,13 +213,13 @@ export default function Profil() {
                 <p className="text-sm">Êtes-vous sûr ?</p>
                 <div className="flex gap-4">
                   <div
-                    className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                    className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                     onClick={handleDeleteConfirmation}
                   >
                     Oui
                   </div>
                   <div
-                    className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                    className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                     onClick={() => setSelectedDelete(false)}
                   >
                     Non
@@ -228,7 +228,7 @@ export default function Profil() {
               </div>
             ) : (
               <div
-                className={`h-full w-full cursor-pointer bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95`}
+                className={`h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95`}
                 onClick={() => setSelectedDelete(true)}
               >
                 Supprimer mon compte
@@ -240,13 +240,13 @@ export default function Profil() {
                 <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                 <div className="flex gap-4">
                   <div
-                    className="p-8 border-2 border-red-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                    className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
                     onClick={handleUpdateConfirmation}
                   >
                     Oui
                   </div>
                   <div
-                    className="p-8 border-2 border-zinc-900 bg-zinc-100 dark:bg-zinc-900 rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                    className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
                     onClick={() => setSelectedUpdate(false)}
                   >
                     Non
@@ -255,24 +255,24 @@ export default function Profil() {
               </div>
             ) : selectedUpdate ? (
               <div
-                className="h-full w-full cursor-pointer bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95"
+                className="h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95"
                 onClick={() => setSelectedUpdate(false)}
               >
                 Annuler
               </div>
             ) : (
               <div
-                className="h-full w-full cursor-pointer bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95"
+                className="h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95"
                 onClick={() => setSelectedUpdate(true)}
               >
                 Modifier
               </div>
             )}
 
-            <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl">
+            <div className="h-full w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               Exporter les données
             </div>
-            <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900 flex justify-center items-center rounded-2xl">
+            <div className="h-full w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               Supprimer les données
             </div>
           </div>

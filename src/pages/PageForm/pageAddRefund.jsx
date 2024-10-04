@@ -106,7 +106,7 @@ export default function PageAddRefund(props) {
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
           <input
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             value={selectedTitre}
             type="text"
             name=""
@@ -120,7 +120,7 @@ export default function PageAddRefund(props) {
 
           <input
             value={selectedDate}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="date"
             name=""
             onChange={(e) => {
@@ -131,7 +131,7 @@ export default function PageAddRefund(props) {
 
           <textarea
             value={selectedDetail}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             name=""
             placeholder="Détails"
             maxLength={250}
@@ -142,7 +142,7 @@ export default function PageAddRefund(props) {
 
           <input
             value={selectedMontant}
-            className="w-96 h-10 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900"
+            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="number"
             min="-10"
             step="0.01"
@@ -156,7 +156,7 @@ export default function PageAddRefund(props) {
 
           <Button
             variant="outline"
-            className="rounded-xl w-1/4 bg-zinc-100 dark:bg-zinc-900 hover:border-blue-500"
+            className="rounded-xl w-1/4 bg-colorSecondaryLight dark:bg-colorPrimaryDark hover:border-blue-500"
           >
             Soumettre le remboursement
           </Button>

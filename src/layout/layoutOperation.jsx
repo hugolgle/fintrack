@@ -77,12 +77,12 @@ function LayoutOperation({
             className={`flex gap-4 top-0 right-0 ${typeProps === "invest" || date === "all" ? "invisible" : ""}`}
           >
             <ChevronLeft
-              className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
+              className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
               size={37.5}
               onClick={clickLastMonth}
             />
             <ChevronRight
-              className="hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-full p-2 cursor-pointer duration-300 transition-all"
+              className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
               size={37.5}
               onClick={clickNextMonth}
             />

@@ -66,7 +66,7 @@ export default function BoardInvest() {
           <div className="h-32 flex gap-4 ">
             <Link
               to="inprogress"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
             >
               <p className="italic font-thin absolute top-2">
                 Investissements en cours
@@ -75,7 +75,7 @@ export default function BoardInvest() {
             </Link>
             <Link
               to="all"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
             >
               <p className="italic font-thin absolute top-2">
                 Tous les investissements
@@ -84,7 +84,7 @@ export default function BoardInvest() {
             </Link>
             <Link
               to="sold"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
             >
               <p className="italic font-thin absolute top-2">
                 Investissements vendus

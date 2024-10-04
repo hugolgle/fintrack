@@ -47,7 +47,7 @@ export default function TableauInvest(props) {
                 className="w-full animate-fade"
                 key={investment._id}
               >
-                <TableRow className="rounded flex my-1 h-10 flex-row items-center bg-zinc-100 dark:bg-zinc-900 cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all">
+                <TableRow className="rounded flex my-1 h-10 flex-row items-center bg-colorSecondaryLight dark:bg-colorPrimaryDark cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all">
                   <TableCell className="w-full">
                     {investment._id.substring(4, 8)}
                   </TableCell>
