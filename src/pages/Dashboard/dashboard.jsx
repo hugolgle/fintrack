@@ -18,12 +18,7 @@ import { getLastSixMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
 import Title from "../../composant/Text/title";
 import { Link } from "react-router-dom";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import MainLayout from "../../layout/mainLayout";
 
 export default function TableauDeBord() {
   const getCurrentMonthAndYear = () => {
@@ -219,53 +214,7 @@ export default function TableauDeBord() {
   return (
     <>
       <section className="w-full">
-        <Title title="Tableau de bord" />
-
-        <TooltipProvider>
-          <div className="absolute flex gap-3 top-4 left-4">
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link
-                  to="/depense/add"
-                  className="bg-colorDepense bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-                >
-                  <Plus />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
-                <p>Ajouter une dépense</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link
-                  to="/recette/add"
-                  className="bg-colorRecette bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-                >
-                  <Plus />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
-                <p>Ajouter une recette</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link
-                  to="/invest/add"
-                  className="bg-colorInvest bg-opacity-15 px-2 py-1 opacity-50 rounded-xl hover:scale-95 hover:opacity-75 transition-all"
-                >
-                  <Plus />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
-                <p>Ajouter un investissement</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </TooltipProvider>
+        <MainLayout title="Tableau de bord" />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
             <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">

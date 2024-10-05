@@ -11,6 +11,7 @@ import { convertDate, months } from "../../utils/fonctionnel";
 import { infoUser } from "../../utils/users";
 import BoxStat from "../../composant/Box/boxStat";
 import { CamembertStat } from "../../composant/Charts/camembertStat";
+import { Separator } from "@/components/ui/separator";
 import {
   getTransactionsByMonth,
   getTransactionsByYear,
@@ -20,6 +21,8 @@ import {
   categorieRecette,
 } from "../../../public/categories.json";
 import Title from "../../composant/Text/title";
+import { Button } from "@/components/ui/button";
+import MainLayout from "../../layout/mainLayout";
 
 export default function Statistique() {
   const getCurrentMonthAndYear = () => {
@@ -138,34 +141,38 @@ export default function Statistique() {
 
   return (
     <section className="w-full">
-      <Title title="Statistiques" />
+      <MainLayout title="Statistique" />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-row gap-2">
           {generateYears().map((year, index) => (
-            <button
-              className={`text-xs rounded-xl transition-all border-1  hover:border-blue-400 ${
-                selectedYear === year ? "border-blue-400" : ""
+            <Button
+              variant="outline"
+              className={`text-xs rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${
+                selectedYear === year
+                  ? "ring-1 ring-blue-400 text-black dark:text-white"
+                  : ""
               }`}
               key={index}
               onClick={() => clickYear(year)}
             >
               {year}
-            </button>
+            </Button>
           ))}
-          <div className="w-px bg-zinc-400 dark:bg-zinc-600" />
+          <Separator orientation="vertical" className="h-7 my-auto" />
           <div className="flex w-full gap-2">
             {generateMonths().map((monthIndex, index) => (
-              <button
-                className={`w-full text-xs rounded-xl transition-all border-1 hover:border-blue-400 ${
+              <Button
+                variant="outline"
+                className={`w-full text-xs rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${
                   selectedMonth === String(monthIndex).padStart(2, "0")
-                    ? "border-blue-400"
+                    ? "ring-1 ring-blue-400 text-black dark:text-white"
                     : ""
                 }`}
                 key={index}
                 onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
               >
                 {months[monthIndex - 1]}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -205,7 +212,7 @@ export default function Statistique() {
                 montant={`${moyenneEconomie} €`}
               />
             </div>
-            <div className="w-4/5 h-px bg-zinc-400 dark:bg-zinc-600" />
+            <Separator className="w-5/6" />
             <div className="flex flex-row gap-4 text-right w-full h-full">
               <BoxStat
                 type="Recette"
@@ -230,7 +237,7 @@ export default function Statistique() {
               />
             </div>
           </div>
-          <div className="w-px bg-zinc-400 items-center my-20 dark:bg-zinc-600" />
+          <Separator orientation="vertical" className="h-80 my-auto" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
             <p className="font-thin text-sm text-center p-2 rounded-2xl bg-colorSecondaryLight dark:bg-colorPrimaryDark w-full">
               Répartitions
@@ -263,19 +270,21 @@ export default function Statistique() {
             </div>
 
             <div className="flex gap-2 w-full">
-              <button
+              <Button
+                variant="outline"
                 onClick={handleByMonth}
-                className={`font-thin italic w-full text-sm hover:scale-95 transition-all ${!selectedByYear && "ring-1 ring-blue-400"}`}
+                className={`font-thin italic w-full rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${!selectedByYear && "ring-1 ring-blue-400 text-black dark:text-white"}`}
               >
                 {convertDate(selectedDate)}
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="outline"
                 onClick={handleByYear}
-                className={`font-thin italic w-full text-sm hover:scale-95 transition-all ${selectedByYear && "ring-1 ring-blue-400"}`}
+                className={`font-thin italic w-full rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${selectedByYear && "ring-1 ring-blue-400 text-black dark:text-white"}`}
               >
                 {selectedYear}
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-col w-full rounded-2xl  h-full items-center p-4 bg-opacity-15 bg-red-600">

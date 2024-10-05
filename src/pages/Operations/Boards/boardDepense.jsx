@@ -20,7 +20,8 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import LayoutOperation from "../../../layout/layoutOperation";
+import MainLayout from "../../../layout/mainLayout";
+import { Separator } from "@/components/ui/separator";
 
 export default function BoardDepense() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
@@ -48,11 +49,7 @@ export default function BoardDepense() {
     <>
       <section className="h-full w-full">
         <div className="flex flex-col">
-          <LayoutOperation
-            title="Board dépense"
-            typeProps="depense"
-            pageBoard
-          />
+          <MainLayout title="Board dépense" typeProps="depense" btnAdd />
           <div className="flex gap-4 animate-fade">
             <div className="flex flex-col gap-4 w-full">
               <div className="flex flex-row w-full h-64 gap-4">
@@ -128,6 +125,7 @@ export default function BoardDepense() {
                 </p>
               </Link>
             </div>
+            <Separator orientation="vertical" className="h-80 my-auto" />
             <Link
               to={`${currentMonthYear}?categories=Abonnement`}
               className="flex flex-col w-[500px] items-center justify-center bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-4"

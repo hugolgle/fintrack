@@ -5,22 +5,12 @@ import { getInvestments } from "./investment.action";
 export const loginUser = (username, password) => {
   return async (dispatch) => {
     try {
-      const response = await fetch("http://localhost:5001/user", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.post("http://localhost:5001/user/login", {
+        username,
+        password,
       });
 
-      if (!response.ok) {
-        throw new Error("Erreur de réseau. Veuillez réessayer.");
-      }
-
-      const usersData = await response.json();
-
-      const user = usersData.find(
-        (u) => u.username === username && u.password === password
-      );
+      const user = response.data;
 
       if (user) {
         const { _id, username, nom, prenom, pseudo, img, createdAt } = user;
@@ -83,7 +73,7 @@ export const editUser = (formData) => {
         }
       );
 
-      const updatedUserData = response.data;
+      const updatedUserData = response.data.user;
       const { _id, username, nom, prenom, pseudo, img, createdAt } =
         updatedUserData;
 
@@ -99,11 +89,13 @@ export const editUser = (formData) => {
           date: createdAt,
         },
       });
+
+      return response.data.message; // Retournez le message de succès
     } catch (error) {
-      // Gestion des erreurs avec un message explicite
+      const errorMessage = error.response?.data?.message || "Erreur inconnue";
       dispatch({
         type: "EDIT_USER_FAILURE",
-        payload: { error: error.message },
+        payload: { error: errorMessage },
       });
       throw error;
     }

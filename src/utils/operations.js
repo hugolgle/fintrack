@@ -297,39 +297,6 @@ export function getInvestmentById(id) {
   }
 }
 
-// -------------------------------- Remboursements
-
-export function getRefundsByTransactionId(transactionId) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
-
-  const transaction = transactions.find(
-    (transaction) => transaction._id === transactionId
-  );
-
-  if (transaction) {
-    return transaction.remboursements || [];
-  } else {
-    return [];
-  }
-}
-
-export function getRefundByTransactionId(transactionId, refundId) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
-
-  const transaction = transactions.find(
-    (transaction) => transaction._id === transactionId
-  );
-
-  if (transaction && transaction.remboursements) {
-    return (
-      transaction.remboursements.find((refund) => refund._id === refundId) ||
-      null
-    );
-  } else {
-    return null;
-  }
-}
-
 // -------------------------------- Titres
 
 export function getTitleOfTransactionsByType(type) {

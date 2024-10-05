@@ -1,20 +1,26 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/actions/user.action";
-import { infoUser, isConnected } from "../utils/users";
-import { BtnTheme } from "./Button/btnTheme";
+import { getInitials, infoUser, isConnected } from "../utils/users";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   BarChart,
-  ChevronLeft,
   Euro,
   HandCoins,
   LayoutDashboard,
   Power,
-  PowerOff,
   WalletCards,
 } from "lucide-react";
 import { toast } from "sonner";
+import { DropdownProfil } from "./dropDownProfil";
+import Logo from "./logo";
+import { versionApp } from "../utils/other";
 
 export default function Navbar(props) {
   const navigate = useNavigate();
@@ -23,166 +29,156 @@ export default function Navbar(props) {
 
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const [selectedLogout, setSelectedLogout] = useState(false);
-  const [wrapMenu, setWrapMenu] = useState(true);
 
   const logout = () => {
     dispatch(logoutUser());
     navigate("/");
-    setSelectedLogout(false);
-    toast("Vous vous êtes déconnecté !");
+    toast.success("Vous vous êtes déconnecté !");
   };
 
   useEffect(() => {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const handleWrap = () => setWrapMenu(!wrapMenu);
-
   const userInfo = infoUser();
-
-  const imagePp = () => (
-    <>
-      <div
-        className={`rounded-full w-12 h-12 hover:scale-90 overflow-hidden transition-all ${activeLink.startsWith("/profil") ? "scale-90" : ""}`}
-      >
-        <img
-          src={
-            userInfo?.img
-              ? `http://localhost:5001/${userInfo?.img}`
-              : "../public/img/imgProfil.svg"
-          }
-          alt="PP"
-          className="object-cover h-full w-full"
-        />
-      </div>
-    </>
-  );
+  const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
   return (
-    <section className="h-screen w-full flex">
-      <div
-        className={`sidebar h-screen py-4 pl-4 fixed ease-linear duration-300 ${wrapMenu ? "w-1/12" : "w-1/5"}`}
-      >
-        <div className=" flex flex-col justify-between overflow-hidden rounded-[18px] relative items-center h-full py-10 px-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark ">
+    <section className="h-screen w-full flex z-50">
+      <div className="sidebar h-screen w-[6%] py-4 pl-4 fixed z-10 ease-linear duration-300">
+        <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
           <Link
             to="/"
-            className="font-logo cursor-pointer text-2xl group text-center w-auto overflow-hidden"
+            className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
           >
-            <div className="flex justify-center items-center cursor-pointer tracking-tight">
-              <p className="p-2 bg-transparent dark:bg-white cursor-pointer text-zinc-900 dark:text-zinc-900 group-hover:bg-colorPrimaryDark text-nowrap group-hover:dark:bg-transparent group-hover:text-white group-hover:dark:text-white transition-all">
-                {wrapMenu ? "D" : "D A S H"}
-              </p>
-              <p className="p-2 bg-colorPrimaryDark dark:bg-transparent cursor-pointer text-white dark:text-white group-hover:bg-transparent text-nowrap group-hover:dark:bg-white group-hover:text-zinc-900 group-hover:dark:text-zinc-900 transition-all">
-                {wrapMenu ? "C" : "C A S H"}
-              </p>
-            </div>
+            <Logo navbar />
           </Link>
-          <BtnTheme />
 
-          <ChevronLeft
-            size={40}
-            onClick={handleWrap}
-            className={`bg-colorPrimaryLight p-2 dark:bg-colorSecondaryDark hover:bg-opacity-50 hover:scale-105 hover:dark:bg-opacity-50 rounded-full cursor-pointer ease-linear duration-300 ${wrapMenu ? "rotate-180" : ""}`}
-          />
+          <div className="flex flex-col justify-between gap-4">
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/tdb"
+                  className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                    activeLink.startsWith("/tdb") &&
+                    "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                  }`}
+                >
+                  <LayoutDashboard />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="rounded-xl">
+                <p>Tableau de bord</p>
+              </TooltipContent>
+            </Tooltip>
+            <div className="flex flex-col">
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/depense"
+                    className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                      activeLink.startsWith("/depense") &&
+                      "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                    }`}
+                  >
+                    <WalletCards />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="rounded-xl">
+                  <p>Board dépense</p>
+                </TooltipContent>
+              </Tooltip>
 
-          <div
-            className={`flex flex-col justify-between ${wrapMenu ? " items-center" : ""} gap-4 w-full`}
-          >
-            <Link
-              to="/tdb"
-              className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/tdb") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
-            >
-              {wrapMenu ? <LayoutDashboard /> : "Tableau de bord"}
-            </Link>
-            <div className="flex flex-col">
-              <Link
-                to="/depense"
-                className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/depense") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
-              >
-                {wrapMenu ? <WalletCards /> : "Dépenses"}
-              </Link>
-              <Link
-                to="/recette"
-                className={`my-1 py-2 rounded hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/recette") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
-              >
-                {wrapMenu ? <Euro /> : "Recettes"}
-              </Link>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/recette"
+                    className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                      activeLink.startsWith("/recette") &&
+                      "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                    }`}
+                  >
+                    <Euro />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="rounded-xl">
+                  <p>Board recette</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
+
             <div className="flex flex-col">
-              <Link
-                to="/invest"
-                className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/invest") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
-              >
-                {wrapMenu ? <HandCoins /> : "Investissements"}
-              </Link>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/invest"
+                    className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                      activeLink.startsWith("/invest") &&
+                      "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                    }`}
+                  >
+                    <HandCoins />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="rounded-xl">
+                  <p>Board investissement</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <Link
-              to="/stat"
-              className={`my-1 py-2 rounded text-nowrap hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/stat") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
-            >
-              {wrapMenu ? <BarChart /> : "Stats"}
-            </Link>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/stat"
+                  className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                    activeLink.startsWith("/stat") &&
+                    "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                  }`}
+                >
+                  <BarChart />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="rounded-xl">
+                <p>Stats</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
 
-          <div
-            className={`flex flex-col justify-end ${wrapMenu ? " items-center" : ""} h-32 w-full`}
-          >
-            {isAuthenticated && (
-              <Link
-                to="/profil"
-                className={`my-1 py-2 rounded text-nowrap ${wrapMenu ? "bg-transparent" : activeLink.startsWith("/profil") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"} hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""}`}
-              >
-                {wrapMenu ? imagePp() : "Profil"}
-              </Link>
-            )}
-
-            {isAuthenticated === false ? (
+          <div className="flex flex-col">
+            {isAuthenticated === true ? (
+              <DropdownProfil
+                btnOpen={
+                  <Avatar className="w-12 h-12 hover:scale-95 transition-all">
+                    <AvatarImage
+                      className="object-cover"
+                      src={`http://localhost:5001/${userInfo?.img}`}
+                    />
+                    <AvatarFallback className="bg-colorPrimaryLight dark:bg-colorSecondaryDark">
+                      {initialName}
+                    </AvatarFallback>
+                  </Avatar>
+                }
+                handleLogout={logout}
+              />
+            ) : (
               <Link
                 to="/connexion"
-                className={`my-1 py-2 rounded text-nowrap bg-green-500 dark:bg-green-500 hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""} ${activeLink.startsWith("/connexion") ? "bg-zinc-200 dark:bg-zinc-900" : "bg-colorPrimaryLight dark:bg-colorSecondaryDark"}`}
+                className={`my-1 p-3 rounded-full  hover:bg-opacity-50 hover:dark:bg-opacity-50  transition-all ${
+                  activeLink.startsWith("/connexion") ||
+                  (activeLink.startsWith("/inscription") &&
+                    "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white")
+                }`}
               >
-                {wrapMenu ? <Power /> : "Connexion"}
+                <Power />
               </Link>
-            ) : selectedLogout ? (
-              <div className="flex flex-col justify-center items-center">
-                <p className="text-sm py-1">Êtes-vous sûr ?</p>
-                <div className="flex justify-center gap-4 w-full">
-                  <div
-                    className="p-1 w-full text-sm border-2 border-red-900 bg-opacity-20 rounded cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
-                    onClick={logout}
-                  >
-                    Oui
-                  </div>
-                  <div
-                    className="p-1 w-full text-sm border-2 border-zinc-900 bg-opacity-20 rounded cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
-                    onClick={() => setSelectedLogout(false)}
-                  >
-                    Non
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div
-                onClick={() => setSelectedLogout(true)}
-                className={`my-1 py-2 rounded bg-red-500 dark:bg-red-500 cursor-pointer text-nowrap dark:text-slate-50 hover:bg-opacity-50 hover:dark:bg-opacity-50 overflow-hidden transition-all ${wrapMenu ? "p-2" : ""}`}
-              >
-                {wrapMenu ? <PowerOff /> : "Déconnexion"}
-              </div>
             )}
           </div>
-
-          <p className="text-xs text-gray-400 text-nowrap absolute bottom-2">
-            {wrapMenu
-              ? `© HLG - v${import.meta.env.VITE_APP_VERSION}`
-              : `© Hugo Le Galle - v${import.meta.env.VITE_APP_VERSION}`}
-          </p>
         </div>
       </div>
 
-      <div
-        className={`relative content ml-auto ease-linear duration-300 p-4 ${wrapMenu ? "w-11/12" : "w-4/5"}`}
-      >
+      <div className="relative content ml-auto ease-linear duration-300 p-4 w-[94%]">
+        <p className="text-[9px] absolute right-0 top-0 m-1 text-gray-500 italic">
+          {versionApp}
+        </p>
         <Outlet />
         {props.children}
       </div>

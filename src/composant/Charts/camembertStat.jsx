@@ -1,6 +1,6 @@
 import { Pie, PieChart, ResponsiveContainer, Cell, Legend } from "recharts";
 
-import { ChartContainer, ChartTooltip } from "../../components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { aggregateTransactions } from "../../utils/operations";
 import { addSpace } from "../../utils/fonctionnel";
 

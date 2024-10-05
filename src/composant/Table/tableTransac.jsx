@@ -6,32 +6,42 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox"; // Imported Checkbox from ShadCN UI
 import { addSpace, formatDate, separateMillier } from "../../utils/fonctionnel";
-import { Circle, CircleCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Tableau(props) {
-  const [selectAllRow, setSelectAllRow] = useState(false);
-  const [selectedRows, setSelectedRows] = useState({});
+  const [selectAllRow, setSelectAllRow] = useState(false); // State to track "Select All" checkbox
+  const [selectedRows, setSelectedRows] = useState({}); // State to track individual row selections
 
-  const handleSelectAllRow = () => {
-    const newSelectAll = !selectAllRow;
-    setSelectAllRow(newSelectAll);
+  // Toggle all rows with "Select All" checkbox
+  const handleSelectAllRow = (checked) => {
+    setSelectAllRow(checked);
     const newSelectedRows = {};
     props.transactions.forEach((transaction) => {
-      newSelectedRows[transaction._id] = newSelectAll;
+      newSelectedRows[transaction._id] = checked;
     });
     setSelectedRows(newSelectedRows);
   };
 
-  const handleSelectRow = (id) => {
-    setSelectedRows((prevSelectedRows) => ({
-      ...prevSelectedRows,
-      [id]: !prevSelectedRows[id],
-    }));
+  // Toggle individual rows and check if "Select All" should be updated
+  const handleSelectRow = (id, checked) => {
+    setSelectedRows((prevSelectedRows) => {
+      const updatedRows = { ...prevSelectedRows, [id]: checked };
+
+      // If all rows are selected, set "Select All" checkbox to true
+      const allSelected =
+        props.transactions.length > 0 &&
+        props.transactions.every((transaction) => updatedRows[transaction._id]);
+
+      setSelectAllRow(allSelected); // Update "Select All" state based on individual row selection
+
+      return updatedRows;
+    });
   };
 
+  // Calculate the total amount of selected transactions
   const calculMontantSelect = () => {
     let total = 0;
     props.transactions.forEach((transaction) => {
@@ -51,17 +61,12 @@ export default function Tableau(props) {
           <TableHeader className="flex w-full items-center">
             {props.selectOpe && (
               <div className="mr-5 text-xs">
-                {selectAllRow ? (
-                  <CircleCheck
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={handleSelectAllRow}
-                  />
-                ) : (
-                  <Circle
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={handleSelectAllRow}
-                  />
-                )}
+                {/* ShadCN Checkbox for select all */}
+                <Checkbox
+                  checked={selectAllRow}
+                  onCheckedChange={handleSelectAllRow}
+                  aria-label="Select all rows"
+                />
               </div>
             )}
             <TableRow className="w-full flex h-7 italic">
@@ -77,23 +82,19 @@ export default function Tableau(props) {
               <div className="flex w-full items-center" key={transaction._id}>
                 {props.selectOpe && (
                   <div className="mr-5">
-                    {selectedRows[transaction._id] ? (
-                      <CircleCheck
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => handleSelectRow(transaction._id)}
-                      />
-                    ) : (
-                      <Circle
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => handleSelectRow(transaction._id)}
-                      />
-                    )}
+                    <Checkbox
+                      checked={!!selectedRows[transaction._id]} // Cast to boolean
+                      onCheckedChange={(checked) =>
+                        handleSelectRow(transaction._id, checked)
+                      }
+                      aria-label={`Select row ${transaction._id}`}
+                    />
                   </div>
                 )}
                 <Link to={transaction._id} className="w-full">
                   <TableRow
                     className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-colorSecondaryLight dark:bg-colorPrimaryDark cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all  ${
-                      selectedRows[transaction._id]
+                      props.selectOpe && selectedRows[transaction._id]
                         ? "ring-1 ring-zinc-400"
                         : ""
                     }`}

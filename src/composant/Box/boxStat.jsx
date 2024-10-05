@@ -78,7 +78,6 @@ function BoxStat(props) {
         </p>
       </div>
       <p className="text-2xl">{formatMontant(currentMontant)} €</p>{" "}
-      {/* Montant animé et formaté */}
     </div>
   );
 }

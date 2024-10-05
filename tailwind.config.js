@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      logo: ["Montserrat", "ui-serif", "system-ui"],
+      logo: ["Nanum Brush Script", "ui-serif", "system-ui"],
     },
     extend: {
       colors: {

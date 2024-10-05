@@ -8,15 +8,33 @@ import {
   formatMontant,
   separateMillier,
 } from "../../../utils/fonctionnel";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   getTitleOfTransactionsByType,
   getTransactionById,
 } from "../../../utils/operations";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   categorieRecette,
   categorieDepense,
 } from "../../../../public/categories.json";
+import { Input } from "@/components/ui/input";
 
 import {
   deleteTransactions,
@@ -25,10 +43,11 @@ import {
 } from "../../../redux/actions/transaction.action";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import PageAddRefund from "../../PageForm/pageAddRefund";
 import { categorieSort } from "../../../utils/other";
-import LayoutOperation from "../../../layout/layoutOperation";
+import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { DialogDelete } from "../../../composant/dialogDelete";
 
 export default function Transaction() {
   const categorieD = categorieSort(categorieDepense);
@@ -55,35 +74,18 @@ export default function Transaction() {
 
   const [selectedDetail, setSelectedDetail] = useState(transaction.detail);
 
-  const calculateTotalRefunds = () => {
-    let totalRefunds = 0;
-    if (transaction.remboursements && transaction.remboursements.length > 0) {
-      transaction.remboursements.forEach((refund) => {
-        totalRefunds += parseFloat(refund.montant);
-      });
-    }
-    const montant = totalRefunds - parseFloat(transaction.montant);
-    return `-${montant}`;
+  const [selectedMontant, setSelectedMontant] = useState(transaction.montant);
+
+  const resetForm = () => {
+    setSelectedTitre(transaction.titre);
+    setSelectedDetail(transaction.detail);
+    setSelectedMontant(transaction.montant);
+    setSelectedCategorie(transaction.categorie);
+    setSelectedDate(transaction.date);
   };
-
-  const montantPaye = calculateTotalRefunds();
-
-  const [selectedMontant, setSelectedMontant] = useState(
-    transaction.remboursements && transaction.remboursements.length > 0
-      ? montantPaye
-      : transaction.montant
-  );
 
   const handleTitre = (event) => {
     setSelectedTitre(event.target.value);
-  };
-
-  const handleCategorie = (event) => {
-    setSelectedCategorie(event.target.value);
-  };
-
-  const handleDate = (event) => {
-    setSelectedDate(event.target.value);
   };
 
   const handleDetail = (event) => {
@@ -98,12 +100,6 @@ export default function Transaction() {
     setUpdate(true);
   };
 
-  const [refundVisible, setRefundVisible] = useState(false);
-
-  const handleRefund = () => {
-    setRefundVisible(!refundVisible);
-  };
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -111,7 +107,7 @@ export default function Transaction() {
     await dispatch(deleteTransactions(id));
     navigate(-1);
     dispatch(getTransactions());
-    toast("Votre transaction a été supprimé !");
+    toast.success("Votre transaction a été supprimé !");
   };
 
   function removeTiret(number) {
@@ -122,12 +118,6 @@ export default function Transaction() {
       return NaN;
     }
   }
-
-  const montantFinal =
-    transaction.montant +
-    transaction.remboursements.reduce((acc, refund) => {
-      return acc + parseFloat(refund.montant);
-    }, 0);
 
   const handleEditConfirmation = async () => {
     const editData = {
@@ -142,7 +132,7 @@ export default function Transaction() {
     await dispatch(editTransactions(editData));
     dispatch(getTransactions());
     setSelectedUpdate(false);
-    toast("L'opération a été modifié avec succès !");
+    toast.success("L'opération a été modifié avec succès !");
   };
 
   const typeProps =
@@ -154,34 +144,21 @@ export default function Transaction() {
 
   return (
     <>
-      <LayoutOperation
+      <MainLayout
         title={transaction.titre}
         typeProps={typeProps}
         categories={transaction.type === "Dépense" ? categorieD : categorieR}
-        pageById
-        refund
-        refundVisible={refundVisible}
-        handleRefund={handleRefund}
+        btnAdd
+        btnReturn
       />
 
-      {refundVisible && (
-        <PageAddRefund
-          transactionId={transaction._id}
-          montant={transaction.montant}
-        />
-      )}
-
-      <section
-        className={`${refundVisible ? "hidden" : "flex flex-row gap-4"}`}
-      >
+      <section className="flex flex-row gap-4">
         <div className="flex flex-col w-3/4 gap-4 animate-fade">
-          <div
-            className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
-          >
+          <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
             {selectedUpdate ? (
               <>
-                <input
-                  className="text-4xl rounded-2xl text-center font-thin mb-5 bg-transparent"
+                <Input
+                  className="text-4xl rounded-2xl text-center h-full font-thin bg-transparent"
                   list="title-suggestions"
                   id="title"
                   name="title"
@@ -205,67 +182,99 @@ export default function Transaction() {
             )}
           </div>
           <div className="flex flex-row gap-4">
-            <div
-              className={`h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
-            >
+            <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
-                <select
-                  id="action"
+                <Select
                   value={selectedCategorie}
-                  className="h-full w-full bg-transparent text-center text-4xl rounded-2xl"
-                  onChange={(e) => {
-                    handleCategorie(e);
-                    handleInputChange();
+                  onValueChange={(value) => {
+                    setSelectedCategorie(value); // Update the selected category
+                    handleInputChange(); // Call your input change handler if necessary
                   }}
                   required
                 >
-                  <option disabled selected>
-                    Entrez la catégorie
-                  </option>
-                  {transaction.type === "Dépense" &&
-                    categorieD.map(({ name }) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  {transaction.type === "Recette" &&
-                    categorieR.map(({ name }) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                </select>
+                  <SelectTrigger className="w-full h-40 px-2 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex items-center justify-center">
+                    <SelectValue placeholder="Entrez la catégorie" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+                    {transaction.type === "Dépense" &&
+                      categorieD.map(({ name }) => (
+                        <SelectItem
+                          key={name}
+                          value={name}
+                          className="rounded-xl"
+                        >
+                          {name}
+                        </SelectItem>
+                      ))}
+                    {transaction.type === "Recette" &&
+                      categorieR.map(({ name }) => (
+                        <SelectItem
+                          key={name}
+                          value={name}
+                          className="rounded-xl"
+                        >
+                          {name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               ) : (
                 <h2 className="text-4xl">{transaction.categorie}</h2>
               )}
             </div>
 
-            <div
-              className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
-            >
+            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
-                <input
-                  className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
-                  value={selectedDate}
-                  type="date"
-                  name=""
-                  onChange={(e) => {
-                    handleDate(e);
-                    handleInputChange();
-                  }}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className="w-full h-40 px-40 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-center rounded-2xl"
+                    >
+                      {selectedDate ? (
+                        format(new Date(selectedDate), "PPP", { locale: fr })
+                      ) : (
+                        <span>Choisir une date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-6 w-6 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto bg-colorSecondaryLight dark:bg-[#1a1a1a] rounded-2xl p-0"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={
+                        selectedDate ? new Date(selectedDate) : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const newDate = new Date(date);
+                          newDate.setUTCHours(0, 0, 0, 0);
+                          newDate.setUTCFullYear(date.getFullYear());
+                          newDate.setUTCMonth(date.getMonth());
+                          newDate.setUTCDate(date.getDate());
+                          setSelectedDate(newDate);
+                        }
+                        handleInputChange();
+                      }}
+                      disabled={(date) => date < new Date("1900-01-01")}
+                      initialFocus
+                      locale={fr}
+                    />
+                  </PopoverContent>
+                </Popover>
               ) : (
                 <h2 className="text-4xl">{formatDate(transaction.date)}</h2>
               )}
             </div>
           </div>
           <div className="flex flex-row gap-4">
-            <div
-              className={`min-h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "py-8"}`}
-            >
+            <div className="min-h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
-                <input
-                  className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
+                <Input
+                  className="h-full w-full px-80  bg-transparent text-center text-4xl  rounded-2xl"
                   value={removeTiret(selectedMontant)}
                   type="number"
                   step="0.5"
@@ -279,62 +288,17 @@ export default function Transaction() {
                 />
               ) : (
                 <div className="flex flex-col">
-                  <p>
-                    Montant{" "}
-                    {transaction.remboursements &&
-                    transaction.remboursements.length > 0
-                      ? "payé"
-                      : ""}
-                  </p>
                   <h2 className="text-4xl">
-                    {transaction.type === "Dépense"
-                      ? `${addSpace(parseFloat(montantPaye).toFixed(2))} €`
-                      : `${addSpace(parseFloat(transaction.montant).toFixed(2))} €`}
+                    {addSpace(parseFloat(transaction.montant).toFixed(2))} €
                   </h2>
                 </div>
               )}
             </div>
-            {transaction.remboursements &&
-              transaction.remboursements.length > 0 && (
-                <Link
-                  to="refund/"
-                  className="min-h-40 w-full flex-col bg-colorSecondaryLight dark:bg-colorPrimaryDark flex items-center rounded-2xl py-8 transition-all hover:bg-opacity-80 hover:scale-95"
-                >
-                  <p>Remboursement(s)</p>
-                  <table className="w-full mt-2">
-                    <tbody>
-                      {transaction.remboursements.map((refund) => (
-                        <tr key={refund._id}>
-                          <td>{convertirFormatDate(refund.date)}</td>
-                          <td>{refund.titre}</td>
-                          <td>
-                            <b>{addSpace(refund.montant)} €</b>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </Link>
-              )}
-
-            {transaction.remboursements &&
-              transaction.remboursements.length > 0 && (
-                <div className="min-h-40 w-full flex-col bg-colorSecondaryLight dark:bg-colorPrimaryDark flex items-center rounded-2xl py-8">
-                  <div className="flex flex-col">
-                    <p>Montant final</p>
-                    <h2 className="text-4xl">
-                      {separateMillier(montantFinal)} €
-                    </h2>
-                  </div>
-                </div>
-              )}
           </div>
           <div className="flex flex-row gap-4">
-            <div
-              className={`h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl ${selectedUpdate ? "animate-[pulseEdit_1s_ease-in-out_infinite] p-0" : "p-8"}`}
-            >
+            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
-                <textarea
+                <Textarea
                   className="h-full w-full bg-transparent text-center text-xl p-4 rounded-2xl"
                   value={selectedDetail}
                   name=""
@@ -384,7 +348,11 @@ export default function Transaction() {
                   </div>
                   <div
                     className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
-                    onClick={() => setSelectedUpdate(false)}
+                    onClick={() => {
+                      setSelectedUpdate(false);
+                      setUpdate(false);
+                      resetForm();
+                    }}
                   >
                     Non
                   </div>
@@ -406,32 +374,14 @@ export default function Transaction() {
               </div>
             )}
             <div className="flex flex-col gap-4 justify-center items-center">
-              {selectedDelete ? (
-                <div className="flex flex-col gap-4 justify-center items-center">
-                  <p className="text-sm">Êtes-vous sûr ?</p>
-                  <div className="flex gap-4">
-                    <div
-                      className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
-                      onClick={handleDeleteConfirmation}
-                    >
-                      Oui
-                    </div>
-                    <div
-                      className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
-                      onClick={() => setSelectedDelete(false)}
-                    >
-                      Non
-                    </div>
+              <DialogDelete
+                btnDelete={
+                  <div className="w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95">
+                    Supprimer
                   </div>
-                </div>
-              ) : (
-                <div
-                  className={`w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
-                  onClick={() => setSelectedDelete(true)}
-                >
-                  Supprimer
-                </div>
-              )}
+                }
+                handleDelete={handleDeleteConfirmation}
+              />
             </div>
           </div>
         </div>

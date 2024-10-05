@@ -1,3 +1,7 @@
+export const versionApp = import.meta.env.VITE_APP_VERSION;
+
+// -----------------------------
+
 export const months = [
   "Janvier",
   "Février",

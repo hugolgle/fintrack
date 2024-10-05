@@ -7,7 +7,7 @@ function BtnAdd(props) {
       className="cursor-pointer hover:scale-110 transition-all"
       to={props.to ? `${props.to}/add` : "add"}
     >
-      <CirclePlus />
+      <CirclePlus size={20} />
     </Link>
   );
 }

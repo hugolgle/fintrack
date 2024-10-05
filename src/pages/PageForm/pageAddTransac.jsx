@@ -6,15 +6,17 @@ import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "../../components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
 import {
   Popover,
   PopoverContent,
@@ -38,8 +40,9 @@ import {
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
 import { fr } from "date-fns/locale";
-import LayoutOperation from "../../layout/layoutOperation";
+import MainLayout from "../../layout/mainLayout";
 import { useNavigate } from "react-router-dom"; // Corriger l'import de useNavigate
+import { Button } from "@/components/ui/button";
 
 // Schéma de validation pour la date
 const FormSchema = z.object({
@@ -117,7 +120,7 @@ export default function PageAddTransac(props) {
 
     const isValid = await form.trigger();
     if (!isValid) {
-      toast("Veuillez remplir tous les champs requis.");
+      toast.success("Veuillez remplir tous les champs requis.");
       return;
     }
 
@@ -133,6 +136,11 @@ export default function PageAddTransac(props) {
 
     try {
       const response = await dispatch(addTransactions(postData));
+
+      if (!response || !response.data) {
+        throw new Error("Aucune réponse reçue du serveur");
+      }
+
       const newOperationId = response.data._id;
       dispatch(getTransactions());
       resetForm();
@@ -142,7 +150,7 @@ export default function PageAddTransac(props) {
       );
       const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
 
-      toast(`Votre ${props.type.toLowerCase()} a été ajouté ! `, {
+      toast.success(`Votre ${props.type.toLowerCase()} a été ajouté ! `, {
         action: {
           label: "Voir",
           onClick: () =>
@@ -152,23 +160,22 @@ export default function PageAddTransac(props) {
         },
       });
     } catch (error) {
-      toast("Une erreur s'est produite lors de l'ajout de l'opération");
+      toast.error("Erreur lors de l'ajout de la transaction.");
     }
   };
 
   return (
     <>
       <section className="h-full">
-        <LayoutOperation
+        <MainLayout
           title={`Ajouter une ${props.type.toLowerCase()}`}
-          pageById
-          pageAdd
+          btnReturn
         />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
-          <input
+          <Input
             className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             list="title-suggestions"
             id="title"
@@ -206,7 +213,7 @@ export default function PageAddTransac(props) {
                 ))}
               {props.type === "Recette" &&
                 categorieR.map(({ name }) => (
-                  <SelectItem key={name} value={name} className="rounded-2xl">
+                  <SelectItem key={name} value={name} className="rounded-xl">
                     {name}
                   </SelectItem>
                 ))}
@@ -242,7 +249,7 @@ export default function PageAddTransac(props) {
             </PopoverContent>
           </Popover>
 
-          <textarea
+          <Textarea
             value={selectedDetail}
             className="w-96 h-20 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             placeholder="Détails"
@@ -252,7 +259,7 @@ export default function PageAddTransac(props) {
             }}
           />
 
-          <input
+          <Input
             value={selectedMontant}
             className="w-96 h-10 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             type="number"
@@ -265,11 +272,7 @@ export default function PageAddTransac(props) {
             required
           />
 
-          <Button
-            variant="outline"
-            className="rounded-xl w-1/4 bg-colorSecondaryLight dark:bg-colorPrimaryDark hover:border-blue-500"
-            type="submit"
-          >
+          <Button variant="outline" className="rounded-xl" type="submit">
             Soumettre la {props.type.toLowerCase()}
           </Button>
         </form>

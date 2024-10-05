@@ -10,10 +10,42 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { CardContent } from "../../components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { addSpace } from "../../utils/fonctionnel";
 
 export function GraphiqueTdb({ data }) {
+  const TooltipDefault = (props) => {
+    <ChartTooltipContent
+      hideLabel
+      className="w-[180px]"
+      formatter={(value, name, item, index) => (
+        <>
+          <div
+            className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+            style={{
+              "--color-bg": `var(--color-${name})`,
+            }}
+          />
+          {chartConfig[name]?.label || name}
+          <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+            {value}
+            <span className="font-normal text-muted-foreground">kcal</span>
+          </div>
+          {/* Add this after the last item */}
+          {index === 1 && (
+            <div className="mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium text-foreground">
+              Total
+              <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                {item.payload.running + item.payload.swimming}
+                <span className="font-normal text-muted-foreground">kcal</span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    />;
+  };
+
   const CustomTooltip = (props) => {
     const { active, payload, label } = props;
 
@@ -143,8 +175,8 @@ export function GraphiqueTdb({ data }) {
             dataKey="montantRecette"
             type="natural"
             stroke={chartConfig.montantRecette.color} // Utiliser la couleur de chartConfig
-            strokeWidth={2}
-            dot={{ fill: chartConfig.montantRecette.color, r: 4 }}
+            strokeWidth={1.5}
+            dot={{ fill: chartConfig.montantRecette.color }}
             activeDot={{ r: 6 }}
           >
             <LabelList
@@ -161,8 +193,8 @@ export function GraphiqueTdb({ data }) {
             dataKey="montantDepense"
             type="natural"
             stroke={chartConfig.montantDepense.color} // Utiliser la couleur de chartConfig
-            strokeWidth={2}
-            dot={{ fill: chartConfig.montantDepense.color, r: 4 }}
+            strokeWidth={1.5}
+            dot={{ fill: chartConfig.montantDepense.color }}
             activeDot={{ r: 6 }}
           >
             <LabelList
@@ -178,8 +210,8 @@ export function GraphiqueTdb({ data }) {
             dataKey="montantInvest"
             type="natural"
             stroke={chartConfig.montantInvest.color} // Utiliser la couleur de chartConfig
-            strokeWidth={2}
-            dot={{ fill: chartConfig.montantInvest.color, r: 4 }}
+            strokeWidth={1.5}
+            dot={{ fill: chartConfig.montantInvest.color }}
             activeDot={{ r: 6 }}
           >
             <LabelList

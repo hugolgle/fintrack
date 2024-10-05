@@ -14,8 +14,6 @@ import BoardInvest from "./pages/Operations/Boards/boardInvest";
 import PageAddInvest from "./pages/PageForm/pageAddInvest";
 import PageInvestment from "./pages/Operations/PageOperations/pageInvestment";
 import Investment from "./pages/Operations/OperationById/investment";
-import Refund from "./pages/Operations/OperationById/refund";
-import BoardRefund from "./pages/Operations/Boards/boardRefund";
 import PrivateRoute from "./composant/privateRoute";
 import BoardRecette from "./pages/Operations/Boards/boardRecette";
 import BoardDepense from "./pages/Operations/Boards/boardDepense";
@@ -52,14 +50,6 @@ function App() {
         {
           path: "/depense/:date/:id",
           element: <PrivateRoute element={<Transaction />} />,
-        },
-        {
-          path: "/depense/:date/:id/refund",
-          element: <PrivateRoute element={<BoardRefund />} />,
-        },
-        {
-          path: "/depense/:date/:id/refund/:idRefund",
-          element: <PrivateRoute element={<Refund />} />,
         },
         {
           path: "/recette",

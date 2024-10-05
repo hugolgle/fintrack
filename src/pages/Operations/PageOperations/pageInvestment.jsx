@@ -8,7 +8,7 @@ import {
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
 import { useParams } from "react-router-dom";
-import LayoutOperation from "../../../layout/layoutOperation";
+import MainLayout from "../../../layout/mainLayout";
 
 export default function PageInvestment() {
   const { urlInvest } = useParams();
@@ -47,7 +47,7 @@ export default function PageInvestment() {
   return (
     <>
       <section className="w-full relative">
-        <LayoutOperation
+        <MainLayout
           title={`Investissements
           ${
             urlInvest === "sold"
@@ -57,7 +57,11 @@ export default function PageInvestment() {
                 : ""
           }`}
           typeProps={"invest"}
-          pageTable
+          btnSearch
+          btnReturn
+          btnAdd
+          btnFilter
+          btnSelect
         />
 
         <TableauInvest investments={investissement} />

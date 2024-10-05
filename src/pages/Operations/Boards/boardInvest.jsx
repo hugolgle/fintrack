@@ -6,7 +6,7 @@ import {
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
 import { formatDateBis } from "../../../utils/fonctionnel";
-import LayoutOperation from "../../../layout/layoutOperation";
+import MainLayout from "../../../layout/mainLayout";
 
 export default function BoardInvest() {
   const getInvest = getAllInvestments(null);
@@ -57,11 +57,7 @@ export default function BoardInvest() {
   return (
     <>
       <section>
-        <LayoutOperation
-          title="Board investissement"
-          typeProps="invest"
-          pageBoard
-        />
+        <MainLayout title="Board investissement" typeProps="invest" btnAdd />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
           <div className="h-32 flex gap-4 ">
             <Link

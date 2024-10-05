@@ -10,6 +10,7 @@ function BtnReturn() {
 
   return (
     <CircleArrowLeft
+      size={20}
       className="cursor-pointer hover:scale-110 transition-all"
       onClick={handleGoBack}
     />

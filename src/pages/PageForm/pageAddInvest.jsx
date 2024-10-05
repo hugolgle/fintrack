@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "../../components/ui/button";
-import { getCurrentDate, separateMillier } from "../../utils/fonctionnel";
+import { separateMillier } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { infoUser } from "../../utils/users";
@@ -13,6 +12,27 @@ import BtnReturn from "../../composant/Button/btnReturn";
 import { getAllInvestments } from "../../utils/operations";
 import Title from "../../composant/Text/title";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react"; // Import de l'icône de calendrier
+import { format } from "date-fns"; // Pour formater la date
+import { fr } from "date-fns/locale"; // Locale française pour la date
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import MainLayout from "../../layout/mainLayout";
 
 export default function PageAddInvest() {
   const userInfo = infoUser();
@@ -21,7 +41,7 @@ export default function PageAddInvest() {
     new Set(getInvest.map((investment) => investment.titre))
   );
 
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Utilisation de la date actuelle par défaut
   const [selectedType, setSelectedType] = useState("");
   const [selectedTitre, setSelectedTitre] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
@@ -30,14 +50,12 @@ export default function PageAddInvest() {
 
   useEffect(() => {
     if (selectedTitre) {
-      // Trouver le dernier investissement avec le titre sélectionné
       const lastInvestment = getInvest
         .filter((investment) => investment.titre === selectedTitre)
         .sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
 
-      // Mettre à jour le champ type si un investissement est trouvé
       if (lastInvestment) {
         setSelectedType(lastInvestment.type || "");
       }
@@ -54,18 +72,12 @@ export default function PageAddInvest() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const isValid = await form.trigger();
-    if (!isValid) {
-      toast("Veuillez remplir tous les champs requis.");
-      return;
-    }
-
     const postData = {
       user: userInfo.id,
       type: selectedType,
       titre: selectedTitre,
       detail: selectedDetail,
-      date: selectedDate,
+      date: selectedDate.toISOString().split("T")[0], // Envoi de la date au format ISO
       montant: separateMillier(selectedMontant),
     };
 
@@ -73,44 +85,57 @@ export default function PageAddInvest() {
       await dispatch(addInvestments(postData));
       dispatch(getInvestments());
       resetForm();
-      toast("Votre investissement a été ajouté ! ");
+      toast.success("Votre investissement a été ajouté !");
     } catch {
-      toast("Une erreur s'est produite lors de l'ajout de l'opération");
+      toast.error("Une erreur s'est produite lors de l'ajout de l'opération");
     }
   };
 
   return (
     <>
       <section className="h-full">
-        <Title title="Ajouter un investissement" />
-
-        <div className="absolute top-4 left-4">
-          <BtnReturn />
-        </div>
+        <MainLayout title="Ajouter un investissement" btnReturn />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         >
-          <input
-            value={selectedDate}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
-            type="date"
-            onChange={(e) => {
-              setSelectedDate(e.target.value);
-            }}
-            required
-          />
+          {/* Input pour la date avec calendrier */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
+              >
+                {selectedDate ? (
+                  format(selectedDate, "PPP", { locale: fr })
+                ) : (
+                  <span>Choisir une date</span>
+                )}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={(date) => date < new Date("1900-01-01")}
+                locale={fr}
+              />
+            </PopoverContent>
+          </Popover>
 
-          <input
+          <Input
             list="title-suggestions"
             value={selectedTitre}
             className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="text"
             maxLength={50}
             placeholder="Titre"
-            onChange={(e) => {
-              setSelectedTitre(e.target.value);
-            }}
+            onChange={(e) => setSelectedTitre(e.target.value)}
             required
           />
 
@@ -120,52 +145,54 @@ export default function PageAddInvest() {
             ))}
           </datalist>
 
-          <select
+          <Select
             value={selectedType}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
-            onChange={(e) => {
-              setSelectedType(e.target.value);
-            }}
+            onValueChange={(value) => setSelectedType(value)}
             required
           >
-            <option disabled value="">
-              Entrez la catégorie
-            </option>
-            <option value="Action">Action</option>
-            <option value="ETF">ETF</option>
-            <option value="Crypto">Crypto</option>
-            <option value="Obligation">Obligation</option>
-            <option value="Dérivé">Dérivé</option>
-          </select>
+            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+              <SelectValue placeholder="Entrez la catégorie" />
+            </SelectTrigger>
+            <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+              <SelectItem className="rounded-xl" value="Action">
+                Action
+              </SelectItem>
+              <SelectItem className="rounded-xl" value="ETF">
+                ETF
+              </SelectItem>
+              <SelectItem className="rounded-xl" value="Crypto">
+                Crypto
+              </SelectItem>
+              <SelectItem className="rounded-xl" value="Obligation">
+                Obligation
+              </SelectItem>
+              <SelectItem className="rounded-xl" value="Dérivé">
+                Dérivé
+              </SelectItem>
+            </SelectContent>
+          </Select>
 
-          <textarea
+          <Textarea
             value={selectedDetail}
             className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             placeholder="Détails"
             maxLength={250}
-            onChange={(e) => {
-              setSelectedDetail(e.target.value);
-            }}
+            onChange={(e) => setSelectedDetail(e.target.value)}
           />
 
-          <input
+          <Input
             value={selectedMontant}
             className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             type="number"
             min="0"
             step="0.01"
             placeholder="Montant"
-            onChange={(e) => {
-              setSelectedMontant(e.target.value);
-            }}
+            onChange={(e) => setSelectedMontant(e.target.value)}
             required
           />
 
-          <Button
-            variant="outline"
-            className="rounded-xl w-1/4 bg-colorSecondaryLight dark:bg-colorPrimaryDark hover:border-blue-500"
-          >
-            Soumettre
+          <Button variant="outline" className="rounded-xl ">
+            Soumettre l'investissement
           </Button>
         </form>
       </section>

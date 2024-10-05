@@ -3,12 +3,22 @@ const path = require("path");
 const UserModel = require("../models/user.model");
 const fs = require("fs");
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 module.exports.loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await UserModel.findOne({ username });
 
-    if (user && bcrypt.compareSync(password, user.password)) {
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
       return res.status(200).json(user);
     } else {
       return res
@@ -46,12 +56,11 @@ module.exports.addUser = async (req, res) => {
       return res.status(400).json({ message: "Cet utilisateur existe déjà" });
     }
 
-    // Hash du mot de passe avant de l'enregistrer
-    // const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await UserModel.create({
       username,
-      password,
+      password: hashedPassword,
       pseudo,
       nom,
       prenom,
@@ -74,23 +83,40 @@ module.exports.editUser = async (req, res) => {
       return res.status(400).json({ message: "Cet utilisateur n'existe pas" });
     }
 
-    let imgPath = req.file ? path.join("uploads", req.file.filename) : user.img;
+    // Vérifiez que l'email est valide
+    if (req.body.username && !emailRegex.test(req.body.username)) {
+      return res.status(400).json({ message: "L'e-mail n'est pas valide" });
+    }
 
-    // Supprimer l'ancienne image si une nouvelle est uploadée
-    if (req.file && user.img) {
+    let imgPath;
+
+    if (req.body.img === "null") {
       const oldImgPath = path.join(__dirname, "..", user.img);
       if (fs.existsSync(oldImgPath)) {
-        fs.unlinkSync(oldImgPath);
+        fs.unlinkSync(oldImgPath); // Delete the old image
+      }
+      imgPath = null;
+    } else {
+      imgPath = req.file ? path.join("uploads", req.file.filename) : user.img;
+
+      if (req.file && user.img) {
+        const oldImgPath = path.join(__dirname, "..", user.img);
+        if (fs.existsSync(oldImgPath)) {
+          fs.unlinkSync(oldImgPath);
+        }
       }
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       req.params.id,
       { ...req.body, img: imgPath },
-      { new: true },
+      { new: true }
     );
 
-    return res.status(200).json(updatedUser);
+    return res.status(200).json({
+      message: "Utilisateur mis à jour avec succès", // <-- Ajoutez un message de succès ici
+      user: updatedUser,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la mise à jour de l'utilisateur",

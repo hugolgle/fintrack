@@ -1,10 +1,11 @@
 import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 function BtnSearch({ searchTerm, handleSearchChange }) {
   return (
     <div className="relative">
-      <input
-        className="rounded-[10px] px-8 h-full w-auto bg-colorSecondaryLight dark:bg-colorPrimaryDark focus:outline-none"
+      <Input
+        className="rounded-[10px] bg-colorSecondaryLight dark:bg-colorPrimaryDark pl-8"
         type="search"
         value={searchTerm}
         onChange={handleSearchChange}
