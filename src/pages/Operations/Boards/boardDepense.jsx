@@ -48,7 +48,7 @@ export default function BoardDepense() {
 
   return (
     <>
-      <section className="h-full w-full">
+      <section className="w-full">
         <div className="flex flex-col">
           <Header title="Board dépense" typeProps="depense" btnAdd />
           <div className="flex gap-4 animate-fade">

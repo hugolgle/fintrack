@@ -133,9 +133,9 @@ export default function Investment() {
   };
 
   return (
-    <>
+    <section className="w-full">
       <Header title={investment.titre} typeProps="invest" btnAdd btnReturn />
-      <section className="flex flex-col gap-4 ">
+      <div className="flex flex-col gap-4 ">
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">
             <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
@@ -203,7 +203,9 @@ export default function Investment() {
                         className="w-full h-40 px-40 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-center rounded-2xl"
                       >
                         {selectedDate ? (
-                          format(new Date(selectedDate), "PPP", { locale: fr })
+                          format(new Date(selectedDate), "PPP", {
+                            locale: fr,
+                          })
                         ) : (
                           <span>Choisir une date</span>
                         )}
@@ -393,7 +395,7 @@ export default function Investment() {
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

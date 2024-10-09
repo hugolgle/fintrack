@@ -9,6 +9,7 @@ import { getTransactions } from "./redux/actions/transaction.action";
 import { getInvestments } from "./redux/actions/investment.action";
 import { ThemeProvider } from "./context/ThemeContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 // Dispatch des actions pour obtenir les transactions et investissements
 store.dispatch(getTransactions());
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <TooltipProvider>
           <App />
+          <Toaster />
         </TooltipProvider>
       </Provider>
     </ThemeProvider>

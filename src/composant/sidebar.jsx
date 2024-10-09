@@ -49,7 +49,7 @@ function Sidebar() {
         to="/"
         className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
       >
-        <Logo navbar />
+        <Logo sidebar />
       </Link>
 
       <div className="flex flex-col justify-between gap-4">

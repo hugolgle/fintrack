@@ -12,14 +12,13 @@ import {
   getTransactionsByType,
   getTitleOfTransactionsByType,
 } from "../../../utils/operations";
-import TableauTransac from "../../../composant/Table/tableTransac";
 import { categorieSort, normalizeText } from "../../../utils/other";
 import {
   categorieDepense,
   categorieRecette,
 } from "../../../../public/categories.json";
-import MainLayout from "../../../layout/mainLayout";
 import Header from "../../../composant/header";
+import Tableau from "../../../composant/Table/tableau";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -87,7 +86,13 @@ export default function PageTransactions(props) {
       const categoryMatches = transaction.categorie
         .toLowerCase()
         .includes(term.toLowerCase());
-      return titleMatches || categoryMatches;
+      const montantMatches = transaction.montant
+        .toLowerCase()
+        .includes(term.toLowerCase());
+      const dateMatches = transaction.date
+        .toLowerCase()
+        .includes(term.toLowerCase());
+      return titleMatches || categoryMatches || montantMatches || dateMatches;
     });
     setSearchResults(filteredTransactions);
   };
@@ -175,6 +180,29 @@ export default function PageTransactions(props) {
     }
   };
 
+  const columns = [
+    {
+      id: 1,
+      name: "ID",
+    },
+    {
+      id: 2,
+      name: "Titre",
+    },
+    {
+      id: 3,
+      name: "Catégorie",
+    },
+    {
+      id: 4,
+      name: "Date",
+    },
+    {
+      id: 5,
+      name: "Montant",
+    },
+  ];
+
   return (
     <>
       <section className="w-full">
@@ -210,9 +238,11 @@ export default function PageTransactions(props) {
           btnSelect
         />
 
-        <TableauTransac
-          transactions={searchTerm ? searchResults : transactions}
+        <Tableau
+          data={searchTerm ? searchResults : transactions}
           selectOpe={selectOpe}
+          columns={columns}
+          type="transactions"
         />
 
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-zinc-900 py-3 transition-all">

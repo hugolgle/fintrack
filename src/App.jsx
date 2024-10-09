@@ -1,7 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home/home";
-import Navbar from "./composant/navbar";
 import Connexion from "./pages/Connexion/connexion";
 import Profil from "./pages/Profile/profil";
 import TableauDeBord from "./pages/Dashboard/dashboard";
@@ -76,11 +75,11 @@ function App() {
           element: <PrivateRoute element={<PageAddInvest />} />,
         },
         {
-          path: "/invest/:urlInvest",
+          path: "/invest/:status",
           element: <PrivateRoute element={<PageInvestment />} />,
         },
         {
-          path: "/invest/:urlInvest/:id",
+          path: "/invest/:status/:id",
           element: <PrivateRoute element={<Investment />} />,
         },
 

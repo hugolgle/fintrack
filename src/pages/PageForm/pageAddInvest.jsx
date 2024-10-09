@@ -93,110 +93,108 @@ export default function PageAddInvest() {
   };
 
   return (
-    <>
-      <section className="h-full">
-        <Header title="Ajouter un investissement" btnReturn />
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
-        >
-          {/* Input pour la date avec calendrier */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
-              >
-                {selectedDate ? (
-                  format(selectedDate, "PPP", { locale: fr })
-                ) : (
-                  <span>Choisir une date</span>
-                )}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
-              align="start"
+    <section className="h-full">
+      <Header title="Ajouter un investissement" btnReturn />
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+      >
+        {/* Input pour la date avec calendrier */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
             >
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                disabled={(date) => date < new Date("1900-01-01")}
-                locale={fr}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Input
-            list="title-suggestions"
-            value={selectedTitre}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
-            type="text"
-            maxLength={50}
-            placeholder="Titre"
-            onChange={(e) => setSelectedTitre(e.target.value)}
-            required
-          />
-
-          <datalist id="title-suggestions">
-            {suggestionsTitle.map((suggestion, index) => (
-              <option key={index} value={suggestion} />
-            ))}
-          </datalist>
-
-          <Select
-            value={selectedType}
-            onValueChange={(value) => setSelectedType(value)}
-            required
+              {selectedDate ? (
+                format(selectedDate, "PPP", { locale: fr })
+              ) : (
+                <span>Choisir une date</span>
+              )}
+              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
+            align="start"
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
-              <SelectValue placeholder="Entrez la catégorie" />
-            </SelectTrigger>
-            <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
-              <SelectItem className="rounded-xl" value="Action">
-                Action
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="ETF">
-                ETF
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Crypto">
-                Crypto
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Obligation">
-                Obligation
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Dérivé">
-                Dérivé
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              disabled={(date) => date < new Date("1900-01-01")}
+              locale={fr}
+            />
+          </PopoverContent>
+        </Popover>
 
-          <Textarea
-            value={selectedDetail}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
-            placeholder="Détails"
-            maxLength={250}
-            onChange={(e) => setSelectedDetail(e.target.value)}
-          />
+        <Input
+          list="title-suggestions"
+          value={selectedTitre}
+          className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+          type="text"
+          maxLength={50}
+          placeholder="Titre"
+          onChange={(e) => setSelectedTitre(e.target.value)}
+          required
+        />
 
-          <Input
-            value={selectedMontant}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Montant"
-            onChange={(e) => setSelectedMontant(e.target.value)}
-            required
-          />
+        <datalist id="title-suggestions">
+          {suggestionsTitle.map((suggestion, index) => (
+            <option key={index} value={suggestion} />
+          ))}
+        </datalist>
 
-          <Button variant="outline" className="rounded-xl ">
-            Soumettre l'investissement
-          </Button>
-        </form>
-      </section>
-    </>
+        <Select
+          value={selectedType}
+          onValueChange={(value) => setSelectedType(value)}
+          required
+        >
+          <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+            <SelectValue placeholder="Entrez la catégorie" />
+          </SelectTrigger>
+          <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+            <SelectItem className="rounded-xl" value="Action">
+              Action
+            </SelectItem>
+            <SelectItem className="rounded-xl" value="ETF">
+              ETF
+            </SelectItem>
+            <SelectItem className="rounded-xl" value="Crypto">
+              Crypto
+            </SelectItem>
+            <SelectItem className="rounded-xl" value="Obligation">
+              Obligation
+            </SelectItem>
+            <SelectItem className="rounded-xl" value="Dérivé">
+              Dérivé
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Textarea
+          value={selectedDetail}
+          className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+          placeholder="Détails"
+          maxLength={250}
+          onChange={(e) => setSelectedDetail(e.target.value)}
+        />
+
+        <Input
+          value={selectedMontant}
+          className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Montant"
+          onChange={(e) => setSelectedMontant(e.target.value)}
+          required
+        />
+
+        <Button variant="outline" className="rounded-xl ">
+          Soumettre l'investissement
+        </Button>
+      </form>
+    </section>
   );
 }

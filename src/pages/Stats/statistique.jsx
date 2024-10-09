@@ -142,7 +142,7 @@ export default function Statistique() {
 
   return (
     <section className="w-full">
-      <Header title="Statistique" />
+      <Header title="Statistiques" />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-row gap-2">
           {generateYears().map((year, index) => (

@@ -28,8 +28,8 @@ export default function Profil() {
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
   return (
-    <>
-      <section className="flex flex-col gap-4">
+    <section className="w-full">
+      <div className="flex flex-col gap-4">
         <Title title="Profil" />
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex-col w-3/4 py-12 bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl gap-6">
@@ -127,7 +127,7 @@ export default function Profil() {
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

@@ -26,7 +26,7 @@ export default function BoardRecette() {
 
   return (
     <>
-      <section className="h-full w-full">
+      <section className="w-full">
         <div className="flex flex-col">
           <Header title="Board recette" typeProps="recette" btnAdd />
           <div className="flex flex-col gap-4 w-full animate-fade">

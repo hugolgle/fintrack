@@ -144,7 +144,7 @@ export default function Transaction() {
         : undefined;
 
   return (
-    <>
+    <section className="w-full">
       <Header
         title={transaction.titre}
         typeProps={typeProps}
@@ -153,7 +153,7 @@ export default function Transaction() {
         btnReturn
       />
 
-      <section className="flex flex-row gap-4">
+      <div className="flex flex-row gap-4">
         <div className="flex flex-col w-3/4 gap-4 animate-fade">
           <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
             {selectedUpdate ? (
@@ -386,7 +386,7 @@ export default function Transaction() {
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

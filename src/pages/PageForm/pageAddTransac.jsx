@@ -73,9 +73,7 @@ export default function PageAddTransac(props) {
   const [selectedMontant, setSelectedMontant] = useState("");
 
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Utiliser useNavigate correctement
-  const [addedOperationDate, setAddedOperationDate] = useState("");
-  const [addedOperationId, setAddedOperationId] = useState("");
+  const navigate = useNavigate();
 
   const lastTransacByTitle = getLatestTransactionByTitle(
     selectedTitre,
@@ -167,7 +165,7 @@ export default function PageAddTransac(props) {
 
   return (
     <>
-      <section className="h-full">
+      <section className="w-full">
         <Header title={`Ajouter une ${props.type.toLowerCase()}`} btnReturn />
         <form
           onSubmit={handleSubmit}

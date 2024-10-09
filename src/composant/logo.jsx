@@ -1,7 +1,7 @@
 import React from "react";
 
-function Logo({ navbar }) {
-  return navbar ? (
+function Logo({ sidebar }) {
+  return sidebar ? (
     <div className="flex justify-center font-logo items-center tracking-tight">
       <p className="p-2 bg-transparent dark:bg-white cursor-pointer text-zinc-900 dark:text-zinc-900 group-hover:bg-colorPrimaryDark text-nowrap group-hover:dark:bg-transparent group-hover:text-white group-hover:dark:text-white transition-all">
         D

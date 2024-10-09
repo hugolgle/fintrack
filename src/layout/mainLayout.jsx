@@ -1,7 +1,6 @@
 import React from "react";
-import Sidebar from "../composant/navbar";
+import Sidebar from "../composant/sidebar";
 import { Outlet } from "react-router-dom";
-import { Toaster } from "sonner";
 
 function MainLayout() {
   return (
@@ -14,7 +13,6 @@ function MainLayout() {
       <div className="ml-auto w-[94%] h-full p-4">
         <Outlet />
       </div>
-      <Toaster />
     </section>
   );
 }
