@@ -19,6 +19,7 @@ import {
   categorieRecette,
 } from "../../../../public/categories.json";
 import MainLayout from "../../../layout/mainLayout";
+import Header from "../../../composant/header";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -177,7 +178,7 @@ export default function PageTransactions(props) {
   return (
     <>
       <section className="w-full">
-        <MainLayout
+        <Header
           title={`${
             date === "all"
               ? `Toutes les ${props.type.toLowerCase()}s`

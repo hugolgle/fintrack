@@ -43,6 +43,7 @@ import { fr } from "date-fns/locale";
 import MainLayout from "../../layout/mainLayout";
 import { useNavigate } from "react-router-dom"; // Corriger l'import de useNavigate
 import { Button } from "@/components/ui/button";
+import Header from "../../composant/header";
 
 // Schéma de validation pour la date
 const FormSchema = z.object({
@@ -167,10 +168,7 @@ export default function PageAddTransac(props) {
   return (
     <>
       <section className="h-full">
-        <MainLayout
-          title={`Ajouter une ${props.type.toLowerCase()}`}
-          btnReturn
-        />
+        <Header title={`Ajouter une ${props.type.toLowerCase()}`} btnReturn />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"

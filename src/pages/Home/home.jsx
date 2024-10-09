@@ -16,14 +16,14 @@ export default function Home() {
       {isAuthenticated ? (
         <Link
           to="/tdb"
-          className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all"
+          className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all duration-500 hover:dark:bg-cyan-500"
         >
           C'est parti !
         </Link>
       ) : (
         <Link
           to="/connexion"
-          className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all hover:scale-125"
+          className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all duration-500 hover:dark:bg-lime-500"
         >
           Connectez-vous !
         </Link>

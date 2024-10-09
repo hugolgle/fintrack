@@ -22,6 +22,7 @@ import {
 } from "../../../utils/other";
 import MainLayout from "../../../layout/mainLayout";
 import { Separator } from "@/components/ui/separator";
+import Header from "../../../composant/header";
 
 export default function BoardDepense() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
@@ -49,7 +50,7 @@ export default function BoardDepense() {
     <>
       <section className="h-full w-full">
         <div className="flex flex-col">
-          <MainLayout title="Board dépense" typeProps="depense" btnAdd />
+          <Header title="Board dépense" typeProps="depense" btnAdd />
           <div className="flex gap-4 animate-fade">
             <div className="flex flex-col gap-4 w-full">
               <div className="flex flex-row w-full h-64 gap-4">

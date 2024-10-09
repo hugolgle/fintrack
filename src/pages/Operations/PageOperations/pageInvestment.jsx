@@ -9,6 +9,7 @@ import {
 } from "../../../utils/calcul";
 import { useParams } from "react-router-dom";
 import MainLayout from "../../../layout/mainLayout";
+import Header from "../../../composant/header";
 
 export default function PageInvestment() {
   const { urlInvest } = useParams();
@@ -47,7 +48,7 @@ export default function PageInvestment() {
   return (
     <>
       <section className="w-full relative">
-        <MainLayout
+        <Header
           title={`Investissements
           ${
             urlInvest === "sold"

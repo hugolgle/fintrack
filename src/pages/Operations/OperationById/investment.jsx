@@ -36,6 +36,7 @@ import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DialogDelete } from "../../../composant/dialogDelete";
+import Header from "../../../composant/header";
 
 export default function Investment() {
   const { id } = useParams();
@@ -133,12 +134,7 @@ export default function Investment() {
 
   return (
     <>
-      <MainLayout
-        title={investment.titre}
-        typeProps="invest"
-        btnAdd
-        btnReturn
-      />
+      <Header title={investment.titre} typeProps="invest" btnAdd btnReturn />
       <section className="flex flex-col gap-4 ">
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">

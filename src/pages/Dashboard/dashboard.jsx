@@ -18,7 +18,7 @@ import { getLastSixMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
 import Title from "../../composant/Text/title";
 import { Link } from "react-router-dom";
-import MainLayout from "../../layout/mainLayout";
+import Header from "../../composant/header";
 
 export default function TableauDeBord() {
   const getCurrentMonthAndYear = () => {
@@ -214,7 +214,7 @@ export default function TableauDeBord() {
   return (
     <>
       <section className="w-full">
-        <MainLayout title="Tableau de bord" />
+        <Header title="Tableau de bord" />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
             <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">

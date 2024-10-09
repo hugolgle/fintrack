@@ -15,6 +15,7 @@ import {
   premierJourMoisEnCours,
 } from "../../../utils/other";
 import MainLayout from "../../../layout/mainLayout";
+import Header from "../../../composant/header";
 
 export default function BoardRecette() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
@@ -27,7 +28,7 @@ export default function BoardRecette() {
     <>
       <section className="h-full w-full">
         <div className="flex flex-col">
-          <MainLayout title="Board recette" typeProps="recette" btnAdd />
+          <Header title="Board recette" typeProps="recette" btnAdd />
           <div className="flex flex-col gap-4 w-full animate-fade">
             <div className="flex flex-row w-full h-64 gap-4">
               <Link

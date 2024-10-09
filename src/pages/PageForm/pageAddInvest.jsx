@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import MainLayout from "../../layout/mainLayout";
+import Header from "../../composant/header";
 
 export default function PageAddInvest() {
   const userInfo = infoUser();
@@ -94,7 +95,7 @@ export default function PageAddInvest() {
   return (
     <>
       <section className="h-full">
-        <MainLayout title="Ajouter un investissement" btnReturn />
+        <Header title="Ajouter un investissement" btnReturn />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"

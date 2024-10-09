@@ -48,6 +48,7 @@ import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DialogDelete } from "../../../composant/dialogDelete";
+import Header from "../../../composant/header";
 
 export default function Transaction() {
   const categorieD = categorieSort(categorieDepense);
@@ -144,7 +145,7 @@ export default function Transaction() {
 
   return (
     <>
-      <MainLayout
+      <Header
         title={transaction.titre}
         typeProps={typeProps}
         categories={transaction.type === "Dépense" ? categorieD : categorieR}

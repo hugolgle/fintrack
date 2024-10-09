@@ -23,6 +23,7 @@ import {
 import Title from "../../composant/Text/title";
 import { Button } from "@/components/ui/button";
 import MainLayout from "../../layout/mainLayout";
+import Header from "../../composant/header";
 
 export default function Statistique() {
   const getCurrentMonthAndYear = () => {
@@ -141,7 +142,7 @@ export default function Statistique() {
 
   return (
     <section className="w-full">
-      <MainLayout title="Statistique" />
+      <Header title="Statistique" />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-row gap-2">
           {generateYears().map((year, index) => (

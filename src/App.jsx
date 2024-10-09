@@ -18,16 +18,14 @@ import PrivateRoute from "./composant/privateRoute";
 import BoardRecette from "./pages/Operations/Boards/boardRecette";
 import BoardDepense from "./pages/Operations/Boards/boardDepense";
 import "../styles/globals.css";
+import MainLayout from "./layout/mainLayout";
+import PageError from "./pages/404/pageError";
 
 function App() {
   const router = createBrowserRouter([
     {
-      element: <Navbar />,
-      errorElement: (
-        <Navbar>
-          <h1>Page introuvable !</h1>
-        </Navbar>
-      ),
+      element: <MainLayout />,
+      errorElement: <PageError />,
       children: [
         { path: "/", element: <Home /> },
 
