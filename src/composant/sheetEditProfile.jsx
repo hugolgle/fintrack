@@ -45,6 +45,9 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
 
   const modifiedUserData = [prenom, nom, username, pseudo, selectedFile];
 
+  console.log(baseUserData);
+  console.log(modifiedUserData);
+
   const isSaveDisabled = baseUserData.every(
     (value, index) => value === modifiedUserData[index]
   );
@@ -233,22 +236,27 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
             </div>
           </SheetFooter>
         </form>
-        <div className="relative mx-auto w-fit">
+        <div className="relative rounded-full group mx-auto mt-16 w-fit">
           {dataProfil?.img && !hiddenImg && (
             <Trash2
-              className="absolute top-1 right-1 z-50 text-red-600 cursor-pointer transition-all hover:scale-110"
+              size={50}
+              strokeWidth={1}
+              className="absolute top-1/2 left-1/2 text-white opacity-0 group-hover:opacity-100 z-50 cursor-pointer transition-all hover:scale-110 transform -translate-x-1/2 -translate-y-1/2"
               onClick={handleImageDelete} // Bind click event to delete handler
             />
           )}
           {preview ? (
-            <Avatar className="w-32 h-32">
-              <AvatarImage className="object-cover" src={preview} />
+            <Avatar className="w-48 h-48">
+              <AvatarImage
+                className="object-cover transition-all duration-300 group-hover:brightness-50" // Ajout du filtre de luminosité
+                src={preview}
+              />
             </Avatar>
           ) : (
             !hiddenImg && (
-              <Avatar className="w-32 h-32">
+              <Avatar className="w-48 h-48">
                 <AvatarImage
-                  className="object-cover"
+                  className="object-cover transition-all duration-300 group-hover:brightness-75" // Ajout du filtre de luminosité
                   src={`http://localhost:5001/${dataProfil?.img}`}
                 />
               </Avatar>
