@@ -20,7 +20,7 @@ import {
 import { toast } from "sonner";
 import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
-import { versionApp } from "../utils/other";
+import { ROUTES } from "./routes";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function Sidebar() {
 
   const logout = () => {
     dispatch(logoutUser());
-    navigate("/");
+    navigate(ROUTES.HOME);
     toast.success("Vous vous êtes déconnecté !");
   };
 
@@ -47,31 +47,31 @@ function Sidebar() {
     {
       id: 1,
       name: "Tableau de bord",
-      link: "/tdb",
+      link: ROUTES.DASHBOARD,
       icon: <LayoutDashboard />,
     },
     {
       id: 2,
       name: "Board dépense",
-      link: "/depense",
+      link: ROUTES.EXPENSE,
       icon: <WalletCards />,
     },
     {
       id: 3,
       name: "Board recette",
-      link: "/recette",
+      link: ROUTES.REVENUE,
       icon: <Euro />,
     },
     {
       id: 4,
       name: "Board investissement",
-      link: "/invest",
+      link: ROUTES.INVESTMENT,
       icon: <HandCoins />,
     },
     {
       id: 5,
       name: "Statistiques",
-      link: "/stat",
+      link: ROUTES.STATISTICS,
       icon: <BarChart />,
     },
   ];
@@ -79,7 +79,7 @@ function Sidebar() {
   return (
     <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
       <Link
-        to="/"
+        to={ROUTES.HOME}
         className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
       >
         <Logo sidebar />
@@ -125,10 +125,10 @@ function Sidebar() {
           />
         ) : (
           <Link
-            to="/connexion"
+            to={ROUTES.LOGIN}
             className={`my-1 p-3 rounded-full  hover:bg-opacity-50 hover:dark:bg-opacity-50  transition-all ${
-              activeLink.startsWith("/connexion") ||
-              (activeLink.startsWith("/inscription") &&
+              activeLink.startsWith(ROUTES.LOGIN) ||
+              (activeLink.startsWith(ROUTES.SIGNUP) &&
                 "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white")
             }`}
           >

@@ -12,11 +12,11 @@ const transactionSchema = new Schema(
       type: String,
       required: true,
     },
-    categorie: {
+    category: {
       type: String,
       required: true,
     },
-    titre: {
+    title: {
       type: String,
       required: true,
     },
@@ -28,7 +28,7 @@ const transactionSchema = new Schema(
       type: String,
       required: false,
     },
-    montant: {
+    amount: {
       type: String,
       required: true,
     },

@@ -106,7 +106,7 @@ export function premierJourMoisEnCours() {
   return dateFormatee;
 }
 
-export function categorieSort(categories) {
+export function categorySort(categories) {
   if (!Array.isArray(categories)) {
     throw new Error("Input must be an array");
   }
@@ -126,4 +126,20 @@ export function normalizeText(text) {
     .normalize("NFD") // Décompose les accents en caractères de base
     .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
     .toLowerCase(); // Convertit en minuscule
+}
+
+export function nameType(typeBdd) {
+  let name = "";
+  switch (typeBdd) {
+    case "Expense":
+      name = "Dépense";
+      break;
+    case "Revenue":
+      name = "Recette";
+      break;
+    default:
+      name = "";
+  }
+
+  return name;
 }

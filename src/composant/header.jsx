@@ -36,7 +36,7 @@ function Header({
   clearFilters,
   handleCheckboxChange,
   selectedTitles,
-  selectedCategories,
+  selectedCategorys,
   btnReturn,
   btnAdd,
   btnFilter,
@@ -77,7 +77,7 @@ function Header({
                     clearFilters={clearFilters}
                     handleCheckboxChange={handleCheckboxChange}
                     selectedTitles={selectedTitles}
-                    selectedCategories={selectedCategories}
+                    selectedCategorys={selectedCategorys}
                   />
                 </PopoverContent>
               </Popover>
@@ -94,17 +94,15 @@ function Header({
                 searchTerm={searchTerm}
                 handleSearchChange={handleSearchChange}
               />
-              {typeProps === "invest" ||
+              {typeProps === "investment" ||
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
                     <ChevronLeft
-                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
-                      size={37.5}
+                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark cursor-pointer transition-all"
                       onClick={clickLastMonth}
                     />
                     <ChevronRight
-                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
-                      size={37.5}
+                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark cursor-pointer transition-all"
                       onClick={clickNextMonth}
                     />
                   </div>

@@ -8,7 +8,7 @@ function PopoverFilter({
   clearFilters,
   handleCheckboxChange,
   selectedTitles,
-  selectedCategories,
+  selectedCategorys,
 }) {
   return (
     <>
@@ -22,13 +22,13 @@ function PopoverFilter({
               <div key={index} className="flex gap-2">
                 <Checkbox
                   id={name}
-                  name="categorie"
+                  name="category"
                   value={name}
-                  checked={selectedCategories.includes(name)}
+                  checked={selectedCategorys.includes(name)}
                   onCheckedChange={(checked) =>
                     handleCheckboxChange(
                       { target: { value: name, checked } },
-                      "categorie"
+                      "category"
                     )
                   }
                   className="cursor-pointer"

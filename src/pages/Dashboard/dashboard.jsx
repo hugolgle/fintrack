@@ -13,7 +13,7 @@ import { CamembertTdb } from "../../composant/Charts/camembertTdb";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
-import { categorieDepense } from "../../../public/categories.json";
+import { categoryDepense } from "../../../public/categories.json";
 import { getLastSixMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
 import Title from "../../composant/Text/title";
@@ -33,14 +33,14 @@ export default function TableauDeBord() {
   const newCurrentMonth = String(currentMonth).padStart(2, "0");
   const currentDate = `${currentYear}${newCurrentMonth}`;
 
-  const montantRecettesMonth = calculTotalByMonth(
-    "Recette",
+  const amountRevenuesMonth = calculTotalByMonth(
+    "Revenue",
     currentDate,
     null,
     null
   );
-  const montantDepensesMonth = calculTotalByMonth(
-    "Dépense",
+  const amountExpensesMonth = calculTotalByMonth(
+    "Expense",
     currentDate,
     null,
     null
@@ -66,14 +66,14 @@ export default function TableauDeBord() {
   const newPreviousMonth = String(previousMonth).padStart(2, "0");
   const previousDate = `${previousYear}${newPreviousMonth}`;
 
-  const montantRecettesLastMonth = calculTotalByMonth(
-    "Recette",
+  const amountRevenuesLastMonth = calculTotalByMonth(
+    "Revenue",
     previousDate,
     null,
     null
   );
-  const montantDepensesLastMonth = calculTotalByMonth(
-    "Dépense",
+  const amountExpensesLastMonth = calculTotalByMonth(
+    "Expense",
     previousDate,
     null,
     null
@@ -129,27 +129,27 @@ export default function TableauDeBord() {
     setMonth(newDate);
   };
 
-  const categoriesDf = categorieDepense.map((categorie) => {
-    if (categorie.categorie === "Fixe") {
-      return categorie.name;
+  const categoriesDf = categoryDepense.map((category) => {
+    if (category.category === "Fixe") {
+      return category.name;
     }
   });
 
-  const categoriesLoisir = categorieDepense.map((categorie) => {
-    if (categorie.categorie === "Loisir") {
-      return categorie.name;
+  const categoriesLoisir = categoryDepense.map((category) => {
+    if (category.category === "Loisir") {
+      return category.name;
     }
   });
 
-  const dataDf = calculTotalByMonth("Dépense", month, categoriesDf, null);
+  const dataDf = calculTotalByMonth("Expense", month, categoriesDf, null);
   const dataLoisir = calculTotalByMonth(
-    "Dépense",
+    "Expense",
     month,
     categoriesLoisir,
     null
   );
 
-  const total = calculTotalByMonth("Recette", month, null, null);
+  const total = calculTotalByMonth("Revenue", month, null, null);
 
   const montantInvest = calculInvestByMonth(month);
 
@@ -184,17 +184,17 @@ export default function TableauDeBord() {
   // Obtenir les 6 derniers mois et leurs montants
   const lastSixMonths = getLastSixMonths(graphMonth);
 
-  const montantDepenseByMonth = [];
-  const montantRecetteByMonth = [];
+  const amountExpenseByMonth = [];
+  const amountRevenueByMonth = [];
   const montantInvestByMonth = [];
 
   lastSixMonths.forEach(({ code }) => {
-    const montantDepenses = calculTotalByMonth("Dépense", code, null, null);
-    const montantRecettes = calculTotalByMonth("Recette", code, null, null);
+    const amountExpenses = calculTotalByMonth("Expense", code, null, null);
+    const amountRevenues = calculTotalByMonth("Revenue", code, null, null);
     const montantInvests = calculInvestByMonth(code);
 
-    montantDepenseByMonth.push(formatData(montantDepenses));
-    montantRecetteByMonth.push(formatData(montantRecettes));
+    amountExpenseByMonth.push(formatData(amountExpenses));
+    amountRevenueByMonth.push(formatData(amountRevenues));
     montantInvestByMonth.push(formatData(montantInvests));
   });
 
@@ -202,8 +202,8 @@ export default function TableauDeBord() {
   const dataGraph = lastSixMonths.map((monthData, index) => ({
     month: monthData.month,
     year: monthData.year,
-    montantDepense: montantDepenseByMonth[index],
-    montantRecette: montantRecetteByMonth[index],
+    amountExpense: amountExpenseByMonth[index],
+    amountRevenue: amountRevenueByMonth[index],
     montantInvest: montantInvestByMonth[index],
   }));
 
@@ -226,15 +226,15 @@ export default function TableauDeBord() {
                   {lastTransactions.map((transaction) => (
                     <tr
                       key={transaction._id}
-                      className={`bg-opacity-15 rounded h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Recette" ? "bg-green-600" : transaction.type === "Dépense" ? "bg-red-600" : ""}`}
+                      className={`bg-opacity-15 rounded h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
                     >
                       <td className="w-full">
                         {convertirFormatDate(transaction.date)}
                       </td>
-                      <td className="w-full truncate">{transaction.titre}</td>
-                      <td className="w-full">{transaction.categorie}</td>
+                      <td className="w-full truncate">{transaction.title}</td>
+                      <td className="w-full">{transaction.category}</td>
                       <td className="w-full">
-                        <b>{addSpace(transaction.montant)} €</b>
+                        <b>{addSpace(transaction.amount)} €</b>
                       </td>
                     </tr>
                   ))}
@@ -244,8 +244,8 @@ export default function TableauDeBord() {
             <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
               <BoxTdb
                 title="Mois actuel"
-                montantDepense={montantDepensesMonth}
-                montantRecette={montantRecettesMonth}
+                amountExpense={amountExpensesMonth}
+                amountRevenue={amountRevenuesMonth}
                 montantEconomie={economiesCurrentMonth}
                 montantInvest={InvestCurrentMonth}
               />
@@ -253,8 +253,8 @@ export default function TableauDeBord() {
             <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
               <BoxTdb
                 title="Mois dernier"
-                montantDepense={montantDepensesLastMonth}
-                montantRecette={montantRecettesLastMonth}
+                amountExpense={amountExpensesLastMonth}
+                amountRevenue={amountRevenuesLastMonth}
                 montantEconomie={economieLastMonth}
                 montantInvest={investLastMonth}
               />

@@ -39,20 +39,20 @@ export default function PageAddInvest() {
   const userInfo = infoUser();
   const getInvest = getAllInvestments(null);
   const suggestionsTitle = Array.from(
-    new Set(getInvest.map((investment) => investment.titre))
+    new Set(getInvest.map((investment) => investment.title))
   );
 
   const [selectedDate, setSelectedDate] = useState(new Date()); // Utilisation de la date actuelle par défaut
   const [selectedType, setSelectedType] = useState("");
-  const [selectedTitre, setSelectedTitre] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedTitre) {
+    if (selectedTitle) {
       const lastInvestment = getInvest
-        .filter((investment) => investment.titre === selectedTitre)
+        .filter((investment) => investment.title === selectedTitle)
         .sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
@@ -61,12 +61,12 @@ export default function PageAddInvest() {
         setSelectedType(lastInvestment.type || "");
       }
     }
-  }, [selectedTitre, getInvest]);
+  }, [selectedTitle, getInvest]);
 
   const resetForm = () => {
     setSelectedDetail("");
     setSelectedType("");
-    setSelectedTitre("");
+    setSelectedTitle("");
     setSelectedMontant("");
   };
 
@@ -76,10 +76,10 @@ export default function PageAddInvest() {
     const postData = {
       user: userInfo.id,
       type: selectedType,
-      titre: selectedTitre,
+      title: selectedTitle,
       detail: selectedDetail,
       date: selectedDate.toISOString().split("T")[0], // Envoi de la date au format ISO
-      montant: separateMillier(selectedMontant),
+      amount: separateMillier(selectedMontant),
     };
 
     try {
@@ -130,12 +130,12 @@ export default function PageAddInvest() {
 
         <Input
           list="title-suggestions"
-          value={selectedTitre}
+          value={selectedTitle}
           className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
           type="text"
           maxLength={50}
           placeholder="Titre"
-          onChange={(e) => setSelectedTitre(e.target.value)}
+          onChange={(e) => setSelectedTitle(e.target.value)}
           required
         />
 

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useLocation } from "react-router-dom";
 import { months } from "../utils/fonctionnel";
+import { ROUTES } from "./routes";
 
 export function BreadcrumbDemo() {
   const location = useLocation();
@@ -15,32 +16,32 @@ export function BreadcrumbDemo() {
   const pathParts = location.pathname.split("/").filter(Boolean);
 
   const pathMap = {
-    "/": "Home",
-    "/depense": "Board Dépense",
-    "/depense/add": "Ajouter",
-    "/depense/:date": "Transactions Dépenses",
-    "/depense/:date/:id": "Dépense Détails",
-    "/recette": "Board Recette",
-    "/recette/add": "Ajouter",
-    "/recette/:date": "Transactions Recettes",
-    "/recette/:date/:id": "Recette Détails",
-    "/invest": "Investissements",
-    "/invest/add": "Ajouter",
-    "/invest/:urlInvest": "Détails Investissement",
-    "/invest/:urlInvest/:id": "Investissement Détails",
-    "/tdb": "Tableau de Bord",
-    "/stat": "Statistiques",
-    "/profil": "Profil",
-    "/connexion": "Connexion",
-    "/inscription": "Inscription",
-    "/session-timed-out": "Session expirée",
+    [ROUTES.HOME]: "Home",
+    [ROUTES.EXPENSE]: "Board Dépense",
+    [ROUTES.ADD_EXPENSE]: "Ajouter",
+    [ROUTES.EXPENSE_BY_DATE]: "Transactions Dépenses",
+    [ROUTES.EXPENSE_BY_ID]: "Dépense Détails",
+    [ROUTES.REVENUE]: "Board Recette",
+    [ROUTES.ADD_REVENUE]: "Ajouter",
+    [ROUTES.REVENUE_BY_DATE]: "Transactions Recettes",
+    [ROUTES.REVENUE_BY_ID]: "Recette Détails",
+    [ROUTES.INVESTMENT]: "Investissements",
+    [ROUTES.ADD_INVEST]: "Ajouter",
+    [ROUTES.INVESTMENT_BY_STATUS]: "Détails Investissement",
+    [ROUTES.INVESTMENT_BY_ID]: "Investissement Détails",
+    [ROUTES.DASHBOARD]: "Tableau de Bord",
+    [ROUTES.STATISTICS]: "Statistiques",
+    [ROUTES.PROFILE]: "Profil",
+    [ROUTES.LOGIN]: "Connexion",
+    [ROUTES.SIGNUP]: "Inscription",
+    [ROUTES.SESSION_TIMED_OUT]: "Session expirée",
   };
 
   return (
     <Breadcrumb>
       <BreadcrumbList className="text-xs">
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Accueil</BreadcrumbLink>
+          <BreadcrumbLink href={ROUTES.HOME}>Accueil</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
 

@@ -112,7 +112,7 @@ export function GraphiqueTdb({ data }) {
   // Trouver la valeur maximale parmi les données pour ajuster l'axe Y
   const maxValue = Math.max(
     ...data.map((item) =>
-      Math.max(item.montantDepense, item.montantRecette, item.montantInvest)
+      Math.max(item.amountExpense, item.amountRevenue, item.montantInvest)
     )
   );
   const yAxisDomain = [0, maxValue * 1.1]; // Ajuste le domaine pour éviter le débordement
@@ -123,11 +123,11 @@ export function GraphiqueTdb({ data }) {
 
   // Configuration des courbes
   const chartConfig = {
-    montantRecette: {
+    amountRevenue: {
       label: "Recette",
       color: "hsl(var(--graph-recette))",
     },
-    montantDepense: {
+    amountExpense: {
       label: "Dépense",
       color: "hsl(var(--graph-depense))",
     },
@@ -172,17 +172,17 @@ export function GraphiqueTdb({ data }) {
           <Tooltip content={<CustomTooltip />} />
 
           <Line
-            dataKey="montantRecette"
+            dataKey="amountRevenue"
             type="natural"
-            stroke={chartConfig.montantRecette.color} // Utiliser la couleur de chartConfig
+            stroke={chartConfig.amountRevenue.color} // Utiliser la couleur de chartConfig
             strokeWidth={1.5}
-            dot={{ fill: chartConfig.montantRecette.color }}
+            dot={{ fill: chartConfig.amountRevenue.color }}
             activeDot={{ r: 6 }}
           >
             <LabelList
               fontWeight={100}
               position="top"
-              stroke={chartConfig.montantRecette.color}
+              stroke={chartConfig.amountRevenue.color}
               offset={10}
               fontSize={12}
               formatter={(value) => `${addSpace(value)} €`} // Ajouter € derrière les valeurs
@@ -190,16 +190,16 @@ export function GraphiqueTdb({ data }) {
           </Line>
 
           <Line
-            dataKey="montantDepense"
+            dataKey="amountExpense"
             type="natural"
-            stroke={chartConfig.montantDepense.color} // Utiliser la couleur de chartConfig
+            stroke={chartConfig.amountExpense.color} // Utiliser la couleur de chartConfig
             strokeWidth={1.5}
-            dot={{ fill: chartConfig.montantDepense.color }}
+            dot={{ fill: chartConfig.amountExpense.color }}
             activeDot={{ r: 6 }}
           >
             <LabelList
               fontWeight={100}
-              stroke={chartConfig.montantDepense.color}
+              stroke={chartConfig.amountExpense.color}
               position="top"
               offset={10}
               fontSize={12}

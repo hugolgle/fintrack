@@ -23,8 +23,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  categorieRecette,
-  categorieDepense,
+  categoryRecette,
+  categoryDepense,
 } from "../../../public/categories.json";
 import { formatMontant } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
@@ -34,7 +34,7 @@ import {
   getTransactions,
 } from "../../redux/actions/transaction.action";
 import { infoUser } from "../../utils/users";
-import { categorieSort, normalizeText } from "../../utils/other";
+import { categorySort, nameType, normalizeText } from "../../utils/other";
 import {
   getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
@@ -55,8 +55,8 @@ const FormSchema = z.object({
 export default function PageAddTransac(props) {
   const userInfo = infoUser();
 
-  const categorieD = categorieSort(categorieDepense);
-  const categorieR = categorieSort(categorieRecette);
+  const categoryD = categorySort(categoryDepense);
+  const categoryR = categorySort(categoryRecette);
 
   const suggestions = getTitleOfTransactionsByType(props.type);
 
@@ -67,8 +67,8 @@ export default function PageAddTransac(props) {
     },
   });
 
-  const [selectedTitre, setSelectedTitre] = useState("");
-  const [selectedCategorie, setSelectedCategorie] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
 
@@ -76,27 +76,27 @@ export default function PageAddTransac(props) {
   const navigate = useNavigate();
 
   const lastTransacByTitle = getLatestTransactionByTitle(
-    selectedTitre,
+    selectedTitle,
     props.type
   );
 
   useEffect(() => {
-    if (selectedTitre && lastTransacByTitle) {
-      setSelectedCategorie(lastTransacByTitle.categorie || "");
+    if (selectedTitle && lastTransacByTitle) {
+      setSelectedCategory(lastTransacByTitle.category || "");
       setSelectedDetail(lastTransacByTitle.detail || "");
       setSelectedMontant(
-        Math.abs(parseFloat(lastTransacByTitle.montant)).toFixed(2) || ""
+        Math.abs(parseFloat(lastTransacByTitle.amount)).toFixed(2) || ""
       );
     } else {
-      setSelectedCategorie("");
+      setSelectedCategory("");
       setSelectedDetail("");
       setSelectedMontant("");
     }
-  }, [selectedTitre, lastTransacByTitle]);
+  }, [selectedTitle, lastTransacByTitle]);
 
   const resetForm = () => {
-    setSelectedTitre("");
-    setSelectedCategorie("");
+    setSelectedTitle("");
+    setSelectedCategory("");
     setSelectedDetail("");
     setSelectedMontant("");
     form.reset();
@@ -106,8 +106,8 @@ export default function PageAddTransac(props) {
     setSelectedDetail(event.target.value);
   };
 
-  const handleTitre = (event) => {
-    setSelectedTitre(event.target.value);
+  const handleTitle = (event) => {
+    setSelectedTitle(event.target.value);
   };
 
   const handleMontant = (event) => {
@@ -126,11 +126,11 @@ export default function PageAddTransac(props) {
     const postData = {
       user: userInfo.id,
       type: props.type,
-      categorie: selectedCategorie,
-      titre: selectedTitre,
+      category: selectedCategory,
+      title: selectedTitle,
       date: form.getValues("date").toISOString().split("T")[0],
       detail: selectedDetail,
-      montant: formatMontant(selectedMontant, props.type),
+      amount: formatMontant(selectedMontant, props.type),
     };
 
     try {
@@ -149,15 +149,18 @@ export default function PageAddTransac(props) {
       );
       const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
 
-      toast.success(`Votre ${props.type.toLowerCase()} a été ajouté ! `, {
-        action: {
-          label: "Voir",
-          onClick: () =>
-            navigate(
-              `/${normalizeText(props.type)}/${formattedDate}/${newOperationId}`
-            ),
-        },
-      });
+      toast.success(
+        `Votre ${nameType(props.type).toLowerCase()} a été ajouté ! `,
+        {
+          action: {
+            label: "Voir",
+            onClick: () =>
+              navigate(
+                `/${normalizeText(props.type)}/${formattedDate}/${newOperationId}`
+              ),
+          },
+        }
+      );
     } catch (error) {
       toast.error("Erreur lors de l'ajout de la transaction.");
     }
@@ -166,7 +169,7 @@ export default function PageAddTransac(props) {
   return (
     <>
       <section className="w-full">
-        <Header title={`Ajouter une ${props.type.toLowerCase()}`} btnReturn />
+        <Header title={`Ajouter une ${props.title}`} btnReturn />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
@@ -178,9 +181,9 @@ export default function PageAddTransac(props) {
             name="title"
             maxLength={50}
             placeholder="Titre"
-            value={selectedTitre}
+            value={selectedTitle}
             onChange={(e) => {
-              handleTitre(e);
+              handleTitle(e);
             }}
             required
           />
@@ -191,9 +194,9 @@ export default function PageAddTransac(props) {
           </datalist>
 
           <Select
-            value={selectedCategorie}
+            value={selectedCategory}
             onValueChange={(value) => {
-              setSelectedCategorie(value);
+              setSelectedCategory(value);
             }}
             required
           >
@@ -201,14 +204,14 @@ export default function PageAddTransac(props) {
               <SelectValue placeholder="Entrez la catégorie" />
             </SelectTrigger>
             <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
-              {props.type === "Dépense" &&
-                categorieD.map(({ name }) => (
+              {props.type === "Expense" &&
+                categoryD.map(({ name }) => (
                   <SelectItem key={name} value={name} className="rounded-xl">
                     {name}
                   </SelectItem>
                 ))}
-              {props.type === "Recette" &&
-                categorieR.map(({ name }) => (
+              {props.type === "Revenue" &&
+                categoryR.map(({ name }) => (
                   <SelectItem key={name} value={name} className="rounded-xl">
                     {name}
                   </SelectItem>

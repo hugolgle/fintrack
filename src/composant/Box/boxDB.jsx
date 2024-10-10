@@ -9,11 +9,11 @@ function BoxTdb(props) {
         <div className="flex flex-row gap-4 h-1/2">
           <div className="flex flex-col w-full h-full bg-green-600 py-3 rounded bg-opacity-15 items-center justify-evenly">
             <p className="font-thin">Recettes</p>
-            <p className="font-thin italic text-xl">{props.montantRecette}</p>
+            <p className="font-thin italic text-xl">{props.amountRevenue}</p>
           </div>
           <div className="flex flex-col w-full h-full bg-red-600 py-3 rounded bg-opacity-15 items-center justify-evenly">
             <p className="font-thin">Dépenses</p>
-            <p className="font-thin italic text-xl">{props.montantDepense}</p>
+            <p className="font-thin italic text-xl">{props.amountExpense}</p>
           </div>
         </div>
         <div className="flex flex-row gap-4 h-1/2">

@@ -31,8 +31,8 @@ import {
 } from "@/components/ui/select";
 
 import {
-  categorieRecette,
-  categorieDepense,
+  categoryRecette,
+  categoryDepense,
 } from "../../../../public/categories.json";
 import { Input } from "@/components/ui/input";
 
@@ -43,7 +43,7 @@ import {
 } from "../../../redux/actions/transaction.action";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { categorieSort } from "../../../utils/other";
+import { categorySort } from "../../../utils/other";
 import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -51,8 +51,8 @@ import { DialogDelete } from "../../../composant/dialogDelete";
 import Header from "../../../composant/header";
 
 export default function Transaction() {
-  const categorieD = categorieSort(categorieDepense);
-  const categorieR = categorieSort(categorieRecette);
+  const categoryD = categorySort(categoryDepense);
+  const categoryR = categorySort(categoryRecette);
 
   const { id } = useParams();
   const transaction = getTransactionById(id);
@@ -65,28 +65,28 @@ export default function Transaction() {
 
   const [update, setUpdate] = useState(false);
 
-  const [selectedTitre, setSelectedTitre] = useState(transaction.titre);
+  const [selectedTitle, setSelectedTitle] = useState(transaction.title);
 
-  const [selectedCategorie, setSelectedCategorie] = useState(
-    transaction.categorie
+  const [selectedCategory, setSelectedCategory] = useState(
+    transaction.category
   );
 
   const [selectedDate, setSelectedDate] = useState(transaction.date);
 
   const [selectedDetail, setSelectedDetail] = useState(transaction.detail);
 
-  const [selectedMontant, setSelectedMontant] = useState(transaction.montant);
+  const [selectedMontant, setSelectedMontant] = useState(transaction.amount);
 
   const resetForm = () => {
-    setSelectedTitre(transaction.titre);
+    setSelectedTitle(transaction.title);
     setSelectedDetail(transaction.detail);
-    setSelectedMontant(transaction.montant);
-    setSelectedCategorie(transaction.categorie);
+    setSelectedMontant(transaction.amount);
+    setSelectedCategory(transaction.category);
     setSelectedDate(transaction.date);
   };
 
-  const handleTitre = (event) => {
-    setSelectedTitre(event.target.value);
+  const handleTitle = (event) => {
+    setSelectedTitle(event.target.value);
   };
 
   const handleDetail = (event) => {
@@ -124,11 +124,11 @@ export default function Transaction() {
     const editData = {
       id: transaction._id,
       type: transaction.type,
-      titre: selectedTitre,
-      categorie: selectedCategorie,
+      title: selectedTitle,
+      category: selectedCategory,
       date: selectedDate,
       detail: selectedDetail,
-      montant: formatMontant(removeTiret(selectedMontant), transaction.type),
+      amount: formatMontant(removeTiret(selectedMontant), transaction.type),
     };
     await dispatch(editTransactions(editData));
     dispatch(getTransactions());
@@ -137,18 +137,18 @@ export default function Transaction() {
   };
 
   const typeProps =
-    transaction.type === "Dépense"
-      ? "depense"
-      : transaction.type === "Recette"
-        ? "recette"
+    transaction.type === "Expense"
+      ? "expense"
+      : transaction.type === "Revenue"
+        ? "revenue"
         : undefined;
 
   return (
     <section className="w-full">
       <Header
-        title={transaction.titre}
+        title={transaction.title}
         typeProps={typeProps}
-        categories={transaction.type === "Dépense" ? categorieD : categorieR}
+        categories={transaction.type === "Expense" ? categoryD : categoryR}
         btnAdd
         btnReturn
       />
@@ -165,9 +165,9 @@ export default function Transaction() {
                   name="title"
                   maxLength={50}
                   placeholder="Titre"
-                  value={selectedTitre}
+                  value={selectedTitle}
                   onChange={(e) => {
-                    handleTitre(e);
+                    handleTitle(e);
                     handleInputChange();
                   }}
                   required
@@ -179,16 +179,16 @@ export default function Transaction() {
                 </datalist>
               </>
             ) : (
-              <h2 className="text-4xl">{transaction.titre}</h2>
+              <h2 className="text-4xl">{transaction.title}</h2>
             )}
           </div>
           <div className="flex flex-row gap-4">
             <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
                 <Select
-                  value={selectedCategorie}
+                  value={selectedCategory}
                   onValueChange={(value) => {
-                    setSelectedCategorie(value); // Update the selected category
+                    setSelectedCategory(value); // Update the selected category
                     handleInputChange(); // Call your input change handler if necessary
                   }}
                   required
@@ -197,8 +197,8 @@ export default function Transaction() {
                     <SelectValue placeholder="Entrez la catégorie" />
                   </SelectTrigger>
                   <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
-                    {transaction.type === "Dépense" &&
-                      categorieD.map(({ name }) => (
+                    {transaction.type === "Expense" &&
+                      categoryD.map(({ name }) => (
                         <SelectItem
                           key={name}
                           value={name}
@@ -207,8 +207,8 @@ export default function Transaction() {
                           {name}
                         </SelectItem>
                       ))}
-                    {transaction.type === "Recette" &&
-                      categorieR.map(({ name }) => (
+                    {transaction.type === "Revenue" &&
+                      categoryR.map(({ name }) => (
                         <SelectItem
                           key={name}
                           value={name}
@@ -220,7 +220,7 @@ export default function Transaction() {
                   </SelectContent>
                 </Select>
               ) : (
-                <h2 className="text-4xl">{transaction.categorie}</h2>
+                <h2 className="text-4xl">{transaction.category}</h2>
               )}
             </div>
 
@@ -290,7 +290,7 @@ export default function Transaction() {
               ) : (
                 <div className="flex flex-col">
                   <h2 className="text-4xl">
-                    {addSpace(parseFloat(transaction.montant).toFixed(2))} €
+                    {addSpace(parseFloat(transaction.amount).toFixed(2))} €
                   </h2>
                 </div>
               )}

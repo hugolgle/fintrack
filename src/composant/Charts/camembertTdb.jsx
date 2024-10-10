@@ -25,30 +25,30 @@ export function CamembertTdb(props) {
 
   const chartData = [
     {
-      categorie: "Dépenses fixes",
+      category: "Dépenses fixes",
       objectif: 50,
-      montant: depensesFixes,
+      amount: depensesFixes,
       pourcentage: (depensesFixes / total) * 100,
       fill: "var(--color-depensesFixes)",
     },
     {
-      categorie: "Loisir",
+      category: "Loisir",
       objectif: 30,
-      montant: loisir,
+      amount: loisir,
       pourcentage: (loisir / total) * 100,
       fill: "var(--color-loisir)",
     },
     {
-      categorie: "Investissements",
+      category: "Investissements",
       objectif: 10,
-      montant: invest,
+      amount: invest,
       pourcentage: (invest / total) * 100,
       fill: "var(--color-invest)",
     },
     {
-      categorie: "Épargne",
+      category: "Épargne",
       objectif: 10,
-      montant: epargne,
+      amount: epargne,
       pourcentage: (epargne / total) * 100,
       fill: "var(--color-epargne)",
     },
@@ -151,8 +151,8 @@ export function CamembertTdb(props) {
           <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
           <Pie
             data={chartData}
-            dataKey="montant"
-            nameKey="categorie"
+            dataKey="amount"
+            nameKey="category"
             innerRadius={50}
             outerRadius={80}
           >

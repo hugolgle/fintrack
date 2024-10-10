@@ -20,6 +20,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { infoUser } from "../utils/users";
+import { ROUTES } from "./routes";
 
 export function DropdownProfil({ btnOpen, handleLogout }) {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
 
   const handleProfileClick = () => {
     setOpen(false);
-    navigate("/profil");
+    navigate(ROUTES.PROFILE);
   };
 
   const handleThemeChange = (value) => {

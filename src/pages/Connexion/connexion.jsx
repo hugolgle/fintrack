@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Eye } from "lucide-react";
+import { ROUTES } from "../../composant/routes";
 
 export default function Connexion() {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export default function Connexion() {
 
   useEffect(() => {
     if (isConnect) {
-      navigate("/");
+      navigate(ROUTES.HOME);
     }
   }, [isConnect, navigate]);
 
@@ -121,7 +122,7 @@ export default function Connexion() {
         <p className="text-xs">Nouveau sur DashCash ?</p>
         <Button
           variant="secondary"
-          onClick={() => navigate("/inscription")}
+          onClick={() => navigate(ROUTES.SIGNUP)}
           className="rounded-xl"
         >
           Créer un compte DashCash !

@@ -1,10 +1,16 @@
 import { Navigate } from "react-router-dom";
-import { isConnected } from "../utils/users"; // Assurez-vous que cette fonction vérifie l'état de connexion de l'utilisateur
-
+import { isConnected } from "../utils/users";
+import { ROUTES } from "./routes";
+import { toast } from "sonner";
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = isConnected();
 
-  return isAuthenticated ? element : <Navigate to="/connexion" />;
+  if (!isAuthenticated) {
+    toast.error("Vous n'êtes pas connecté !");
+    return <Navigate to={ROUTES.LOGIN} />;
+  }
+
+  return element;
 };
 
 export default PrivateRoute;

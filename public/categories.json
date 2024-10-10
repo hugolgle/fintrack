@@ -1,5 +1,5 @@
 {
-  "categorieRecette": [
+  "categoryRecette": [
     {
       "name": "Salaire",
       "color": "hsl(var(--chart-1))"
@@ -25,69 +25,69 @@
       "color": "hsl(var(--chart-6))"
     }
   ],
-  "categorieDepense": [
+  "categoryDepense": [
     {
       "name": "Bar/Boite",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-1))"
     },
     {
       "name": "Resto",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-2))"
     },
     {
       "name": "Santé",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-3))"
     },
     {
       "name": "Activité",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-4))"
     },
     {
       "name": "Véhicule",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-5))"
     },
     {
       "name": "Coiffeur",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-6))"
     },
     {
       "name": "Shopping",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-7))"
     },
     {
       "name": "Alimentation",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-8))"
     },
     {
       "name": "Abonnement",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-9))"
     },
     {
       "name": "Divers",
-      "categorie": "Fixe",
+      "category": "Fixe",
       "color": "hsl(var(--chart-10))"
     },
     {
       "name": "Achat",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-11))"
     },
     {
       "name": "Voyage",
-      "categorie": "Loisir",
+      "category": "Loisir",
       "color": "hsl(var(--chart-12))"
     }
   ],
-  "categorieAbonnement": [
+  "categoryAbonnement": [
     {
       "name": "Netflix"
     },

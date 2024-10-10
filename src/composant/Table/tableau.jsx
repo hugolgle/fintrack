@@ -44,7 +44,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
     let total = 0;
     data.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
-        total += parseFloat(transaction.montant);
+        total += parseFloat(transaction.amount);
       }
     });
     return total;
@@ -90,7 +90,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                 )}
                 <Link to={item._id} className="w-full">
                   <TableRow
-                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-colorSecondaryLight dark:bg-colorPrimaryDark cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${
+                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-colorSecondaryLight dark:bg-colorPrimaryDark animate-fade cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${
                       selectOpe && selectedRows[item._id]
                         ? "ring-1 ring-zinc-400"
                         : ""
@@ -104,7 +104,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                       <>
                         <TableCell className="w-full">{item.type}</TableCell>
                         <TableCell className="w-full truncate">
-                          {item.titre}
+                          {item.title}
                         </TableCell>
                         <TableCell className="w-full">
                           {formatDate(item.date)}
@@ -115,7 +115,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                           </TableCell>
                         )}
                         <TableCell className="w-full">
-                          <b>{addSpace(item.montant)} €</b>
+                          <b>{addSpace(item.amount)} €</b>
                         </TableCell>
                         {status === "sold" && (
                           <>
@@ -136,16 +136,16 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                     {type === "transactions" && (
                       <>
                         <TableCell className="w-full truncate">
-                          {item.titre}
+                          {item.title}
                         </TableCell>
                         <TableCell className="w-full">
-                          {item.categorie}
+                          {item.category}
                         </TableCell>
                         <TableCell className="w-full">
                           {formatDate(item.date)}
                         </TableCell>
                         <TableCell className="w-full">
-                          <b>{addSpace(item.montant)} €</b>
+                          <b>{addSpace(item.amount)} €</b>
                         </TableCell>
                       </>
                     )}

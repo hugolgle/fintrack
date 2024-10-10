@@ -1,21 +1,19 @@
 import { Link } from "react-router-dom";
-import BtnAdd from "../../../composant/Button/btnAdd";
 import { getAllInvestments } from "../../../utils/operations";
 import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
 import { formatDateBis } from "../../../utils/fonctionnel";
-import MainLayout from "../../../layout/mainLayout";
 import Header from "../../../composant/header";
 
 export default function BoardInvest() {
   const getInvest = getAllInvestments(null);
 
   const firstDateByTitle = getInvest.reduce((acc, investment) => {
-    const { titre, date } = investment;
-    if (!acc[titre] || new Date(date) < new Date(acc[titre])) {
-      acc[titre] = date;
+    const { title, date } = investment;
+    if (!acc[title] || new Date(date) < new Date(acc[title])) {
+      acc[title] = date;
     }
     return acc;
   }, {});
@@ -23,13 +21,13 @@ export default function BoardInvest() {
   const uniqueInvest = getInvest.filter((investment) => {
     return (
       new Date(investment.date).getTime() ===
-      new Date(firstDateByTitle[investment.titre]).getTime()
+      new Date(firstDateByTitle[investment.title]).getTime()
     );
   });
 
   const investmentCountByTitle = getInvest.reduce((acc, investment) => {
-    const { titre } = investment;
-    acc[titre] = (acc[titre] || 0) + 1;
+    const { title } = investment;
+    acc[title] = (acc[title] || 0) + 1;
     return acc;
   }, {});
 
@@ -58,7 +56,7 @@ export default function BoardInvest() {
   return (
     <>
       <section>
-        <Header title="Board investissement" typeProps="invest" btnAdd />
+        <Header title="Board investissement" typeProps="investment" btnAdd />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
           <div className="h-32 flex gap-4 ">
             <Link
@@ -97,11 +95,11 @@ export default function BoardInvest() {
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center mb-4">
-            {uniqueInvest.map(({ titre, type, date }, index) => {
-              const linkInvest = titre.toLowerCase().replace(/\s+/g, "");
-              const montant = calculTotalInvestmentByTitle(null, titre);
+            {uniqueInvest.map(({ title, type, date }, index) => {
+              const linkInvest = title.toLowerCase().replace(/\s+/g, "");
+              const amount = calculTotalInvestmentByTitle(null, title);
 
-              const count = investmentCountByTitle[titre];
+              const count = investmentCountByTitle[title];
 
               return (
                 <Link
@@ -120,9 +118,9 @@ export default function BoardInvest() {
                     </p>
                   </div>
 
-                  <p className="text-xl truncate">{titre}</p>
+                  <p className="text-xl truncate">{title}</p>
                   <div className="flex justify-between">
-                    <p className="font-medium italic">{montant}</p>
+                    <p className="font-medium italic">{amount}</p>
                     <p className="text-lg italic">({count})</p>
                   </div>
                 </Link>

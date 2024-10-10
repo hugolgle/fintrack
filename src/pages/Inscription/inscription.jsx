@@ -48,7 +48,7 @@ export default function Inscription() {
       setPrenom("");
       setImage(null);
       setImagePreview(null);
-      navigate("/connexion");
+      navigate(ROUTES.LOGIN);
     } catch (err) {
       toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
     }
@@ -210,7 +210,7 @@ export default function Inscription() {
       <div className="flex flex-col justify-center items-center gap-2 px-36">
         <p className="text-xs">Vous possédez déjà un compte ?</p>
         <Link
-          to="/connexion"
+          to={ROUTES.LOGIN}
           className="rounded-xl bg-transparent border-2 border-zinc-700 py-2 text-sm px-4 transition-all hover:bg-zinc-200 hover:dark:bg-zinc-700"
         >
           Identifiez-vous !

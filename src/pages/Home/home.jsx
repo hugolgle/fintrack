@@ -1,4 +1,5 @@
 import Logo from "../../composant/logo";
+import { ROUTES } from "../../composant/routes";
 import { infoUser, isConnected } from "../../utils/users";
 import { Link } from "react-router-dom";
 
@@ -15,14 +16,14 @@ export default function Home() {
       </div>
       {isAuthenticated ? (
         <Link
-          to="/tdb"
+          to={ROUTES.DASHBOARD}
           className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all duration-500 hover:dark:bg-cyan-500"
         >
           C'est parti !
         </Link>
       ) : (
         <Link
-          to="/connexion"
+          to={ROUTES.LOGIN}
           className="p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl transition-all duration-500 hover:dark:bg-lime-500"
         >
           Connectez-vous !

@@ -100,11 +100,11 @@ export function separateMillier(valeur) {
   return `${partieEntiere}.${partieDecimale}`;
 }
 
-export function formatMontant(montant, type) {
-  if (type === "Dépense") {
-    return `-${separateMillier(montant)}`;
+export function formatMontant(amount, type) {
+  if (type === "Expense") {
+    return `-${separateMillier(amount)}`;
   } else {
-    return separateMillier(montant);
+    return separateMillier(amount);
   }
 }
 

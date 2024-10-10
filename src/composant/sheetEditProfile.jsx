@@ -248,7 +248,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
           {preview ? (
             <Avatar className="w-48 h-48">
               <AvatarImage
-                className="object-cover transition-all duration-300 group-hover:brightness-50" // Ajout du filtre de luminosité
+                className="object-cover animate-fade transition-all duration-300 group-hover:brightness-50" // Ajout du filtre de luminosité
                 src={preview}
               />
             </Avatar>
@@ -256,7 +256,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
             !hiddenImg && (
               <Avatar className="w-48 h-48">
                 <AvatarImage
-                  className="object-cover transition-all duration-300 group-hover:brightness-75" // Ajout du filtre de luminosité
+                  className="object-cover animate-fade transition-all duration-300 group-hover:brightness-75" // Ajout du filtre de luminosité
                   src={`http://localhost:5001/${dataProfil?.img}`}
                 />
               </Avatar>

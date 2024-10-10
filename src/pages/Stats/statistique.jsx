@@ -17,8 +17,8 @@ import {
   getTransactionsByYear,
 } from "../../utils/operations";
 import {
-  categorieDepense,
-  categorieRecette,
+  categoryDepense,
+  categoryRecette,
 } from "../../../public/categories.json";
 import Title from "../../composant/Text/title";
 import { Button } from "@/components/ui/button";
@@ -105,30 +105,30 @@ export default function Statistique() {
   const selectedDate = `${selectedYear}${selectedMonth}`;
 
   const depenseYear = calculTotalByYear(
-    "Dépense",
+    "Expense",
     `${selectedYear}`,
     null,
     null
   );
   const recetteYear = calculTotalByYear(
-    "Recette",
+    "Revenue",
     `${selectedYear}`,
     null,
     null
   );
 
-  const depenseMonth = calculTotalByMonth("Dépense", selectedDate, null, null);
-  const recetteMonth = calculTotalByMonth("Recette", selectedDate, null, null);
+  const depenseMonth = calculTotalByMonth("Expense", selectedDate, null, null);
+  const recetteMonth = calculTotalByMonth("Revenue", selectedDate, null, null);
 
   const nbMonth = generateMonths().length;
 
   const moyenneDepenseMois = calculMoyenne(
-    "Dépense",
+    "Expense",
     `${selectedYear}`,
     nbMonth
   );
   const moyenneRecetteMois = calculMoyenne(
-    "Recette",
+    "Revenue",
     `${selectedYear}`,
     nbMonth
   );
@@ -181,58 +181,67 @@ export default function Statistique() {
           <div className="flex flex-col items-center gap-4 w-2/3">
             <div className="flex flex-row gap-4 w-full h-full text-right">
               <BoxStat
-                type="Recette totale"
+                title="Recette totale"
+                type="Revenue"
                 selectedYear={selectedYear}
-                montant={recetteYear}
+                amount={recetteYear}
               />
               <BoxStat
-                type="Dépense totale"
+                title="Dépense totale"
+                type="Expense"
                 selectedYear={selectedYear}
-                montant={depenseYear}
+                amount={depenseYear}
               />
               <BoxStat
-                type="Économie totale"
+                title="Économie totale"
+                type="State"
                 selectedYear={selectedYear}
-                montant={`${economieTotale} €`}
+                amount={`${economieTotale} €`}
               />
             </div>
             <div className="flex flex-row gap-4 w-full h-full text-right">
               <BoxStat
-                type="Recette/Mois"
+                title="Recette/Mois"
+                type="Revenue"
                 selectedYear={selectedYear}
-                montant={moyenneRecetteMois}
+                amount={moyenneRecetteMois}
               />
               <BoxStat
-                type="Dépense/Mois"
+                title="Dépense/Mois"
+                type="Expense"
                 selectedYear={selectedYear}
-                montant={moyenneDepenseMois}
+                amount={moyenneDepenseMois}
               />
               <BoxStat
-                type="Économie/Mois"
+                title="Économie/Mois"
+                type="State"
                 selectedYear={selectedYear}
-                montant={`${moyenneEconomie} €`}
+                amount={`${moyenneEconomie} €`}
               />
             </div>
             <Separator className="w-5/6" />
             <div className="flex flex-row gap-4 text-right w-full h-full">
               <BoxStat
-                type="Recette"
+                title="Recette"
+                type="Revenue"
                 months={months}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
-                montant={recetteMonth}
+                amount={recetteMonth}
               />
               <BoxStat
-                type="Dépense"
+                title="Dépense"
+                type="Expense"
                 months={months}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
-                montant={depenseMonth}
+                amount={depenseMonth}
               />
               <BoxStat
-                type={parseFloat(economieMonth) < 0 ? "Déficit" : "Économie"}
+                type="State"
+                title={parseFloat(economieMonth) < 0 ? "Déficit" : "Économie"}
                 selectedYear={selectedYear}
-                montant={`${economieMonth} €`}
+                amount={`${economieMonth} €`}
                 months={months}
                 selectedMonth={selectedMonth}
               />
@@ -266,7 +275,7 @@ export default function Statistique() {
                         null
                       )
                 }
-                categorie={categorieRecette}
+                category={categoryRecette}
               />
             </div>
 
@@ -299,18 +308,18 @@ export default function Statistique() {
                   selectedByYear
                     ? getTransactionsByYear(
                         `${selectedYear}`,
-                        "Dépense",
+                        "Expense",
                         null,
                         null
                       )
                     : getTransactionsByMonth(
                         selectedDate,
-                        "Dépense",
+                        "Expense",
                         null,
                         null
                       )
                 }
-                categorie={categorieDepense}
+                category={categoryDepense}
               />
             </div>
           </div>

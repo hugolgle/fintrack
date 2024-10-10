@@ -12,10 +12,10 @@ import {
   getTransactionsByType,
   getTitleOfTransactionsByType,
 } from "../../../utils/operations";
-import { categorieSort, normalizeText } from "../../../utils/other";
+import { categorySort, nameType, normalizeText } from "../../../utils/other";
 import {
-  categorieDepense,
-  categorieRecette,
+  categoryDepense,
+  categoryRecette,
 } from "../../../../public/categories.json";
 import Header from "../../../composant/header";
 import Tableau from "../../../composant/Table/tableau";
@@ -26,10 +26,10 @@ export default function PageTransactions(props) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const typeProps =
-    props.type === "Dépense"
-      ? "depense"
-      : props.type === "Recette"
-        ? "recette"
+    props.type === "Expense"
+      ? "expense"
+      : props.type === "Revenue"
+        ? "revenue"
         : undefined;
 
   const [selectOpe, setSelectOpe] = useState(false);
@@ -38,13 +38,13 @@ export default function PageTransactions(props) {
   };
 
   const categories =
-    props.type === "Dépense"
-      ? categorieSort(categorieDepense)
-      : props.type === "Recette"
-        ? categorieSort(categorieRecette)
+    props.type === "Expense"
+      ? categorySort(categoryDepense)
+      : props.type === "Revenue"
+        ? categorySort(categoryRecette)
         : "";
 
-  const [selectedCategories, setSelectedCategories] = useState(
+  const [selectedCategorys, setSelectedCategorys] = useState(
     searchParams.getAll("categories")
   );
   const [selectedTitles, setSelectedTitles] = useState(
@@ -57,42 +57,51 @@ export default function PageTransactions(props) {
     const value = event.target.value;
     const isChecked = event.target.checked;
     const updatedArray = isChecked
-      ? type === "categorie"
-        ? [...selectedCategories, value]
+      ? type === "category"
+        ? [...selectedCategorys, value]
         : [...selectedTitles, value]
-      : type === "categorie"
-        ? selectedCategories.filter((cat) => cat !== value)
+      : type === "category"
+        ? selectedCategorys.filter((cat) => cat !== value)
         : selectedTitles.filter((title) => title !== value);
 
-    if (type === "categorie") {
-      setSelectedCategories(updatedArray);
+    if (type === "category") {
+      setSelectedCategorys(updatedArray);
       setSearchParams({ categories: updatedArray, titles: selectedTitles });
     } else {
       setSelectedTitles(updatedArray);
-      setSearchParams({ categories: selectedCategories, titles: updatedArray });
+      setSearchParams({ categories: selectedCategorys, titles: updatedArray });
     }
   };
 
-  const check = selectedCategories.length + selectedTitles.length;
+  const check = selectedCategorys.length + selectedTitles.length;
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [clickResearch, setClickResearch] = useState(false);
 
   const performSearch = (term) => {
     const filteredTransactions = transactions.filter((transaction) => {
-      const titleMatches = transaction.titre
+      const idMatches = transaction._id
         .toLowerCase()
         .includes(term.toLowerCase());
-      const categoryMatches = transaction.categorie
+      const titleMatches = transaction.title
         .toLowerCase()
         .includes(term.toLowerCase());
-      const montantMatches = transaction.montant
+      const categoryMatches = transaction.category
+        .toLowerCase()
+        .includes(term.toLowerCase());
+      const montantMatches = transaction.amount
         .toLowerCase()
         .includes(term.toLowerCase());
       const dateMatches = transaction.date
         .toLowerCase()
         .includes(term.toLowerCase());
-      return titleMatches || categoryMatches || montantMatches || dateMatches;
+      return (
+        idMatches ||
+        titleMatches ||
+        categoryMatches ||
+        montantMatches ||
+        dateMatches
+      );
     });
     setSearchResults(filteredTransactions);
   };
@@ -104,18 +113,18 @@ export default function PageTransactions(props) {
 
   const transactions =
     date === "all"
-      ? getTransactionsByType(props.type, selectedCategories, selectedTitles)
+      ? getTransactionsByType(props.type, selectedCategorys, selectedTitles)
       : date?.length === 4
         ? getTransactionsByYear(
             date,
             props.type,
-            selectedCategories,
+            selectedCategorys,
             selectedTitles
           )
         : getTransactionsByMonth(
             date,
             props.type,
-            selectedCategories,
+            selectedCategorys,
             selectedTitles
           );
 
@@ -126,7 +135,7 @@ export default function PageTransactions(props) {
   }, [searchTerm, transactions]);
 
   const clearFilters = () => {
-    setSelectedCategories([]);
+    setSelectedCategorys([]);
     setSelectedTitles([]);
     setSearchParams({});
   };
@@ -209,10 +218,10 @@ export default function PageTransactions(props) {
         <Header
           title={`${
             date === "all"
-              ? `Toutes les ${props.type.toLowerCase()}s`
+              ? `Toutes les ${nameType(props.type).toLowerCase()}s`
               : date?.length === 4
-                ? `${props.type}s de ${date}`
-                : `${props.type}s de ${convertDate(date)}`
+                ? `${nameType(props.type)}s de ${date}`
+                : `${nameType(props.type)}s de ${convertDate(date)}`
           }`}
           typeProps={normalizeText(props.type)}
           categories={categories}
@@ -230,7 +239,7 @@ export default function PageTransactions(props) {
           clearFilters={clearFilters}
           handleCheckboxChange={handleCheckboxChange}
           selectedTitles={selectedTitles}
-          selectedCategories={selectedCategories}
+          selectedCategorys={selectedCategorys}
           btnSearch
           btnAdd
           btnReturn
@@ -249,19 +258,19 @@ export default function PageTransactions(props) {
           Total :{" "}
           <b>
             {date === "all"
-              ? calculTotal(props.type, selectedCategories, selectedTitles)
+              ? calculTotal(props.type, selectedCategorys, selectedTitles)
               : date && date.length === 4
                 ? calculTotalByYear(
                     props.type,
                     date,
-                    selectedCategories,
+                    selectedCategorys,
                     selectedTitles
                   )
                 : date
                   ? calculTotalByMonth(
                       props.type,
                       date,
-                      selectedCategories,
+                      selectedCategorys,
                       selectedTitles
                     )
                   : "Date non définie"}
@@ -272,20 +281,20 @@ export default function PageTransactions(props) {
             {date === "all"
               ? getTransactionsByType(
                   props.type,
-                  selectedCategories,
+                  selectedCategorys,
                   selectedTitles
                 ).length
               : date?.length === 4
                 ? getTransactionsByYear(
                     date,
                     props.type,
-                    selectedCategories,
+                    selectedCategorys,
                     selectedTitles
                   ).length
                 : getTransactionsByMonth(
                     date,
                     props.type,
-                    selectedCategories,
+                    selectedCategorys,
                     selectedTitles
                   ).length}
           </b>

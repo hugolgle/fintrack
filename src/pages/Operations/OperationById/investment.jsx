@@ -52,28 +52,28 @@ export default function Investment() {
 
   const [selectedType, setSelectedType] = useState(investment.type);
 
-  const [selectedTitre, setSelectedTitre] = useState(investment.titre);
+  const [selectedTitle, setSelectedTitle] = useState(investment.title);
 
   const [selectedDetail, setSelectedDetail] = useState(investment.detail);
 
   const [selectedDate, setSelectedDate] = useState(investment.date);
 
-  const [selectedMontant, setSelectedMontant] = useState(investment.montant);
+  const [selectedMontant, setSelectedMontant] = useState(investment.amount);
 
   const [selectedMontantVendu, setSelectedMontantVendu] = useState(
-    investment.montant
+    investment.amount
   );
 
   const resetForm = () => {
     setSelectedType(investment.type);
-    setSelectedTitre(investment.titre);
+    setSelectedTitle(investment.title);
     setSelectedDetail(investment.detail);
     setSelectedDate(investment.date);
-    setSelectedMontant(investment.montant);
+    setSelectedMontant(investment.amount);
   };
 
-  const handleTitre = (event) => {
-    setSelectedTitre(event.target.value);
+  const handleTitle = (event) => {
+    setSelectedTitle(event.target.value);
   };
 
   const handleDate = (event) => {
@@ -114,10 +114,10 @@ export default function Investment() {
     const editData = {
       id: investment._id,
       type: selectedType,
-      titre: selectedTitre,
+      title: selectedTitle,
       date: selectedDate,
       detail: selectedDetail,
-      montant: separateMillier(selectedMontant),
+      amount: separateMillier(selectedMontant),
     };
     await dispatch(editInvestments(editData));
     toast.success("L'opération a été modifié avec succès !");
@@ -134,7 +134,12 @@ export default function Investment() {
 
   return (
     <section className="w-full">
-      <Header title={investment.titre} typeProps="invest" btnAdd btnReturn />
+      <Header
+        title={investment.title}
+        typeProps="investment"
+        btnAdd
+        btnReturn
+      />
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">
@@ -142,17 +147,17 @@ export default function Investment() {
               {selectedUpdate ? (
                 <Input
                   className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
-                  value={selectedTitre}
+                  value={selectedTitle}
                   type="text"
                   name=""
                   onChange={(e) => {
-                    handleTitre(e);
+                    handleTitle(e);
                     handleInputChange();
                   }}
                   placeholder="Type"
                 />
               ) : (
-                <h2 className="text-4xl">{investment.titre}</h2>
+                <h2 className="text-4xl">{investment.title}</h2>
               )}
             </div>
 
@@ -255,7 +260,7 @@ export default function Investment() {
                     placeholder="Montant"
                   />
                 ) : (
-                  <h2 className="text-4xl">{investment.montant} €</h2>
+                  <h2 className="text-4xl">{investment.amount} €</h2>
                 )}
               </div>
             </div>

@@ -73,13 +73,13 @@ export default function PageInvestment() {
 
   const performSearch = (term) => {
     const filteredInvestments = investissements.filter((investment) => {
-      const titleMatches = investment.titre
+      const titleMatches = investment.title
         .toLowerCase()
         .includes(term.toLowerCase());
       const typeMatches = investment.type
         .toLowerCase()
         .includes(term.toLowerCase());
-      const montantMatches = investment.montant
+      const montantMatches = investment.amount
         .toLowerCase()
         .includes(term.toLowerCase());
       const dateMatches = investment.date
@@ -163,7 +163,7 @@ export default function PageInvestment() {
       <section className="w-full relative">
         <Header
           title={`Investissements ${statusType}`}
-          typeProps={"invest"}
+          typeProps="investment"
           handleSelectOpe={handleSelectOpe}
           handleSearchChange={handleSearchChange}
           setClickResearch={setClickResearch}

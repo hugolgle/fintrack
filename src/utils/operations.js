@@ -40,22 +40,22 @@ export function getAllTransactions() {
   return transactions;
 }
 
-export function getTransactionsByType(type, filterCategorie, filterTitle) {
+export function getTransactionsByType(type, filterCategory, filterTitle) {
   const transactions = useSelector((state) => state.transactionReducer || []);
 
   let filteredTransactions = type
     ? transactions.filter((transaction) => transaction.type === type)
     : transactions;
 
-  if (filterCategorie && filterCategorie.length > 0) {
+  if (filterCategory && filterCategory.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction) =>
-      filterCategorie.includes(transaction.categorie)
+      filterCategory.includes(transaction.category)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction) =>
-      filterTitle.includes(transaction.titre)
+      filterTitle.includes(transaction.title)
     );
   }
 
@@ -79,7 +79,7 @@ export function getTransactionById(id) {
 export function getTransactionsByMonth(
   month,
   type,
-  filterCategorie,
+  filterCategory,
   filterTitle
 ) {
   const targetMonth = `${month.slice(0, 4)}-${month.slice(4)}`;
@@ -99,15 +99,15 @@ export function getTransactionsByMonth(
     );
   }
 
-  if (filterCategorie && filterCategorie.length > 0) {
+  if (filterCategory && filterCategory.length > 0) {
     transactionsInMonth = transactionsInMonth.filter((transaction) =>
-      filterCategorie.includes(transaction.categorie)
+      filterCategory.includes(transaction.category)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     transactionsInMonth = transactionsInMonth.filter((transaction) =>
-      filterTitle.includes(transaction.titre)
+      filterTitle.includes(transaction.title)
     );
   }
 
@@ -121,12 +121,7 @@ export function getTransactionsByMonth(
   return transactionsInMonth;
 }
 
-export function getTransactionsByYear(
-  year,
-  type,
-  filterCategorie,
-  filterTitle
-) {
+export function getTransactionsByYear(year, type, filterCategory, filterTitle) {
   const transactions = useSelector((state) => state.transactionReducer || []);
 
   let transactionsInYear = transactions.filter((transaction) => {
@@ -140,15 +135,15 @@ export function getTransactionsByYear(
     );
   }
 
-  if (filterCategorie && filterCategorie.length > 0) {
+  if (filterCategory && filterCategory.length > 0) {
     transactionsInYear = transactionsInYear.filter((transaction) =>
-      filterCategorie.includes(transaction.categorie)
+      filterCategory.includes(transaction.category)
     );
   }
 
   if (filterTitle && filterTitle.length > 0) {
     transactionsInYear = transactionsInYear.filter((transaction) =>
-      filterTitle.includes(transaction.titre)
+      filterTitle.includes(transaction.title)
     );
   }
 
@@ -231,7 +226,7 @@ export function getLastSubscribe() {
 
   // Step 1: Filter transactions for the category 'Abonnement'
   let filteredTransactions = transactions.filter(
-    (transaction) => transaction.categorie === "Abonnement"
+    (transaction) => transaction.category === "Abonnement"
   );
 
   // Step 2: Filter for transactions between the start date and end date
@@ -242,9 +237,9 @@ export function getLastSubscribe() {
 
   // Step 3: Return the filtered transactions as is (without removing duplicates)
   const lastSubscriptions = filteredTransactions.map((transaction) => ({
-    titre: transaction.titre,
+    title: transaction.title,
     date: transaction.date, // Keeping the date as it is (string)
-    montant: transaction.montant,
+    amount: transaction.amount,
   }));
 
   // Return all filtered transactions (even if there are duplicates)
@@ -276,8 +271,8 @@ export function getInvestmentsByTitle(title) {
     const formattedTitle = title.toLowerCase().replace(/\s+/g, "");
 
     const filteredInvestments = investments.filter((investment) => {
-      const investTitle = investment.titre
-        ? investment.titre.toLowerCase().replace(/\s+/g, "")
+      const investTitle = investment.title
+        ? investment.title.toLowerCase().replace(/\s+/g, "")
         : "";
       return investTitle === formattedTitle;
     });
@@ -297,7 +292,7 @@ export function getInvestmentById(id) {
   }
 }
 
-// -------------------------------- Titres
+// -------------------------------- Titles
 
 export function getTitleOfTransactionsByType(type) {
   const transactions = useSelector((state) => state.transactionReducer || []);
@@ -312,9 +307,9 @@ export function getTitleOfTransactionsByType(type) {
     return transaction.type === type && transactionDate >= startDate;
   });
 
-  const titles = filteredTransactions.map((transaction) => transaction.titre);
+  const titles = filteredTransactions.map((transaction) => transaction.title);
 
-  // Tri des titres par ordre alphabétique
+  // Tri des titles par ordre alphabétique
   const sortedTitles = titles.sort((a, b) => {
     if (a.toLowerCase() < b.toLowerCase()) {
       return -1;
@@ -341,7 +336,7 @@ export function getLatestTransactionByTitle(title, type) {
     : transactions;
 
   const filteredByTitle = filteredTransactions.filter(
-    (transaction) => transaction.titre === title
+    (transaction) => transaction.title === title
   );
 
   if (filteredByTitle.length === 0) return null;
@@ -358,24 +353,24 @@ export function getLatestTransactionByTitle(title, type) {
 
 export function aggregateTransactions(transactions) {
   const totalMontant = transactions.reduce(
-    (sum, transaction) => sum + Math.abs(transaction.montant),
+    (sum, transaction) => sum + Math.abs(transaction.amount),
     0
   );
 
-  const montantParCategorie = transactions.reduce((acc, transaction) => {
-    const categorie = transaction.categorie;
-    const montant = Math.abs(transaction.montant); // Assurer que le montant est positif
-    if (!acc[categorie]) {
-      acc[categorie] = 0;
+  const montantParCategory = transactions.reduce((acc, transaction) => {
+    const category = transaction.category;
+    const amount = Math.abs(transaction.amount); // Assurer que le amount est positif
+    if (!acc[category]) {
+      acc[category] = 0;
     }
-    acc[categorie] += montant;
+    acc[category] += amount;
     return acc;
   }, {});
 
-  return Object.entries(montantParCategorie).map(([categorie, montant]) => ({
-    nomCate: categorie,
-    montant: montant.toFixed(2), // Convertir le montant en chaîne de caractères avec deux décimales
-    pourcentage: ((montant / totalMontant) * 100).toFixed(2), // Calculer le pourcentage et le formater
+  return Object.entries(montantParCategory).map(([category, amount]) => ({
+    nomCate: category,
+    amount: amount.toFixed(2), // Convertir le amount en chaîne de caractères avec deux décimales
+    pourcentage: ((amount / totalMontant) * 100).toFixed(2), // Calculer le pourcentage et le formater
   }));
 }
 

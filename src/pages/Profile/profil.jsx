@@ -19,7 +19,7 @@ export default function Profil() {
   //   const confirmed = window.confirm("Cette action est irréversible ?");
   //   if (confirmed) {
   //     await dispatch(deleteUser(userInfo.id) as any);
-  //     navigate("/");
+  //     navigate(ROUTES.HOME);
   //   } else {
   //     setSelectedDelete(false);
   //   }

@@ -21,14 +21,14 @@ export default function BoardRecette() {
   const lastMonths = getLastThreeMonthsOfCurrentYear();
   const lastYears = getLastTwoYears();
   const currentMonth = getCurrentMonth();
-  const lastTransactions = getLastTransactionsByType("Recette", 5, true);
+  const lastTransactions = getLastTransactionsByType("Revenue", 5, true);
   const firstDayMonth = premierJourMoisEnCours();
 
   return (
     <>
       <section className="w-full">
         <div className="flex flex-col">
-          <Header title="Board recette" typeProps="recette" btnAdd />
+          <Header title="Board recette" typeProps="revenue" btnAdd />
           <div className="flex flex-col gap-4 w-full animate-fade">
             <div className="flex flex-row w-full h-64 gap-4">
               <Link
@@ -37,7 +37,7 @@ export default function BoardRecette() {
               >
                 <div className="flex flex-col w-full gap-4">
                   <p className="text-4xl font-thin">
-                    {calculTotalByMonth("Recette", currentMonth, null, null)}
+                    {calculTotalByMonth("Revenue", currentMonth, null, null)}
                   </p>
 
                   {lastTransactions && lastTransactions.length > 0 ? (
@@ -46,10 +46,10 @@ export default function BoardRecette() {
                         {lastTransactions.map((transaction) => (
                           <tr key={transaction._id}>
                             <td>{convertirFormatDate(transaction.date)}</td>
-                            <td>{transaction.titre}</td>
-                            <td>{transaction.categorie}</td>
+                            <td>{transaction.title}</td>
+                            <td>{transaction.category}</td>
                             <td>
-                              <b>{addSpace(transaction.montant)} €</b>
+                              <b>{addSpace(transaction.amount)} €</b>
                             </td>
                           </tr>
                         ))}
@@ -71,7 +71,7 @@ export default function BoardRecette() {
                   >
                     <p className="text-right italic">{month.month}</p>
                     <p className="text-4xl font-thin">
-                      {calculTotalByMonth("Recette", month.code, null, null)}
+                      {calculTotalByMonth("Revenue", month.code, null, null)}
                     </p>
                   </Link>
                 ))}
@@ -87,7 +87,7 @@ export default function BoardRecette() {
                 >
                   <p className="italic absolute top-2">{year}</p>
                   <p className="text-4xl font-thin">
-                    {calculTotalByYear("Recette", `${year}`, null, null)}
+                    {calculTotalByYear("Revenue", `${year}`, null, null)}
                   </p>
                 </Link>
               ))}
@@ -99,7 +99,7 @@ export default function BoardRecette() {
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
               <p className="text-4xl font-thin">
-                {calculTotal("Recette", null, null)}
+                {calculTotal("Revenue", null, null)}
               </p>
             </Link>
           </div>

@@ -2,7 +2,7 @@ const OperationModel = require("../models/transaction.model");
 
 module.exports.addTransaction = async (req, res) => {
   try {
-    if (!req.body.date || !req.body.montant) {
+    if (!req.body.date || !req.body.amount) {
       return res
         .status(400)
         .json({ message: "Veuillez fournir les informations nécessaires" });
@@ -11,11 +11,11 @@ module.exports.addTransaction = async (req, res) => {
     const transaction = await OperationModel.create({
       user: req.body.user,
       type: req.body.type,
-      categorie: req.body.categorie,
-      titre: req.body.titre,
+      category: req.body.category,
+      title: req.body.title,
       date: req.body.date,
       detail: req.body.detail || "",
-      montant: req.body.montant,
+      amount: req.body.amount,
     });
 
     return res.status(201).json(transaction);

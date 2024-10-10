@@ -2,7 +2,7 @@ const InvestmentModel = require("../models/investment.model");
 
 module.exports.setInvestments = async (req, res) => {
   try {
-    if (!req.body.date || !req.body.montant) {
+    if (!req.body.date || !req.body.amount) {
       return res
         .status(400)
         .json({ message: "Veuillez fournir les informations nécessaires" });
@@ -11,10 +11,10 @@ module.exports.setInvestments = async (req, res) => {
     const investment = await InvestmentModel.create({
       user: req.body.user,
       type: req.body.type,
-      titre: req.body.titre,
+      title: req.body.title,
       detail: req.body.detail || "",
       date: req.body.date,
-      montant: req.body.montant,
+      amount: req.body.amount,
       isSold: false,
     });
 
@@ -69,7 +69,7 @@ module.exports.soldInvestment = async (req, res) => {
       return res.status(400).json({ message: "Le montant vendu est invalide" });
     }
 
-    const montantInitial = parseFloat(investment.montant);
+    const montantInitial = parseFloat(investment.amount);
     const benefice = montantVendu - montantInitial;
 
     const updatedOperation = await InvestmentModel.findByIdAndUpdate(

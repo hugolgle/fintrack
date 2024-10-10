@@ -69,21 +69,21 @@ const renderCustomLegend = (props) => {
 
 export function CamembertStat(props) {
   // Définir les couleurs de catégorie avec des valeurs hexadécimales
-  const categoryColors = props.categorie.reduce((acc, category) => {
+  const categoryColors = props.category.reduce((acc, category) => {
     acc[category.name] = category.color;
     return acc;
   }, {});
 
   const chartData = aggregateTransactions(props.transactions);
   const totalAmount = chartData.reduce(
-    (sum, item) => sum + parseFloat(item.montant),
+    (sum, item) => sum + parseFloat(item.amount),
     0
   );
 
   const transformedData = chartData.map((item) => ({
     name: item.nomCate,
-    value: parseFloat(item.montant),
-    pourcentage: (parseFloat(item.montant) / totalAmount) * 100,
+    value: parseFloat(item.amount),
+    pourcentage: (parseFloat(item.amount) / totalAmount) * 100,
     fill: categoryColors[item.nomCate],
   }));
 

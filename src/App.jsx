@@ -19,6 +19,7 @@ import BoardDepense from "./pages/Operations/Boards/boardDepense";
 import "../styles/globals.css";
 import MainLayout from "./layout/mainLayout";
 import PageError from "./pages/404/pageError";
+import { ROUTES } from "./composant/routes";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,71 +27,88 @@ function App() {
       element: <MainLayout />,
       errorElement: <PageError />,
       children: [
-        { path: "/", element: <Home /> },
-
-        { path: "/tdb", element: <PrivateRoute element={<TableauDeBord />} /> },
+        { path: ROUTES.HOME, element: <Home /> },
 
         {
-          path: "/depense",
+          path: ROUTES.DASHBOARD,
+          element: <PrivateRoute element={<TableauDeBord />} />,
+        },
+
+        {
+          path: ROUTES.EXPENSE,
           element: <PrivateRoute element={<BoardDepense />} />,
         },
         {
-          path: "/depense/add",
-          element: <PrivateRoute element={<PageAddTransac type="Dépense" />} />,
-        },
-        {
-          path: "/depense/:date",
+          path: ROUTES.ADD_EXPENSE,
           element: (
-            <PrivateRoute element={<PageTransactions type="Dépense" />} />
+            <PrivateRoute
+              element={<PageAddTransac type="Expense" title="dépense" />}
+            />
           ),
         },
         {
-          path: "/depense/:date/:id",
+          path: ROUTES.EXPENSE_BY_DATE,
+          element: (
+            <PrivateRoute element={<PageTransactions type="Expense" />} />
+          ),
+        },
+        {
+          path: ROUTES.EXPENSE_BY_ID,
           element: <PrivateRoute element={<Transaction />} />,
         },
         {
-          path: "/recette",
+          path: ROUTES.REVENUE,
           element: <PrivateRoute element={<BoardRecette />} />,
         },
         {
-          path: "/recette/add",
-          element: <PrivateRoute element={<PageAddTransac type="Recette" />} />,
-        },
-        {
-          path: "/recette/:date",
+          path: ROUTES.ADD_REVENUE,
           element: (
-            <PrivateRoute element={<PageTransactions type="Recette" />} />
+            <PrivateRoute
+              element={<PageAddTransac type="Revenue" title="recette" />}
+            />
           ),
         },
         {
-          path: "/recette/:date/:id",
+          path: ROUTES.REVENUE_BY_DATE,
+          element: (
+            <PrivateRoute element={<PageTransactions type="Revenue" />} />
+          ),
+        },
+        {
+          path: ROUTES.REVENUE_BY_ID,
           element: <PrivateRoute element={<Transaction />} />,
         },
         {
-          path: "/invest",
+          path: ROUTES.INVESTMENT,
           element: <PrivateRoute element={<BoardInvest />} />,
         },
         {
-          path: "/invest/add",
+          path: ROUTES.ADD_INVESTMENT,
           element: <PrivateRoute element={<PageAddInvest />} />,
         },
         {
-          path: "/invest/:status",
+          path: ROUTES.INVESTMENT_BY_STATUS,
           element: <PrivateRoute element={<PageInvestment />} />,
         },
         {
-          path: "/invest/:status/:id",
+          path: ROUTES.INVESTMENT_BY_ID,
           element: <PrivateRoute element={<Investment />} />,
         },
 
-        { path: "/stat", element: <PrivateRoute element={<Statistique />} /> },
-
-        { path: "/profil", element: <PrivateRoute element={<Profil />} /> },
-
-        { path: "/connexion", element: <Connexion /> },
-        { path: "/inscription", element: <Inscription /> },
         {
-          path: "/session-timed-out",
+          path: ROUTES.STATISTICS,
+          element: <PrivateRoute element={<Statistique />} />,
+        },
+
+        {
+          path: ROUTES.PROFILE,
+          element: <PrivateRoute element={<Profil />} />,
+        },
+
+        { path: ROUTES.LOGIN, element: <Connexion /> },
+        { path: ROUTES.SIGNUP, element: <Inscription /> },
+        {
+          path: ROUTES.SESSION_TIMED_OUT,
           element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
         },
       ],
