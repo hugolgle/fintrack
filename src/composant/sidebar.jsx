@@ -43,6 +43,39 @@ function Sidebar() {
   const userInfo = infoUser();
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
+  const menu = [
+    {
+      id: 1,
+      name: "Tableau de bord",
+      link: "/tdb",
+      icon: <LayoutDashboard />,
+    },
+    {
+      id: 2,
+      name: "Board dépense",
+      link: "/depense",
+      icon: <WalletCards />,
+    },
+    {
+      id: 3,
+      name: "Board recette",
+      link: "/recette",
+      icon: <Euro />,
+    },
+    {
+      id: 4,
+      name: "Board investissement",
+      link: "/invest",
+      icon: <HandCoins />,
+    },
+    {
+      id: 5,
+      name: "Statistiques",
+      link: "/stat",
+      icon: <BarChart />,
+    },
+  ];
+
   return (
     <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
       <Link
@@ -52,93 +85,26 @@ function Sidebar() {
         <Logo sidebar />
       </Link>
 
-      <div className="flex flex-col justify-between gap-4">
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <Link
-              to="/tdb"
-              className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-                activeLink.startsWith("/tdb") &&
-                "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
-              }`}
-            >
-              <LayoutDashboard />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="rounded-xl">
-            <p>Tableau de bord</p>
-          </TooltipContent>
-        </Tooltip>
-        <div className="flex flex-col">
-          <Tooltip delayDuration={0}>
+      <div className="flex flex-col justify-between gap-2">
+        {menu.map(({ id, name, link, icon }) => (
+          <Tooltip key={id} delayDuration={0}>
             <TooltipTrigger asChild>
               <Link
-                to="/depense"
+                to={link}
                 className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-                  activeLink.startsWith("/depense") &&
-                  "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                  activeLink.startsWith(link)
+                    ? "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                    : ""
                 }`}
               >
-                <WalletCards />
+                {icon}
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right" className="rounded-xl">
-              <p>Board dépense</p>
+              <p>{name}</p>
             </TooltipContent>
           </Tooltip>
-
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Link
-                to="/recette"
-                className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-                  activeLink.startsWith("/recette") &&
-                  "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
-                }`}
-              >
-                <Euro />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="rounded-xl">
-              <p>Board recette</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-
-        <div className="flex flex-col">
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Link
-                to="/invest"
-                className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-                  activeLink.startsWith("/invest") &&
-                  "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
-                }`}
-              >
-                <HandCoins />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="rounded-xl">
-              <p>Board investissement</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <Link
-              to="/stat"
-              className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-                activeLink.startsWith("/stat") &&
-                "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
-              }`}
-            >
-              <BarChart />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="rounded-xl">
-            <p>Stats</p>
-          </TooltipContent>
-        </Tooltip>
+        ))}
       </div>
 
       <div className="flex flex-col">
