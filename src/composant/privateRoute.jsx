@@ -1,9 +1,24 @@
 import { Navigate } from "react-router-dom";
-import { isConnected } from "../utils/users";
+import { useIsAuthenticated } from "../utils/users"; // Hook pour vérifier l'authentification
+import { toast } from "sonner"; // Pour afficher les messages d'erreur
+import Loader from "./loader"; // Composant de chargement
 import { ROUTES } from "./routes";
-import { toast } from "sonner";
+
 const PrivateRoute = ({ element }) => {
-  const isAuthenticated = isConnected();
+  const userId = localStorage.getItem("userId");
+
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (isError) {
+    toast.error(
+      "Une erreur s'est produite lors de la vérification de l'authentification."
+    );
+    return <Navigate to={ROUTES.LOGIN} />;
+  }
 
   if (!isAuthenticated) {
     toast.error("Vous n'êtes pas connecté !");

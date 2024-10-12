@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import {
   calculEconomie,
   calculMoyenne,
@@ -8,7 +7,6 @@ import {
   calculTotalByYear,
 } from "../../utils/calcul";
 import { convertDate, months } from "../../utils/fonctionnel";
-import { infoUser } from "../../utils/users";
 import BoxStat from "../../composant/Box/boxStat";
 import { CamembertStat } from "../../composant/Charts/camembertStat";
 import { Separator } from "@/components/ui/separator";
@@ -20,12 +18,42 @@ import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
-import Title from "../../composant/Text/title";
 import { Button } from "@/components/ui/button";
-import MainLayout from "../../layout/mainLayout";
+import { fetchTransactions } from "../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
+import { useCurrentUser } from "../../hooks/user.hooks";
+import Loader from "../../composant/loader";
 
 export default function Statistique() {
+  // Fetch user ID from local storage
+  const userId = localStorage.getItem("userId");
+
+  // Always call hooks, even if userId is missing or null
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(
+    userId || null
+  );
+  const {
+    data: transactionsData = [],
+    error: transactionsError,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchTransactions", userInfo?._id],
+    queryFn: async () => {
+      const response = await fetchTransactions(userInfo?._id);
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+      return response.data || []; // Default to an empty array if no data
+    },
+  });
+
+  // Log errors if any
+  if (transactionsError) {
+    console.error("Transactions Error:", transactionsError);
+  }
+
   const getCurrentMonthAndYear = () => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
@@ -33,20 +61,21 @@ export default function Statistique() {
     return { month: currentMonth, year: currentYear };
   };
 
-  const userInfo = infoUser();
   const { month: currentMonth, year: currentYear } = getCurrentMonthAndYear();
+
   const [selectedMonth, setSelectedMonth] = useState(
     String(currentMonth).padStart(2, "0")
   );
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [firstYear, setFirstYear] = useState(currentYear);
   const [filteredOperation, setFilteredOperation] = useState([]);
+  const [selectedByYear, setSelectedByYear] = useState(false);
 
-  const transactionReducer = useSelector((state) => state.transactionReducer);
-
+  // Always run useEffect for filtering transactions
   useEffect(() => {
-    setFilteredOperation(transactionReducer);
-  }, [transactionReducer]);
+    if (!Array.isArray(transactionsData)) return;
+    setFilteredOperation(transactionsData);
+  }, [transactionsData]);
 
   useEffect(() => {
     const yearsSet = new Set();
@@ -54,7 +83,7 @@ export default function Statistique() {
 
     filteredOperation?.forEach((transaction) => {
       const year = new Date(transaction.date).getFullYear();
-      if (transaction.user === userInfo.id) {
+      if (transaction.user === userInfo?._id) {
         yearsSet?.add(year);
         if (year < minYear) {
           minYear = year;
@@ -63,7 +92,7 @@ export default function Statistique() {
     });
 
     setFirstYear(minYear);
-  }, [filteredOperation, userInfo.id, currentYear]);
+  }, [filteredOperation, userInfo?._id, currentYear]);
 
   const clickMonth = (month) => {
     setSelectedMonth(month);
@@ -76,16 +105,17 @@ export default function Statistique() {
     } else {
       setSelectedMonth("01");
     }
+    refetch(); // Refetch data when year is changed
   };
-
-  const [selectedByYear, setSelectedByYear] = useState(false);
 
   const handleByMonth = () => {
     setSelectedByYear(false);
+    refetch(); // Refetch data when switched to monthly view
   };
 
   const handleByYear = () => {
     setSelectedByYear(true);
+    refetch(); // Refetch data when switched to yearly view
   };
 
   const generateYears = () => {
@@ -102,43 +132,73 @@ export default function Statistique() {
     }
     return Array.from({ length: 12 }, (_, i) => i + 1);
   };
+
   const selectedDate = `${selectedYear}${selectedMonth}`;
 
   const depenseYear = calculTotalByYear(
+    transactionsData,
     "Expense",
     `${selectedYear}`,
     null,
     null
   );
   const recetteYear = calculTotalByYear(
+    transactionsData,
     "Revenue",
     `${selectedYear}`,
     null,
     null
   );
 
-  const depenseMonth = calculTotalByMonth("Expense", selectedDate, null, null);
-  const recetteMonth = calculTotalByMonth("Revenue", selectedDate, null, null);
+  const depenseMonth = calculTotalByMonth(
+    transactionsData,
+    "Expense",
+    selectedDate,
+    null,
+    null
+  );
+  const recetteMonth = calculTotalByMonth(
+    transactionsData,
+    "Revenue",
+    selectedDate,
+    null,
+    null
+  );
 
   const nbMonth = generateMonths().length;
 
   const moyenneDepenseMois = calculMoyenne(
+    transactionsData,
     "Expense",
     `${selectedYear}`,
     nbMonth
   );
   const moyenneRecetteMois = calculMoyenne(
+    transactionsData,
     "Revenue",
     `${selectedYear}`,
     nbMonth
   );
 
-  const economieTotale = calculEconomie(`${selectedYear}`, null);
-  const economieMonth = calculEconomie(`${selectedYear}`, selectedMonth);
+  const economieTotale = calculEconomie(
+    transactionsData,
+    `${selectedYear}`,
+    null
+  );
+  const economieMonth = calculEconomie(
+    transactionsData,
+    `${selectedYear}`,
+    selectedMonth
+  );
   const moyenneEconomie = calculMoyenneEconomie(
     moyenneDepenseMois,
     moyenneRecetteMois
   );
+
+  // Handle loading state
+  if (loadingUser) {
+    return <Loader />;
+  }
 
   return (
     <section className="w-full">
@@ -263,14 +323,16 @@ export default function Statistique() {
                 transactions={
                   selectedByYear
                     ? getTransactionsByYear(
+                        transactionsData,
                         `${selectedYear}`,
-                        "Recette",
+                        "Revenue",
                         null,
                         null
                       )
                     : getTransactionsByMonth(
+                        transactionsData,
                         selectedDate,
-                        "Recette",
+                        "Revenue",
                         null,
                         null
                       )
@@ -307,12 +369,14 @@ export default function Statistique() {
                 transactions={
                   selectedByYear
                     ? getTransactionsByYear(
+                        transactionsData,
                         `${selectedYear}`,
                         "Expense",
                         null,
                         null
                       )
                     : getTransactionsByMonth(
+                        transactionsData,
                         selectedDate,
                         "Expense",
                         null,

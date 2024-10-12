@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const UserModel = require("../models/user.model");
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,7 +20,12 @@ module.exports.loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      return res.status(200).json(user);
+      // Générer un token JWT avec une expiration d'une heure
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      return res.status(200).json({ user, token }); // Retourner l'utilisateur et le token
     } else {
       return res
         .status(401)
@@ -149,6 +155,29 @@ module.exports.deleteUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la suppression de l'utilisateur",
+      error,
+    });
+  }
+};
+
+module.exports.getCurrentUser = async (req, res) => {
+  try {
+    // Récupérer l'ID de l'utilisateur depuis les paramètres de la requête ou un token
+    const userId = req.params.id; // Si vous passez l'ID en paramètre
+
+    // Rechercher l'utilisateur par ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Retourner les informations de l'utilisateur sans le mot de passe
+    const { password, ...userData } = user.toObject(); // Exclure le mot de passe des données renvoyées
+    return res.status(200).json(userData);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la récupération de l'utilisateur",
       error,
     });
   }

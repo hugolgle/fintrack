@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { addUser } from "../../redux/actions/user.action";
-import Title from "../../composant/Text/title";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { toast } from "sonner"; // Ensure you're using the right toast library
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { EyeOff, Eye } from "lucide-react";
+import { ROUTES } from "../../composant/routes";
+import { useAddUser } from "../../hooks/user.hooks"; // Ensure this path is correct
+import Title from "../../composant/Text/title";
 
 export default function Inscription() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { mutate: addUser, isLoading } = useAddUser(); // Destructure mutate and isLoading
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +22,9 @@ export default function Inscription() {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const passwordRef = useRef(null); // Référence pour l'input de mot de passe
+  const passwordRef = useRef(null);
 
-  const handleNewUser = async (e) => {
+  const handleNewUser = (e) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -38,20 +38,25 @@ export default function Inscription() {
       formData.append("img", image);
     }
 
-    try {
-      await dispatch(addUser(formData));
-      toast.success("Inscription réussie !");
-      setUsername("");
-      setPassword("");
-      setPseudo("");
-      setNom("");
-      setPrenom("");
-      setImage(null);
-      setImagePreview(null);
-      navigate(ROUTES.LOGIN);
-    } catch (err) {
-      toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
-    }
+    // Use the addUser mutation
+    addUser(formData, {
+      onSuccess: () => {
+        toast.success("Inscription réussie !");
+        // Clear form fields after success
+        setUsername("");
+        setPassword("");
+        setPseudo("");
+        setNom("");
+        setPrenom("");
+        setImage(null);
+        setImagePreview(null);
+        navigate(ROUTES.LOGIN);
+      },
+      onError: (error) => {
+        console.error("Error adding user:", error); // Debugging line
+        toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+      },
+    });
   };
 
   const handleImageChange = (e) => {
@@ -69,20 +74,19 @@ export default function Inscription() {
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev); // Bascule la visibilité
+    setShowPassword((prev) => !prev);
   };
 
-  // Gestion des clics en dehors de l'input de mot de passe
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (passwordRef.current && !passwordRef.current.contains(event.target)) {
-        setShowPassword(false); // Cacher le mot de passe si le clic est à l'extérieur
+        setShowPassword(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside); // Écouter les clics
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // Nettoyer l'écouteur
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [passwordRef]);
 
@@ -121,7 +125,7 @@ export default function Inscription() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setShowPassword(false); // Optionnel : Cacher le mot de passe après modification
+                  setShowPassword(false);
                 }}
                 required
               />
@@ -202,8 +206,13 @@ export default function Inscription() {
           </Avatar>
         )}
 
-        <Button variant="outline" className="rounded-xl " type="submit">
-          S'inscrire
+        <Button
+          variant="outline"
+          className="rounded-xl"
+          type="submit"
+          disabled={isLoading}
+        >
+          {isLoading ? "En cours..." : "S'inscrire"}
         </Button>
       </form>
 

@@ -1,36 +1,24 @@
-// import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
-import { getInitials, infoUser } from "../../utils/users";
-import { editUser } from "../../redux/actions/user.action";
-import { formatDate } from "../../utils/fonctionnel";
-import Title from "../../composant/Text/title";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
+import { getInitials } from "../../utils/users";
 import { SheetEditProfile } from "../../composant/sheetEditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Header from "../../composant/header";
+import { useCurrentUser } from "../../hooks/user.hooks";
+import { Loader } from "lucide-react";
+import { formatDate } from "../../utils/fonctionnel";
 
 export default function Profil() {
-  const userInfo = infoUser();
-  // const navigate = useNavigate();
-  // const [selectedDelete, setSelectedDelete] = useState(false);
-
-  // const handleDeleteConfirmation = async () => {
-  //   const confirmed = window.confirm("Cette action est irréversible ?");
-  //   if (confirmed) {
-  //     await dispatch(deleteUser(userInfo.id) as any);
-  //     navigate(ROUTES.HOME);
-  //   } else {
-  //     setSelectedDelete(false);
-  //   }
-  // };
+  const userId = localStorage.getItem("userId");
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  if (loadingUser) {
+    return <Loader />;
+  }
 
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
   return (
     <section className="w-full">
-      <div className="flex flex-col gap-4">
-        <Title title="Profil" />
+      <div className="flex flex-col">
+        <Header title="Profil" />
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex-col w-3/4 py-12 bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl gap-6">
             <div className="relative">
@@ -48,68 +36,37 @@ export default function Profil() {
             </div>
             <div>
               <p>Prénom :</p>
-
               <p>
-                <b>{userInfo.prenom}</b>
+                <b>{userInfo?.prenom}</b>
               </p>
             </div>
             <div>
               <p>Nom :</p>
-
               <p>
-                <b>{userInfo.nom}</b>
+                <b>{userInfo?.nom}</b>
               </p>
             </div>
             <div>
               <p>E-mail :</p>
-
               <p>
-                <b>{userInfo.username}</b>
+                <b>{userInfo?.username}</b>
               </p>
             </div>
             <div>
               <p>Pseudo :</p>
-
               <p>
-                <b>{userInfo.pseudo}</b>
+                <b>{userInfo?.pseudo}</b>
               </p>
             </div>
             <div>
               <p>Inscript le :</p>
               <p>
-                <b>{formatDate(userInfo.date)}</b>
+                <b>{formatDate(userInfo?.createdAt)}</b>
               </p>
             </div>
           </div>
 
           <div className="flex flex-col w-3/4 gap-4">
-            {/* {selectedDelete ? (
-              <div className="flex flex-col gap-4 h-40 justify-center items-center">
-                <p className="text-sm">Êtes-vous sûr ?</p>
-                <div className="flex gap-4">
-                  <div
-                    className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
-                    onClick={handleDeleteConfirmation}
-                  >
-                    Oui
-                  </div>
-                  <div
-                    className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
-                    onClick={() => setSelectedDelete(false)}
-                  >
-                    Non
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div
-                className={`h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95`}
-                onClick={() => setSelectedDelete(true)}
-              >
-                Supprimer mon compte
-              </div>
-            )} */}
-
             <SheetEditProfile
               btnOpen={
                 <div className="h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95">
@@ -118,7 +75,6 @@ export default function Profil() {
               }
               dataProfil={userInfo}
             />
-
             <div className="h-full w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               Exporter les données
             </div>

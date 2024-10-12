@@ -1,64 +1,70 @@
 import { useEffect, useState } from "react";
 
 function BoxStat(props) {
-  const [currentMontant, setCurrentMontant] = useState(0); // État local pour le amount animé
-  const [previousMontant, setPreviousMontant] = useState(0); // État pour le amount précédent
+  const [currentMontant, setCurrentMontant] = useState(0); // State for animated amount
+  const [previousMontant, setPreviousMontant] = useState(0); // State for previous amount
 
-  // Nettoyer les espaces, les virgules et convertir en nombre, tout en prenant en compte les montants négatifs
+  // Convert props.amount to a number
+  const amountAsString = String(props.amount || 0);
+
+  // Clean spaces and convert to number, handling negatives
   const targetMontant = parseFloat(
-    props.amount.replace(/\s/g, "").replace(",", ".")
+    amountAsString.replace(/\s/g, "").replace(",", ".")
   );
 
-  let bgColor = "";
+  // If targetMontant is NaN, default it to 0
+  const validTargetMontant = isNaN(targetMontant) ? 0 : targetMontant;
 
+  // Determine background color based on the type
+  let bgColor = "";
   if (props.type === "Expense") {
     bgColor = "bg-red-600";
   } else if (props.type === "Revenue") {
     bgColor = "bg-green-600";
   } else if (props.type === "State") {
-    bgColor = targetMontant >= 0 ? "bg-green-600" : "bg-red-600";
+    bgColor = validTargetMontant >= 0 ? "bg-green-600" : "bg-red-600";
   }
 
   useEffect(() => {
-    // Démarre l'animation à partir du amount précédent
+    // Start animation from previous amount
     let startMontant = previousMontant;
-    const duration = 1000; // Durée de l'animation en ms
-    const stepTime = 10; // Temps entre chaque incrément
+    const duration = 200; // Animation duration in ms
+    const stepTime = 10; // Time between increments
 
-    const difference = targetMontant - previousMontant; // Différence entre le amount précédent et le amount cible
+    const difference = validTargetMontant - previousMontant; // Difference between previous and target amount
     const incrementMontant = difference / (duration / stepTime);
 
     const timer = setInterval(() => {
       startMontant += incrementMontant;
       if (
-        (incrementMontant > 0 && startMontant >= targetMontant) ||
-        (incrementMontant < 0 && startMontant <= targetMontant)
+        (incrementMontant > 0 && startMontant >= validTargetMontant) ||
+        (incrementMontant < 0 && startMontant <= validTargetMontant)
       ) {
-        setCurrentMontant(targetMontant); // Fixe la valeur finale
-        clearInterval(timer); // Stoppe l'intervalle lorsque le amount est atteint
+        setCurrentMontant(validTargetMontant); // Set final value
+        clearInterval(timer); // Stop interval when target is reached
       } else {
-        setCurrentMontant(Math.round(startMontant * 100) / 100); // Arrondit à 2 décimales
+        setCurrentMontant(Math.round(startMontant * 100) / 100); // Round to 2 decimals
       }
     }, stepTime);
 
-    return () => clearInterval(timer); // Nettoyage de l'intervalle lors du démontage du composant
-  }, [targetMontant, previousMontant]);
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, [validTargetMontant, previousMontant]);
 
   useEffect(() => {
-    // Met à jour le amount précédent lorsque le amount cible change
+    // Update previous amount when target amount changes
     setPreviousMontant(currentMontant);
-  }, [targetMontant]);
+  }, [currentMontant]);
 
-  // Fonction pour formater le amount avec des espaces entre les milliers
+  // Format amount with spaces for thousands
   const formatMontant = (amount) => {
-    const sign = amount < 0 ? "-" : ""; // Conserver le signe négatif
-    const absoluteMontant = Math.abs(amount); // Utiliser la valeur absolue pour le formatage
+    const sign = amount < 0 ? "-" : ""; // Preserve negative sign
+    const absoluteMontant = Math.abs(amount); // Use absolute value for formatting
 
     return (
       sign +
       absoluteMontant
-        .toFixed(2) // Arrondir à 2 décimales
-        .replace(/\B(?=(\d{3})+(?!\d))/g, " ") // Ajouter les espaces entre les milliers
+        .toFixed(2) // Round to 2 decimals
+        .replace(/\B(?=(\d{3})+(?!\d))/g, " ") // Add spaces for thousands
     );
   };
 
@@ -74,7 +80,7 @@ function BoxStat(props) {
           {props.selectedYear}
         </p>
       </div>
-      <p className="text-2xl">{formatMontant(currentMontant)} €</p>{" "}
+      <p className="text-2xl">{formatMontant(currentMontant)} €</p>
     </div>
   );
 }

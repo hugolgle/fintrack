@@ -16,11 +16,42 @@ import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
 import { categoryDepense } from "../../../public/categories.json";
 import { getLastSixMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
-import Title from "../../composant/Text/title";
-import { Link } from "react-router-dom";
+import { fetchTransactions } from "../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
+import { fetchInvestments } from "../../service/investment.service";
+import Loader from "../../composant/loader";
 
 export default function TableauDeBord() {
+  const userId = localStorage.getItem("userId");
+  const { isLoading, data: dataTransac } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response.data;
+    },
+  });
+
+  const { data: dataInvest } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response?.data;
+    },
+  });
+
   const getCurrentMonthAndYear = () => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
@@ -34,19 +65,21 @@ export default function TableauDeBord() {
   const currentDate = `${currentYear}${newCurrentMonth}`;
 
   const amountRevenuesMonth = calculTotalByMonth(
+    dataTransac,
     "Revenue",
     currentDate,
     null,
     null
   );
   const amountExpensesMonth = calculTotalByMonth(
+    dataTransac,
     "Expense",
     currentDate,
     null,
     null
   );
 
-  const InvestCurrentMonth = calculInvestByMonth(currentDate);
+  const InvestCurrentMonth = calculInvestByMonth(dataInvest, currentDate);
 
   const getPreviousMonthAndYear = (month, year) => {
     let prevMonth = month - 1;
@@ -67,12 +100,14 @@ export default function TableauDeBord() {
   const previousDate = `${previousYear}${newPreviousMonth}`;
 
   const amountRevenuesLastMonth = calculTotalByMonth(
+    dataTransac,
     "Revenue",
     previousDate,
     null,
     null
   );
   const amountExpensesLastMonth = calculTotalByMonth(
+    dataTransac,
     "Expense",
     previousDate,
     null,
@@ -80,18 +115,34 @@ export default function TableauDeBord() {
   );
 
   const economiesCurrentMonth = calculEconomie(
+    dataTransac,
     `${currentYear}`,
     newCurrentMonth
   );
 
-  const investLastMonth = calculInvestByMonth(previousDate);
+  const investLastMonth = calculInvestByMonth(dataInvest, previousDate);
 
-  const economieLastMonth = calculEconomie(`${previousYear}`, newPreviousMonth);
+  const economieLastMonth = calculEconomie(
+    dataTransac,
+    `${previousYear}`,
+    newPreviousMonth
+  );
 
-  const lastTransactions = getLastTransactionsByType(null, 6, false);
+  const lastTransactions = getLastTransactionsByType(
+    dataTransac,
+    null,
+    6,
+    false
+  );
 
   const formatData = (data) => {
-    const cleanedData = data.replace(/[^\d.-]/g, "").replace(/ /g, "");
+    if (data === null || data === undefined) {
+      return "0.00";
+    }
+
+    const cleanedData = String(data)
+      .replace(/[^\d.-]/g, "")
+      .replace(/ /g, "");
     const absoluteValue = Math.abs(parseFloat(cleanedData));
 
     return absoluteValue.toFixed(2);
@@ -141,17 +192,24 @@ export default function TableauDeBord() {
     }
   });
 
-  const dataDf = calculTotalByMonth("Expense", month, categoriesDf, null);
+  const dataDf = calculTotalByMonth(
+    dataTransac,
+    "Expense",
+    month,
+    categoriesDf,
+    null
+  );
   const dataLoisir = calculTotalByMonth(
+    dataTransac,
     "Expense",
     month,
     categoriesLoisir,
     null
   );
 
-  const total = calculTotalByMonth("Revenue", month, null, null);
+  const total = calculTotalByMonth(dataTransac, "Revenue", month, null, null);
 
-  const montantInvest = calculInvestByMonth(month);
+  const montantInvest = calculInvestByMonth(dataInvest, month);
 
   const [graphMonth, setGraphMonth] = useState(currentDate);
 
@@ -189,9 +247,21 @@ export default function TableauDeBord() {
   const montantInvestByMonth = [];
 
   lastSixMonths.forEach(({ code }) => {
-    const amountExpenses = calculTotalByMonth("Expense", code, null, null);
-    const amountRevenues = calculTotalByMonth("Revenue", code, null, null);
-    const montantInvests = calculInvestByMonth(code);
+    const amountExpenses = calculTotalByMonth(
+      dataTransac,
+      "Expense",
+      code,
+      null,
+      null
+    );
+    const amountRevenues = calculTotalByMonth(
+      dataTransac,
+      "Revenue",
+      code,
+      null,
+      null
+    );
+    const montantInvests = calculInvestByMonth(dataInvest, code);
 
     amountExpenseByMonth.push(formatData(amountExpenses));
     amountRevenueByMonth.push(formatData(amountRevenues));
@@ -211,6 +281,11 @@ export default function TableauDeBord() {
 
   const lastMonth = lastSixMonths[lastSixMonths.length - 1];
 
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <>
       <section className="w-full">
@@ -226,7 +301,7 @@ export default function TableauDeBord() {
                   {lastTransactions.map((transaction) => (
                     <tr
                       key={transaction._id}
-                      className={`bg-opacity-15 rounded h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
+                      className={`bg-opacity-15 rounded-lg h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
                     >
                       <td className="w-full">
                         {convertirFormatDate(transaction.date)}

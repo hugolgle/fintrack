@@ -2,19 +2,11 @@
 
 import { separateMillier } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { infoUser } from "../../utils/users";
-import {
-  addInvestments,
-  getInvestments,
-} from "../../redux/actions/investment.action";
-import BtnReturn from "../../composant/Button/btnReturn";
-import { getAllInvestments } from "../../utils/operations";
-import Title from "../../composant/Text/title";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation } from "@tanstack/react-query"; // Importer useMutation
 
 import {
   Popover,
@@ -32,14 +24,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import MainLayout from "../../layout/mainLayout";
 import Header from "../../composant/header";
+import {
+  addInvestment,
+  fetchInvestments,
+} from "../../service/investment.service";
+import { useQuery } from "@tanstack/react-query";
+import { useCurrentUser } from "../../hooks/user.hooks";
+import { Loader } from "lucide-react";
 
 export default function PageAddInvest() {
-  const userInfo = infoUser();
-  const getInvest = getAllInvestments(null);
+  const userId = localStorage.getItem("userId");
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+
+  const { data } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments(userInfo?._id);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response?.data;
+    },
+  });
+
   const suggestionsTitle = Array.from(
-    new Set(getInvest.map((investment) => investment.title))
+    new Set(data?.map((investment) => investment.title))
   );
 
   const [selectedDate, setSelectedDate] = useState(new Date()); // Utilisation de la date actuelle par défaut
@@ -47,11 +60,25 @@ export default function PageAddInvest() {
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
-  const dispatch = useDispatch();
+
+  // Mutation pour ajouter un investissement
+  const addInvestmentMutation = useMutation({
+    mutationFn: async (postData) => {
+      const response = await addInvestment(postData, userInfo?._id); // Envoyer les données à l'API
+      return response; // Assurez-vous que votre API renvoie une réponse appropriée
+    },
+    onSuccess: () => {
+      resetForm();
+      toast.success("Votre investissement a été ajouté !");
+    },
+    onError: () => {
+      toast.error("Une erreur s'est produite lors de l'ajout de l'opération");
+    },
+  });
 
   useEffect(() => {
     if (selectedTitle) {
-      const lastInvestment = getInvest
+      const lastInvestment = data
         .filter((investment) => investment.title === selectedTitle)
         .sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -61,36 +88,34 @@ export default function PageAddInvest() {
         setSelectedType(lastInvestment.type || "");
       }
     }
-  }, [selectedTitle, getInvest]);
+  }, [selectedTitle, data]);
 
   const resetForm = () => {
     setSelectedDetail("");
     setSelectedType("");
     setSelectedTitle("");
     setSelectedMontant("");
+    setSelectedDate(new Date()); // Réinitialiser la date également
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const postData = {
-      user: userInfo.id,
+      user: userInfo?.id,
       type: selectedType,
       title: selectedTitle,
       detail: selectedDetail,
-      date: selectedDate.toISOString().split("T")[0], // Envoi de la date au format ISO
+      date: new Date(selectedDate.setHours(0, 0, 0, 0)).toLocaleDateString(
+        "fr-CA"
+      ),
       amount: separateMillier(selectedMontant),
     };
 
-    try {
-      await dispatch(addInvestments(postData));
-      dispatch(getInvestments());
-      resetForm();
-      toast.success("Votre investissement a été ajouté !");
-    } catch {
-      toast.error("Une erreur s'est produite lors de l'ajout de l'opération");
-    }
+    addInvestmentMutation.mutate(postData); // Utiliser mutate pour ajouter l'investissement
   };
+
+  if (loadingUser) return <Loader />;
 
   return (
     <section className="h-full">

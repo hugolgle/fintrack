@@ -19,15 +19,19 @@ import {
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
-import { infoUser } from "../utils/users";
 import { ROUTES } from "./routes";
+import { useCurrentUser } from "../hooks/user.hooks";
+import { Loader } from "lucide-react";
 
 export function DropdownProfil({ btnOpen, handleLogout }) {
+  const userId = localStorage.getItem("userId");
+  const { data: userInfo, isLoading } = useCurrentUser(userId);
+  if (isLoading) {
+    return <Loader />;
+  }
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
-
-  const userInfo = infoUser();
 
   const handleProfileClick = () => {
     setOpen(false);
@@ -47,9 +51,7 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="ml-3">
-        <DropdownMenuLabel className="text-center font-light">
-          {userInfo.prenom}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"

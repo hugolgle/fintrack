@@ -1,8 +1,6 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { logoutUser } from "../redux/actions/user.action";
-import { getInitials, infoUser, isConnected } from "../utils/users";
+import { getInitials, useIsAuthenticated } from "../utils/users"; // Assurez-vous d'utiliser le hook ici
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -21,18 +19,21 @@ import { toast } from "sonner";
 import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
 import { ROUTES } from "./routes";
+import { useCurrentUser, useLogout } from "../hooks/user.hooks";
+import Loader from "./loader";
 
 function Sidebar() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isAuthenticated = isConnected();
-
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
+  const userId = localStorage.getItem("userId");
+  // Récupérer les informations de l'utilisateur actuel
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId); // Utilisez le hook ici
+
+  // Utiliser le hook useLogout
+  const logoutMutation = useLogout();
 
   const logout = () => {
-    dispatch(logoutUser());
-    navigate(ROUTES.HOME);
+    logoutMutation.mutate(); // Appelle la mutation de déconnexion
     toast.success("Vous vous êtes déconnecté !");
   };
 
@@ -40,9 +41,15 @@ function Sidebar() {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const userInfo = infoUser();
+  // Utilisateur
+
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  if (loadingUser) {
+    return <Loader />;
+  }
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
+  // Menu de la sidebar
   const menu = [
     {
       id: 1,
@@ -76,6 +83,11 @@ function Sidebar() {
     },
   ];
 
+  // Affichez un message d'erreur si l'authentification échoue
+  if (isError) {
+    toast.error("Erreur lors de la vérification de l'authentification");
+  }
+
   return (
     <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
       <Link
@@ -108,7 +120,7 @@ function Sidebar() {
       </div>
 
       <div className="flex flex-col">
-        {isAuthenticated === true ? (
+        {isAuthenticated ? ( // Si l'utilisateur est authentifié
           <DropdownProfil
             btnOpen={
               <Avatar className="w-12 h-12 hover:scale-95 transition-all">
@@ -121,7 +133,7 @@ function Sidebar() {
                 </AvatarFallback>
               </Avatar>
             }
-            handleLogout={logout}
+            handleLogout={logout} // Utiliser la nouvelle fonction logout
           />
         ) : (
           <Link

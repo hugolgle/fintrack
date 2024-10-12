@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { subMonths, startOfMonth } from "date-fns";
 
 export const months = [
@@ -34,18 +33,14 @@ export function getCurrentMonth() {
 
 // -------------------------------- Transactions
 
-export function getAllTransactions() {
-  const transactions = useSelector((state) => state.transactionReducer || []);
-
-  return transactions;
-}
-
-export function getTransactionsByType(type, filterCategory, filterTitle) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
+export function getTransactionsByType(data, type, filterCategory, filterTitle) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
 
   let filteredTransactions = type
-    ? transactions.filter((transaction) => transaction.type === type)
-    : transactions;
+    ? data?.filter((transaction) => transaction.type === type)
+    : data;
 
   if (filterCategory && filterCategory.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction) =>
@@ -67,16 +62,20 @@ export function getTransactionsByType(type, filterCategory, filterTitle) {
   });
 }
 
-export function getTransactionById(id) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
+export function getTransactionById(data, id) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
   if (id) {
-    return transactions.find((transaction) => transaction._id === id);
+    return data?.find((transaction) => transaction._id === id);
   } else {
     return null;
   }
 }
 
 export function getTransactionsByMonth(
+  data,
   month,
   type,
   filterCategory,
@@ -84,9 +83,11 @@ export function getTransactionsByMonth(
 ) {
   const targetMonth = `${month.slice(0, 4)}-${month.slice(4)}`;
 
-  const transactions = useSelector((state) => state.transactionReducer || []);
+  if (!Array.isArray(data)) {
+    return [];
+  }
 
-  let transactionsInMonth = transactions.filter((transaction) => {
+  let transactionsInMonth = data?.filter((transaction) => {
     const transactionDate = transaction.date.split("T")[0];
     const transactionMonth = transactionDate.slice(0, 7);
 
@@ -121,10 +122,18 @@ export function getTransactionsByMonth(
   return transactionsInMonth;
 }
 
-export function getTransactionsByYear(year, type, filterCategory, filterTitle) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
+export function getTransactionsByYear(
+  data,
+  year,
+  type,
+  filterCategory,
+  filterTitle
+) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
 
-  let transactionsInYear = transactions.filter((transaction) => {
+  let transactionsInYear = data?.filter((transaction) => {
     const transactionYear = transaction.date.slice(0, 4);
     return transactionYear === year;
   });
@@ -157,19 +166,18 @@ export function getTransactionsByYear(year, type, filterCategory, filterTitle) {
   return transactionsInYear;
 }
 
-export function getLastTransactionsByType(type, number, month) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
+export function getLastTransactionsByType(data, type, number, month) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
+  let filteredTransactions = data;
 
-  let filteredTransactions = transactions;
-
-  // Filter by type if type is not null
   if (type !== null) {
-    filteredTransactions = transactions.filter(
+    filteredTransactions = data?.filter(
       (transaction) => transaction.type === type
     );
   }
 
-  // Filter by current month if month is true
   if (month) {
     const getCurrentMonthAndYear = () => {
       const currentDate = new Date();
@@ -202,8 +210,10 @@ export function getLastTransactionsByType(type, number, month) {
   return lastTransactions;
 }
 
-export function getLastSubscribe() {
-  const transactions = useSelector((state) => state.transactionReducer || []);
+export function getLastSubscribe(data) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
 
   // Helper function to get the start date (31 days ago) and end date (today)
   const getDateRange = () => {
@@ -225,7 +235,7 @@ export function getLastSubscribe() {
   const { startDate, endDate } = getDateRange();
 
   // Step 1: Filter transactions for the category 'Abonnement'
-  let filteredTransactions = transactions.filter(
+  let filteredTransactions = data?.filter(
     (transaction) => transaction.category === "Abonnement"
   );
 
@@ -248,13 +258,14 @@ export function getLastSubscribe() {
 
 // -------------------------------- Investissements
 
-export function getAllInvestments(isSold) {
-  const investments = useSelector((state) => state.investmentReducer || []);
-
+export function getAllInvestments(data, isSold) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
   const filteredInvestments =
     isSold !== null
-      ? investments.filter((investment) => investment.isSold === isSold)
-      : investments;
+      ? data?.filter((investment) => investment.isSold === isSold)
+      : data;
 
   return filteredInvestments.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -264,13 +275,14 @@ export function getAllInvestments(isSold) {
   });
 }
 
-export function getInvestmentsByTitle(title) {
-  const investments = useSelector((state) => state.investmentReducer || []);
-
+export function getInvestmentsByTitle(data, title) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
   if (title) {
     const formattedTitle = title.toLowerCase().replace(/\s+/g, "");
 
-    const filteredInvestments = investments.filter((investment) => {
+    const filteredInvestments = data?.filter((investment) => {
       const investTitle = investment.title
         ? investment.title.toLowerCase().replace(/\s+/g, "")
         : "";
@@ -283,10 +295,12 @@ export function getInvestmentsByTitle(title) {
   }
 }
 
-export function getInvestmentById(id) {
-  const investments = useSelector((state) => state.investmentReducer || []);
+export function getInvestmentById(data, id) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
   if (id) {
-    return investments.find((investment) => investment._id === id);
+    return data?.find((investment) => investment._id === id);
   } else {
     return null;
   }
@@ -294,15 +308,16 @@ export function getInvestmentById(id) {
 
 // -------------------------------- Titles
 
-export function getTitleOfTransactionsByType(type) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
-
+export function getTitleOfTransactionsByType(data, type) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
   // Calculer la date de début des deux derniers mois
   const currentDate = new Date();
   const startDate = startOfMonth(subMonths(currentDate, 2));
 
   // Filtrer les transactions par type et par date
-  const filteredTransactions = transactions.filter((transaction) => {
+  const filteredTransactions = data?.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
     return transaction.type === type && transactionDate >= startDate;
   });
@@ -328,12 +343,13 @@ export function getTitleOfTransactionsByType(type) {
 
 // -------------------------------- Auto complete form
 
-export function getLatestTransactionByTitle(title, type) {
-  const transactions = useSelector((state) => state.transactionReducer || []);
-
+export function getLatestTransactionByTitle(data, title, type) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
   let filteredTransactions = type
-    ? transactions.filter((transaction) => transaction.type === type)
-    : transactions;
+    ? data?.filter((transaction) => transaction.type === type)
+    : data;
 
   const filteredByTitle = filteredTransactions.filter(
     (transaction) => transaction.title === title
@@ -376,7 +392,7 @@ export function aggregateTransactions(transactions) {
 
 export function generateChartConfig(data) {
   const config = {};
-  data.forEach((item, index) => {
+  data?.forEach((item, index) => {
     const key = item.nomCate.replace(/\s+/g, "").toLowerCase();
     config[key] = {
       label: item.nomCate,

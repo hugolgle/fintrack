@@ -10,66 +10,74 @@ import {
 } from "../../../utils/calcul";
 import Header from "../../../composant/header";
 import { useParams } from "react-router-dom/dist/umd/react-router-dom.development";
+import { useQuery } from "@tanstack/react-query";
+import { fetchInvestments } from "../../../service/investment.service";
+import Loader from "../../../composant/loader";
 
 export default function PageInvestment() {
+  const userId = localStorage.getItem("userId");
+
+  // Ensure useParams is always called, regardless of render flow
+  const { status } = useParams();
+  const investmentTitle = status || "Investissement inconnu";
+
+  // State Hooks
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectOpe, setSelectOpe] = useState(false);
   const [clickResearch, setClickResearch] = useState(false);
 
+  // Fetch investments data
+  const { isLoading, data } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments(userId);
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+      return response.data;
+    },
+  });
+
+  // Keep hook order consistent, even when loading
+  let investissements = [];
+  let totalInvestissement = 0;
+  let nombreTransactions = 0;
+
+  if (!isLoading && data) {
+    // Prepare investissements and other variables based on the status
+    switch (status) {
+      case "all":
+        investissements = data;
+        totalInvestissement = calculTotalInvestment(data, null, "");
+        nombreTransactions = data.length;
+        break;
+      case "sold":
+        investissements = getAllInvestments(data, true);
+        totalInvestissement = calculTotalInvestment(data, true, "");
+        nombreTransactions = investissements.length;
+        break;
+      case "inprogress":
+        investissements = getAllInvestments(data, false);
+        totalInvestissement = calculTotalInvestment(data, false, "");
+        nombreTransactions = investissements.length;
+        break;
+      default:
+        investissements = getInvestmentsByTitle(data, investmentTitle);
+        totalInvestissement = calculTotalInvestmentByTitle(
+          data,
+          null,
+          investmentTitle
+        );
+        nombreTransactions = investissements.length;
+        break;
+    }
+  }
+
   const handleSelectOpe = () => {
     setSelectOpe(!selectOpe);
   };
-  const { status } = useParams();
-  const investmentTitle = status || "Investissement inconnu";
-
-  let investissements;
-  switch (status) {
-    case "all":
-      investissements = getAllInvestments(null);
-      break;
-    case "sold":
-      investissements = getAllInvestments(true);
-      break;
-    case "inprogress":
-      investissements = getAllInvestments(false);
-      break;
-    default:
-      investissements = getInvestmentsByTitle(investmentTitle);
-      break;
-  }
-
-  let totalInvestissement;
-  switch (status) {
-    case "all":
-      totalInvestissement = calculTotalInvestment(null, "");
-      break;
-    case "sold":
-      totalInvestissement = calculTotalInvestment(true, "");
-      break;
-    case "inprogress":
-      totalInvestissement = calculTotalInvestment(false, "");
-      break;
-    default:
-      totalInvestissement = calculTotalInvestmentByTitle(null, investmentTitle);
-      break;
-  }
-
-  let nombreTransactions;
-  switch (status) {
-    case "all":
-      nombreTransactions = getAllInvestments(null).length;
-      break;
-    case "sold":
-      nombreTransactions = getAllInvestments(true).length;
-      break;
-    case "inprogress":
-      nombreTransactions = getAllInvestments(false).length;
-      break;
-    default:
-      nombreTransactions = getInvestmentsByTitle(investmentTitle).length;
-      break;
-  }
 
   const performSearch = (term) => {
     const filteredInvestments = investissements.filter((investment) => {
@@ -101,51 +109,24 @@ export default function PageInvestment() {
     }
   }, [searchTerm, investissements]);
 
+  // Define the columns based on the status
   const columns = [
-    {
-      id: 1,
-      name: "ID",
-    },
-    {
-      id: 3,
-      name: "Type",
-    },
-    {
-      id: 2,
-      name: "Titre",
-    },
-    {
-      id: 4,
-      name: "Date",
-    },
-    ...(status === "all"
-      ? [
-          {
-            id: 5,
-            name: "Status",
-          },
-        ]
-      : []),
-    {
-      id: status === "inprogress" ? 6 : 5,
-      name: "Montant investi",
-    },
+    { id: 1, name: "ID" },
+    { id: 3, name: "Type" },
+    { id: 2, name: "Titre" },
+    { id: 4, name: "Date" },
+    ...(status === "all" ? [{ id: 5, name: "Status" }] : []),
+    { id: status === "inprogress" ? 6 : 5, name: "Montant investi" },
     ...(status === "sold"
       ? [
-          {
-            id: 5,
-            name: "Montant vendu",
-          },
-          {
-            id: 5,
-            name: "Bénéfice/Déficit",
-          },
+          { id: 5, name: "Montant vendu" },
+          { id: 5, name: "Bénéfice/Déficit" },
         ]
       : []),
   ];
 
+  // Determine the display title based on the status
   let statusType = "";
-
   switch (status) {
     case "sold":
       statusType = "vendus";
@@ -156,6 +137,11 @@ export default function PageInvestment() {
     default:
       statusType = "";
       break;
+  }
+
+  // Handle loading state
+  if (isLoading) {
+    return <Loader />;
   }
 
   return (

@@ -20,7 +20,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
   const handleSelectAllRow = (checked) => {
     setSelectAllRow(checked);
     const newSelectedRows = {};
-    data.forEach((transaction) => {
+    data?.forEach((transaction) => {
       newSelectedRows[transaction._id] = checked;
     });
     setSelectedRows(newSelectedRows);
@@ -42,7 +42,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
 
   const calculMontantSelect = () => {
     let total = 0;
-    data.forEach((transaction) => {
+    data?.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
         total += parseFloat(transaction.amount);
       }

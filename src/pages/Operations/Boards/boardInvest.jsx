@@ -1,41 +1,67 @@
 import { Link } from "react-router-dom";
-import { getAllInvestments } from "../../../utils/operations";
+import { useQuery } from "@tanstack/react-query";
+import { fetchInvestments } from "../../../service/investment.service";
 import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
 import { formatDateBis } from "../../../utils/fonctionnel";
 import Header from "../../../composant/header";
+import { toast } from "sonner";
+import Loader from "../../../composant/loader";
 
 export default function BoardInvest() {
-  const getInvest = getAllInvestments(null);
+  const userId = localStorage.getItem("userId");
+  const { isLoading, data } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments(userId);
 
-  const firstDateByTitle = getInvest.reduce((acc, investment) => {
-    const { title, date } = investment;
-    if (!acc[title] || new Date(date) < new Date(acc[title])) {
-      acc[title] = date;
-    }
-    return acc;
-  }, {});
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
 
-  const uniqueInvest = getInvest.filter((investment) => {
-    return (
-      new Date(investment.date).getTime() ===
-      new Date(firstDateByTitle[investment.title]).getTime()
-    );
+      return response.data;
+    },
   });
 
-  const investmentCountByTitle = getInvest.reduce((acc, investment) => {
-    const { title } = investment;
-    acc[title] = (acc[title] || 0) + 1;
-    return acc;
-  }, {});
+  // Calcul de la première date pour chaque titre
+  const firstDateByTitle = Array.isArray(data)
+    ? data?.reduce((acc, investment) => {
+        const { title, date } = investment;
+        if (!acc[title] || new Date(date) < new Date(acc[title])) {
+          acc[title] = date;
+        }
+        return acc;
+      }, {})
+    : {};
 
-  const montantInvestInProgress = calculTotalInvestment(false, "");
-  const montantInvestSold = calculTotalInvestment(true, "");
-  const montantInvest = calculTotalInvestment(null, "");
+  // Filtrer les investissements pour n'avoir que le premier par titre
+  const uniqueInvest = Array.isArray(data)
+    ? data?.filter((investment) => {
+        return (
+          new Date(investment.date).getTime() ===
+          new Date(firstDateByTitle[investment.title]).getTime()
+        );
+      })
+    : [];
 
-  // Function to determine the hover color class based on investment type
+  // Compter les investissements par titre
+  const investmentCountByTitle = Array.isArray(data)
+    ? data?.reduce((acc, investment) => {
+        const { title } = investment;
+        acc[title] = (acc[title] || 0) + 1;
+        return acc;
+      }, {})
+    : {};
+
+  // Calcul des montants
+  const montantInvestInProgress = calculTotalInvestment(data, false, "");
+  const montantInvestSold = calculTotalInvestment(data, true, "");
+  const montantInvest = calculTotalInvestment(data, null, "");
+
+  // Gestion du style en fonction du type d'investissement
   const getHoverClass = (type) => {
     switch (type) {
       case "Action":
@@ -53,54 +79,57 @@ export default function BoardInvest() {
     }
   };
 
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <>
-      <section>
-        <Header title="Board investissement" typeProps="investment" btnAdd />
-        <div className="flex flex-col w-full justify-center gap-4 animate-fade">
-          <div className="h-32 flex gap-4 ">
-            <Link
-              to="inprogress"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-            >
-              <p className="italic font-thin absolute top-2">
-                Investissements en cours
-              </p>
-              <p className="text-4xl font-thin">{montantInvestInProgress}</p>
-            </Link>
-            <Link
-              to="all"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-            >
-              <p className="italic font-thin absolute top-2">
-                Tous les investissements
-              </p>
-              <p className="text-4xl font-thin">{montantInvest}</p>
-            </Link>
-            <Link
-              to="sold"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-            >
-              <p className="italic font-thin absolute top-2">
-                Investissements vendus
-              </p>
-              <p className="text-4xl font-thin">{montantInvestSold}</p>
-            </Link>
-          </div>
+    <section>
+      <Header title="Board investissement" typeProps="investment" btnAdd />
+      <div className="flex flex-col w-full justify-center gap-4 animate-fade">
+        <div className="h-32 flex gap-4">
+          <Link
+            to="inprogress"
+            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+          >
+            <p className="italic font-thin absolute top-2">
+              Investissements en cours
+            </p>
+            <p className="text-4xl font-thin">{montantInvestInProgress}</p>
+          </Link>
+          <Link
+            to="all"
+            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+          >
+            <p className="italic font-thin absolute top-2">
+              Tous les investissements
+            </p>
+            <p className="text-4xl font-thin">{montantInvest}</p>
+          </Link>
+          <Link
+            to="sold"
+            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+          >
+            <p className="italic font-thin absolute top-2">
+              Investissements vendus
+            </p>
+            <p className="text-4xl font-thin">{montantInvestSold}</p>
+          </Link>
+        </div>
 
-          <div className="flex items-center justify-center mb-1 px-8">
-            <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
-            <p className="text-xl mx-8 font-thin italic">Mes ordres</p>
-            <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
-          </div>
+        <div className="flex items-center justify-center mb-1 px-8">
+          <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
+          <p className="text-xl mx-8 font-thin italic">Mes ordres</p>
+          <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
+        </div>
 
-          <div className="flex flex-wrap gap-4 justify-center mb-4">
-            {uniqueInvest.map(({ title, type, date }, index) => {
+        <div className="flex flex-wrap gap-4 justify-center mb-4">
+          {uniqueInvest.length > 0 ? (
+            uniqueInvest.map(({ title, type, date }, index) => {
               const linkInvest = title.toLowerCase().replace(/\s+/g, "");
-              const amount = calculTotalInvestmentByTitle(null, title);
-
+              const amount = calculTotalInvestmentByTitle(data, null, title);
               const count = investmentCountByTitle[title];
-
               return (
                 <Link
                   key={index}
@@ -125,10 +154,12 @@ export default function BoardInvest() {
                   </div>
                 </Link>
               );
-            })}
-          </div>
+            })
+          ) : (
+            <p>Aucun investissement trouvé.</p>
+          )}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

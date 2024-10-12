@@ -1,11 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom";
-
 import {
   convertDateHour,
   formatDate,
   separateMillier,
 } from "../../../utils/fonctionnel";
-import { getInvestmentById } from "../../../utils/operations";
+import {
+  fetchInvestmentById,
+  fetchInvestments,
+} from "../../../service/investment.service";
+import {
+  editInvestments,
+  deleteInvestments,
+} from "../../../service/investment.service";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -22,62 +28,82 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useDispatch } from "react-redux";
+import { useMutation, useQuery } from "@tanstack/react-query"; // Added missing useQuery
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  deleteInvestments,
-  editInvestments,
-  getInvestments,
-  soldInvestments,
-} from "../../../redux/actions/investment.action";
-import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DialogDelete } from "../../../composant/dialogDelete";
 import Header from "../../../composant/header";
+import { getInvestmentsByTitle } from "../../../utils/operations";
+import { useEffect } from "react";
+import Loader from "../../../composant/loader";
 
 export default function Investment() {
-  const { id } = useParams();
-  const investment = getInvestmentById(id);
+  const userId = localStorage.getItem("userId");
+  const { data } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments(userId);
 
-  const [selectedDelete, setSelectedDelete] = useState(false);
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response?.data;
+    },
+  });
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [selectedUpdate, setSelectedUpdate] = useState(false);
-
-  const [selectedVendre, setSelectedVendre] = useState(false);
-
   const [update, setUpdate] = useState(false);
 
-  const [selectedType, setSelectedType] = useState(investment.type);
+  // Fetch the investment details by ID
+  const {
+    data: investment,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchInvestmentById", id],
+    queryFn: () => fetchInvestmentById(id),
+    enabled: !!id,
+  });
 
-  const [selectedTitle, setSelectedTitle] = useState(investment.title);
-
-  const [selectedDetail, setSelectedDetail] = useState(investment.detail);
-
-  const [selectedDate, setSelectedDate] = useState(investment.date);
-
-  const [selectedMontant, setSelectedMontant] = useState(investment.amount);
-
-  const [selectedMontantVendu, setSelectedMontantVendu] = useState(
-    investment.amount
+  // Initialize states only when investment data is available
+  const [selectedTitle, setSelectedTitle] = useState(investment?.data?.title);
+  const [selectedType, setSelectedType] = useState(investment?.data?.type);
+  const [selectedDetail, setSelectedDetail] = useState(
+    investment?.data?.detail
+  );
+  const [selectedDate, setSelectedDate] = useState(investment?.data?.date);
+  const [selectedMontant, setSelectedMontant] = useState(
+    investment?.data?.amount
   );
 
+  useEffect(() => {
+    if (investment) {
+      setSelectedTitle(investment?.data?.title);
+      setSelectedDetail(investment?.data?.detail);
+      setSelectedMontant(investment?.data?.amount);
+      setSelectedType(investment?.data?.type);
+      setSelectedDate(investment?.data?.date);
+    }
+  }, [investment]); // Réagir
+
   const resetForm = () => {
-    setSelectedType(investment.type);
-    setSelectedTitle(investment.title);
-    setSelectedDetail(investment.detail);
-    setSelectedDate(investment.date);
-    setSelectedMontant(investment.amount);
+    setSelectedType(investment?.data?.type);
+    setSelectedTitle(investment?.data?.title);
+    setSelectedDetail(investment?.data?.detail);
+    setSelectedDate(investment?.data?.date);
+    setSelectedMontant(investment?.data?.amount);
   };
 
   const handleTitle = (event) => {
     setSelectedTitle(event.target.value);
-  };
-
-  const handleDate = (event) => {
-    setSelectedDate(event.target.value);
   };
 
   const handleDetail = (event) => {
@@ -88,54 +114,68 @@ export default function Investment() {
     setSelectedMontant(event.target.value);
   };
 
-  const handleMontantVendu = (event) => {
-    setSelectedMontantVendu(event.target.value);
+  const handleInputChange = () => setUpdate(true);
+
+  const mutationDelete = useMutation({
+    mutationFn: async () => {
+      await deleteInvestments(id);
+      toast.success("Votre transaction a été supprimée !");
+    },
+    onSuccess: () => navigate(-1),
+  });
+
+  const handleDeleteConfirmation = () => {
+    mutationDelete.mutate();
   };
 
-  const handleInputChange = () => {
-    setUpdate(true);
+  const mutationEdit = useMutation({
+    mutationFn: async () => {
+      const editData = {
+        id: investment?.data?._id,
+        type: selectedType,
+        title: selectedTitle,
+        date: selectedDate,
+        detail: selectedDetail,
+        amount: separateMillier(selectedMontant),
+      };
+      await editInvestments(editData);
+      toast.success("L'opération a été modifiée avec succès !");
+    },
+    onSuccess: () => {
+      refetch();
+      resetForm();
+      setSelectedUpdate(false);
+    },
+  });
+
+  const handleEditConfirmation = () => {
+    mutationEdit.mutate();
   };
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const handleDeleteConfirmation = async () => {
-    await dispatch(deleteInvestments(id));
-    navigate(-1);
-    dispatch(getInvestments());
-    toast.success("L'opération a été supprimé avec succès !");
+  const removeTiret = (number) => {
+    if (typeof number === "string") {
+      return parseFloat(number.replace(/-/g, ""));
+    } else {
+      console.error("Invalid input, expected a string:", number);
+      return NaN;
+    }
   };
 
-  function removeTiret(number) {
-    return parseFloat(number.replace(/-/g, ""));
+  const suggestions = Array.from(
+    new Set(data?.map((investment) => investment.title))
+  );
+
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
   }
-
-  const handleEditConfirmation = async () => {
-    const editData = {
-      id: investment._id,
-      type: selectedType,
-      title: selectedTitle,
-      date: selectedDate,
-      detail: selectedDetail,
-      amount: separateMillier(selectedMontant),
-    };
-    await dispatch(editInvestments(editData));
-    toast.success("L'opération a été modifié avec succès !");
-    dispatch(getInvestments());
-    setSelectedUpdate(false);
-  };
-
-  const handleSoldConfirmation = async () => {
-    await dispatch(soldInvestments(investment._id, selectedMontantVendu));
-    toast.success("L'investissement a été vendu avec succès !", "bg-grenn-500");
-    dispatch(getInvestments());
-    setSelectedUpdate(false);
-  };
+  if (error)
+    return <div>Erreur lors de la récupération de la transaction.</div>;
 
   return (
     <section className="w-full">
       <Header
-        title={investment.title}
+        title={investment?.data?.title}
         typeProps="investment"
         btnAdd
         btnReturn
@@ -145,19 +185,27 @@ export default function Investment() {
           <div className="flex flex-col gap-4 w-3/4">
             <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
               {selectedUpdate ? (
-                <Input
-                  className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
-                  value={selectedTitle}
-                  type="text"
-                  name=""
-                  onChange={(e) => {
-                    handleTitle(e);
-                    handleInputChange();
-                  }}
-                  placeholder="Type"
-                />
+                <>
+                  <Input
+                    className="h-full w-full bg-transparent text-center text-4xl  rounded-2xl"
+                    value={selectedTitle}
+                    type="text"
+                    list="title-suggestions"
+                    name=""
+                    onChange={(e) => {
+                      handleTitle(e);
+                      handleInputChange();
+                    }}
+                    placeholder="Titre"
+                  />
+                  <datalist id="title-suggestions">
+                    {suggestions.map((suggestion, index) => (
+                      <option key={index} value={suggestion} />
+                    ))}
+                  </datalist>
+                </>
               ) : (
-                <h2 className="text-4xl">{investment.title}</h2>
+                <h2 className="text-4xl">{investment?.data?.title}</h2>
               )}
             </div>
 
@@ -173,7 +221,7 @@ export default function Investment() {
                     required
                   >
                     <SelectTrigger className="w-full h-40 px-2 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex items-center justify-center">
-                      <SelectValue placeholder="Entrez la catégorie" />
+                      <SelectValue placeholder="Entrez le type" />
                     </SelectTrigger>
                     <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
                       <SelectItem className="rounded-xl" value="Action">
@@ -194,7 +242,7 @@ export default function Investment() {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <h2 className="text-4xl">{investment.type}</h2>
+                  <h2 className="text-4xl">{investment?.data?.type}</h2>
                 )}
               </div>
             </div>
@@ -242,7 +290,9 @@ export default function Investment() {
                     </PopoverContent>
                   </Popover>
                 ) : (
-                  <h2 className="text-4xl">{formatDate(investment.date)}</h2>
+                  <h2 className="text-4xl">
+                    {formatDate(investment?.data?.date)}
+                  </h2>
                 )}
               </div>
               <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
@@ -260,7 +310,7 @@ export default function Investment() {
                     placeholder="Montant"
                   />
                 ) : (
-                  <h2 className="text-4xl">{investment.amount} €</h2>
+                  <h2 className="text-4xl">{investment?.data?.amount} €</h2>
                 )}
               </div>
             </div>
@@ -278,8 +328,8 @@ export default function Investment() {
                 />
               ) : (
                 <h2 className="text-xl">
-                  {investment.detail
-                    ? investment.detail
+                  {investment?.data?.detail
+                    ? investment?.data?.detail
                     : "Aucun détail ajouté"}
                 </h2>
               )}
@@ -291,17 +341,17 @@ export default function Investment() {
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Ajouter le : <br />
-                  <b>{convertDateHour(investment.createdAt)}</b>
+                  <b>{convertDateHour(investment?.data?.createdAt)}</b>
                 </p>
               </div>
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Derniere modification le : <br />
-                  <b>{convertDateHour(investment.updatedAt)}</b>
+                  <b>{convertDateHour(investment?.data?.updatedAt)}</b>
                 </p>
               </div>
             </div>
-            {!investment.isSold && (
+            {/* {!investment?.data?.isSold && (
               <>
                 <div className="flex flex-col w-full gap-4 justify-center items-center">
                   {selectedVendre ? (
@@ -347,7 +397,7 @@ export default function Investment() {
                   )}
                 </div>
               </>
-            )}
+            )} */}
 
             <div className="flex flex-col gap-4 w-full">
               {selectedUpdate && update === true ? (

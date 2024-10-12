@@ -28,22 +28,23 @@ import {
 } from "../../../public/categories.json";
 import { formatMontant } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import {
-  addTransactions,
-  getTransactions,
-} from "../../redux/actions/transaction.action";
-import { infoUser } from "../../utils/users";
 import { categorySort, nameType, normalizeText } from "../../utils/other";
 import {
   getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
 import { fr } from "date-fns/locale";
-import MainLayout from "../../layout/mainLayout";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom"; // Corriger l'import de useNavigate
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/header";
+import {
+  addTransaction,
+  fetchTransactions,
+} from "../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
+import { useCurrentUser } from "../../hooks/user.hooks";
+import Loader from "../../composant/loader";
 
 // Schéma de validation pour la date
 const FormSchema = z.object({
@@ -53,12 +54,27 @@ const FormSchema = z.object({
 });
 
 export default function PageAddTransac(props) {
-  const userInfo = infoUser();
+  const userId = localStorage.getItem("userId");
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+
+  const { data } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response?.data;
+    },
+  });
 
   const categoryD = categorySort(categoryDepense);
   const categoryR = categorySort(categoryRecette);
 
-  const suggestions = getTitleOfTransactionsByType(props.type);
+  const suggestions = getTitleOfTransactionsByType(data, props.type);
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -72,10 +88,10 @@ export default function PageAddTransac(props) {
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const lastTransacByTitle = getLatestTransactionByTitle(
+    data,
     selectedTitle,
     props.type
   );
@@ -114,6 +130,41 @@ export default function PageAddTransac(props) {
     setSelectedMontant(event.target.value);
   };
 
+  const addTransactionMutation = useMutation({
+    mutationFn: async (postData) => {
+      const response = await addTransaction(postData, userInfo?._id);
+
+      return response;
+    },
+    onSuccess: (response) => {
+      const newOperationId = response?.data?._id;
+      resetForm();
+
+      const transactionDate = new Date(response?.data?.date);
+      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
+
+      toast.success(
+        `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `,
+        {
+          action: {
+            label: "Voir",
+            onClick: () =>
+              navigate(
+                `/${normalizeText(response?.data?.type)}/${formattedDate}/${newOperationId}`
+              ),
+          },
+        }
+      );
+    },
+    onError: (error) => {
+      console.error(
+        "Error during transaction:",
+        error.response ? error.response?.data : error.message
+      );
+      toast.error("Erreur lors de l'ajout de la transaction.");
+    },
+  });
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -123,48 +174,23 @@ export default function PageAddTransac(props) {
       return;
     }
 
+    const selectedDate = form.getValues("date");
+    selectedDate.setHours(0, 0, 0, 0);
+
     const postData = {
-      user: userInfo.id,
+      user: userInfo?.id,
       type: props.type,
       category: selectedCategory,
       title: selectedTitle,
-      date: form.getValues("date").toISOString().split("T")[0],
+      date: selectedDate.toLocaleDateString("fr-CA"),
       detail: selectedDetail,
       amount: formatMontant(selectedMontant, props.type),
     };
 
-    try {
-      const response = await dispatch(addTransactions(postData));
-
-      if (!response || !response.data) {
-        throw new Error("Aucune réponse reçue du serveur");
-      }
-
-      const newOperationId = response.data._id;
-      dispatch(getTransactions());
-      resetForm();
-
-      const transactionDate = new Date(
-        form.getValues("date").toISOString().split("T")[0]
-      );
-      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
-
-      toast.success(
-        `Votre ${nameType(props.type).toLowerCase()} a été ajouté ! `,
-        {
-          action: {
-            label: "Voir",
-            onClick: () =>
-              navigate(
-                `/${normalizeText(props.type)}/${formattedDate}/${newOperationId}`
-              ),
-          },
-        }
-      );
-    } catch (error) {
-      toast.error("Erreur lors de l'ajout de la transaction.");
-    }
+    addTransactionMutation.mutate(postData);
   };
+
+  if (loadingUser) return <Loader />;
 
   return (
     <>
@@ -272,7 +298,7 @@ export default function PageAddTransac(props) {
           />
 
           <Button variant="outline" className="rounded-xl" type="submit">
-            Soumettre la {props.type.toLowerCase()}
+            Soumettre la {props.title}
           </Button>
         </form>
       </section>

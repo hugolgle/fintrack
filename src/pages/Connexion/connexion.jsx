@@ -1,64 +1,66 @@
-import { useState, FormEvent, useEffect, useContext, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../redux/actions/user.action";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
-import { isConnected } from "../../utils/users";
+import { useIsAuthenticated } from "../../utils/users";
 import Title from "../../composant/Text/title";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/routes";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "../../service/user.service";
 
 export default function Connexion() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const passwordRef = useRef(null); // Créer une référence pour l'input de mot de passe
+  const passwordRef = useRef(null);
 
-  const messageError = useSelector((state) => state.userReducer?.error);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await dispatch(loginUser(username, password));
-      if (messageError) {
-        toast.error(messageError);
-      } else {
-        toast.success("Vous êtes connecté !");
-      }
-    } catch (error) {
+  const mutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      localStorage.setItem("userId", data.user._id);
+      localStorage.setItem("token", data.token);
+      toast.success("Vous êtes connecté !");
+      navigate(ROUTES.HOME);
+    },
+    onError: (error) => {
       console.error("Erreur lors de la connexion :", error);
       toast.error("Une erreur s'est produite lors de la connexion.");
-    }
+    },
+  });
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    mutation.mutate({ username, password });
   };
 
-  const isConnect = isConnected();
+  const userId = localStorage.getItem("userId");
+
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
 
   useEffect(() => {
-    if (isConnect) {
+    if (isAuthenticated) {
       navigate(ROUTES.HOME);
     }
-  }, [isConnect, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev); // Bascule la visibilité
+    setShowPassword((prev) => !prev);
   };
 
-  // Utiliser useEffect pour gérer les clics à l'extérieur de l'input de mot de passe
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (passwordRef.current && !passwordRef.current.contains(event.target)) {
-        setShowPassword(false); // Cacher le mot de passe si le clic est à l'extérieur
+        setShowPassword(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside); // Écouter les clics
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // Nettoyer l'écouteur
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [passwordRef]);
 
@@ -91,15 +93,14 @@ export default function Connexion() {
             <Input
               className="h-10 px-2"
               id="password"
-              type={showPassword ? "text" : "password"} // Changer le type selon l'état
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 setShowPassword(false);
-              }} // Met à jour le mot de passe
+              }}
               required
             />
-
             <button
               type="button"
               onClick={togglePasswordVisibility}
@@ -114,7 +115,12 @@ export default function Connexion() {
           </div>
         </div>
 
-        <Button variant="outline" className="rounded-xl" type="submit">
+        <Button
+          variant="outline"
+          className="rounded-xl"
+          type="submit"
+          disabled={mutation.isLoading}
+        >
           Connexion
         </Button>
       </form>

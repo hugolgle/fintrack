@@ -1,20 +1,27 @@
-import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUser } from "../service/user.service";
 
-export function isConnected() {
-  const userAutenticate = useSelector(
-    (state) => state.userReducer?.isAuthenticated
-  );
-  return userAutenticate;
-}
+export const useIsAuthenticated = (userId) => {
+  const queryKey = ["currentUser", userId];
 
-export function infoUser() {
-  const infoUser = useSelector((state) => state.userReducer?.user);
-  return infoUser;
-}
+  // Hook useQuery pour récupérer l'utilisateur courant
+  const {
+    data: currentUser,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey,
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId, // Activer la requête seulement si userId est défini
+  });
 
+  return { isAuthenticated: !!currentUser, isLoading, isError };
+};
+
+// Fonction pour obtenir les initiales
 export function getInitials(prenom = "", nom = "") {
-  const initialPrenom = prenom?.charAt(0)?.toUpperCase() || ""; // Assure que prenom n'est pas null ou undefined
-  const initialNom = nom?.charAt(0)?.toUpperCase() || ""; // Assure que nom n'est pas null ou undefined
+  const initialPrenom = prenom.charAt(0).toUpperCase(); // Assure que prenom n'est pas vide
+  const initialNom = nom.charAt(0).toUpperCase(); // Assure que nom n'est pas vide
 
   return `${initialPrenom}${initialNom}`; // Retourne les initiales combinées
 }

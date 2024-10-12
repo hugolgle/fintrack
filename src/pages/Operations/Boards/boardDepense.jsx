@@ -20,18 +20,40 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import MainLayout from "../../../layout/mainLayout";
+import { fetchTransactions } from "../../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import Header from "../../../composant/header";
+import Loader from "../../../composant/loader";
 
 export default function BoardDepense() {
+  const userId = localStorage.getItem("userId");
+  const { isLoading, data } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response.data;
+    },
+  });
+
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+
   const lastMonths = getLastThreeMonthsOfCurrentYear();
   const lastYears = getLastTwoYears();
   const currentMonth = getCurrentMonth();
-  const lastTransactions = getLastTransactionsByType("Expense", 5, true);
+  const lastTransactions = getLastTransactionsByType(data, "Expense", 5, true);
   const firstDayMonth = premierJourMoisEnCours();
 
-  const mySubscribes = getLastSubscribe();
+  const mySubscribes = getLastSubscribe(data);
 
   const sortMySubscribes = mySubscribes.sort((a, b) => {
     const dateA = new Date(a.date);
@@ -60,7 +82,13 @@ export default function BoardDepense() {
                 >
                   <div className="flex flex-col w-full gap-4">
                     <p className="text-4xl font-thin">
-                      {calculTotalByMonth("Expense", currentMonth, null, null)}
+                      {calculTotalByMonth(
+                        data,
+                        "Expense",
+                        currentMonth,
+                        null,
+                        null
+                      )}
                     </p>
 
                     {lastTransactions && lastTransactions.length > 0 ? (
@@ -94,7 +122,13 @@ export default function BoardDepense() {
                     >
                       <p className="text-right italic">{month.month}</p>
                       <p className="text-4xl font-thin">
-                        {calculTotalByMonth("Expense", month.code, null, null)}
+                        {calculTotalByMonth(
+                          data,
+                          "Expense",
+                          month.code,
+                          null,
+                          null
+                        )}
                       </p>
                     </Link>
                   ))}
@@ -110,7 +144,13 @@ export default function BoardDepense() {
                   >
                     <p className="italic absolute top-2">{year}</p>
                     <p className="text-4xl font-thin">
-                      {calculTotalByYear("Expense", `${year}`, null, null)}
+                      {calculTotalByYear(
+                        data,
+                        "Expense",
+                        `${year}`,
+                        null,
+                        null
+                      )}
                     </p>
                   </Link>
                 ))}
@@ -122,7 +162,7 @@ export default function BoardDepense() {
               >
                 <p className="italic absolute top-2">Toutes les dépenses</p>
                 <p className="text-4xl font-thin">
-                  {calculTotal("Expense", null, null)}
+                  {calculTotal(data, "Expense", null, null)}
                 </p>
               </Link>
             </div>

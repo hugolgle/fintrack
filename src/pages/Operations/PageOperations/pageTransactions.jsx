@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { convertDate } from "../../../utils/fonctionnel";
 import {
@@ -19,8 +19,26 @@ import {
 } from "../../../../public/categories.json";
 import Header from "../../../composant/header";
 import Tableau from "../../../composant/Table/tableau";
+import { fetchTransactions } from "../../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "../../../composant/loader";
 
 export default function PageTransactions(props) {
+  const userId = localStorage.getItem("userId");
+  const { isLoading, data } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response.data;
+    },
+  });
+
   const { date } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,7 +69,7 @@ export default function PageTransactions(props) {
     searchParams.getAll("titles")
   );
 
-  const titles = getTitleOfTransactionsByType(props.type);
+  const titles = getTitleOfTransactionsByType(data, props.type);
 
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
@@ -113,15 +131,22 @@ export default function PageTransactions(props) {
 
   const transactions =
     date === "all"
-      ? getTransactionsByType(props.type, selectedCategorys, selectedTitles)
+      ? getTransactionsByType(
+          data,
+          props.type,
+          selectedCategorys,
+          selectedTitles
+        )
       : date?.length === 4
         ? getTransactionsByYear(
+            data,
             date,
             props.type,
             selectedCategorys,
             selectedTitles
           )
         : getTransactionsByMonth(
+            data,
             date,
             props.type,
             selectedCategorys,
@@ -212,6 +237,11 @@ export default function PageTransactions(props) {
     },
   ];
 
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <>
       <section className="w-full">
@@ -258,9 +288,10 @@ export default function PageTransactions(props) {
           Total :{" "}
           <b>
             {date === "all"
-              ? calculTotal(props.type, selectedCategorys, selectedTitles)
+              ? calculTotal(data, props.type, selectedCategorys, selectedTitles)
               : date && date.length === 4
                 ? calculTotalByYear(
+                    data,
                     props.type,
                     date,
                     selectedCategorys,
@@ -268,6 +299,7 @@ export default function PageTransactions(props) {
                   )
                 : date
                   ? calculTotalByMonth(
+                      data,
                       props.type,
                       date,
                       selectedCategorys,
@@ -280,18 +312,21 @@ export default function PageTransactions(props) {
           <b>
             {date === "all"
               ? getTransactionsByType(
+                  data,
                   props.type,
                   selectedCategorys,
                   selectedTitles
                 ).length
               : date?.length === 4
                 ? getTransactionsByYear(
+                    data,
                     date,
                     props.type,
                     selectedCategorys,
                     selectedTitles
                   ).length
                 : getTransactionsByMonth(
+                    data,
                     date,
                     props.type,
                     selectedCategorys,

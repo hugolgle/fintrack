@@ -1,9 +1,7 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import {
   addSpace,
   convertDateHour,
-  convertirFormatDate,
   formatDate,
   formatMontant,
   separateMillier,
@@ -17,10 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  getTitleOfTransactionsByType,
-  getTransactionById,
-} from "../../../utils/operations";
+import { getTitleOfTransactionsByType } from "../../../utils/operations";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -36,53 +31,89 @@ import {
 } from "../../../../public/categories.json";
 import { Input } from "@/components/ui/input";
 
-import {
-  deleteTransactions,
-  editTransactions,
-  getTransactions,
-} from "../../../redux/actions/transaction.action";
-import { useDispatch } from "react-redux";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { categorySort } from "../../../utils/other";
-import MainLayout from "../../../layout/mainLayout";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DialogDelete } from "../../../composant/dialogDelete";
 import Header from "../../../composant/header";
+import {
+  deleteTransactions,
+  editTransactions,
+  fetchTransactionById,
+  fetchTransactions,
+} from "../../../service/transaction.service";
+import { useEffect } from "react";
+import Loader from "../../../composant/loader";
 
 export default function Transaction() {
   const categoryD = categorySort(categoryDepense);
   const categoryR = categorySort(categoryRecette);
-
   const { id } = useParams();
-  const transaction = getTransactionById(id);
+  const userId = localStorage.getItem("userId");
+  const { data } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
 
-  const suggestions = getTitleOfTransactionsByType(transaction.type);
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
 
-  const [selectedDelete, setSelectedDelete] = useState(false);
+      return response?.data;
+    },
+  });
 
-  const [selectedUpdate, setSelectedUpdate] = useState(false);
+  const {
+    data: transaction,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchTransactionById", id],
+    queryFn: () => fetchTransactionById(id),
+    enabled: !!id,
+  });
 
-  const [update, setUpdate] = useState(false);
-
-  const [selectedTitle, setSelectedTitle] = useState(transaction.title);
-
-  const [selectedCategory, setSelectedCategory] = useState(
-    transaction.category
+  const suggestions = getTitleOfTransactionsByType(
+    data,
+    transaction?.data?.type
   );
 
-  const [selectedDate, setSelectedDate] = useState(transaction.date);
+  const [selectedUpdate, setSelectedUpdate] = useState(false);
+  const [update, setUpdate] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState(transaction?.data?.title);
+  const [selectedCategory, setSelectedCategory] = useState(
+    transaction?.data?.category
+  );
+  const [selectedDate, setSelectedDate] = useState(transaction?.data?.date);
+  const [selectedDetail, setSelectedDetail] = useState(
+    transaction?.data?.detail
+  );
+  const [selectedMontant, setSelectedMontant] = useState(
+    transaction?.data?.amount
+  );
 
-  const [selectedDetail, setSelectedDetail] = useState(transaction.detail);
-
-  const [selectedMontant, setSelectedMontant] = useState(transaction.amount);
+  useEffect(() => {
+    if (transaction) {
+      setSelectedTitle(transaction.data.title);
+      setSelectedDetail(transaction.data.detail);
+      setSelectedMontant(transaction.data.amount);
+      setSelectedCategory(transaction.data.category);
+      setSelectedDate(transaction.data.date);
+    }
+  }, [transaction]); // Réagir
 
   const resetForm = () => {
-    setSelectedTitle(transaction.title);
-    setSelectedDetail(transaction.detail);
-    setSelectedMontant(transaction.amount);
-    setSelectedCategory(transaction.category);
-    setSelectedDate(transaction.date);
+    if (transaction) {
+      setSelectedTitle(transaction?.data?.title);
+      setSelectedDetail(transaction?.data?.detail);
+      setSelectedMontant(transaction?.data?.amount);
+      setSelectedCategory(transaction?.data?.category);
+      setSelectedDate(transaction?.data?.date);
+    }
   };
 
   const handleTitle = (event) => {
@@ -102,59 +133,83 @@ export default function Transaction() {
   };
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const handleDeleteConfirmation = async () => {
-    await dispatch(deleteTransactions(id));
-    navigate(-1);
-    dispatch(getTransactions());
-    toast.success("Votre transaction a été supprimé !");
+  const mutationDelete = useMutation({
+    mutationFn: async () => {
+      await deleteTransactions(id);
+      toast.success("Votre transaction a été supprimée !");
+    },
+    onSuccess: () => {
+      navigate(-1);
+    },
+  });
+
+  const handleDeleteConfirmation = () => {
+    mutationDelete.mutate();
   };
 
-  function removeTiret(number) {
+  const mutationEdit = useMutation({
+    mutationFn: async () => {
+      const editData = {
+        id: transaction?.data?._id,
+        type: transaction?.data?.type,
+        title: selectedTitle,
+        category: selectedCategory,
+        date: selectedDate,
+        detail: selectedDetail,
+        amount: formatMontant(
+          removeTiret(selectedMontant),
+          transaction?.data?.type
+        ),
+      };
+      await editTransactions(editData);
+      toast.success("L'opération a été modifiée avec succès !");
+    },
+    onSuccess: () => {
+      refetch();
+      resetForm();
+      setSelectedUpdate(false);
+    },
+  });
+
+  const removeTiret = (number) => {
     if (typeof number === "string") {
       return parseFloat(number.replace(/-/g, ""));
     } else {
       console.error("Invalid input, expected a string:", number);
       return NaN;
     }
-  }
+  };
 
-  const handleEditConfirmation = async () => {
-    const editData = {
-      id: transaction._id,
-      type: transaction.type,
-      title: selectedTitle,
-      category: selectedCategory,
-      date: selectedDate,
-      detail: selectedDetail,
-      amount: formatMontant(removeTiret(selectedMontant), transaction.type),
-    };
-    await dispatch(editTransactions(editData));
-    dispatch(getTransactions());
-    setSelectedUpdate(false);
-    toast.success("L'opération a été modifié avec succès !");
+  const handleEditConfirmation = () => {
+    mutationEdit.mutate();
   };
 
   const typeProps =
-    transaction.type === "Expense"
+    transaction?.data?.type === "Expense"
       ? "expense"
-      : transaction.type === "Revenue"
+      : transaction?.data?.type === "Revenue"
         ? "revenue"
         : undefined;
+
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (error)
+    return <div>Erreur lors de la récupération de la transaction.</div>;
 
   return (
     <section className="w-full">
       <Header
-        title={transaction.title}
+        title={transaction?.data?.title}
         typeProps={typeProps}
-        categories={transaction.type === "Expense" ? categoryD : categoryR}
         btnAdd
         btnReturn
       />
 
-      <div className="flex flex-row gap-4">
-        <div className="flex flex-col w-3/4 gap-4 animate-fade">
+      <div className="flex flex-row gap-4 animate-fade">
+        <div className="flex flex-col w-3/4 gap-4 ">
           <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
             {selectedUpdate ? (
               <>
@@ -179,7 +234,7 @@ export default function Transaction() {
                 </datalist>
               </>
             ) : (
-              <h2 className="text-4xl">{transaction.title}</h2>
+              <h2 className="text-4xl">{transaction?.data?.title}</h2>
             )}
           </div>
           <div className="flex flex-row gap-4">
@@ -197,7 +252,7 @@ export default function Transaction() {
                     <SelectValue placeholder="Entrez la catégorie" />
                   </SelectTrigger>
                   <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
-                    {transaction.type === "Expense" &&
+                    {transaction?.data?.type === "Expense" &&
                       categoryD.map(({ name }) => (
                         <SelectItem
                           key={name}
@@ -207,7 +262,7 @@ export default function Transaction() {
                           {name}
                         </SelectItem>
                       ))}
-                    {transaction.type === "Revenue" &&
+                    {transaction?.data?.type === "Revenue" &&
                       categoryR.map(({ name }) => (
                         <SelectItem
                           key={name}
@@ -220,7 +275,7 @@ export default function Transaction() {
                   </SelectContent>
                 </Select>
               ) : (
-                <h2 className="text-4xl">{transaction.category}</h2>
+                <h2 className="text-4xl">{transaction?.data?.category}</h2>
               )}
             </div>
 
@@ -267,7 +322,9 @@ export default function Transaction() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <h2 className="text-4xl">{formatDate(transaction.date)}</h2>
+                <h2 className="text-4xl">
+                  {formatDate(transaction?.data?.date)}
+                </h2>
               )}
             </div>
           </div>
@@ -290,7 +347,8 @@ export default function Transaction() {
               ) : (
                 <div className="flex flex-col">
                   <h2 className="text-4xl">
-                    {addSpace(parseFloat(transaction.amount).toFixed(2))} €
+                    {addSpace(parseFloat(transaction?.data?.amount).toFixed(2))}{" "}
+                    €
                   </h2>
                 </div>
               )}
@@ -311,8 +369,8 @@ export default function Transaction() {
                 />
               ) : (
                 <h2 className="text-xl">
-                  {transaction.detail
-                    ? transaction.detail
+                  {transaction?.data?.detail
+                    ? transaction?.data?.detail
                     : "Aucun détail ajouté"}
                 </h2>
               )}
@@ -324,14 +382,14 @@ export default function Transaction() {
             <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
               <p>
                 Ajouter le : <br />
-                <b>{convertDateHour(transaction.createdAt)}</b>
+                <b>{convertDateHour(transaction?.data?.createdAt)}</b>
               </p>
             </div>
-            {transaction.updatedAt !== transaction.createdAt && (
+            {transaction?.data?.updatedAt !== transaction?.data?.createdAt && (
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Dernière modification le : <br />
-                  <b>{convertDateHour(transaction.updatedAt)}</b>
+                  <b>{convertDateHour(transaction?.data?.updatedAt)}</b>
                 </p>
               </div>
             )}

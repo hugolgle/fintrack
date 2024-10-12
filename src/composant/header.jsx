@@ -70,7 +70,7 @@ function Header({
                     <BtnFilter check={check} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 max-h-80 overflow-auto">
+                <PopoverContent className="select-none w-80 max-h-80 overflow-auto">
                   <PopoverFilter
                     categories={categories}
                     titles={titles}

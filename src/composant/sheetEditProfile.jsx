@@ -13,27 +13,25 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
-import { useState } from "react";
-import { useDispatch } from "react-redux"; // Importez useDispatch pour les actions Redux
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { editUser } from "../redux/actions/user.action";
 import { Trash2 } from "lucide-react";
-import { useEffect } from "react";
-import { getTransactions } from "../redux/actions/transaction.action";
-import { getInvestments } from "../redux/actions/investment.action";
+import { useEditUser, useCurrentUser } from "../hooks/user.hooks";
 
 export function SheetEditProfile({ btnOpen, dataProfil }) {
-  const dispatch = useDispatch(); // Initialize dispatch for Redux actions
+  const [isFieldEmpty, setIsFieldEmpty] = useState(false);
+  const userId = localStorage.getItem("userId");
   const [prenom, setPrenom] = useState(dataProfil?.prenom ?? "");
   const [nom, setNom] = useState(dataProfil?.nom ?? "");
   const [username, setUsername] = useState(dataProfil?.username ?? "");
   const [pseudo, setPseudo] = useState(dataProfil?.pseudo ?? "");
-  const [selectedFile, setSelectedFile] = useState(dataProfil?.img ?? ""); // Start with no file selected
-  const [preview, setPreview] = useState(null); // State for image preview
-  const [isImageDeleted, setIsImageDeleted] = useState(false); // Track image deletion
-  const [hiddenImg, setHiddenImg] = useState(false); // Track image deletion
+  const [selectedFile, setSelectedFile] = useState(dataProfil?.img ?? "");
+  const [preview, setPreview] = useState(null);
+  const [isImageDeleted, setIsImageDeleted] = useState(false);
+  const [hiddenImg, setHiddenImg] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isFieldEmpty, setIsFieldEmpty] = useState(false);
+  const { mutate: editUser, isLoading: isEditing } = useEditUser(userId);
+  const { refetch: refetchUser } = useCurrentUser(userId);
 
   const baseUserData = [
     dataProfil?.prenom,
@@ -45,20 +43,14 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
 
   const modifiedUserData = [prenom, nom, username, pseudo, selectedFile];
 
-  console.log(baseUserData);
-  console.log(modifiedUserData);
-
   const isSaveDisabled = baseUserData.every(
     (value, index) => value === modifiedUserData[index]
   );
 
   useEffect(() => {
-    // Vérifie si au moins un champ est vide
-    if (prenom === "" || nom === "" || username === "" || pseudo === "") {
-      setIsFieldEmpty(true);
-    } else {
-      setIsFieldEmpty(false);
-    }
+    setIsFieldEmpty(
+      prenom === "" || nom === "" || username === "" || pseudo === ""
+    );
   }, [prenom, nom, username, pseudo]);
 
   const handleFileChange = (e) => {
@@ -66,17 +58,15 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
       const file = e.target.files[0];
       setSelectedFile(file);
 
-      // Create a URL for the image preview
       const fileURL = URL.createObjectURL(file);
       setPreview(fileURL);
-      setIsImageDeleted(false); // Reset deletion state when a new file is selected
+      setIsImageDeleted(false);
     }
   };
 
-  // Handle image deletion
   const handleImageDelete = () => {
-    setIsImageDeleted(true); // Mark the image as deleted
-    setSelectedFile(null); // Clear the selected file
+    setIsImageDeleted(true);
+    setSelectedFile(null);
     setPreview(null);
     setHiddenImg(true);
   };
@@ -84,45 +74,44 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
   const handleUpdateConfirmation = async (e) => {
     e.preventDefault();
 
-    // Fonction pour valider le format de l'email
-
     const formData = new FormData();
-    formData.append("_id", dataProfil?.id);
+    formData.append("_id", userId);
     formData.append("username", username);
     formData.append("pseudo", pseudo);
     formData.append("nom", nom);
     formData.append("prenom", prenom);
 
-    // If the image is deleted, indicate this in the formData
-    if (isImageDeleted) {
-      formData.append("img", null); // Indicate that the image should be deleted
-    } else if (selectedFile) {
-      formData.append("img", selectedFile); // Add the selected file
+    // Append the image only if it exists or is not deleted
+    if (!isImageDeleted && selectedFile) {
+      formData.append("img", selectedFile);
+    }
+
+    // Log the data being sent
+    console.log("Données envoyées pour mise à jour :", formData);
+
+    if (isSaveDisabled) {
+      toast.info("Aucune modification apportée !");
+      return;
     }
 
     try {
-      const successMessage = await dispatch(editUser(formData));
-      if (successMessage) {
-        toast.success(successMessage); // Affichez le message de succès du backend
-        setIsOpen(false);
-      }
+      await editUser(formData);
+      toast.success("Profil mis à jour avec succès !");
+      await refetchUser();
+      setIsOpen(false);
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        toast.error(err.response.data.message); // Affichez le message d'erreur du backend
-      } else {
-        toast.error("Une erreur s'est produite lors de la modification !");
-      }
-      setIsOpen(true);
+      toast.error(
+        "Une erreur s'est produite lors de la mise à jour du profil !"
+      );
     }
   };
 
-  // Reset function to cancel modifications
   const handleCancel = () => {
     setPrenom(dataProfil?.prenom ?? "");
     setNom(dataProfil?.nom ?? "");
     setUsername(dataProfil?.username ?? "");
     setPseudo(dataProfil?.pseudo ?? "");
-    setSelectedFile(dataProfil?.img ?? "");
+    setSelectedFile(null);
     setPreview(null);
     setIsImageDeleted(false);
     setHiddenImg(false);
@@ -224,15 +213,13 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
                   Annuler
                 </Button>
               )}
-              <SheetClose asChild>
-                <Button
-                  type="button"
-                  onClick={handleUpdateConfirmation}
-                  disabled={isSaveDisabled || isFieldEmpty}
-                >
-                  Enregistrer
-                </Button>
-              </SheetClose>
+              <Button
+                type="button"
+                onClick={handleUpdateConfirmation}
+                disabled={isSaveDisabled || isFieldEmpty || isEditing}
+              >
+                {isEditing ? "Enregistrement..." : "Enregistrer"}
+              </Button>
             </div>
           </SheetFooter>
         </form>
@@ -242,13 +229,13 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
               size={50}
               strokeWidth={1}
               className="absolute top-1/2 left-1/2 text-white opacity-0 group-hover:opacity-100 z-50 cursor-pointer transition-all hover:scale-110 transform -translate-x-1/2 -translate-y-1/2"
-              onClick={handleImageDelete} // Bind click event to delete handler
+              onClick={handleImageDelete}
             />
           )}
           {preview ? (
             <Avatar className="w-48 h-48">
               <AvatarImage
-                className="object-cover animate-fade transition-all duration-300 group-hover:brightness-50" // Ajout du filtre de luminosité
+                className="object-cover animate-fade transition-all duration-300 group-hover:brightness-50"
                 src={preview}
               />
             </Avatar>
@@ -256,7 +243,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
             !hiddenImg && (
               <Avatar className="w-48 h-48">
                 <AvatarImage
-                  className="object-cover animate-fade transition-all duration-300 group-hover:brightness-75" // Ajout du filtre de luminosité
+                  className="object-cover animate-fade transition-all duration-300 group-hover:brightness-75"
                   src={`http://localhost:5001/${dataProfil?.img}`}
                 />
               </Avatar>

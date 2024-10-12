@@ -14,14 +14,36 @@ import {
   getLastTwoYears,
   premierJourMoisEnCours,
 } from "../../../utils/other";
-import MainLayout from "../../../layout/mainLayout";
+import { fetchTransactions } from "../../../service/transaction.service";
+import { useQuery } from "@tanstack/react-query";
 import Header from "../../../composant/header";
+import Loader from "../../../composant/loader";
 
 export default function BoardRecette() {
+  const userId = localStorage.getItem("userId");
+  const { isLoading, data } = useQuery({
+    queryKey: ["fetchTransactions"],
+    queryFn: async () => {
+      const response = await fetchTransactions(userId);
+
+      if (response?.response?.data?.message) {
+        const message = response.response.data.message;
+        toast.warn(message);
+      }
+
+      return response.data;
+    },
+  });
+
+  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
+  if (isLoading) {
+    return <Loader />;
+  }
+
   const lastMonths = getLastThreeMonthsOfCurrentYear();
   const lastYears = getLastTwoYears();
   const currentMonth = getCurrentMonth();
-  const lastTransactions = getLastTransactionsByType("Revenue", 5, true);
+  const lastTransactions = getLastTransactionsByType(data, "Revenue", 5, true);
   const firstDayMonth = premierJourMoisEnCours();
 
   return (
@@ -37,7 +59,13 @@ export default function BoardRecette() {
               >
                 <div className="flex flex-col w-full gap-4">
                   <p className="text-4xl font-thin">
-                    {calculTotalByMonth("Revenue", currentMonth, null, null)}
+                    {calculTotalByMonth(
+                      data,
+                      "Revenue",
+                      currentMonth,
+                      null,
+                      null
+                    )}
                   </p>
 
                   {lastTransactions && lastTransactions.length > 0 ? (
@@ -71,7 +99,13 @@ export default function BoardRecette() {
                   >
                     <p className="text-right italic">{month.month}</p>
                     <p className="text-4xl font-thin">
-                      {calculTotalByMonth("Revenue", month.code, null, null)}
+                      {calculTotalByMonth(
+                        data,
+                        "Revenue",
+                        month.code,
+                        null,
+                        null
+                      )}
                     </p>
                   </Link>
                 ))}
@@ -87,7 +121,7 @@ export default function BoardRecette() {
                 >
                   <p className="italic absolute top-2">{year}</p>
                   <p className="text-4xl font-thin">
-                    {calculTotalByYear("Revenue", `${year}`, null, null)}
+                    {calculTotalByYear(data, "Revenue", `${year}`, null, null)}
                   </p>
                 </Link>
               ))}
@@ -99,7 +133,7 @@ export default function BoardRecette() {
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
               <p className="text-4xl font-thin">
-                {calculTotal("Revenue", null, null)}
+                {calculTotal(data, "Revenue", null, null)}
               </p>
             </Link>
           </div>
