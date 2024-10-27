@@ -45,6 +45,7 @@ export const useLogout = () => {
     mutationFn: logoutUser,
     onSuccess: () => {
       localStorage.removeItem("userId");
+      sessionStorage.removeItem("token");
       navigate("/login");
     },
     onError: (error) => {

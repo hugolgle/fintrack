@@ -10,12 +10,17 @@ export const loginUser = async (credentials) => {
 export const logoutUser = async () => {};
 
 export const getCurrentUser = async (userId) => {
-  const token = localStorage.getItem("token"); // Récupérer le token depuis le localStorage
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
   const response = await axios.get(`${API_URL}/current/${userId}`, {
     headers: {
-      Authorization: token, // Ajouter le token dans l'en-tête
+      Authorization: `Bearer ${token}`,
     },
   });
+
   return response.data;
 };
 
@@ -37,15 +42,30 @@ export const addUser = async (userData) => {
 };
 
 export const editUser = async (userId, userData) => {
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
   const response = await axios.put(`${API_URL}/edit/${userId}`, userData, {
     headers: {
       "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data;
 };
 
 export const deleteUser = async (userId) => {
-  const response = await axios.delete(`${API_URL}/delete/${userId}`);
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
+  const response = await axios.delete(`${API_URL}/delete/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };

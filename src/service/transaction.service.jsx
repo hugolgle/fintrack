@@ -1,20 +1,39 @@
 import axios from "axios";
 
-// Fonction pour récupérer toutes les transactions d'un utilisateur
 export const fetchTransactions = async (userId) => {
-  return await axios.get(`http://localhost:5001/transactions/user/${userId}`);
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
+  return await axios.get(`http://localhost:5001/transactions/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Préfixer le token avec "Bearer "
+    },
+  });
 };
 
-// Fonction pour récupérer une transaction par ID
 export const fetchTransactionById = async (id) => {
-  return await axios.get(`http://localhost:5001/transactions/${id}`);
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
+  return await axios.get(`http://localhost:5001/transactions/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
-// Fonction pour ajouter une nouvelle transaction
 export const addTransaction = async (transactionData, userId) => {
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
   const { title, category, date, detail, amount, type } = transactionData;
 
-  // Formatage des données si nécessaire
   const newTransaction = {
     user: userId,
     title,
@@ -25,11 +44,24 @@ export const addTransaction = async (transactionData, userId) => {
     type,
   };
 
-  return await axios.post(`http://localhost:5001/transactions`, newTransaction);
+  return await axios.post(
+    `http://localhost:5001/transactions`,
+    newTransaction,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 // Fonction pour modifier une transaction existante
 export const editTransactions = async (editData) => {
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
   const { id, title, category, date, detail, amount, type } = editData;
 
   const updatedTransaction = {
@@ -43,11 +75,25 @@ export const editTransactions = async (editData) => {
 
   return await axios.put(
     `http://localhost:5001/transactions/${id}`,
-    updatedTransaction
+    updatedTransaction,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 };
 
 // Fonction pour supprimer une transaction par ID
 export const deleteTransactions = async (id) => {
-  return await axios.delete(`http://localhost:5001/transactions/${id}`);
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
+  return await axios.delete(`http://localhost:5001/transactions/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

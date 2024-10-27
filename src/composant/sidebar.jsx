@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getInitials, useIsAuthenticated } from "../utils/users"; // Assurez-vous d'utiliser le hook ici
+import { getInitials, useIsAuthenticated } from "../utils/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -20,14 +20,13 @@ import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
 import { ROUTES } from "./routes";
 import { useCurrentUser, useLogout } from "../hooks/user.hooks";
-import Loader from "./loader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function Sidebar() {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
   const userId = localStorage.getItem("userId");
-  // Récupérer les informations de l'utilisateur actuel
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId); // Utilisez le hook ici
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
 
   // Utiliser le hook useLogout
   const logoutMutation = useLogout();
@@ -41,12 +40,30 @@ function Sidebar() {
     setActiveLink(location.pathname);
   }, [location]);
 
-  // Utilisateur
-
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
   if (loadingUser) {
-    return <Loader />;
+    return (
+      <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+        <Link
+          to={ROUTES.HOME}
+          className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
+        >
+          <Logo sidebar />
+        </Link>
+
+        <div className="flex flex-col justify-between gap-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} className="h-8 w-[90%] rounded-full" />
+          ))}
+        </div>
+
+        <div className="flex flex-col">
+          <Skeleton className="w-12 h-12 rounded-full" />
+        </div>
+      </div>
+    );
   }
+
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
   // Menu de la sidebar
@@ -83,11 +100,6 @@ function Sidebar() {
     },
   ];
 
-  // Affichez un message d'erreur si l'authentification échoue
-  if (isError) {
-    toast.error("Erreur lors de la vérification de l'authentification");
-  }
-
   return (
     <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
       <Link
@@ -120,7 +132,7 @@ function Sidebar() {
       </div>
 
       <div className="flex flex-col">
-        {isAuthenticated ? ( // Si l'utilisateur est authentifié
+        {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
               <Avatar className="w-12 h-12 hover:scale-95 transition-all">
@@ -133,7 +145,7 @@ function Sidebar() {
                 </AvatarFallback>
               </Avatar>
             }
-            handleLogout={logout} // Utiliser la nouvelle fonction logout
+            handleLogout={logout}
           />
         ) : (
           <Link

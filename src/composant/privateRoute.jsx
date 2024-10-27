@@ -13,14 +13,7 @@ const PrivateRoute = ({ element }) => {
     return <Loader />;
   }
 
-  if (isError) {
-    toast.error(
-      "Une erreur s'est produite lors de la vérification de l'authentification."
-    );
-    return <Navigate to={ROUTES.LOGIN} />;
-  }
-
-  if (!isAuthenticated) {
+  if (!isAuthenticated || isError) {
     toast.error("Vous n'êtes pas connecté !");
     return <Navigate to={ROUTES.LOGIN} />;
   }

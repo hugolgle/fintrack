@@ -22,7 +22,7 @@ export default function Connexion() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       localStorage.setItem("userId", data.user._id);
-      localStorage.setItem("token", data.token);
+      sessionStorage.setItem("token", data.token);
       toast.success("Vous êtes connecté !");
       navigate(ROUTES.HOME);
     },

@@ -7,11 +7,13 @@ const auth = (req, res, next) => {
     return res.status(403).json({ message: "Aucun token fourni." });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  const bearerToken = token.split(" ")[1];
+
+  jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ message: "Token invalide." });
+      return res.status(401).json({ message: "Token invalide ou expiré." });
     }
-    req.userId = decoded.id; // Ajoutez l'ID de l'utilisateur à la requête
+    req.userId = decoded.id;
     next();
   });
 };

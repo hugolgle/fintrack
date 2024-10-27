@@ -26,9 +26,11 @@ const router = express.Router();
 
 router.get("/", getUsers);
 router.post("/login", loginUser);
-router.post("/add", upload.single("img"), addUser); // Protéger cette route
-router.put("/edit/:id", upload.single("img"), editUser); // Protéger cette route
-router.delete("/delete/:id", deleteUser); // Protéger cette route
-router.get("/current/:id", getCurrentUser); // Protéger cette route
+router.post("/add", upload.single("img"), addUser);
+
+// Routes protégées avec le middleware `auth`
+router.put("/edit/:id", auth, upload.single("img"), editUser);
+router.delete("/delete/:id", auth, deleteUser);
+router.get("/current/:id", auth, getCurrentUser);
 
 module.exports = router;
