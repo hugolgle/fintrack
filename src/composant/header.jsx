@@ -1,7 +1,7 @@
 import React from "react";
-import BtnReturn from "./Button/btnReturn"; // Assurez-vous d'importer BtnReturn
-import BtnAdd from "./Button/btnAdd"; // Assurez-vous d'importer BtnAdd
-import BtnFilter from "./Button/btnFilter"; // Assurez-vous d'importer BtnFilter
+import BtnReturn from "./Button/btnReturn";
+import BtnAdd from "./Button/btnAdd";
+import BtnFilter from "./Button/btnFilter";
 import Title from "./Text/title";
 import {
   ChevronLeft,
@@ -98,11 +98,11 @@ function Header({
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
                     <ChevronLeft
-                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark cursor-pointer transition-all"
+                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark rounded-full p-2 cursor-pointer transition-all size-9"
                       onClick={clickLastMonth}
                     />
                     <ChevronRight
-                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark cursor-pointer transition-all"
+                      className="hover:bg-colorSecondaryLight hover:dark:bg-colorPrimaryDark rounded-full p-2 cursor-pointer transition-all size-9"
                       onClick={clickNextMonth}
                     />
                   </div>

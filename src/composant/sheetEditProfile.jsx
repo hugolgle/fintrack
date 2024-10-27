@@ -20,7 +20,6 @@ import { useEditUser, useCurrentUser } from "../hooks/user.hooks";
 
 export function SheetEditProfile({ btnOpen, dataProfil }) {
   const [isFieldEmpty, setIsFieldEmpty] = useState(false);
-  const userId = localStorage.getItem("userId");
   const [prenom, setPrenom] = useState(dataProfil?.prenom ?? "");
   const [nom, setNom] = useState(dataProfil?.nom ?? "");
   const [username, setUsername] = useState(dataProfil?.username ?? "");
@@ -30,8 +29,8 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
   const [isImageDeleted, setIsImageDeleted] = useState(false);
   const [hiddenImg, setHiddenImg] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: editUser, isLoading: isEditing } = useEditUser(userId);
-  const { refetch: refetchUser } = useCurrentUser(userId);
+  const { mutate: editUser, isLoading: isEditing } = useEditUser();
+  const { refetch: refetchUser } = useCurrentUser();
 
   const baseUserData = [
     dataProfil?.prenom,
@@ -75,19 +74,14 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("_id", userId);
     formData.append("username", username);
     formData.append("pseudo", pseudo);
     formData.append("nom", nom);
     formData.append("prenom", prenom);
 
-    // Append the image only if it exists or is not deleted
     if (!isImageDeleted && selectedFile) {
       formData.append("img", selectedFile);
     }
-
-    // Log the data being sent
-    console.log("Données envoyées pour mise à jour :", formData);
 
     if (isSaveDisabled) {
       toast.info("Aucune modification apportée !");

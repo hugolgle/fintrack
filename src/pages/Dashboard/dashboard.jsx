@@ -23,11 +23,10 @@ import { fetchInvestments } from "../../service/investment.service";
 import Loader from "../../composant/loader";
 
 export default function TableauDeBord() {
-  const userId = localStorage.getItem("userId");
   const { isLoading, data: dataTransac } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userId);
+      const response = await fetchTransactions();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -36,12 +35,13 @@ export default function TableauDeBord() {
 
       return response.data;
     },
+    refetchOnMount: true,
   });
 
   const { data: dataInvest } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
-      const response = await fetchInvestments(userId);
+      const response = await fetchInvestments();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -50,6 +50,7 @@ export default function TableauDeBord() {
 
       return response?.data;
     },
+    refetchOnMount: true,
   });
 
   const getCurrentMonthAndYear = () => {
@@ -239,7 +240,6 @@ export default function TableauDeBord() {
     setGraphMonth(newDate);
   };
 
-  // Obtenir les 6 derniers mois et leurs montants
   const lastSixMonths = getLastSixMonths(graphMonth);
 
   const amountExpenseByMonth = [];
@@ -268,7 +268,6 @@ export default function TableauDeBord() {
     montantInvestByMonth.push(formatData(montantInvests));
   });
 
-  // Préparer les données pour le graphique
   const dataGraph = lastSixMonths.map((monthData, index) => ({
     month: monthData.month,
     year: monthData.year,
@@ -281,7 +280,6 @@ export default function TableauDeBord() {
 
   const lastMonth = lastSixMonths[lastSixMonths.length - 1];
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }
@@ -292,7 +290,7 @@ export default function TableauDeBord() {
         <Header title="Tableau de bord" />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark h-full rounded-xl p-4 flex flex-col gap-4">
               <h2 className="text-3xl font-extralight italic">
                 Dernières transactions
               </h2>
@@ -340,7 +338,7 @@ export default function TableauDeBord() {
               <h2 className="text-3xl font-extralight italic">Graphique</h2>
               <GraphiqueTdb data={dataGraph} />
               <div
-                className={`flex flex-row gap-4 w-full px-20 justify-between bottom-2`}
+                className={`flex flex-row gap-4 min-w-fit w-3/5 mx-auto px-20 items-center justify-between bottom-2`}
               >
                 <ChevronLeft
                   size={30}

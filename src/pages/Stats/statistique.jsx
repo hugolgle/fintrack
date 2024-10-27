@@ -26,18 +26,8 @@ import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader";
 
 export default function Statistique() {
-  // Fetch user ID from local storage
-  const userId = localStorage.getItem("userId");
-
-  // Always call hooks, even if userId is missing or null
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(
-    userId || null
-  );
-  const {
-    data: transactionsData = [],
-    error: transactionsError,
-    refetch,
-  } = useQuery({
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
+  const { data: transactionsData = [], refetch } = useQuery({
     queryKey: ["fetchTransactions", userInfo?._id],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
@@ -45,14 +35,10 @@ export default function Statistique() {
         const message = response.response.data.message;
         toast.warn(message);
       }
-      return response.data || []; // Default to an empty array if no data
+      return response.data || [];
     },
+    refetchOnMount: true,
   });
-
-  // Log errors if any
-  if (transactionsError) {
-    console.error("Transactions Error:", transactionsError);
-  }
 
   const getCurrentMonthAndYear = () => {
     const currentDate = new Date();
@@ -71,7 +57,6 @@ export default function Statistique() {
   const [filteredOperation, setFilteredOperation] = useState([]);
   const [selectedByYear, setSelectedByYear] = useState(false);
 
-  // Always run useEffect for filtering transactions
   useEffect(() => {
     if (!Array.isArray(transactionsData)) return;
     setFilteredOperation(transactionsData);
@@ -105,17 +90,17 @@ export default function Statistique() {
     } else {
       setSelectedMonth("01");
     }
-    refetch(); // Refetch data when year is changed
+    refetch();
   };
 
   const handleByMonth = () => {
     setSelectedByYear(false);
-    refetch(); // Refetch data when switched to monthly view
+    refetch();
   };
 
   const handleByYear = () => {
     setSelectedByYear(true);
-    refetch(); // Refetch data when switched to yearly view
+    refetch();
   };
 
   const generateYears = () => {
@@ -195,7 +180,6 @@ export default function Statistique() {
     moyenneRecetteMois
   );
 
-  // Handle loading state
   if (loadingUser) {
     return <Loader />;
   }

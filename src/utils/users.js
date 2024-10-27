@@ -1,27 +1,40 @@
+import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "../service/user.service";
 
-export const useIsAuthenticated = (userId) => {
-  const queryKey = ["currentUser", userId];
+const getUserIdFromToken = () => {
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    return null;
+  }
 
-  // Hook useQuery pour récupérer l'utilisateur courant
+  try {
+    const decodedToken = jwtDecode(token);
+    return decodedToken.id;
+  } catch (error) {
+    throw new Error("Erreur lors du décodage du token.");
+  }
+};
+
+export const useIsAuthenticated = () => {
+  const userId = getUserIdFromToken();
+
   const {
     data: currentUser,
     isLoading,
     isError,
   } = useQuery({
-    queryKey,
+    queryKey: ["currentUser", userId],
     queryFn: () => getCurrentUser(userId),
-    enabled: !!userId, // Activer la requête seulement si userId est défini
+    enabled: !!userId,
   });
 
-  return { isAuthenticated: !!currentUser, isLoading, isError };
+  return { isAuthenticated: !!currentUser && !!userId, isLoading, isError };
 };
 
-// Fonction pour obtenir les initiales
 export function getInitials(prenom = "", nom = "") {
-  const initialPrenom = prenom.charAt(0).toUpperCase(); // Assure que prenom n'est pas vide
-  const initialNom = nom.charAt(0).toUpperCase(); // Assure que nom n'est pas vide
+  const initialPrenom = prenom.charAt(0).toUpperCase();
+  const initialNom = nom.charAt(0).toUpperCase();
 
-  return `${initialPrenom}${initialNom}`; // Retourne les initiales combinées
+  return `${initialPrenom}${initialNom}`;
 }

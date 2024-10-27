@@ -1,10 +1,23 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-export const fetchInvestments = async (userId) => {
+const getUserIdFromToken = () => {
   const token = sessionStorage.getItem("token");
   if (!token) {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
+
+  try {
+    const decodedToken = jwtDecode(token);
+    return decodedToken.id;
+  } catch (error) {
+    throw new Error("Erreur lors du décodage du token.");
+  }
+};
+
+export const fetchInvestments = async () => {
+  const token = sessionStorage.getItem("token");
+  const userId = getUserIdFromToken();
 
   return await axios.get(`http://localhost:5001/investments/user/${userId}`, {
     headers: {
@@ -15,9 +28,6 @@ export const fetchInvestments = async (userId) => {
 
 export const fetchInvestmentById = async (id) => {
   const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
 
   return await axios.get(`http://localhost:5001/investments/${id}`, {
     headers: {
@@ -26,15 +36,12 @@ export const fetchInvestmentById = async (id) => {
   });
 };
 
-export const addInvestment = async (investmentData, userId) => {
+export const addInvestment = async (investmentData) => {
   const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
+  const userId = getUserIdFromToken();
 
   const { title, date, detail, amount, type } = investmentData;
 
-  // Formatage des données si nécessaire
   const newInvestment = {
     user: userId,
     title,
@@ -53,10 +60,6 @@ export const addInvestment = async (investmentData, userId) => {
 
 export const editInvestments = async (editData) => {
   const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
-
   const { id, title, date, detail, amount, type } = editData;
 
   const updatedInvestment = {
@@ -80,9 +83,6 @@ export const editInvestments = async (editData) => {
 
 export const deleteInvestments = async (id) => {
   const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
 
   return await axios.delete(`http://localhost:5001/investments/${id}`, {
     headers: {

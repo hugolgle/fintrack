@@ -21,13 +21,11 @@ export default function Connexion() {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      localStorage.setItem("userId", data.user._id);
       sessionStorage.setItem("token", data.token);
       toast.success("Vous êtes connecté !");
       navigate(ROUTES.HOME);
     },
     onError: (error) => {
-      console.error("Erreur lors de la connexion :", error);
       toast.error("Une erreur s'est produite lors de la connexion.");
     },
   });
@@ -37,9 +35,7 @@ export default function Connexion() {
     mutation.mutate({ username, password });
   };
 
-  const userId = localStorage.getItem("userId");
-
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated();
 
   useEffect(() => {
     if (isAuthenticated) {

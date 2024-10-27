@@ -54,9 +54,8 @@ export function getLastThreeMonthsOfCurrentYear() {
 }
 
 export function getLastSixMonths(currentDate) {
-  // Extraire l'année et le mois de currentDate
   const currentYear = parseInt(currentDate.slice(0, 4), 10);
-  const currentMonth = parseInt(currentDate.slice(4, 6), 10) - 1; // Convertir le mois en index (0-11)
+  const currentMonth = parseInt(currentDate.slice(4, 6), 10) - 1;
 
   const lastMonths = [];
 
@@ -69,7 +68,7 @@ export function getLastSixMonths(currentDate) {
       year -= 1;
     }
 
-    const formattedMonth = ("0" + (month + 1)).slice(-2); // Format le mois en deux chiffres
+    const formattedMonth = ("0" + (month + 1)).slice(-2);
     const monthInLetter = months[month];
     lastMonths.push({
       code: `${year}${formattedMonth}`,
@@ -123,9 +122,9 @@ export function categorySort(categories) {
 
 export function normalizeText(text) {
   return text
-    .normalize("NFD") // Décompose les accents en caractères de base
-    .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
-    .toLowerCase(); // Convertit en minuscule
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 export function nameType(typeBdd) {

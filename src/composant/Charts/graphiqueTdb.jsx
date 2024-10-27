@@ -77,19 +77,17 @@ export function GraphiqueTdb({ data }) {
     return null;
   };
 
-  // Trouver la valeur maximale parmi les données pour ajuster l'axe Y
   const maxValue = Math.max(
     ...data.map((item) =>
       Math.max(item.amountExpense, item.amountRevenue, item.montantInvest)
     )
   );
-  const yAxisDomain = [0, maxValue * 1.1]; // Ajuste le domaine pour éviter le débordement
+  const yAxisDomain = [0, maxValue * 1.1];
   const ticks = Array.from(
     { length: 4 },
     (_, i) => Math.ceil((maxValue * 1.1 * i) / 3 / 100) * 100
   );
 
-  // Configuration des courbes
   const chartConfig = {
     amountRevenue: {
       label: "Recette",
@@ -116,9 +114,10 @@ export function GraphiqueTdb({ data }) {
           margin={{ top: 20, left: 0, right: 40, bottom: 10 }}
         >
           <CartesianGrid
-            strokeDasharray="3" // Style de ligne pointillée
-            stroke={chartConfig.text.color} // Couleur de la grille
-            vertical={false} // Pas de lignes verticales
+            strokeDasharray="3"
+            stroke={chartConfig.text.color}
+            e
+            vertical={false}
           />
 
           <XAxis
@@ -142,7 +141,7 @@ export function GraphiqueTdb({ data }) {
           <Line
             dataKey="amountRevenue"
             type="natural"
-            stroke={chartConfig.amountRevenue.color} // Utiliser la couleur de chartConfig
+            stroke={chartConfig.amountRevenue.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.amountRevenue.color }}
             activeDot={{ r: 6 }}
@@ -153,14 +152,14 @@ export function GraphiqueTdb({ data }) {
               stroke={chartConfig.amountRevenue.color}
               offset={10}
               fontSize={12}
-              formatter={(value) => `${addSpace(value)} €`} // Ajouter € derrière les valeurs
+              formatter={(value) => `${addSpace(value)} €`}
             />
           </Line>
 
           <Line
             dataKey="amountExpense"
             type="natural"
-            stroke={chartConfig.amountExpense.color} // Utiliser la couleur de chartConfig
+            stroke={chartConfig.amountExpense.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.amountExpense.color }}
             activeDot={{ r: 6 }}
@@ -171,13 +170,13 @@ export function GraphiqueTdb({ data }) {
               position="top"
               offset={10}
               fontSize={12}
-              formatter={(value) => `${addSpace(value)} €`} // Ajouter € derrière les valeurs
+              formatter={(value) => `${addSpace(value)} €`}
             />
           </Line>
           <Line
             dataKey="montantInvest"
             type="natural"
-            stroke={chartConfig.montantInvest.color} // Utiliser la couleur de chartConfig
+            stroke={chartConfig.montantInvest.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.montantInvest.color }}
             activeDot={{ r: 6 }}
@@ -188,7 +187,7 @@ export function GraphiqueTdb({ data }) {
               position="top"
               offset={10}
               fontSize={12}
-              formatter={(value) => `${addSpace(value)} €`} // Ajouter € derrière les valeurs
+              formatter={(value) => `${addSpace(value)} €`}
             />
           </Line>
         </LineChart>

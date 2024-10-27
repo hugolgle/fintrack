@@ -111,14 +111,12 @@ export function formatMontant(amount, type) {
 export function getCurrentYearAndMonth() {
   const currentDate = new Date();
   const year = currentDate.getFullYear();
-  let month = (currentDate.getMonth() + 1).toString(); // Ajoute 1 car les mois sont indexés à partir de 0
+  let month = (currentDate.getMonth() + 1).toString();
 
-  // Ajouter un '0' devant le mois si nécessaire (par exemple, 01, 02, ... 09)
   if (month.length < 2) {
     month = "0" + month;
   }
 
-  // Retourne la date au format AAAAMM
   return `${year}${month}`;
 }
 

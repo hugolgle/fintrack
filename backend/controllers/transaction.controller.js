@@ -28,7 +28,7 @@ module.exports.addTransaction = async (req, res) => {
 
 module.exports.getTransactions = async (req, res) => {
   try {
-    const transactions = await OperationModel.find({ user: req.params.idUser }); // Change this line to filter by user ID
+    const transactions = await OperationModel.find({ user: req.params.idUser });
     return res.status(200).json(transactions);
   } catch (error) {
     return res.status(500).json({

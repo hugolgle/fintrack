@@ -1,13 +1,11 @@
 import { Navigate } from "react-router-dom";
-import { useIsAuthenticated } from "../utils/users"; // Hook pour vérifier l'authentification
-import { toast } from "sonner"; // Pour afficher les messages d'erreur
-import Loader from "./loader"; // Composant de chargement
+import { useIsAuthenticated } from "../utils/users";
+import { toast } from "sonner";
+import Loader from "./loader";
 import { ROUTES } from "./routes";
 
 const PrivateRoute = ({ element }) => {
-  const userId = localStorage.getItem("userId");
-
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated();
 
   if (isLoading) {
     return <Loader />;

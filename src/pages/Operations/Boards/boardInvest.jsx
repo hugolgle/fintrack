@@ -11,11 +11,10 @@ import { toast } from "sonner";
 import Loader from "../../../composant/loader";
 
 export default function BoardInvest() {
-  const userId = localStorage.getItem("userId");
   const { isLoading, data } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
-      const response = await fetchInvestments(userId);
+      const response = await fetchInvestments();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -24,9 +23,9 @@ export default function BoardInvest() {
 
       return response.data;
     },
+    refetchOnMount: true,
   });
 
-  // Calcul de la première date pour chaque titre
   const firstDateByTitle = Array.isArray(data)
     ? data?.reduce((acc, investment) => {
         const { title, date } = investment;
@@ -37,7 +36,6 @@ export default function BoardInvest() {
       }, {})
     : {};
 
-  // Filtrer les investissements pour n'avoir que le premier par titre
   const uniqueInvest = Array.isArray(data)
     ? data?.filter((investment) => {
         return (
@@ -47,7 +45,6 @@ export default function BoardInvest() {
       })
     : [];
 
-  // Compter les investissements par titre
   const investmentCountByTitle = Array.isArray(data)
     ? data?.reduce((acc, investment) => {
         const { title } = investment;
@@ -56,30 +53,27 @@ export default function BoardInvest() {
       }, {})
     : {};
 
-  // Calcul des montants
   const montantInvestInProgress = calculTotalInvestment(data, false, "");
   const montantInvestSold = calculTotalInvestment(data, true, "");
   const montantInvest = calculTotalInvestment(data, null, "");
 
-  // Gestion du style en fonction du type d'investissement
   const getHoverClass = (type) => {
     switch (type) {
       case "Action":
-        return "bg-pink-600"; // Couleur pour Action
+        return "bg-pink-600";
       case "ETF":
-        return "bg-blue-600"; // Couleur pour ETF
+        return "bg-blue-600";
       case "Crypto":
-        return "bg-green-600"; // Couleur pour Crypto
+        return "bg-green-600";
       case "Obligation":
-        return "bg-purple-600"; // Couleur pour Obligation
+        return "bg-purple-600";
       case "Dérivé":
-        return "bg-red-600"; // Couleur pour Dérivé
+        return "bg-red-600";
       default:
-        return "bg-gray-600"; // Couleur par défaut
+        return "bg-gray-600";
     }
   };
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }

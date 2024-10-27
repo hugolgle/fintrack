@@ -58,16 +58,13 @@ export function BreadcrumbDemo() {
             displayName = part.slice(0, 4);
           }
 
-          // Vérifier si c'est le dernier élément du chemin
           const isLast = index === pathParts.length - 1;
 
           return (
             <BreadcrumbItem key={index}>
               {isLast ? (
-                // Dernier élément non cliquable
                 <BreadcrumbPage>{displayName}</BreadcrumbPage>
               ) : (
-                // Autres éléments cliquables
                 <>
                   <BreadcrumbLink href={href}>{displayName}</BreadcrumbLink>
                   <BreadcrumbSeparator />

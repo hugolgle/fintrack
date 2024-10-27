@@ -73,7 +73,6 @@ export function CamembertTdb(props) {
     },
   };
 
-  // Custom Legend Component
   const renderCustomLegend = (props) => {
     const { payload } = props;
     return (
@@ -93,7 +92,6 @@ export function CamembertTdb(props) {
     );
   };
 
-  // Custom Tooltip Content Component
   const CustomTooltipContent = (props) => {
     const { active, payload } = props;
     if (active && payload && payload.length) {

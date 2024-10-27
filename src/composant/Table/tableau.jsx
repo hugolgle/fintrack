@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox"; // Imported Checkbox from ShadCN UI
+import { Checkbox } from "@/components/ui/checkbox";
 import { addSpace, formatDate, separateMillier } from "../../utils/fonctionnel";
 import { useState } from "react";
 

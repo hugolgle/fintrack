@@ -24,11 +24,10 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "../../../composant/loader";
 
 export default function PageTransactions(props) {
-  const userId = localStorage.getItem("userId");
   const { isLoading, data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userId);
+      const response = await fetchTransactions();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -37,6 +36,7 @@ export default function PageTransactions(props) {
 
       return response.data;
     },
+    refetchOnMount: true,
   });
 
   const { date } = useParams();
@@ -237,7 +237,6 @@ export default function PageTransactions(props) {
     },
   ];
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }

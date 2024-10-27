@@ -28,7 +28,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQuery } from "@tanstack/react-query"; // Added missing useQuery
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,11 +41,10 @@ import { useEffect } from "react";
 import Loader from "../../../composant/loader";
 
 export default function Investment() {
-  const userId = localStorage.getItem("userId");
   const { data } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
-      const response = await fetchInvestments(userId);
+      const response = await fetchInvestments();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -54,6 +53,7 @@ export default function Investment() {
 
       return response?.data;
     },
+    refetchOnMount: true,
   });
   const { id } = useParams();
   const navigate = useNavigate();
@@ -61,7 +61,6 @@ export default function Investment() {
   const [selectedUpdate, setSelectedUpdate] = useState(false);
   const [update, setUpdate] = useState(false);
 
-  // Fetch the investment details by ID
   const {
     data: investment,
     isLoading,
@@ -71,9 +70,9 @@ export default function Investment() {
     queryKey: ["fetchInvestmentById", id],
     queryFn: () => fetchInvestmentById(id),
     enabled: !!id,
+    refetchOnMount: true,
   });
 
-  // Initialize states only when investment data is available
   const [selectedTitle, setSelectedTitle] = useState(investment?.data?.title);
   const [selectedType, setSelectedType] = useState(investment?.data?.type);
   const [selectedDetail, setSelectedDetail] = useState(
@@ -92,7 +91,7 @@ export default function Investment() {
       setSelectedType(investment?.data?.type);
       setSelectedDate(investment?.data?.date);
     }
-  }, [investment]); // Réagir
+  }, [investment]);
 
   const resetForm = () => {
     setSelectedType(investment?.data?.type);
@@ -156,7 +155,6 @@ export default function Investment() {
     if (typeof number === "string") {
       return parseFloat(number.replace(/-/g, ""));
     } else {
-      console.error("Invalid input, expected a string:", number);
       return NaN;
     }
   };
@@ -165,7 +163,6 @@ export default function Investment() {
     new Set(data?.map((investment) => investment.title))
   );
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }
@@ -215,8 +212,8 @@ export default function Investment() {
                   <Select
                     value={selectedType}
                     onValueChange={(value) => {
-                      setSelectedType(value); // Update the selected category
-                      handleInputChange(); // Call your input change handler if necessary
+                      setSelectedType(value);
+                      handleInputChange();
                     }}
                     required
                   >

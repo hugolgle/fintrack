@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 
 function BoxStat(props) {
-  const [currentMontant, setCurrentMontant] = useState(0); // State for animated amount
-  const [previousMontant, setPreviousMontant] = useState(0); // State for previous amount
+  const [currentMontant, setCurrentMontant] = useState(0);
+  const [previousMontant, setPreviousMontant] = useState(0);
 
-  // Convert props.amount to a number
   const amountAsString = String(props.amount || 0);
 
-  // Clean spaces and convert to number, handling negatives
   const targetMontant = parseFloat(
     amountAsString.replace(/\s/g, "").replace(",", ".")
   );
 
-  // If targetMontant is NaN, default it to 0
   const validTargetMontant = isNaN(targetMontant) ? 0 : targetMontant;
 
-  // Determine background color based on the type
   let bgColor = "";
   if (props.type === "Expense") {
     bgColor = "bg-red-600";
@@ -26,12 +22,11 @@ function BoxStat(props) {
   }
 
   useEffect(() => {
-    // Start animation from previous amount
     let startMontant = previousMontant;
-    const duration = 200; // Animation duration in ms
-    const stepTime = 10; // Time between increments
+    const duration = 200;
+    const stepTime = 10;
 
-    const difference = validTargetMontant - previousMontant; // Difference between previous and target amount
+    const difference = validTargetMontant - previousMontant;
     const incrementMontant = difference / (duration / stepTime);
 
     const timer = setInterval(() => {
@@ -40,31 +35,26 @@ function BoxStat(props) {
         (incrementMontant > 0 && startMontant >= validTargetMontant) ||
         (incrementMontant < 0 && startMontant <= validTargetMontant)
       ) {
-        setCurrentMontant(validTargetMontant); // Set final value
-        clearInterval(timer); // Stop interval when target is reached
+        setCurrentMontant(validTargetMontant);
+        clearInterval(timer);
       } else {
-        setCurrentMontant(Math.round(startMontant * 100) / 100); // Round to 2 decimals
+        setCurrentMontant(Math.round(startMontant * 100) / 100);
       }
     }, stepTime);
 
-    return () => clearInterval(timer); // Cleanup on unmount
+    return () => clearInterval(timer);
   }, [validTargetMontant, previousMontant]);
 
   useEffect(() => {
-    // Update previous amount when target amount changes
     setPreviousMontant(currentMontant);
   }, [currentMontant]);
 
-  // Format amount with spaces for thousands
   const formatMontant = (amount) => {
-    const sign = amount < 0 ? "-" : ""; // Preserve negative sign
-    const absoluteMontant = Math.abs(amount); // Use absolute value for formatting
+    const sign = amount < 0 ? "-" : "";
+    const absoluteMontant = Math.abs(amount);
 
     return (
-      sign +
-      absoluteMontant
-        .toFixed(2) // Round to 2 decimals
-        .replace(/\B(?=(\d{3})+(?!\d))/g, " ") // Add spaces for thousands
+      sign + absoluteMontant.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")
     );
   };
 

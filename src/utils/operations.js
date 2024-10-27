@@ -196,7 +196,6 @@ export function getLastTransactionsByType(data, type, number, month) {
     });
   }
 
-  // Sort by createdAt date first, then by date
   filteredTransactions.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -204,7 +203,6 @@ export function getLastTransactionsByType(data, type, number, month) {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // Slice the sorted transactions to get the required number of last transactions
   const lastTransactions = filteredTransactions.slice(0, number);
 
   return lastTransactions;
@@ -215,44 +213,37 @@ export function getLastSubscribe(data) {
     return [];
   }
 
-  // Helper function to get the start date (31 days ago) and end date (today)
   const getDateRange = () => {
     const currentDate = new Date();
 
-    // Start date: 31 days ago
     const startDate = new Date();
     startDate.setDate(currentDate.getDate() - 31);
 
-    // End date: today (current date)
     const endDate = currentDate;
 
     return {
-      startDate: startDate.toISOString().split("T")[0], // Format YYYY-MM-DD
-      endDate: endDate.toISOString().split("T")[0], // Format YYYY-MM-DD
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
     };
   };
 
   const { startDate, endDate } = getDateRange();
 
-  // Step 1: Filter transactions for the category 'Abonnement'
   let filteredTransactions = data?.filter(
     (transaction) => transaction.category === "Abonnement"
   );
 
-  // Step 2: Filter for transactions between the start date and end date
   filteredTransactions = filteredTransactions.filter((transaction) => {
-    const transactionDate = transaction.date; // already in YYYY-MM-DD format
+    const transactionDate = transaction.date;
     return transactionDate >= startDate && transactionDate <= endDate;
   });
 
-  // Step 3: Return the filtered transactions as is (without removing duplicates)
   const lastSubscriptions = filteredTransactions.map((transaction) => ({
     title: transaction.title,
-    date: transaction.date, // Keeping the date as it is (string)
+    date: transaction.date,
     amount: transaction.amount,
   }));
 
-  // Return all filtered transactions (even if there are duplicates)
   return lastSubscriptions;
 }
 
@@ -312,11 +303,9 @@ export function getTitleOfTransactionsByType(data, type) {
   if (!Array.isArray(data)) {
     return [];
   }
-  // Calculer la date de début des deux derniers mois
   const currentDate = new Date();
   const startDate = startOfMonth(subMonths(currentDate, 2));
 
-  // Filtrer les transactions par type et par date
   const filteredTransactions = data?.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
     return transaction.type === type && transactionDate >= startDate;
@@ -324,7 +313,6 @@ export function getTitleOfTransactionsByType(data, type) {
 
   const titles = filteredTransactions.map((transaction) => transaction.title);
 
-  // Tri des titles par ordre alphabétique
   const sortedTitles = titles.sort((a, b) => {
     if (a.toLowerCase() < b.toLowerCase()) {
       return -1;
@@ -335,7 +323,6 @@ export function getTitleOfTransactionsByType(data, type) {
     return 0;
   });
 
-  // Supprimer les doublons
   const uniqueTitles = Array.from(new Set(sortedTitles));
 
   return uniqueTitles;
@@ -375,7 +362,7 @@ export function aggregateTransactions(transactions) {
 
   const montantParCategory = transactions.reduce((acc, transaction) => {
     const category = transaction.category;
-    const amount = Math.abs(transaction.amount); // Assurer que le amount est positif
+    const amount = Math.abs(transaction.amount);
     if (!acc[category]) {
       acc[category] = 0;
     }
@@ -385,8 +372,8 @@ export function aggregateTransactions(transactions) {
 
   return Object.entries(montantParCategory).map(([category, amount]) => ({
     nomCate: category,
-    amount: amount.toFixed(2), // Convertir le amount en chaîne de caractères avec deux décimales
-    pourcentage: ((amount / totalMontant) * 100).toFixed(2), // Calculer le pourcentage et le formater
+    amount: amount.toFixed(2),
+    pourcentage: ((amount / totalMontant) * 100).toFixed(2),
   }));
 }
 
@@ -396,7 +383,7 @@ export function generateChartConfig(data) {
     const key = item.nomCate.replace(/\s+/g, "").toLowerCase();
     config[key] = {
       label: item.nomCate,
-      color: `hsl(var(--chart-${(index % 20) + 1}))`, // Utiliser modulo pour boucler sur les 20 couleurs
+      color: `hsl(var(--chart-${(index % 20) + 1}))`,
     };
   });
   return config;

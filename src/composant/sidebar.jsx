@@ -20,19 +20,16 @@ import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
 import { ROUTES } from "./routes";
 import { useCurrentUser, useLogout } from "../hooks/user.hooks";
-import { Skeleton } from "@/components/ui/skeleton";
 
 function Sidebar() {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const userId = localStorage.getItem("userId");
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated(userId);
+  const { isAuthenticated, isLoading, isError } = useIsAuthenticated();
 
-  // Utiliser le hook useLogout
   const logoutMutation = useLogout();
 
   const logout = () => {
-    logoutMutation.mutate(); // Appelle la mutation de déconnexion
+    logoutMutation.mutate();
     toast.success("Vous vous êtes déconnecté !");
   };
 
@@ -40,33 +37,13 @@ function Sidebar() {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
   if (loadingUser) {
-    return (
-      <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
-        <Link
-          to={ROUTES.HOME}
-          className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
-        >
-          <Logo sidebar />
-        </Link>
-
-        <div className="flex flex-col justify-between gap-2">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className="h-8 w-[90%] rounded-full" />
-          ))}
-        </div>
-
-        <div className="flex flex-col">
-          <Skeleton className="w-12 h-12 rounded-full" />
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
-  // Menu de la sidebar
   const menu = [
     {
       id: 1,
@@ -101,10 +78,10 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+    <div className="flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
       <Link
         to={ROUTES.HOME}
-        className="cursor-pointer rounded-t-full text-2xl group text-center h-11 w-auto overflow-hidden"
+        className="cursor-pointer rounded-xl text-2xl group text-center h-11 w-auto overflow-hidden"
       >
         <Logo sidebar />
       </Link>
@@ -115,7 +92,7 @@ function Sidebar() {
             <TooltipTrigger asChild>
               <Link
                 to={link}
-                className={`my-1 p-3 rounded-full font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
                   activeLink.startsWith(link)
                     ? "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
                     : ""
@@ -124,7 +101,7 @@ function Sidebar() {
                 {icon}
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right" className="rounded-xl">
+            <TooltipContent side="right">
               <p>{name}</p>
             </TooltipContent>
           </Tooltip>
@@ -135,7 +112,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 hover:scale-95 transition-all">
+              <Avatar className="w-12 h-12 rounded-xl brightness-75 hover:brightness-100 transition-all">
                 <AvatarImage
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}
@@ -150,10 +127,11 @@ function Sidebar() {
         ) : (
           <Link
             to={ROUTES.LOGIN}
-            className={`my-1 p-3 rounded-full  hover:bg-opacity-50 hover:dark:bg-opacity-50  transition-all ${
+            className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
               activeLink.startsWith(ROUTES.LOGIN) ||
-              (activeLink.startsWith(ROUTES.SIGNUP) &&
-                "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white")
+              activeLink.startsWith(ROUTES.SIGNUP)
+                ? "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                : ""
             }`}
           >
             <Power />

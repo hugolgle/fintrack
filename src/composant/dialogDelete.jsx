@@ -27,11 +27,7 @@ export function DialogDelete({ btnDelete, handleDelete }) {
         </DialogHeader>
 
         <DialogFooter className="sm:justify-start">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete} // Appel direct à handleLogout
-          >
+          <Button type="button" variant="destructive" onClick={handleDelete}>
             Oui
           </Button>
           <DialogClose asChild>

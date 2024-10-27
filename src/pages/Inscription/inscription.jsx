@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner"; // Ensure you're using the right toast library
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/routes";
-import { useAddUser } from "../../hooks/user.hooks"; // Ensure this path is correct
+import { useAddUser } from "../../hooks/user.hooks";
 import Title from "../../composant/Text/title";
 
 export default function Inscription() {
   const navigate = useNavigate();
-  const { mutate: addUser, isLoading } = useAddUser(); // Destructure mutate and isLoading
+  const { mutate: addUser, isLoading } = useAddUser();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -38,11 +38,9 @@ export default function Inscription() {
       formData.append("img", image);
     }
 
-    // Use the addUser mutation
     addUser(formData, {
       onSuccess: () => {
         toast.success("Inscription réussie !");
-        // Clear form fields after success
         setUsername("");
         setPassword("");
         setPseudo("");
@@ -53,7 +51,6 @@ export default function Inscription() {
         navigate(ROUTES.LOGIN);
       },
       onError: (error) => {
-        console.error("Error adding user:", error); // Debugging line
         toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
       },
     });

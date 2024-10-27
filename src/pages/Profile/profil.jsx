@@ -7,8 +7,7 @@ import { Loader } from "lucide-react";
 import { formatDate } from "../../utils/fonctionnel";
 
 export default function Profil() {
-  const userId = localStorage.getItem("userId");
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
   if (loadingUser) {
     return <Loader />;
   }

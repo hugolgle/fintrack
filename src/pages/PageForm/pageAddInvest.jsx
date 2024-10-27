@@ -6,16 +6,16 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation } from "@tanstack/react-query"; // Importer useMutation
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react"; // Import de l'icône de calendrier
-import { format } from "date-fns"; // Pour formater la date
-import { fr } from "date-fns/locale"; // Locale française pour la date
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import {
   Select,
   SelectContent,
@@ -34,8 +34,7 @@ import { useCurrentUser } from "../../hooks/user.hooks";
 import { Loader } from "lucide-react";
 
 export default function PageAddInvest() {
-  const userId = localStorage.getItem("userId");
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
 
   const { data } = useQuery({
     queryKey: ["fetchInvestments"],
@@ -49,23 +48,23 @@ export default function PageAddInvest() {
 
       return response?.data;
     },
+    refetchOnMount: true,
   });
 
   const suggestionsTitle = Array.from(
     new Set(data?.map((investment) => investment.title))
   );
 
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Utilisation de la date actuelle par défaut
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedType, setSelectedType] = useState("");
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
   const [selectedMontant, setSelectedMontant] = useState("");
 
-  // Mutation pour ajouter un investissement
   const addInvestmentMutation = useMutation({
     mutationFn: async (postData) => {
-      const response = await addInvestment(postData, userInfo?._id); // Envoyer les données à l'API
-      return response; // Assurez-vous que votre API renvoie une réponse appropriée
+      const response = await addInvestment(postData, userInfo?._id);
+      return response;
     },
     onSuccess: () => {
       resetForm();
@@ -95,7 +94,7 @@ export default function PageAddInvest() {
     setSelectedType("");
     setSelectedTitle("");
     setSelectedMontant("");
-    setSelectedDate(new Date()); // Réinitialiser la date également
+    setSelectedDate(new Date());
   };
 
   const handleSubmit = async (event) => {
@@ -112,7 +111,7 @@ export default function PageAddInvest() {
       amount: separateMillier(selectedMontant),
     };
 
-    addInvestmentMutation.mutate(postData); // Utiliser mutate pour ajouter l'investissement
+    addInvestmentMutation.mutate(postData);
   };
 
   if (loadingUser) return <Loader />;
@@ -124,7 +123,6 @@ export default function PageAddInvest() {
         onSubmit={handleSubmit}
         className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
       >
-        {/* Input pour la date avec calendrier */}
         <Popover>
           <PopoverTrigger asChild>
             <Button

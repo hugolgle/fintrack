@@ -6,17 +6,9 @@ import { useIsAuthenticated } from "../../utils/users";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const userId = localStorage.getItem("userId");
+  const { isAuthenticated, isLoading: loadingAuth } = useIsAuthenticated();
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
 
-  // Ensure hooks are always called, even if userId is not present.
-  const { isAuthenticated, isLoading: loadingAuth } = useIsAuthenticated(
-    userId || null
-  );
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(
-    userId || null
-  );
-
-  // Show the loader if either authentication or user data is still loading.
   if (loadingAuth || loadingUser) {
     return <Loader />;
   }

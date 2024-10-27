@@ -20,7 +20,6 @@ module.exports.setInvestments = async (req, res) => {
 
     return res.status(201).json(investment);
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       message: "Erreur lors de la création de l'investissement",
       error,

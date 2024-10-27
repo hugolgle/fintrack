@@ -4,7 +4,6 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { aggregateTransactions } from "../../utils/operations";
 import { addSpace } from "../../utils/fonctionnel";
 
-// Custom Tooltip Content Component
 const CustomTooltipContent = (props) => {
   const { active, payload } = props;
   if (active && payload && payload.length) {
@@ -40,14 +39,11 @@ const CustomTooltipContent = (props) => {
   return null;
 };
 
-// Custom Legend Component
 const renderCustomLegend = (props) => {
-  const { payload, topN = 5 } = props; // topN from props or default to 5
-  // Tri du payload par pourcentage décroissant
+  const { payload, topN = 5 } = props;
   const payloadSort = payload.sort(
     (a, b) => b.payload.pourcentage - a.payload.pourcentage
   );
-  // Tronquer la liste pour n'afficher que les `topN` premiers éléments
   const payloadTopN = payloadSort.slice(0, topN);
 
   return (
@@ -68,7 +64,6 @@ const renderCustomLegend = (props) => {
 };
 
 export function CamembertStat(props) {
-  // Définir les couleurs de catégorie avec des valeurs hexadécimales
   const categoryColors = props.category.reduce((acc, category) => {
     acc[category.name] = category.color;
     return acc;

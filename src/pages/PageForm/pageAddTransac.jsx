@@ -35,7 +35,7 @@ import {
 } from "../../utils/operations";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom"; // Corriger l'import de useNavigate
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/header";
 import {
@@ -46,7 +46,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader";
 
-// Schéma de validation pour la date
 const FormSchema = z.object({
   date: z.date({
     required_error: "Une date est requise.",
@@ -54,8 +53,7 @@ const FormSchema = z.object({
 });
 
 export default function PageAddTransac(props) {
-  const userId = localStorage.getItem("userId");
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser(userId);
+  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
 
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
@@ -69,6 +67,7 @@ export default function PageAddTransac(props) {
 
       return response?.data;
     },
+    refetchOnMount: true,
   });
 
   const categoryD = categorySort(categoryDepense);
@@ -79,7 +78,7 @@ export default function PageAddTransac(props) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      date: new Date(), // Valeur par défaut pour la date
+      date: new Date(),
     },
   });
 
@@ -157,10 +156,6 @@ export default function PageAddTransac(props) {
       );
     },
     onError: (error) => {
-      console.error(
-        "Error during transaction:",
-        error.response ? error.response?.data : error.message
-      );
       toast.error("Erreur lors de l'ajout de la transaction.");
     },
   });

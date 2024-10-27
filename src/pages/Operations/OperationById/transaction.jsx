@@ -51,11 +51,10 @@ export default function Transaction() {
   const categoryD = categorySort(categoryDepense);
   const categoryR = categorySort(categoryRecette);
   const { id } = useParams();
-  const userId = localStorage.getItem("userId");
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userId);
+      const response = await fetchTransactions();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -64,6 +63,7 @@ export default function Transaction() {
 
       return response?.data;
     },
+    refetchOnMount: true,
   });
 
   const {
@@ -75,6 +75,7 @@ export default function Transaction() {
     queryKey: ["fetchTransactionById", id],
     queryFn: () => fetchTransactionById(id),
     enabled: !!id,
+    refetchOnMount: true,
   });
 
   const suggestions = getTitleOfTransactionsByType(
@@ -104,7 +105,7 @@ export default function Transaction() {
       setSelectedCategory(transaction.data.category);
       setSelectedDate(transaction.data.date);
     }
-  }, [transaction]); // Réagir
+  }, [transaction]);
 
   const resetForm = () => {
     if (transaction) {
@@ -176,7 +177,6 @@ export default function Transaction() {
     if (typeof number === "string") {
       return parseFloat(number.replace(/-/g, ""));
     } else {
-      console.error("Invalid input, expected a string:", number);
       return NaN;
     }
   };
@@ -192,7 +192,6 @@ export default function Transaction() {
         ? "revenue"
         : undefined;
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }
@@ -210,7 +209,7 @@ export default function Transaction() {
 
       <div className="flex flex-row gap-4 animate-fade">
         <div className="flex flex-col w-3/4 gap-4 ">
-          <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+          <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
             {selectedUpdate ? (
               <>
                 <Input
@@ -238,13 +237,13 @@ export default function Transaction() {
             )}
           </div>
           <div className="flex flex-row gap-4">
-            <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
               {selectedUpdate ? (
                 <Select
                   value={selectedCategory}
                   onValueChange={(value) => {
-                    setSelectedCategory(value); // Update the selected category
-                    handleInputChange(); // Call your input change handler if necessary
+                    setSelectedCategory(value);
+                    handleInputChange();
                   }}
                   required
                 >
@@ -279,7 +278,7 @@ export default function Transaction() {
               )}
             </div>
 
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
               {selectedUpdate ? (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -329,10 +328,10 @@ export default function Transaction() {
             </div>
           </div>
           <div className="flex flex-row gap-4">
-            <div className="min-h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div className="min-h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
               {selectedUpdate ? (
                 <Input
-                  className="h-full w-full px-80  bg-transparent text-center text-4xl  rounded-2xl"
+                  className="h-full w-full px-80 bg-transparent text-center text-4xl rounded-2xl"
                   value={removeTiret(selectedMontant)}
                   type="number"
                   step="0.5"
@@ -355,7 +354,7 @@ export default function Transaction() {
             </div>
           </div>
           <div className="flex flex-row gap-4">
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
               {selectedUpdate ? (
                 <Textarea
                   className="h-full w-full bg-transparent text-center text-xl p-4 rounded-2xl"

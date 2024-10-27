@@ -1,14 +1,27 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-export const fetchTransactions = async (userId) => {
+const getUserIdFromToken = () => {
   const token = sessionStorage.getItem("token");
   if (!token) {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
+  try {
+    const decodedToken = jwtDecode(token);
+    return decodedToken.id;
+  } catch (error) {
+    throw new Error("Erreur lors du décodage du token.");
+  }
+};
+
+export const fetchTransactions = async () => {
+  const userId = getUserIdFromToken();
+  const token = sessionStorage.getItem("token");
+
   return await axios.get(`http://localhost:5001/transactions/user/${userId}`, {
     headers: {
-      Authorization: `Bearer ${token}`, // Préfixer le token avec "Bearer "
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -26,11 +39,9 @@ export const fetchTransactionById = async (id) => {
   });
 };
 
-export const addTransaction = async (transactionData, userId) => {
+export const addTransaction = async (transactionData) => {
+  const userId = getUserIdFromToken();
   const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
 
   const { title, category, date, detail, amount, type } = transactionData;
 
@@ -55,7 +66,6 @@ export const addTransaction = async (transactionData, userId) => {
   );
 };
 
-// Fonction pour modifier une transaction existante
 export const editTransactions = async (editData) => {
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -84,7 +94,6 @@ export const editTransactions = async (editData) => {
   );
 };
 
-// Fonction pour supprimer une transaction par ID
 export const deleteTransactions = async (id) => {
   const token = sessionStorage.getItem("token");
   if (!token) {

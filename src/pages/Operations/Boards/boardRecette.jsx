@@ -20,11 +20,10 @@ import Header from "../../../composant/header";
 import Loader from "../../../composant/loader";
 
 export default function BoardRecette() {
-  const userId = localStorage.getItem("userId");
   const { isLoading, data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userId);
+      const response = await fetchTransactions();
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -33,9 +32,9 @@ export default function BoardRecette() {
 
       return response.data;
     },
+    refetchOnMount: true,
   });
 
-  // Affichez un écran de chargement pendant que vous vérifiez l'authentification
   if (isLoading) {
     return <Loader />;
   }

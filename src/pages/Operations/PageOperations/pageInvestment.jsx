@@ -15,38 +15,32 @@ import { fetchInvestments } from "../../../service/investment.service";
 import Loader from "../../../composant/loader";
 
 export default function PageInvestment() {
-  const userId = localStorage.getItem("userId");
-
-  // Ensure useParams is always called, regardless of render flow
   const { status } = useParams();
   const investmentTitle = status || "Investissement inconnu";
 
-  // State Hooks
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectOpe, setSelectOpe] = useState(false);
   const [clickResearch, setClickResearch] = useState(false);
 
-  // Fetch investments data
   const { isLoading, data } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
-      const response = await fetchInvestments(userId);
+      const response = await fetchInvestments();
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
         toast.warn(message);
       }
       return response.data;
     },
+    refetchOnMount: true,
   });
 
-  // Keep hook order consistent, even when loading
   let investissements = [];
   let totalInvestissement = 0;
   let nombreTransactions = 0;
 
   if (!isLoading && data) {
-    // Prepare investissements and other variables based on the status
     switch (status) {
       case "all":
         investissements = data;
@@ -109,7 +103,6 @@ export default function PageInvestment() {
     }
   }, [searchTerm, investissements]);
 
-  // Define the columns based on the status
   const columns = [
     { id: 1, name: "ID" },
     { id: 3, name: "Type" },
@@ -125,7 +118,6 @@ export default function PageInvestment() {
       : []),
   ];
 
-  // Determine the display title based on the status
   let statusType = "";
   switch (status) {
     case "sold":
@@ -139,7 +131,6 @@ export default function PageInvestment() {
       break;
   }
 
-  // Handle loading state
   if (isLoading) {
     return <Loader />;
   }
