@@ -4,23 +4,16 @@ import {
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../../utils/calcul";
-import { addSpace, convertirFormatDate } from "../../../utils/fonctionnel";
-import {
-  getCurrentMonth,
-  getLastTransactionsByType,
-} from "../../../utils/operations";
-import {
-  getLastThreeMonthsOfCurrentYear,
-  getLastTwoYears,
-  premierJourMoisEnCours,
-} from "../../../utils/other";
+import { addSpace, formatDateDayMonth } from "../../../utils/fonctionnel";
+import { getLastTransactionsByType } from "../../../utils/operations";
+import { currentDate, getLastMonths, getLastYears } from "../../../utils/other";
 import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../../composant/header";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function BoardRecette() {
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -35,33 +28,38 @@ export default function BoardRecette() {
     refetchOnMount: true,
   });
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
 
-  const lastMonths = getLastThreeMonthsOfCurrentYear();
-  const lastYears = getLastTwoYears();
-  const currentMonth = getCurrentMonth();
+  const { month: currentMonth, year: currentYear } = currentDate();
+  const currentYearMonth = `${currentYear}${currentMonth}`;
+
+  const lastMonths = getLastMonths(currentYearMonth, 3).reverse();
+  const lastYears = getLastYears(2);
   const lastTransactions = getLastTransactionsByType(data, "Revenue", 5, true);
-  const firstDayMonth = premierJourMoisEnCours();
 
   return (
     <>
       <section className="w-full">
         <div className="flex flex-col">
-          <Header title="Board recette" typeProps="revenue" btnAdd />
+          <Header
+            title="Board recette"
+            typeProps="revenue"
+            btnAdd
+            isFetching={isFetching}
+          />
           <div className="flex flex-col gap-4 w-full animate-fade">
             <div className="flex flex-row w-full h-64 gap-4">
               <Link
-                to={currentMonth}
+                key={lastMonths[0].code}
+                to={lastMonths[0].code}
                 className="flex flex-col hover:scale-95 justify-between w-3/5 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
               >
                 <div className="flex flex-col w-full gap-4">
-                  <p className="text-4xl font-thin">
+                  <p className="text-3xl font-thin">
                     {calculTotalByMonth(
                       data,
                       "Revenue",
-                      currentMonth,
+                      lastMonths[0].code,
                       null,
                       null
                     )}
@@ -72,7 +70,7 @@ export default function BoardRecette() {
                       <tbody>
                         {lastTransactions.map((transaction) => (
                           <tr key={transaction._id}>
-                            <td>{convertirFormatDate(transaction.date)}</td>
+                            <td>{formatDateDayMonth(transaction.date)}</td>
                             <td>{transaction.title}</td>
                             <td>{transaction.category}</td>
                             <td>
@@ -87,17 +85,18 @@ export default function BoardRecette() {
                   )}
                 </div>
 
-                <p className="text-right italic">Depuis le {firstDayMonth}</p>
+                <p className="text-right italic">Ce mois-ci</p>
               </Link>
-              <div className="flex flex-col-reverse gap-4 w-2/5 text-left">
-                {lastMonths.map((month) => (
+
+              <div className="flex flex-col w-2/5 gap-4 text-left">
+                {lastMonths.slice(1).map((month) => (
                   <Link
                     key={month.code}
                     to={month.code}
-                    className="flex flex-col-reverse hover:scale-95 justify-between w-full h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                    className="flex flex-col hover:scale-95 justify-between w-full h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
                   >
                     <p className="text-right italic">{month.month}</p>
-                    <p className="text-4xl font-thin">
+                    <p className="text-3xl font-thin">
                       {calculTotalByMonth(
                         data,
                         "Revenue",
@@ -116,10 +115,10 @@ export default function BoardRecette() {
                 <Link
                   key={year}
                   to={`${year}`}
-                  className=" w-1/2 relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+                  className="w-1/2 relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
                 >
                   <p className="italic absolute top-2">{year}</p>
-                  <p className="text-4xl font-thin">
+                  <p className="text-3xl font-thin">
                     {calculTotalByYear(data, "Revenue", `${year}`, null, null)}
                   </p>
                 </Link>
@@ -128,10 +127,10 @@ export default function BoardRecette() {
 
             <Link
               to="all"
-              className="w-full relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-2"
+              className="w-full relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
-              <p className="text-4xl font-thin">
+              <p className="text-3xl font-thin">
                 {calculTotal(data, "Revenue", null, null)}
               </p>
             </Link>

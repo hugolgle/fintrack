@@ -12,7 +12,7 @@ import Header from "../../../composant/header";
 import { useParams } from "react-router-dom/dist/umd/react-router-dom.development";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInvestments } from "../../../service/investment.service";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function PageInvestment() {
   const { status } = useParams();
@@ -23,7 +23,7 @@ export default function PageInvestment() {
   const [selectOpe, setSelectOpe] = useState(false);
   const [clickResearch, setClickResearch] = useState(false);
 
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -131,9 +131,7 @@ export default function PageInvestment() {
       break;
   }
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
 
   return (
     <>
@@ -157,6 +155,7 @@ export default function PageInvestment() {
           columns={columns}
           type="investments"
           selectOpe={selectOpe}
+          isFetching={isFetching}
         />
 
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-zinc-900 py-3 transition-all">

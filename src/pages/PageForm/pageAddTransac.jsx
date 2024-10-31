@@ -26,7 +26,7 @@ import {
   categoryRecette,
   categoryDepense,
 } from "../../../public/categories.json";
-import { formatMontant } from "../../utils/fonctionnel";
+import { formatAmount } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
 import { categorySort, nameType, normalizeText } from "../../utils/other";
 import {
@@ -44,7 +44,7 @@ import {
 } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "../../hooks/user.hooks";
-import Loader from "../../composant/loader";
+import Loader from "../../composant/loader/loader";
 
 const FormSchema = z.object({
   date: z.date({
@@ -85,7 +85,7 @@ export default function PageAddTransac(props) {
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
-  const [selectedMontant, setSelectedMontant] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState("");
 
   const navigate = useNavigate();
 
@@ -99,13 +99,13 @@ export default function PageAddTransac(props) {
     if (selectedTitle && lastTransacByTitle) {
       setSelectedCategory(lastTransacByTitle.category || "");
       setSelectedDetail(lastTransacByTitle.detail || "");
-      setSelectedMontant(
+      setSelectedAmount(
         Math.abs(parseFloat(lastTransacByTitle.amount)).toFixed(2) || ""
       );
     } else {
       setSelectedCategory("");
       setSelectedDetail("");
-      setSelectedMontant("");
+      setSelectedAmount("");
     }
   }, [selectedTitle, lastTransacByTitle]);
 
@@ -113,7 +113,7 @@ export default function PageAddTransac(props) {
     setSelectedTitle("");
     setSelectedCategory("");
     setSelectedDetail("");
-    setSelectedMontant("");
+    setSelectedAmount("");
     form.reset();
   };
 
@@ -126,7 +126,7 @@ export default function PageAddTransac(props) {
   };
 
   const handleMontant = (event) => {
-    setSelectedMontant(event.target.value);
+    setSelectedAmount(event.target.value);
   };
 
   const addTransactionMutation = useMutation({
@@ -179,7 +179,7 @@ export default function PageAddTransac(props) {
       title: selectedTitle,
       date: selectedDate.toLocaleDateString("fr-CA"),
       detail: selectedDetail,
-      amount: formatMontant(selectedMontant, props.type),
+      amount: formatAmount(selectedAmount, props.type),
     };
 
     addTransactionMutation.mutate(postData);
@@ -280,7 +280,7 @@ export default function PageAddTransac(props) {
           />
 
           <Input
-            value={selectedMontant}
+            value={selectedAmount}
             className="w-96 h-10 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             type="number"
             min="0"

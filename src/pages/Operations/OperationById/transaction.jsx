@@ -1,11 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  addSpace,
-  convertDateHour,
-  formatDate,
-  formatMontant,
-  separateMillier,
-} from "../../../utils/fonctionnel";
+import { addSpace, formatAmount, formatDate } from "../../../utils/fonctionnel";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -45,7 +39,7 @@ import {
   fetchTransactions,
 } from "../../../service/transaction.service";
 import { useEffect } from "react";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function Transaction() {
   const categoryD = categorySort(categoryDepense);
@@ -71,6 +65,7 @@ export default function Transaction() {
     isLoading,
     error,
     refetch,
+    isFetching,
   } = useQuery({
     queryKey: ["fetchTransactionById", id],
     queryFn: () => fetchTransactionById(id),
@@ -84,7 +79,6 @@ export default function Transaction() {
   );
 
   const [selectedUpdate, setSelectedUpdate] = useState(false);
-  const [update, setUpdate] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState(transaction?.data?.title);
   const [selectedCategory, setSelectedCategory] = useState(
     transaction?.data?.category
@@ -93,15 +87,35 @@ export default function Transaction() {
   const [selectedDetail, setSelectedDetail] = useState(
     transaction?.data?.detail
   );
-  const [selectedMontant, setSelectedMontant] = useState(
+  const [selectedAmount, setSelectedAmount] = useState(
     transaction?.data?.amount
+  );
+
+  const dataBase = [
+    transaction?.data?.title,
+    transaction?.data?.detail,
+    transaction?.data?.amount,
+    transaction?.data?.category,
+    transaction?.data?.date,
+  ];
+
+  const dataEdit = [
+    selectedTitle,
+    selectedDetail,
+    selectedAmount,
+    selectedCategory,
+    selectedDate,
+  ];
+
+  const isSaveDisabled = dataBase.every(
+    (value, index) => value === dataEdit[index]
   );
 
   useEffect(() => {
     if (transaction) {
       setSelectedTitle(transaction.data.title);
       setSelectedDetail(transaction.data.detail);
-      setSelectedMontant(transaction.data.amount);
+      setSelectedAmount(transaction.data.amount);
       setSelectedCategory(transaction.data.category);
       setSelectedDate(transaction.data.date);
     }
@@ -111,7 +125,7 @@ export default function Transaction() {
     if (transaction) {
       setSelectedTitle(transaction?.data?.title);
       setSelectedDetail(transaction?.data?.detail);
-      setSelectedMontant(transaction?.data?.amount);
+      setSelectedAmount(transaction?.data?.amount);
       setSelectedCategory(transaction?.data?.category);
       setSelectedDate(transaction?.data?.date);
     }
@@ -126,11 +140,7 @@ export default function Transaction() {
   };
 
   const handleMontant = (event) => {
-    setSelectedMontant(event.target.value);
-  };
-
-  const handleInputChange = () => {
-    setUpdate(true);
+    setSelectedAmount(event.target.value);
   };
 
   const navigate = useNavigate();
@@ -158,8 +168,8 @@ export default function Transaction() {
         category: selectedCategory,
         date: selectedDate,
         detail: selectedDetail,
-        amount: formatMontant(
-          removeTiret(selectedMontant),
+        amount: formatAmount(
+          removeTiret(selectedAmount),
           transaction?.data?.type
         ),
       };
@@ -192,9 +202,8 @@ export default function Transaction() {
         ? "revenue"
         : undefined;
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
+
   if (error)
     return <div>Erreur lors de la récupération de la transaction.</div>;
 
@@ -205,6 +214,7 @@ export default function Transaction() {
         typeProps={typeProps}
         btnAdd
         btnReturn
+        isFetching={isFetching}
       />
 
       <div className="flex flex-row gap-4 animate-fade">
@@ -222,7 +232,6 @@ export default function Transaction() {
                   value={selectedTitle}
                   onChange={(e) => {
                     handleTitle(e);
-                    handleInputChange();
                   }}
                   required
                 />
@@ -243,7 +252,6 @@ export default function Transaction() {
                   value={selectedCategory}
                   onValueChange={(value) => {
                     setSelectedCategory(value);
-                    handleInputChange();
                   }}
                   required
                 >
@@ -312,7 +320,6 @@ export default function Transaction() {
                           newDate.setUTCDate(date.getDate());
                           setSelectedDate(newDate);
                         }
-                        handleInputChange();
                       }}
                       disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
@@ -322,7 +329,7 @@ export default function Transaction() {
                 </Popover>
               ) : (
                 <h2 className="text-4xl">
-                  {formatDate(transaction?.data?.date)}
+                  {formatDate(transaction?.data?.date, 2)}
                 </h2>
               )}
             </div>
@@ -332,14 +339,13 @@ export default function Transaction() {
               {selectedUpdate ? (
                 <Input
                   className="h-full w-full px-80 bg-transparent text-center text-4xl rounded-2xl"
-                  value={removeTiret(selectedMontant)}
+                  value={removeTiret(selectedAmount)}
                   type="number"
                   step="0.5"
                   min="0"
                   name=""
                   onChange={(e) => {
                     handleMontant(e);
-                    handleInputChange();
                   }}
                   placeholder="Montant"
                 />
@@ -362,7 +368,6 @@ export default function Transaction() {
                   name=""
                   onChange={(e) => {
                     handleDetail(e);
-                    handleInputChange();
                   }}
                   placeholder="Détails"
                 />
@@ -381,20 +386,20 @@ export default function Transaction() {
             <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
               <p>
                 Ajouter le : <br />
-                <b>{convertDateHour(transaction?.data?.createdAt)}</b>
+                <b>{formatDate(transaction?.data?.createdAt, 1)}</b>
               </p>
             </div>
             {transaction?.data?.updatedAt !== transaction?.data?.createdAt && (
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Dernière modification le : <br />
-                  <b>{convertDateHour(transaction?.data?.updatedAt)}</b>
+                  <b>{formatDate(transaction?.data?.updatedAt, 1)}</b>
                 </p>
               </div>
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {selectedUpdate && update === true ? (
+            {selectedUpdate && !isSaveDisabled ? (
               <div className="flex flex-col gap-4 justify-center items-center">
                 <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                 <div className="flex gap-4">

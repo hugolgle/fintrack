@@ -8,9 +8,8 @@ import { formatDate } from "../../utils/fonctionnel";
 
 export default function Profil() {
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
-  if (loadingUser) {
-    return <Loader />;
-  }
+
+  if (loadingUser) return <Loader />;
 
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
@@ -60,7 +59,7 @@ export default function Profil() {
             <div>
               <p>Inscript le :</p>
               <p>
-                <b>{formatDate(userInfo?.createdAt)}</b>
+                <b>{formatDate(userInfo?.createdAt, 2)}</b>
               </p>
             </div>
           </div>

@@ -7,23 +7,28 @@ import {
 import {
   addSpace,
   convertDate,
-  convertirFormatDate,
+  formatDateDayMonth,
 } from "../../utils/fonctionnel";
 import { CamembertTdb } from "../../composant/Charts/camembertTdb";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
 import { categoryDepense } from "../../../public/categories.json";
-import { getLastSixMonths } from "../../utils/other";
+import { currentDate, getLastMonths } from "../../utils/other";
 import BoxTdb from "../../composant/Box/boxDB";
 import { fetchTransactions } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
 import { fetchInvestments } from "../../service/investment.service";
-import Loader from "../../composant/loader";
+import Loader from "../../composant/loader/loader";
+import LoaderBis from "../../composant/loader/loaderBis";
 
 export default function TableauDeBord() {
-  const { isLoading, data: dataTransac } = useQuery({
+  const {
+    isLoading,
+    data: dataTransac,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -51,55 +56,48 @@ export default function TableauDeBord() {
       return response?.data;
     },
     refetchOnMount: true,
+    staleTime: 60_000,
   });
 
-  const getCurrentMonthAndYear = () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-    return { month: currentMonth, year: currentYear };
-  };
+  // ---------------------
 
-  const { month: currentMonth, year: currentYear } = getCurrentMonthAndYear();
-
-  const newCurrentMonth = String(currentMonth).padStart(2, "0");
-  const currentDate = `${currentYear}${newCurrentMonth}`;
+  const { month: currentMonth, year: currentYear } = currentDate();
+  const currentYearMonth = `${currentYear}${currentMonth}`;
 
   const amountRevenuesMonth = calculTotalByMonth(
     dataTransac,
     "Revenue",
-    currentDate,
+    currentYearMonth,
     null,
     null
   );
   const amountExpensesMonth = calculTotalByMonth(
     dataTransac,
     "Expense",
-    currentDate,
+    currentYearMonth,
     null,
     null
   );
 
-  const InvestCurrentMonth = calculInvestByMonth(dataInvest, currentDate);
+  const InvestCurrentMonth = calculInvestByMonth(dataInvest, currentYearMonth);
 
   const getPreviousMonthAndYear = (month, year) => {
-    let prevMonth = month - 1;
-    let prevYear = year;
-    if (prevMonth === 0) {
-      prevMonth = 12;
-      prevYear -= 1;
+    let previousMonth = month - 1;
+    let previousYear = year;
+    if (previousMonth === 0) {
+      previousMonth = 12;
+      previousYear -= 1;
     }
-    return { month: prevMonth, year: prevYear };
+    return { previousMonth, previousYear };
   };
 
-  const { month: previousMonth, year: previousYear } = getPreviousMonthAndYear(
+  const { previousMonth, previousYear } = getPreviousMonthAndYear(
     currentMonth,
     currentYear
   );
 
   const newPreviousMonth = String(previousMonth).padStart(2, "0");
   const previousDate = `${previousYear}${newPreviousMonth}`;
-
   const amountRevenuesLastMonth = calculTotalByMonth(
     dataTransac,
     "Revenue",
@@ -118,7 +116,7 @@ export default function TableauDeBord() {
   const economiesCurrentMonth = calculEconomie(
     dataTransac,
     `${currentYear}`,
-    newCurrentMonth
+    currentMonth
   );
 
   const investLastMonth = calculInvestByMonth(dataInvest, previousDate);
@@ -149,7 +147,7 @@ export default function TableauDeBord() {
     return absoluteValue.toFixed(2);
   };
 
-  const [month, setMonth] = useState(currentDate);
+  const [month, setMonth] = useState(currentYearMonth);
 
   const clickLastMonth = () => {
     let yearNum = parseInt(month.slice(0, 4), 10);
@@ -212,7 +210,7 @@ export default function TableauDeBord() {
 
   const montantInvest = calculInvestByMonth(dataInvest, month);
 
-  const [graphMonth, setGraphMonth] = useState(currentDate);
+  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
   const clickNextMonthGraph = () => {
     let yearNum = parseInt(graphMonth.slice(0, 4), 10);
@@ -240,7 +238,7 @@ export default function TableauDeBord() {
     setGraphMonth(newDate);
   };
 
-  const lastSixMonths = getLastSixMonths(graphMonth);
+  const lastSixMonths = getLastMonths(graphMonth, 6);
 
   const amountExpenseByMonth = [];
   const amountRevenueByMonth = [];
@@ -276,18 +274,17 @@ export default function TableauDeBord() {
     montantInvest: montantInvestByMonth[index],
   }));
 
-  const firstMonth = lastSixMonths[0];
+  if (isLoading) return <Loader />;
 
-  const lastMonth = lastSixMonths[lastSixMonths.length - 1];
+  const firstMonthOfSix = lastSixMonths[0];
+  const lastMonthOfSix = lastSixMonths[lastSixMonths.length - 1];
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  const theMonthGraph = `${firstMonthOfSix.month} ${firstMonthOfSix.year} - ${lastMonthOfSix.month} ${lastMonthOfSix.year}`;
 
   return (
     <>
       <section className="w-full">
-        <Header title="Tableau de bord" />
+        <Header title="Tableau de bord" isFetching={isFetching} />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
             <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark h-full rounded-xl p-4 flex flex-col gap-4">
@@ -302,7 +299,7 @@ export default function TableauDeBord() {
                       className={`bg-opacity-15 rounded-lg h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
                     >
                       <td className="w-full">
-                        {convertirFormatDate(transaction.date)}
+                        {formatDateDayMonth(transaction.date)}
                       </td>
                       <td className="w-full truncate">{transaction.title}</td>
                       <td className="w-full">{transaction.category}</td>
@@ -336,7 +333,11 @@ export default function TableauDeBord() {
           <div className="flex flex-row gap-4 h-full">
             <div className="w-7/12 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl h-full p-4 relative">
               <h2 className="text-3xl font-extralight italic">Graphique</h2>
-              <GraphiqueTdb data={dataGraph} />
+              {!isFetching ? (
+                <GraphiqueTdb data={dataGraph} />
+              ) : (
+                <LoaderBis />
+              )}{" "}
               <div
                 className={`flex flex-row gap-4 min-w-fit w-3/5 mx-auto px-20 items-center justify-between bottom-2`}
               >
@@ -345,10 +346,7 @@ export default function TableauDeBord() {
                   className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
                   onClick={clickLastMonthGraph}
                 />
-                <p className="text-sm italic">
-                  {firstMonth.month} {firstMonth.year} - {lastMonth.month}{" "}
-                  {lastMonth.year}
-                </p>
+                <p className="text-sm italic">{theMonthGraph}</p>
                 <ChevronRight
                   size={30}
                   className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
@@ -368,15 +366,19 @@ export default function TableauDeBord() {
                 <ChevronRight
                   size={30}
                   onClick={clickNextMonth}
-                  className={`hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all ${month >= currentDate ? "invisible" : ""}`}
+                  className={`hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all ${month >= currentYearMonth ? "invisible" : ""}`}
                 />
               </div>
-              <CamembertTdb
-                dataDf={formatData(dataDf)}
-                dataLoisir={formatData(dataLoisir)}
-                dataInvest={montantInvest}
-                total={formatData(total)}
-              />
+              {!isFetching ? (
+                <CamembertTdb
+                  dataDf={formatData(dataDf)}
+                  dataLoisir={formatData(dataLoisir)}
+                  dataInvest={montantInvest}
+                  total={formatData(total)}
+                />
+              ) : (
+                <LoaderBis />
+              )}
             </div>
           </div>
         </div>

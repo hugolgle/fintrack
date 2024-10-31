@@ -7,8 +7,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useLocation } from "react-router-dom";
-import { months } from "../utils/fonctionnel";
 import { ROUTES } from "./routes";
+import { months } from "../utils/other";
 
 export function BreadcrumbDemo() {
   const location = useLocation();

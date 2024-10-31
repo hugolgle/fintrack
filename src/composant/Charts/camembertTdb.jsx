@@ -96,8 +96,8 @@ export function CamembertTdb(props) {
     const { active, payload } = props;
     if (active && payload && payload.length) {
       const { name, value, payload: data } = payload[0];
-      const pourcentage = data.pourcentage.toFixed(2);
-      const objectif = data.objectif.toFixed(2);
+      const pourcentage = data.pourcentage.toFixed(2) || 0;
+      const objectif = data.objectif.toFixed(2) || 0;
 
       return (
         <div className="bg-white dark:bg-zinc-900 text-xs p-2 rounded-xl shadow-2xl">
@@ -121,9 +121,7 @@ export function CamembertTdb(props) {
               <div className="flex flex-row justify-center items-center gap-1">
                 <p className="opacity-75">Pourcentage</p>
               </div>
-              <p className="italic font-black">
-                {pourcentage ? pourcentage : "0"} %
-              </p>
+              <p className="italic font-black">{pourcentage ?? "0"} %</p>
             </div>
             <div className="flex flex-row justify-between gap-4">
               <div className="flex flex-row justify-center items-center gap-1">

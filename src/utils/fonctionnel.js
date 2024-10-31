@@ -1,25 +1,7 @@
-export const months = [
-  "Janvier",
-  "Février",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Août",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Décembre",
-];
+import { currentDate, months } from "./other";
 
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-
-const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-const day = String(currentDate.getDate()).padStart(2, "0");
-export const getCurrentDate = `${currentYear}-${month}-${day}`;
-
+const date = currentDate();
+export const getCurrentDate = `${date.year}-${date.month}-${date.day}`;
 // ---------------------------------
 
 export function Path(lePath, level) {
@@ -56,7 +38,7 @@ export function convertDate(code) {
   return nomMois + " " + annee;
 }
 
-export function convertDateHour(dateString) {
+export function formatDate(dateString, format) {
   const date = new Date(dateString);
   const day = date.getDate().toString().padStart(2, "0");
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -64,19 +46,19 @@ export function convertDateHour(dateString) {
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
 
-  return `${day}/${month}/${year} à ${hours}h${minutes}`;
+  if (format === 1) {
+    return `${day}/${month}/${year} à ${hours}h${minutes}`;
+  } else if (format === 2) {
+    const formattedMonth = months[parseInt(month, 10) - 1];
+    return `${parseInt(day, 10)} ${formattedMonth} ${year}`;
+  } else {
+    throw new Error(
+      "Format non reconnu. Utilisez 1 pour heures ou 2 pour lettres."
+    );
+  }
 }
 
-export function formatDate(date) {
-  const [year, month, day] = date.split("-");
-
-  const formattedDay = parseInt(day, 10);
-  const formattedMonth = months[parseInt(month, 10) - 1];
-
-  return `${formattedDay} ${formattedMonth} ${year}`;
-}
-
-export function formatDateBis(date) {
+export function formatDateSlash(date) {
   const [year, month, day] = date.split("-");
   const formattedDay = day.padStart(2, "0");
   const formattedMonth = month.padStart(2, "0");
@@ -84,46 +66,25 @@ export function formatDateBis(date) {
   return `${formattedDay}/${formattedMonth}/${year}`;
 }
 
-export function convertirFormatDate(date) {
+export function formatDateDayMonth(date) {
   const dateObj = new Date(date);
   const jourFormatte = String(dateObj.getDate()).padStart(2, "0");
   const moisFormatte = String(dateObj.getMonth() + 1).padStart(2, "0");
   return `${jourFormatte}/${moisFormatte}`;
 }
 
-export function separateMillier(valeur) {
+export function formatAmount(amount, type) {
   const montantNumerique =
-    typeof valeur === "number" ? valeur : parseFloat(valeur) || 0;
+    typeof amount === "number" ? amount : parseFloat(amount) || 0;
   const [partieEntiere, partieDecimale] = montantNumerique
     .toFixed(2)
     .split(".");
-  return `${partieEntiere}.${partieDecimale}`;
-}
 
-export function formatMontant(amount, type) {
+  const formattedAmount = `${partieEntiere}.${partieDecimale}`;
+
   if (type === "Expense") {
-    return `-${separateMillier(amount)}`;
+    return `-${formattedAmount}`;
   } else {
-    return separateMillier(amount);
+    return formattedAmount;
   }
-}
-
-export function getCurrentYearAndMonth() {
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  let month = (currentDate.getMonth() + 1).toString();
-
-  if (month.length < 2) {
-    month = "0" + month;
-  }
-
-  return `${year}${month}`;
-}
-
-export function retireSpace(nombre) {
-  const nombreStr = nombre.toString();
-
-  const resultat = nombreStr.replace(/\s/g, "");
-
-  return parseFloat(resultat);
 }

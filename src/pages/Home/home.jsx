@@ -1,4 +1,4 @@
-import Loader from "../../composant/loader";
+import Loader from "../../composant/loader/loader";
 import Logo from "../../composant/logo";
 import { ROUTES } from "../../composant/routes";
 import { useCurrentUser } from "../../hooks/user.hooks";
@@ -9,9 +9,7 @@ export default function Home() {
   const { isAuthenticated, isLoading: loadingAuth } = useIsAuthenticated();
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
 
-  if (loadingAuth || loadingUser) {
-    return <Loader />;
-  }
+  if (loadingAuth || loadingUser) return <Loader />;
 
   return (
     <section className="flex flex-col justify-center items-center h-full gap-14 animate-fade">

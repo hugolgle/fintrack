@@ -26,7 +26,11 @@ export default function Connexion() {
       navigate(ROUTES.HOME);
     },
     onError: (error) => {
-      toast.error("Une erreur s'est produite lors de la connexion.");
+      if (error.response && error.response.status === 401) {
+        toast.error("Mot de passe ou nom d'utilisateur incorrect");
+      } else {
+        toast.error("Une erreur s'est produite lors de la connexion.");
+      }
     },
   });
 
@@ -68,23 +72,18 @@ export default function Connexion() {
         className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
       >
         <div className="flex flex-col items-start">
-          <Label htmlFor="login" className="mb-2 italic">
-            E-mail
-          </Label>
           <Input
             className="w-96 h-10 px-2"
             id="login"
             type="email"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            placeholder="Votre e-mail"
             required
           />
         </div>
 
         <div className="flex flex-col items-start">
-          <Label htmlFor="password" className="mb-2 italic">
-            Mot de passe
-          </Label>
           <div className="relative w-96" ref={passwordRef}>
             <Input
               className="h-10 px-2"
@@ -95,19 +94,19 @@ export default function Connexion() {
                 setPassword(e.target.value);
                 setShowPassword(false);
               }}
+              placeholder="Mot de passe"
               required
             />
-            <button
-              type="button"
+            <div
               onClick={togglePasswordVisibility}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
+              className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5" />
+                <EyeOff className="w-5" />
               ) : (
-                <Eye className="h-5 w-5" />
+                <Eye className="w-5" />
               )}
-            </button>
+            </div>
           </div>
         </div>
 

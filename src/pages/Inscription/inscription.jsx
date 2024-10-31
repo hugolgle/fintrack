@@ -126,17 +126,16 @@ export default function Inscription() {
                 }}
                 required
               />
-              <button
-                type="button"
+              <div
                 onClick={togglePasswordVisibility}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
+                className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
+                  <EyeOff className="w-5" />
                 ) : (
-                  <Eye className="h-5 w-5" />
+                  <Eye className="w-5" />
                 )}
-              </button>
+              </div>
             </div>
           </div>
         </div>

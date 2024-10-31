@@ -1,6 +1,5 @@
 "use client";
 
-import { separateMillier } from "../../utils/fonctionnel";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -32,6 +31,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import { Loader } from "lucide-react";
+import { formatAmount } from "../../utils/fonctionnel";
 
 export default function PageAddInvest() {
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
@@ -59,7 +59,7 @@ export default function PageAddInvest() {
   const [selectedType, setSelectedType] = useState("");
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedDetail, setSelectedDetail] = useState("");
-  const [selectedMontant, setSelectedMontant] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState("");
 
   const addInvestmentMutation = useMutation({
     mutationFn: async (postData) => {
@@ -93,7 +93,7 @@ export default function PageAddInvest() {
     setSelectedDetail("");
     setSelectedType("");
     setSelectedTitle("");
-    setSelectedMontant("");
+    setSelectedAmount("");
     setSelectedDate(new Date());
   };
 
@@ -108,7 +108,7 @@ export default function PageAddInvest() {
       date: new Date(selectedDate.setHours(0, 0, 0, 0)).toLocaleDateString(
         "fr-CA"
       ),
-      amount: separateMillier(selectedMontant),
+      amount: formatAmount(selectedAmount),
     };
 
     addInvestmentMutation.mutate(postData);
@@ -204,13 +204,13 @@ export default function PageAddInvest() {
         />
 
         <Input
-          value={selectedMontant}
+          value={selectedAmount}
           className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
           type="number"
           min="0"
           step="0.01"
           placeholder="Montant"
-          onChange={(e) => setSelectedMontant(e.target.value)}
+          onChange={(e) => setSelectedAmount(e.target.value)}
           required
         />
 

@@ -3,12 +3,6 @@ import BtnReturn from "./Button/btnReturn";
 import BtnAdd from "./Button/btnAdd";
 import BtnFilter from "./Button/btnFilter";
 import Title from "./Text/title";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ListCollapse,
-} from "lucide-react/dist/cjs/lucide-react";
-import { useLocation } from "react-router-dom/dist/umd/react-router-dom.development";
 import BtnSearch from "./Button/btnSearch";
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +13,9 @@ import {
 } from "@/components/ui/popover";
 import PopoverFilter from "./popoverFilter";
 import { BreadcrumbDemo } from "./breadCrumb";
+import Fetcher from "./loader/fetcher";
+import { useLocation } from "react-router";
+import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
 
 function Header({
   title,
@@ -42,6 +39,7 @@ function Header({
   btnFilter,
   btnSearch,
   btnSelect,
+  isFetching,
 }) {
   const location = useLocation();
 
@@ -49,7 +47,7 @@ function Header({
   const canReturn = pathSegments.length >= 2;
 
   return (
-    <div className="w-full justify-between  flex animate-fade">
+    <div className="w-full justify-between flex animate-fade relative">
       <div className="flex flex-col gap-2 items-start w-1/4 justify-start">
         <BreadcrumbDemo />
         <div className="flex gap-2">
@@ -111,6 +109,7 @@ function Header({
           </>
         )}
       </div>
+      {isFetching && <Fetcher />}
     </div>
   );
 }

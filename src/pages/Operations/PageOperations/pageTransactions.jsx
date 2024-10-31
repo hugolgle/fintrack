@@ -21,10 +21,10 @@ import Header from "../../../composant/header";
 import Tableau from "../../../composant/Table/tableau";
 import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function PageTransactions(props) {
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -237,9 +237,7 @@ export default function PageTransactions(props) {
     },
   ];
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
 
   return (
     <>
@@ -281,6 +279,7 @@ export default function PageTransactions(props) {
           selectOpe={selectOpe}
           columns={columns}
           type="transactions"
+          isFetching={isFetching}
         />
 
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-zinc-900 py-3 transition-all">

@@ -8,10 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { addSpace, formatDate, separateMillier } from "../../utils/fonctionnel";
+import { addSpace, formatAmount, formatDate } from "../../utils/fonctionnel";
 import { useState } from "react";
+import Fetcher from "../loader/fetcher";
 
-export default function Tableau({ type, columns, data, selectOpe }) {
+export default function Tableau({
+  type,
+  columns,
+  data,
+  selectOpe,
+  isFetching,
+}) {
   const { status } = useParams();
 
   const [selectAllRow, setSelectAllRow] = useState(false);
@@ -55,7 +62,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
   return (
     <>
       {data && data.length > 0 ? (
-        <Table className="w-full flex flex-col px-1 animate-fade">
+        <Table className="w-full flex flex-col px-1 animate-fade relative">
           <TableHeader className="flex w-full items-center">
             {selectOpe && (
               <div className="mr-5 text-xs">
@@ -107,7 +114,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                           {item.title}
                         </TableCell>
                         <TableCell className="w-full">
-                          {formatDate(item.date)}
+                          {formatDate(item.date, 2)}
                         </TableCell>
                         {status === "all" && (
                           <TableCell className="w-full">
@@ -120,13 +127,13 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                         {status === "sold" && (
                           <>
                             <TableCell className="w-full">
-                              <b>{separateMillier(item.montantVendu)} €</b>
+                              <b>{formatAmount(item.montantVendu)} €</b>
                             </TableCell>
                             <TableCell className="w-full">
                               <b>
                                 {item.benefice > 0
-                                  ? `+${separateMillier(item.benefice)} €`
-                                  : `-${separateMillier(item.benefice)} €`}
+                                  ? `+${formatAmount(item.benefice)} €`
+                                  : `-${formatAmount(item.benefice)} €`}
                               </b>
                             </TableCell>
                           </>
@@ -142,7 +149,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
                           {item.category}
                         </TableCell>
                         <TableCell className="w-full">
-                          {formatDate(item.date)}
+                          {formatDate(item.date, 2)}
                         </TableCell>
                         <TableCell className="w-full">
                           <b>{addSpace(item.amount)} €</b>
@@ -154,6 +161,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
               </div>
             ))}
           </TableBody>
+          {isFetching && <Fetcher />}
         </Table>
       ) : (
         <p>Aucune transaction n'a été trouvée ...</p>
@@ -161,7 +169,7 @@ export default function Tableau({ type, columns, data, selectOpe }) {
       {selectOpe && (
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-colorPrimaryLight dark:bg-colorSecondaryDark py-3 transition-all">
           Total sélectionnés : <br />
-          <b>{addSpace(separateMillier(montantSelect))} €</b>
+          <b>{formatAmount(montantSelect)} €</b>
           <br />
         </div>
       )}

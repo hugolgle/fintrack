@@ -1,9 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  convertDateHour,
-  formatDate,
-  separateMillier,
-} from "../../../utils/fonctionnel";
+import { formatDate, formatAmount } from "../../../utils/fonctionnel";
 import {
   fetchInvestmentById,
   fetchInvestments,
@@ -38,7 +34,7 @@ import { DialogDelete } from "../../../composant/dialogDelete";
 import Header from "../../../composant/header";
 import { getInvestmentsByTitle } from "../../../utils/operations";
 import { useEffect } from "react";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function Investment() {
   const { data } = useQuery({
@@ -59,13 +55,13 @@ export default function Investment() {
   const navigate = useNavigate();
 
   const [selectedUpdate, setSelectedUpdate] = useState(false);
-  const [update, setUpdate] = useState(false);
 
   const {
     data: investment,
     isLoading,
     error,
     refetch,
+    isFetching,
   } = useQuery({
     queryKey: ["fetchInvestmentById", id],
     queryFn: () => fetchInvestmentById(id),
@@ -79,27 +75,47 @@ export default function Investment() {
     investment?.data?.detail
   );
   const [selectedDate, setSelectedDate] = useState(investment?.data?.date);
-  const [selectedMontant, setSelectedMontant] = useState(
+  const [selectedAmount, setSelectedAmount] = useState(
     investment?.data?.amount
   );
 
   useEffect(() => {
     if (investment) {
       setSelectedTitle(investment?.data?.title);
-      setSelectedDetail(investment?.data?.detail);
-      setSelectedMontant(investment?.data?.amount);
       setSelectedType(investment?.data?.type);
+      setSelectedDetail(investment?.data?.detail);
       setSelectedDate(investment?.data?.date);
+      setSelectedAmount(investment?.data?.amount);
     }
   }, [investment]);
 
   const resetForm = () => {
-    setSelectedType(investment?.data?.type);
     setSelectedTitle(investment?.data?.title);
+    setSelectedType(investment?.data?.type);
     setSelectedDetail(investment?.data?.detail);
     setSelectedDate(investment?.data?.date);
-    setSelectedMontant(investment?.data?.amount);
+    setSelectedAmount(investment?.data?.amount);
   };
+
+  const dataBase = [
+    investment?.data?.title,
+    investment?.data?.type,
+    investment?.data?.detail,
+    investment?.data?.date,
+    investment?.data?.amount,
+  ];
+
+  const dataEdit = [
+    selectedTitle,
+    selectedType,
+    selectedDetail,
+    selectedDate,
+    selectedAmount,
+  ];
+
+  const isSaveDisabled = dataBase.every(
+    (value, index) => value === dataEdit[index]
+  );
 
   const handleTitle = (event) => {
     setSelectedTitle(event.target.value);
@@ -110,10 +126,8 @@ export default function Investment() {
   };
 
   const handleMontant = (event) => {
-    setSelectedMontant(event.target.value);
+    setSelectedAmount(event.target.value);
   };
-
-  const handleInputChange = () => setUpdate(true);
 
   const mutationDelete = useMutation({
     mutationFn: async () => {
@@ -135,7 +149,7 @@ export default function Investment() {
         title: selectedTitle,
         date: selectedDate,
         detail: selectedDetail,
-        amount: separateMillier(selectedMontant),
+        amount: formatAmount(selectedAmount),
       };
       await editInvestments(editData);
       toast.success("L'opération a été modifiée avec succès !");
@@ -163,9 +177,8 @@ export default function Investment() {
     new Set(data?.map((investment) => investment.title))
   );
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
+
   if (error)
     return <div>Erreur lors de la récupération de la transaction.</div>;
 
@@ -176,6 +189,7 @@ export default function Investment() {
         typeProps="investment"
         btnAdd
         btnReturn
+        isFetching={isFetching}
       />
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-row gap-4 animate-fade">
@@ -288,7 +302,7 @@ export default function Investment() {
                   </Popover>
                 ) : (
                   <h2 className="text-4xl">
-                    {formatDate(investment?.data?.date)}
+                    {formatDate(investment?.data?.date, 2)}
                   </h2>
                 )}
               </div>
@@ -296,7 +310,7 @@ export default function Investment() {
                 {selectedUpdate ? (
                   <Input
                     className="h-full w-full px-40 bg-transparent text-center text-4xl rounded-2xl"
-                    value={removeTiret(selectedMontant)}
+                    value={removeTiret(selectedAmount)}
                     type="number"
                     step="0.5"
                     min="0"
@@ -338,13 +352,13 @@ export default function Investment() {
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Ajouter le : <br />
-                  <b>{convertDateHour(investment?.data?.createdAt)}</b>
+                  <b>{formatDate(investment?.data?.createdAt, 1)}</b>
                 </p>
               </div>
               <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
                 <p>
                   Derniere modification le : <br />
-                  <b>{convertDateHour(investment?.data?.updatedAt)}</b>
+                  <b>{formatDate(investment?.data?.updatedAt, 1)}</b>
                 </p>
               </div>
             </div>
@@ -397,7 +411,7 @@ export default function Investment() {
             )} */}
 
             <div className="flex flex-col gap-4 w-full">
-              {selectedUpdate && update === true ? (
+              {selectedUpdate && !isSaveDisabled ? (
                 <div className="flex flex-col gap-4 justify-center items-center">
                   <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                   <div className="flex gap-4">

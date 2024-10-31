@@ -49,7 +49,7 @@ function BoxStat(props) {
     setPreviousMontant(currentMontant);
   }, [currentMontant]);
 
-  const formatMontant = (amount) => {
+  const formatAmountSign = (amount) => {
     const sign = amount < 0 ? "-" : "";
     const absoluteMontant = Math.abs(amount);
 
@@ -70,7 +70,7 @@ function BoxStat(props) {
           {props.selectedYear}
         </p>
       </div>
-      <p className="text-2xl">{formatMontant(currentMontant)} €</p>
+      <p className="text-2xl">{formatAmountSign(currentMontant)} €</p>
     </div>
   );
 }

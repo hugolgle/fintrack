@@ -6,7 +6,7 @@ import {
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../utils/calcul";
-import { convertDate, months } from "../../utils/fonctionnel";
+import { convertDate } from "../../utils/fonctionnel";
 import BoxStat from "../../composant/Box/boxStat";
 import { CamembertStat } from "../../composant/Charts/camembertStat";
 import { Separator } from "@/components/ui/separator";
@@ -23,11 +23,17 @@ import { fetchTransactions } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
 import { useCurrentUser } from "../../hooks/user.hooks";
-import Loader from "../../composant/loader";
+import Loader from "../../composant/loader/loader";
+import { currentDate, months } from "../../utils/other";
+import LoaderBis from "../../composant/loader/loaderBis";
 
 export default function Statistique() {
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
-  const { data: transactionsData = [], refetch } = useQuery({
+  const { data: userInfo } = useCurrentUser();
+  const {
+    data: transactionsData = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchTransactions", userInfo?._id],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
@@ -40,14 +46,7 @@ export default function Statistique() {
     refetchOnMount: true,
   });
 
-  const getCurrentMonthAndYear = () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-    return { month: currentMonth, year: currentYear };
-  };
-
-  const { month: currentMonth, year: currentYear } = getCurrentMonthAndYear();
+  const { month: currentMonth, year: currentYear } = currentDate();
 
   const [selectedMonth, setSelectedMonth] = useState(
     String(currentMonth).padStart(2, "0")
@@ -85,22 +84,14 @@ export default function Statistique() {
 
   const clickYear = (year) => {
     setSelectedYear(year);
-    if (year === currentYear) {
-      setSelectedMonth(String(currentMonth).padStart(2, "0"));
-    } else {
-      setSelectedMonth("01");
-    }
-    refetch();
   };
 
   const handleByMonth = () => {
     setSelectedByYear(false);
-    refetch();
   };
 
   const handleByYear = () => {
     setSelectedByYear(true);
-    refetch();
   };
 
   const generateYears = () => {
@@ -180,13 +171,43 @@ export default function Statistique() {
     moyenneRecetteMois
   );
 
-  if (loadingUser) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
+
+  const expensePieChartYear = getTransactionsByYear(
+    transactionsData,
+    `${selectedYear}`,
+    "Expense",
+    null,
+    null
+  );
+
+  const expensePieChartMonth = getTransactionsByMonth(
+    transactionsData,
+    selectedDate,
+    "Expense",
+    null,
+    null
+  );
+
+  const revenuePieChartYear = getTransactionsByYear(
+    transactionsData,
+    `${selectedYear}`,
+    "Revenue",
+    null,
+    null
+  );
+
+  const revenuePieChartMonth = getTransactionsByMonth(
+    transactionsData,
+    selectedDate,
+    "Revenue",
+    null,
+    null
+  );
 
   return (
     <section className="w-full">
-      <Header title="Statistiques" />
+      <Header title="Statistiques" isFetching={isFetching} />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-row gap-2">
           {generateYears().map((year, index) => (
@@ -303,26 +324,16 @@ export default function Statistique() {
                   : `Recettes de ${convertDate(selectedDate)}`}
               </p>
 
-              <CamembertStat
-                transactions={
-                  selectedByYear
-                    ? getTransactionsByYear(
-                        transactionsData,
-                        `${selectedYear}`,
-                        "Revenue",
-                        null,
-                        null
-                      )
-                    : getTransactionsByMonth(
-                        transactionsData,
-                        selectedDate,
-                        "Revenue",
-                        null,
-                        null
-                      )
-                }
-                category={categoryRecette}
-              />
+              {!isFetching ? (
+                <CamembertStat
+                  transactions={
+                    selectedByYear ? revenuePieChartYear : revenuePieChartMonth
+                  }
+                  category={categoryRecette}
+                />
+              ) : (
+                <LoaderBis size={180} />
+              )}
             </div>
 
             <div className="flex gap-2 w-full">
@@ -343,32 +354,22 @@ export default function Statistique() {
               </Button>
             </div>
 
-            <div className="flex flex-col w-full rounded-2xl  h-full items-center p-4 bg-opacity-15 bg-red-600">
+            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 bg-opacity-15 bg-red-600">
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Dépenses de ${selectedYear}`
                   : `Dépenses de ${convertDate(selectedDate)}`}
               </p>
-              <CamembertStat
-                transactions={
-                  selectedByYear
-                    ? getTransactionsByYear(
-                        transactionsData,
-                        `${selectedYear}`,
-                        "Expense",
-                        null,
-                        null
-                      )
-                    : getTransactionsByMonth(
-                        transactionsData,
-                        selectedDate,
-                        "Expense",
-                        null,
-                        null
-                      )
-                }
-                category={categoryDepense}
-              />
+              {!isFetching ? (
+                <CamembertStat
+                  transactions={
+                    selectedByYear ? expensePieChartYear : expensePieChartMonth
+                  }
+                  category={categoryDepense}
+                />
+              ) : (
+                <LoaderBis />
+              )}
             </div>
           </div>
         </div>

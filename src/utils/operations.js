@@ -1,36 +1,5 @@
 import { subMonths, startOfMonth } from "date-fns";
 
-export const months = [
-  "Janvier",
-  "Février",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Août",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Décembre",
-];
-
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-const currentMonth = currentDate.getMonth();
-
-const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-const day = String(currentDate.getDate()).padStart(2, "0");
-export const getCurrentDate = `${currentYear}-${month}-${day}`;
-
-export function getCurrentMonth() {
-  const month = currentMonth + 1;
-
-  const formattedMonth = month < 10 ? `0${month}` : `${month}`;
-
-  return `${currentYear}${formattedMonth}`;
-}
-
 // -------------------------------- Transactions
 
 export function getTransactionsByType(data, type, filterCategory, filterTitle) {

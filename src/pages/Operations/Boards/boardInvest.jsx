@@ -5,13 +5,13 @@ import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
-import { formatDateBis } from "../../../utils/fonctionnel";
+import { formatDateSlash } from "../../../utils/fonctionnel";
 import Header from "../../../composant/header";
 import { toast } from "sonner";
-import Loader from "../../../composant/loader";
+import Loader from "../../../composant/loader/loader";
 
 export default function BoardInvest() {
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -74,84 +74,89 @@ export default function BoardInvest() {
     }
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
 
   return (
-    <section>
-      <Header title="Board investissement" typeProps="investment" btnAdd />
-      <div className="flex flex-col w-full justify-center gap-4 animate-fade">
-        <div className="h-32 flex gap-4">
-          <Link
-            to="inprogress"
-            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-          >
-            <p className="italic font-thin absolute top-2">
-              Investissements en cours
-            </p>
-            <p className="text-4xl font-thin">{montantInvestInProgress}</p>
-          </Link>
-          <Link
-            to="all"
-            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-          >
-            <p className="italic font-thin absolute top-2">
-              Tous les investissements
-            </p>
-            <p className="text-4xl font-thin">{montantInvest}</p>
-          </Link>
-          <Link
-            to="sold"
-            className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
-          >
-            <p className="italic font-thin absolute top-2">
-              Investissements vendus
-            </p>
-            <p className="text-4xl font-thin">{montantInvestSold}</p>
-          </Link>
-        </div>
+    <section className="w-full">
+      <div className="flex flex-col">
+        <Header
+          title="Board investissement"
+          typeProps="investment"
+          btnAdd
+          isFetching={isFetching}
+        />
+        <div className="flex flex-col w-full justify-center gap-4 animate-fade">
+          <div className="h-32 flex gap-4">
+            <Link
+              to="inprogress"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+            >
+              <p className="italic font-thin absolute top-2">
+                Investissements en cours
+              </p>
+              <p className="text-3xl font-thin">{montantInvestInProgress}</p>
+            </Link>
+            <Link
+              to="all"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+            >
+              <p className="italic font-thin absolute top-2">
+                Tous les investissements
+              </p>
+              <p className="text-3xl font-thin">{montantInvest}</p>
+            </Link>
+            <Link
+              to="sold"
+              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+            >
+              <p className="italic font-thin absolute top-2">
+                Investissements vendus
+              </p>
+              <p className="text-3xl font-thin">{montantInvestSold}</p>
+            </Link>
+          </div>
 
-        <div className="flex items-center justify-center mb-1 px-8">
-          <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
-          <p className="text-xl mx-8 font-thin italic">Mes ordres</p>
-          <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
-        </div>
+          <div className="flex items-center justify-center mb-1 px-8">
+            <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
+            <p className="text-xl mx-8 font-thin italic">Mes ordres</p>
+            <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>{" "}
+          </div>
 
-        <div className="flex flex-wrap gap-4 justify-center mb-4">
-          {uniqueInvest.length > 0 ? (
-            uniqueInvest.map(({ title, type, date }, index) => {
-              const linkInvest = title.toLowerCase().replace(/\s+/g, "");
-              const amount = calculTotalInvestmentByTitle(data, null, title);
-              const count = investmentCountByTitle[title];
-              return (
-                <Link
-                  key={index}
-                  to={linkInvest}
-                  className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl px-4 py-4 transition-all hover:scale-95 bg-opacity-20 hover:bg-opacity-50 ${getHoverClass(
-                    type
-                  )} `}
-                >
-                  <div className="flex justify-between">
-                    <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
-                      {formatDateBis(date)}
-                    </p>
-                    <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
-                      {type}
-                    </p>
-                  </div>
+          <div className="flex flex-wrap gap-4 justify-center mb-4">
+            {uniqueInvest.length > 0 ? (
+              uniqueInvest.map(({ title, type, date }, index) => {
+                const linkInvest = title.toLowerCase().replace(/\s+/g, "");
+                const amount = calculTotalInvestmentByTitle(data, null, title);
+                const count = investmentCountByTitle[title];
+                return (
+                  <Link
+                    key={index}
+                    to={linkInvest}
+                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl px-4 py-4 transition-all hover:scale-95 bg-opacity-20 hover:bg-opacity-50 ${getHoverClass(
+                      type
+                    )} `}
+                  >
+                    <div className="flex justify-between">
+                      <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
+                        {formatDateSlash(date)}
+                      </p>
+                      <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
+                        {type}
+                      </p>
+                    </div>
 
-                  <p className="text-xl truncate">{title}</p>
-                  <div className="flex justify-between">
-                    <p className="font-medium italic">{amount}</p>
-                    <p className="text-lg italic">({count})</p>
-                  </div>
-                </Link>
-              );
-            })
-          ) : (
-            <p>Aucun investissement trouvé.</p>
-          )}
+                    <p className="text-xl truncate">{title}</p>
+                    <div className="flex justify-between">
+                      <p className="font-medium italic">{amount}</p>
+                      <p className="text-lg italic">({count})</p>
+                    </div>
+                  </Link>
+                );
+              })
+            ) : (
+              <p>Aucun investissement trouvé.</p>
+            )}
+          </div>
         </div>
       </div>
     </section>

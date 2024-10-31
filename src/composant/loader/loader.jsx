@@ -1,16 +1,9 @@
 import React from "react";
-import "./loader.css";
 
 function Loader() {
   return (
     <div className="h-full w-full flex justify-center items-center">
-      <div class="spinner">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      <div class="border-2 border-black border-t-transparent dark:border-2 dark:border-white dark:border-t-transparent rounded-full w-10 h-10 animate-spin"></div>
     </div>
   );
 }
