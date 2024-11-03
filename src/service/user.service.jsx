@@ -37,7 +37,13 @@ export const addUser = async (userData) => {
     );
     return response.data;
   } catch (error) {
-    throw error;
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.message || "Erreur lors de l'inscription"
+      );
+    } else {
+      throw new Error("Erreur lors de la connexion au serveur.");
+    }
   }
 };
 
@@ -46,14 +52,23 @@ export const editUser = async (userId, userData) => {
   if (!token) {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
-
-  const response = await axios.put(`${API_URL}/edit/${userId}`, userData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axios.put(`${API_URL}/edit/${userId}`, userData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.message || "Erreur lors de la modification"
+      );
+    } else {
+      throw new Error("Erreur lors de la connexion au serveur.");
+    }
+  }
 };
 
 export const deleteUser = async (userId) => {

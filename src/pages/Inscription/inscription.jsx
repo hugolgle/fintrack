@@ -9,61 +9,76 @@ import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/routes";
 import { useAddUser } from "../../hooks/user.hooks";
 import Title from "../../composant/Text/title";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function Inscription() {
   const navigate = useNavigate();
-  const { mutate: addUser, isLoading } = useAddUser();
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [pseudo, setPseudo] = useState("");
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
+  const { mutate: addUser, isPending } = useAddUser();
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const passwordRef = useRef(null);
 
-  const handleNewUser = (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().email("Email invalide").required("Email requis"),
+    password: Yup.string()
+      .min(6, "Le mot de passe doit contenir au moins 6 caractères")
+      .required("Mot de passe requis"),
+    confirmPassword: Yup.string()
+      .oneOf(
+        [Yup.ref("password"), null],
+        "Les mots de passe doivent correspondre"
+      )
+      .required("Confirmation du mot de passe requise"),
+    nom: Yup.string().required("Nom requis"),
+    prenom: Yup.string().required("Prénom requis"),
+    img: Yup.mixed().nullable().optional(),
+  });
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("pseudo", pseudo);
-    formData.append("nom", nom);
-    formData.append("prenom", prenom);
-
-    if (image) {
-      formData.append("img", image);
-    }
-
-    addUser(formData, {
-      onSuccess: () => {
-        toast.success("Inscription réussie !");
-        setUsername("");
-        setPassword("");
-        setPseudo("");
-        setNom("");
-        setPrenom("");
-        setImage(null);
-        setImagePreview(null);
-        navigate(ROUTES.LOGIN);
-      },
-      onError: (error) => {
-        toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
-      },
-    });
-  };
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      nom: "",
+      prenom: "",
+      img: null,
+    },
+    validationSchema,
+    validateOnMount: true,
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append("username", values.username);
+      formData.append("password", values.password);
+      formData.append("nom", values.nom);
+      formData.append("prenom", values.prenom);
+      if (image) {
+        formData.append("img", image);
+      }
+      addUser(formData, {
+        onSuccess: () => {
+          formik.resetForm();
+          setImage(null);
+          setImagePreview(null);
+          navigate(ROUTES.LOGIN);
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      });
+    },
+  });
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] || null;
     setImage(file);
+    formik.setFieldValue("img", file);
 
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-
       return () => URL.revokeObjectURL(previewUrl);
     } else {
       setImagePreview(null);
@@ -72,6 +87,10 @@ export default function Inscription() {
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
   };
 
   useEffect(() => {
@@ -91,97 +110,126 @@ export default function Inscription() {
     <>
       <Title title="Inscription" />
       <form
-        onSubmit={handleNewUser}
+        onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
         encType="multipart/form-data"
       >
-        <div className="flex gap-4">
-          <div className="flex flex-col items-start">
-            <Label htmlFor="login" className="mb-2 italic">
-              E-mail <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              className="w-96 h-10"
-              id="login"
-              type="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="flex flex-col items-start">
-            <Label htmlFor="password" className="mb-2 italic">
-              Mot de passe <span className="text-red-500">*</span>
-            </Label>
-            <div className="relative w-96" ref={passwordRef}>
-              <Input
-                className="h-10"
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setShowPassword(false);
-                }}
-                required
-              />
-              <div
-                onClick={togglePasswordVisibility}
-                className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5" />
-                ) : (
-                  <Eye className="w-5" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-col items-start">
+        <div className="flex gap-4 w-96">
+          <div className="flex flex-col items-start w-full">
             <Label htmlFor="prenom" className="mb-2 italic">
               Prénom <span className="text-red-500">*</span>
             </Label>
             <Input
-              className="w-96 h-10 "
+              className=" h-10"
               id="prenom"
-              type="text"
-              value={prenom}
-              onChange={(e) => setPrenom(e.target.value)}
-              required
+              value={formik.values.prenom}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
+            {formik.touched.prenom && formik.errors.prenom && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                {formik.errors.prenom}
+              </p>
+            )}
           </div>
 
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start w-full">
             <Label htmlFor="nom" className="mb-2 italic">
               Nom <span className="text-red-500">*</span>
             </Label>
             <Input
-              className="w-96 h-10"
+              className=" h-10"
               id="nom"
-              type="text"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              required
+              value={formik.values.nom}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
+            {formik.touched.nom && formik.errors.nom && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                {formik.errors.nom}
+              </p>
+            )}
           </div>
         </div>
 
         <div className="flex flex-col items-start">
-          <Label htmlFor="pseudo" className="mb-2 italic">
-            Pseudo <span className="text-red-500">*</span>
+          <Label htmlFor="username" className="mb-2 italic">
+            E-mail <span className="text-red-500">*</span>
           </Label>
           <Input
             className="w-96 h-10"
-            id="pseudo"
-            type="text"
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            required
+            id="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
+          {formik.touched.username && formik.errors.username && (
+            <p className="text-xs text-red-500 mt-1 ml-2">
+              {formik.errors.username}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col items-start">
+          <Label htmlFor="password" className="mb-2 italic">
+            Mot de passe <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative w-96" ref={passwordRef}>
+            <Input
+              className="h-10"
+              id="password"
+              type={!showPassword ? "password" : ""}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            <div
+              onClick={togglePasswordVisibility}
+              className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5" />
+              ) : (
+                <Eye className="w-5" />
+              )}
+            </div>
+          </div>
+          {formik.touched.password && formik.errors.password && (
+            <p className="text-xs text-red-500 mt-1 ml-2">
+              {formik.errors.password}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col items-start">
+          <Label htmlFor="confirmPassword" className="mb-2 italic">
+            Confirmation du mot de passe <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative w-96" ref={passwordRef}>
+            <Input
+              className="h-10"
+              id="confirmPassword"
+              type={!showConfirmPassword ? "password" : ""}
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            <div
+              onClick={toggleConfirmPasswordVisibility}
+              className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-5" />
+              ) : (
+                <Eye className="w-5" />
+              )}
+            </div>
+          </div>
+          {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+            <p className="text-xs text-red-500 mt-1 ml-2">
+              {formik.errors.confirmPassword}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col items-start">
@@ -194,6 +242,11 @@ export default function Inscription() {
             accept="image/*"
             onChange={handleImageChange}
           />
+          {formik.touched.img && formik.errors.img && (
+            <p className="text-xs text-red-500 mt-1 ml-2">
+              {formik.errors.img}
+            </p>
+          )}
         </div>
 
         {imagePreview && (
@@ -206,9 +259,9 @@ export default function Inscription() {
           variant="outline"
           className="rounded-xl"
           type="submit"
-          disabled={isLoading}
+          disabled={isPending || !formik.isValid}
         >
-          {isLoading ? "En cours..." : "S'inscrire"}
+          {isPending ? "En cours ..." : "S'inscrire"}
         </Button>
       </form>
 

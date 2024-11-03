@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export function DialogDelete({ btnDelete, handleDelete }) {
+export function DialogDelete({ btnDelete, handleDelete, isPending }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -27,8 +27,12 @@ export function DialogDelete({ btnDelete, handleDelete }) {
         </DialogHeader>
 
         <DialogFooter className="sm:justify-start">
-          <Button type="button" variant="destructive" onClick={handleDelete}>
-            Oui
+          <Button
+            variant="destructive"
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            {isPending ? "Suppression ..." : "Oui"}
           </Button>
           <DialogClose asChild>
             <Button type="button" variant="outline">

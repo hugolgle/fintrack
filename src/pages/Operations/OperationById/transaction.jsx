@@ -246,7 +246,7 @@ export default function Transaction() {
             )}
           </div>
           <div className="flex flex-row gap-4">
-            <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
               {selectedUpdate ? (
                 <Select
                   value={selectedCategory}
@@ -444,6 +444,7 @@ export default function Transaction() {
                   </div>
                 }
                 handleDelete={handleDeleteConfirmation}
+                isPending={mutationDelete.isPending}
               />
             </div>
           </div>

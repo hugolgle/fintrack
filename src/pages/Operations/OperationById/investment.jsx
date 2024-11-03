@@ -456,6 +456,7 @@ export default function Investment() {
                     </div>
                   }
                   handleDelete={handleDeleteConfirmation}
+                  isPending={mutationDelete.isPending}
                 />
               </div>
             </div>

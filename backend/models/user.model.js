@@ -11,10 +11,6 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    pseudo: {
-      type: String,
-      required: true,
-    },
     nom: {
       type: String,
       required: true,

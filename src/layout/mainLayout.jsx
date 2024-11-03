@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "../composant/sidebar";
 import { Outlet } from "react-router-dom";
+import { versionApp } from "../utils/other";
 
 function MainLayout() {
   return (
@@ -11,6 +12,9 @@ function MainLayout() {
 
       <div className="ml-auto w-[94%] h-full p-4">
         <Outlet />
+        <p className="fixed top-0 right-0 mr-1 text-[10px] text-gray-500 italic">
+          {versionApp}
+        </p>
       </div>
     </section>
   );

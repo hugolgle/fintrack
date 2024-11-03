@@ -5,6 +5,7 @@ import Header from "../../composant/header";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import { Loader } from "lucide-react";
 import { formatDate } from "../../utils/fonctionnel";
+import { Button } from "@/components/ui/button";
 
 export default function Profil() {
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
@@ -17,69 +18,30 @@ export default function Profil() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header title="Profil" />
-        <div className="flex flex-row gap-4 animate-fade">
-          <div className="flex-col w-3/4 py-12 bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl gap-6">
-            <div className="relative">
-              <div className="w-full"></div>
-
-              <Avatar className="w-28 h-28">
-                <AvatarImage
-                  className="object-cover"
-                  src={`http://localhost:5001/${userInfo?.img}`}
-                />
-                <AvatarFallback className="bg-colorPrimaryLight dark:bg-colorSecondaryDark">
-                  {initialName}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <div>
-              <p>Prénom :</p>
-              <p>
-                <b>{userInfo?.prenom}</b>
-              </p>
-            </div>
-            <div>
-              <p>Nom :</p>
-              <p>
-                <b>{userInfo?.nom}</b>
-              </p>
-            </div>
-            <div>
-              <p>E-mail :</p>
-              <p>
-                <b>{userInfo?.username}</b>
-              </p>
-            </div>
-            <div>
-              <p>Pseudo :</p>
-              <p>
-                <b>{userInfo?.pseudo}</b>
-              </p>
-            </div>
-            <div>
-              <p>Inscript le :</p>
-              <p>
-                <b>{formatDate(userInfo?.createdAt, 2)}</b>
-              </p>
-            </div>
+        <div className="flex-col w-1/2 py-12 mx-auto bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl animate-fade gap-1">
+          <div className="relative">
+            <Avatar className="w-28 h-28">
+              <AvatarImage
+                className="object-cover"
+                src={`http://localhost:5001/${userInfo?.img}`}
+              />
+              <AvatarFallback className="bg-colorPrimaryLight dark:bg-colorSecondaryDark">
+                {initialName}
+              </AvatarFallback>
+            </Avatar>
           </div>
 
-          <div className="flex flex-col w-3/4 gap-4">
-            <SheetEditProfile
-              btnOpen={
-                <div className="h-full w-full cursor-pointer bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl hover:bg-opacity-80 transition-all hover:scale-95">
-                  Modifier
-                </div>
-              }
-              dataProfil={userInfo}
-            />
-            <div className="h-full w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
-              Exporter les données
-            </div>
-            <div className="h-full w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
-              Supprimer les données
-            </div>
-          </div>
+          <p className="text-2xl">
+            {userInfo?.prenom} {userInfo?.nom}
+          </p>
+
+          <p className="text-xs text-gray-600 dark:text-gray-400">
+            {userInfo?.username}
+          </p>
+          {/* <p className="text-xs">
+            Inscrit le <b>{formatDate(userInfo?.createdAt, 2)}</b>
+          </p> */}
+          <SheetEditProfile dataProfil={userInfo} />
         </div>
       </div>
     </section>

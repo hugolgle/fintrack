@@ -1,11 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import {
   Select,
   SelectContent,
@@ -27,11 +24,11 @@ import {
   categoryDepense,
 } from "../../../public/categories.json";
 import { formatAmount } from "../../utils/fonctionnel";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { categorySort, nameType, normalizeText } from "../../utils/other";
 import {
-  getLatestTransactionByTitle,
   getTitleOfTransactionsByType,
+  getTransactionsByType,
 } from "../../utils/operations";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
@@ -45,20 +42,32 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader/loader";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
-const FormSchema = z.object({
-  date: z.date({
-    required_error: "Une date est requise.",
-  }),
+const validationSchema = yup.object().shape({
+  title: yup
+    .string()
+    .max(50, "Le titre est trop longs")
+    .required("Le titre est requis"),
+  category: yup.string().required("La catégorie est requise"),
+  date: yup.date().required("La date est requise"),
+  detail: yup.string().max(250, "Les détails sont trop long"),
+  amount: yup
+    .number()
+    .typeError("Le montant est requis")
+    .positive("Le montant doit être positif")
+    .required("Le montant est requis"),
 });
 
 export default function PageAddTransac(props) {
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
+  const navigate = useNavigate();
 
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userId);
+      const response = await fetchTransactions(userInfo?._id);
 
       if (response?.response?.data?.message) {
         const message = response.response.data.message;
@@ -75,70 +84,12 @@ export default function PageAddTransac(props) {
 
   const suggestions = getTitleOfTransactionsByType(data, props.type);
 
-  const form = useForm({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      date: new Date(),
-    },
-  });
-
-  const [selectedTitle, setSelectedTitle] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedDetail, setSelectedDetail] = useState("");
-  const [selectedAmount, setSelectedAmount] = useState("");
-
-  const navigate = useNavigate();
-
-  const lastTransacByTitle = getLatestTransactionByTitle(
-    data,
-    selectedTitle,
-    props.type
-  );
-
-  useEffect(() => {
-    if (selectedTitle && lastTransacByTitle) {
-      setSelectedCategory(lastTransacByTitle.category || "");
-      setSelectedDetail(lastTransacByTitle.detail || "");
-      setSelectedAmount(
-        Math.abs(parseFloat(lastTransacByTitle.amount)).toFixed(2) || ""
-      );
-    } else {
-      setSelectedCategory("");
-      setSelectedDetail("");
-      setSelectedAmount("");
-    }
-  }, [selectedTitle, lastTransacByTitle]);
-
-  const resetForm = () => {
-    setSelectedTitle("");
-    setSelectedCategory("");
-    setSelectedDetail("");
-    setSelectedAmount("");
-    form.reset();
-  };
-
-  const handleDetail = (event) => {
-    setSelectedDetail(event.target.value);
-  };
-
-  const handleTitle = (event) => {
-    setSelectedTitle(event.target.value);
-  };
-
-  const handleMontant = (event) => {
-    setSelectedAmount(event.target.value);
-  };
-
   const addTransactionMutation = useMutation({
     mutationFn: async (postData) => {
-      const response = await addTransaction(postData, userInfo?._id);
-
-      return response;
+      return await addTransaction(postData, userInfo?._id);
     },
     onSuccess: (response) => {
       const newOperationId = response?.data?._id;
-      resetForm();
-
       const transactionDate = new Date(response?.data?.date);
       const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
 
@@ -156,70 +107,88 @@ export default function PageAddTransac(props) {
       );
     },
     onError: (error) => {
+      console.error("Error details:", error.response || error);
       toast.error("Erreur lors de l'ajout de la transaction.");
     },
   });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      category: "",
+      date: new Date(),
+      detail: "",
+      amount: "",
+    },
+    validationSchema,
+    validateOnMount: true,
+    onSubmit: async (values, { resetForm }) => {
+      const postData = {
+        user: userInfo?._id,
+        type: props.type,
+        category: values.category,
+        title: values.title,
+        date: values.date.toLocaleDateString("fr-CA"),
+        detail: values.detail,
+        amount: formatAmount(values.amount, props.type),
+      };
+      addTransactionMutation.mutate(postData, {
+        onSuccess: () => {
+          resetForm();
+        },
+      });
+    },
+  });
 
-    const isValid = await form.trigger();
-    if (!isValid) {
-      toast.success("Veuillez remplir tous les champs requis.");
-      return;
+  useEffect(() => {
+    const dataByType = getTransactionsByType(data, props.type);
+    if (dataByType && formik.values.title) {
+      const existingTransaction = dataByType
+        .reverse()
+        .find((transaction) => transaction.title === formik.values.title);
+
+      if (existingTransaction) {
+        formik.setFieldValue("category", existingTransaction.category);
+        formik.setFieldValue("detail", existingTransaction.detail);
+        formik.setFieldValue("amount", Math.abs(existingTransaction.amount));
+      }
     }
-
-    const selectedDate = form.getValues("date");
-    selectedDate.setHours(0, 0, 0, 0);
-
-    const postData = {
-      user: userInfo?.id,
-      type: props.type,
-      category: selectedCategory,
-      title: selectedTitle,
-      date: selectedDate.toLocaleDateString("fr-CA"),
-      detail: selectedDetail,
-      amount: formatAmount(selectedAmount, props.type),
-    };
-
-    addTransactionMutation.mutate(postData);
-  };
+  }, [formik.values.title, data]);
 
   if (loadingUser) return <Loader />;
 
   return (
-    <>
-      <section className="w-full">
-        <Header title={`Ajouter une ${props.title}`} btnReturn />
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
-        >
+    <section className="w-full">
+      <Header title={`Ajouter une ${props.title}`} btnReturn />
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+      >
+        <div>
           <Input
             className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
             list="title-suggestions"
             id="title"
             name="title"
-            maxLength={50}
             placeholder="Titre"
-            value={selectedTitle}
-            onChange={(e) => {
-              handleTitle(e);
-            }}
-            required
+            {...formik.getFieldProps("title")}
           />
+          {formik.touched.title && formik.errors.title && (
+            <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              {formik.errors.title}
+            </p>
+          )}
           <datalist id="title-suggestions">
             {suggestions.map((suggestion, index) => (
               <option key={index} value={suggestion} />
             ))}
           </datalist>
-
+        </div>
+        <div>
           <Select
-            value={selectedCategory}
-            onValueChange={(value) => {
-              setSelectedCategory(value);
-            }}
-            required
+            name="category"
+            value={formik.values.category}
+            onValueChange={(value) => formik.setFieldValue("category", value)}
           >
             <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
               <SelectValue placeholder="Entrez la catégorie" />
@@ -239,15 +208,22 @@ export default function PageAddTransac(props) {
                 ))}
             </SelectContent>
           </Select>
+          {formik.touched.category && formik.errors.category && (
+            <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              {formik.errors.category}
+            </p>
+          )}
+        </div>
 
+        <div>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={"outline"}
+                variant="outline"
                 className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
               >
-                {form.watch("date") ? (
-                  format(form.watch("date"), "PPP", { locale: fr })
+                {formik.values.date ? (
+                  format(formik.values.date, "PPP", { locale: fr })
                 ) : (
                   <span>Choisir une date</span>
                 )}
@@ -260,43 +236,60 @@ export default function PageAddTransac(props) {
             >
               <Calendar
                 mode="single"
-                selected={form.watch("date")}
-                onSelect={(date) => form.setValue("date", date)}
+                selected={formik.values.date}
+                onSelect={(date) => formik.setFieldValue("date", date)}
                 disabled={(date) => date < new Date("1900-01-01")}
                 initialFocus
                 locale={fr}
               />
             </PopoverContent>
           </Popover>
+          {formik.touched.date && formik.errors.date && (
+            <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              {formik.errors.date}
+            </p>
+          )}
+        </div>
 
+        <div>
           <Textarea
-            value={selectedDetail}
+            name="detail"
             className="w-96 h-20 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             placeholder="Détails"
-            maxLength={250}
-            onChange={(e) => {
-              handleDetail(e);
-            }}
+            {...formik.getFieldProps("detail")}
           />
-
+          {formik.touched.detail && formik.errors.detail && (
+            <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              {formik.errors.detail}
+            </p>
+          )}
+        </div>
+        <div>
           <Input
-            value={selectedAmount}
+            name="amount"
             className="w-96 h-10 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
             type="number"
-            min="0"
             step="0.01"
             placeholder="Montant"
-            onChange={(e) => {
-              handleMontant(e);
-            }}
-            required
+            {...formik.getFieldProps("amount")}
           />
+          {formik.touched.amount && formik.errors.amount && (
+            <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              {formik.errors.amount}
+            </p>
+          )}
+        </div>
 
-          <Button variant="outline" className="rounded-xl" type="submit">
-            Soumettre la {props.title}
-          </Button>
-        </form>
-      </section>
-    </>
+        <Button
+          className="rounded-xl"
+          type="submit"
+          disabled={addTransactionMutation.isPending || !formik.isValid}
+        >
+          {addTransactionMutation.isPending
+            ? "En cours ..."
+            : `Soumettre la ${props.title}`}
+        </Button>
+      </form>
+    </section>
   );
 }

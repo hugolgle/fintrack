@@ -9,6 +9,7 @@ import {
   deleteUser,
 } from "../service/user.service";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const getUserIdFromToken = () => {
   const token = sessionStorage.getItem("token");
@@ -62,8 +63,15 @@ export const useLogout = () => {
 export const useAddUser = () => {
   return useMutation({
     mutationFn: addUser,
-    onError: () => {
-      toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+    onSuccess: (event) => {
+      toast.success(event.message);
+    },
+    onError: (error) => {
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+      }
     },
   });
 };
@@ -73,10 +81,17 @@ export const useEditUser = () => {
 
   return useMutation({
     mutationFn: (userData) => {
-      if (!(userData instanceof FormData)) {
-        throw new Error("Les données envoyées doivent être un FormData");
-      }
       return editUser(userId, userData);
+    },
+    onSuccess: (event) => {
+      toast.success(event.message);
+    },
+    onError: (error) => {
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erreur lors de la modification. Veuillez réessayer.");
+      }
     },
   });
 };

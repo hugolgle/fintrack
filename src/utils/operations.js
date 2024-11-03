@@ -297,30 +297,6 @@ export function getTitleOfTransactionsByType(data, type) {
   return uniqueTitles;
 }
 
-// -------------------------------- Auto complete form
-
-export function getLatestTransactionByTitle(data, title, type) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  let filteredTransactions = type
-    ? data?.filter((transaction) => transaction.type === type)
-    : data;
-
-  const filteredByTitle = filteredTransactions.filter(
-    (transaction) => transaction.title === title
-  );
-
-  if (filteredByTitle.length === 0) return null;
-
-  return filteredByTitle.sort((a, b) => {
-    const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
-    if (dateSort !== 0) return dateSort;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  })[0];
-}
-
 // -------------------------------- Chart
 
 export function aggregateTransactions(transactions) {

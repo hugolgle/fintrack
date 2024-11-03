@@ -24,7 +24,7 @@ import { useCurrentUser, useLogout } from "../hooks/user.hooks";
 function Sidebar() {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated();
+  const { isAuthenticated } = useIsAuthenticated();
 
   const logoutMutation = useLogout();
 
@@ -112,7 +112,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 rounded-xl brightness-75 hover:brightness-100 transition-all">
+              <Avatar className="w-12 h-12 rounded-xl hover:scale-95 transition-all">
                 <AvatarImage
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}

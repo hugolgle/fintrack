@@ -10,13 +10,13 @@ import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/routes";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../service/user.service";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function Connexion() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef(null);
+  const { isAuthenticated } = useIsAuthenticated();
 
   const mutation = useMutation({
     mutationFn: loginUser,
@@ -34,18 +34,30 @@ export default function Connexion() {
     },
   });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    mutation.mutate({ username, password });
-  };
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().email("Email invalide").required("Email requis"),
+    password: Yup.string().required("Mot de passe requis"),
+  });
 
-  const { isAuthenticated, isLoading, isError } = useIsAuthenticated();
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema,
+    validateOnMount: true,
+    onSubmit: (values) => {
+      mutation.mutate(values);
+    },
+  });
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate(ROUTES.HOME);
     }
   }, [isAuthenticated, navigate]);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -68,32 +80,42 @@ export default function Connexion() {
     <>
       <Title title="S'identifier" />
       <form
-        onSubmit={handleLogin}
+        onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
       >
         <div className="flex flex-col items-start">
+          <Label htmlFor="username" className="mb-2 italic">
+            Votre e-mail <span className="text-red-500">*</span>
+          </Label>
           <Input
             className="w-96 h-10 px-2"
-            id="login"
+            id="username"
             type="email"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="Votre e-mail"
             required
           />
+          {formik.touched.username && formik.errors.username && (
+            <p className="text-xs text-red-500 mt-1">
+              {formik.errors.username}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col items-start">
+          <Label htmlFor="password" className="mb-2 italic">
+            Mot de passe <span className="text-red-500">*</span>
+          </Label>
           <div className="relative w-96" ref={passwordRef}>
             <Input
               className="h-10 px-2"
               id="password"
               type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setShowPassword(false);
-              }}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               placeholder="Mot de passe"
               required
             />
@@ -108,15 +130,20 @@ export default function Connexion() {
               )}
             </div>
           </div>
+          {formik.touched.password && formik.errors.password && (
+            <p className="text-xs text-red-500 mt-1">
+              {formik.errors.password}
+            </p>
+          )}
         </div>
 
         <Button
           variant="outline"
           className="rounded-xl"
           type="submit"
-          disabled={mutation.isLoading}
+          disabled={mutation.isPending || !formik.isValid}
         >
-          Connexion
+          {mutation.isPending ? "Chargement ..." : "Connexion"}
         </Button>
       </form>
       <div className="flex flex-col justify-center items-center gap-2 px-36">

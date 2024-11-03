@@ -15,7 +15,7 @@ export default function Home() {
     <section className="flex flex-col justify-center items-center h-full gap-14 animate-fade">
       <div>
         <h1 className="font-light">
-          Bienvenue <span className="font-bold">{userInfo?.pseudo}</span> sur
+          Bienvenue <span className="font-bold">{userInfo?.prenom}</span> sur
         </h1>
         <Logo />
       </div>
