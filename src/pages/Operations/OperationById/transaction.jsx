@@ -40,6 +40,7 @@ import {
 } from "../../../service/transaction.service";
 import { useEffect } from "react";
 import Loader from "../../../composant/loader/loader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function Transaction() {
   const categoryD = categorySort(categoryDepense);
@@ -207,6 +208,12 @@ export default function Transaction() {
   if (error)
     return <div>Erreur lors de la récupération de la transaction.</div>;
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <section className="w-full">
       <Header
@@ -219,7 +226,9 @@ export default function Transaction() {
 
       <div className="flex flex-row gap-4 animate-fade">
         <div className="flex flex-col w-3/4 gap-4 ">
-          <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+          <div
+            className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+          >
             {selectedUpdate ? (
               <>
                 <Input
@@ -246,7 +255,9 @@ export default function Transaction() {
             )}
           </div>
           <div className="flex flex-row gap-4">
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+            <div
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+            >
               {selectedUpdate ? (
                 <Select
                   value={selectedCategory}
@@ -286,7 +297,9 @@ export default function Transaction() {
               )}
             </div>
 
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+            <div
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+            >
               {selectedUpdate ? (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -335,7 +348,9 @@ export default function Transaction() {
             </div>
           </div>
           <div className="flex flex-row gap-4">
-            <div className="min-h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+            <div
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+            >
               {selectedUpdate ? (
                 <Input
                   className="h-full w-full px-80 bg-transparent text-center text-4xl rounded-2xl"
@@ -360,7 +375,9 @@ export default function Transaction() {
             </div>
           </div>
           <div className="flex flex-row gap-4">
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl overflow-hidden">
+            <div
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+            >
               {selectedUpdate ? (
                 <Textarea
                   className="h-full w-full bg-transparent text-center text-xl p-4 rounded-2xl"
@@ -383,14 +400,18 @@ export default function Transaction() {
         </div>
         <div className="flex flex-col w-1/4 justify-between">
           <div className="flex flex-col gap-4">
-            <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
+            <div
+              className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
+            >
               <p>
                 Ajouter le : <br />
                 <b>{formatDate(transaction?.data?.createdAt, 1)}</b>
               </p>
             </div>
             {transaction?.data?.updatedAt !== transaction?.data?.createdAt && (
-              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
+              <div
+                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
+              >
                 <p>
                   Dernière modification le : <br />
                   <b>{formatDate(transaction?.data?.updatedAt, 1)}</b>
@@ -423,14 +444,14 @@ export default function Transaction() {
               </div>
             ) : selectedUpdate ? (
               <div
-                className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:scale-95 cursor-pointer transition-all `}
                 onClick={() => setSelectedUpdate(false)}
               >
                 Annuler
               </div>
             ) : (
               <div
-                className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:scale-95 cursor-pointer transition-all`}
                 onClick={() => setSelectedUpdate(true)}
               >
                 Modifier
@@ -439,7 +460,9 @@ export default function Transaction() {
             <div className="flex flex-col gap-4 justify-center items-center">
               <DialogDelete
                 btnDelete={
-                  <div className="w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95">
+                  <div
+                    className={`w-full p-8 h-32 border-2 border-red-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
+                  >
                     Supprimer
                   </div>
                 }

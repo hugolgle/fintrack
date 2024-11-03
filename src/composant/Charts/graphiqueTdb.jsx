@@ -21,7 +21,7 @@ export function GraphiqueTdb({ data }) {
       const year = data.find((d) => d.month === label)?.year;
       const economieMonth = payload[0].value - payload[1].value;
       return (
-        <div className="bg-white dark:bg-zinc-900 text-xs p-2 rounded-xl shadow-2xl ">
+        <div className="bg-white dark:bg-black text-xs p-2 rounded-xl shadow-2xl ">
           <div className="text-left mb-1">
             <p style={{ color: "hsl(var(--primary))" }}>
               {label} {year}

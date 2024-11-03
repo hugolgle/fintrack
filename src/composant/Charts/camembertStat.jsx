@@ -9,7 +9,7 @@ const CustomTooltipContent = (props) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white dark:bg-zinc-900 text-xs p-2 rounded-xl shadow-2xl ">
+      <div className="bg-white dark:bg-black text-xs p-2 rounded-xl shadow-2xl ">
         <div className="text-left mb-1 flex items-center gap-2">
           <div
             className="w-[8px] h-[8px] rounded"

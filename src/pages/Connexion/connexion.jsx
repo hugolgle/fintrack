@@ -83,59 +83,45 @@ export default function Connexion() {
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
       >
-        <div className="flex flex-col items-start">
-          <Label htmlFor="username" className="mb-2 italic">
-            Votre e-mail <span className="text-red-500">*</span>
-          </Label>
+        <Input
+          className="w-96 h-10 px-2"
+          id="username"
+          type="email"
+          value={formik.values.username}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          placeholder="Votre e-mail"
+          required
+        />
+        {formik.touched.username && formik.errors.username && (
+          <p className="text-xs text-red-500 mt-1">{formik.errors.username}</p>
+        )}
+
+        <div className="relative w-96" ref={passwordRef}>
           <Input
-            className="w-96 h-10 px-2"
-            id="username"
-            type="email"
-            value={formik.values.username}
+            className="h-10 px-2"
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={formik.values.password}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Votre e-mail"
+            placeholder="Mot de passe"
             required
           />
-          {formik.touched.username && formik.errors.username && (
-            <p className="text-xs text-red-500 mt-1">
-              {formik.errors.username}
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-col items-start">
-          <Label htmlFor="password" className="mb-2 italic">
-            Mot de passe <span className="text-red-500">*</span>
-          </Label>
-          <div className="relative w-96" ref={passwordRef}>
-            <Input
-              className="h-10 px-2"
-              id="password"
-              type={showPassword ? "text" : "password"}
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Mot de passe"
-              required
-            />
-            <div
-              onClick={togglePasswordVisibility}
-              className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
-            >
-              {showPassword ? (
-                <EyeOff className="w-5" />
-              ) : (
-                <Eye className="w-5" />
-              )}
-            </div>
+          <div
+            onClick={togglePasswordVisibility}
+            className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
+          >
+            {showPassword ? (
+              <EyeOff className="w-5" />
+            ) : (
+              <Eye className="w-5" />
+            )}
           </div>
-          {formik.touched.password && formik.errors.password && (
-            <p className="text-xs text-red-500 mt-1">
-              {formik.errors.password}
-            </p>
-          )}
         </div>
+        {formik.touched.password && formik.errors.password && (
+          <p className="text-xs text-red-500 mt-1">{formik.errors.password}</p>
+        )}
 
         <Button
           variant="outline"

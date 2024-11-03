@@ -60,7 +60,7 @@ function BoxStat(props) {
 
   return (
     <div
-      className={`w-full flex flex-col-reverse italic gap-10 justify-between font-thin rounded-2xl transition-all px-4 py-2 ${bgColor} bg-opacity-10 hover:bg-opacity-20`}
+      className={`w-full flex flex-col-reverse italic gap-10 justify-between font-thin rounded-2xl transition-all px-4 py-2 ${bgColor} hover:bg-opacity-95`}
     >
       <div className="flex justify-between">
         <p className="text-xs text-left">{props.title}</p>

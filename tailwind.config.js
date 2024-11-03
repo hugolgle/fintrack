@@ -18,8 +18,11 @@ module.exports = {
       colors: {
         colorPrimaryDark: "rgb(9 9 11)",
         colorSecondaryDark: "rgb(17 19 21)",
-        colorPrimaryLight: "rgb(255, 255, 255)",
-        colorSecondaryLight: "rgb(244 244 245)",
+        colorPrimaryLight: "rgb(244, 244, 245)",
+        colorSecondaryLight: "rgb(255, 255, 255)",
+        colorPrimaryCustom: "var(--color-primary-custom, rgb(255, 255, 255))",
+        colorSecondaryCustom:
+          "var(--color-secondary-custom, rgb(255, 255, 255))",
         colorDepense: "hsl(var(--graph-depense))",
         colorRecette: "hsl(var(--graph-recette))",
         colorInvest: "hsl(var(--graph-invest))",

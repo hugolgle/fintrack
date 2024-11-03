@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { addSpace, formatAmount, formatDate } from "../../utils/fonctionnel";
 import { useState } from "react";
 import Fetcher from "../loader/fetcher";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Tableau({
   type,
@@ -59,6 +60,12 @@ export default function Tableau({
 
   const montantSelect = calculMontantSelect();
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <>
       {data && data.length > 0 ? (
@@ -97,11 +104,7 @@ export default function Tableau({
                 )}
                 <Link to={item._id} className="w-full">
                   <TableRow
-                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 bg-colorSecondaryLight dark:bg-colorPrimaryDark animate-fade cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${
-                      selectOpe && selectedRows[item._id]
-                        ? "ring-1 ring-zinc-400"
-                        : ""
-                    }`}
+                    className={`rounded-[14px] flex my-1 flex-row items-center h-10 ${bgColor} animate-fade cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${selectOpe && selectedRows[item._id] ? "ring-1 ring-zinc-400" : ""}`}
                   >
                     <TableCell className="w-full">
                       {item._id.substring(4, 8)}

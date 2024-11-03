@@ -20,6 +20,7 @@ import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
 import { ROUTES } from "./routes";
 import { useCurrentUser, useLogout } from "../hooks/user.hooks";
+import { useTheme } from "../context/ThemeContext";
 
 function Sidebar() {
   const location = useLocation();
@@ -77,8 +78,21 @@ function Sidebar() {
     },
   ];
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
+  const bgColorSecondary =
+    theme === "custom"
+      ? "bg-colorSecondaryCustom"
+      : "bg-colorSecondaryLight dark:bg-colorSecondaryDark";
+
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+    <div
+      className={`flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 ${bgColor}`}
+    >
       <Link
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center h-11 w-auto overflow-hidden"
@@ -94,7 +108,7 @@ function Sidebar() {
                 to={link}
                 className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
                   activeLink.startsWith(link)
-                    ? "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                    ? `${bgColorSecondary} text-black dark:text-white`
                     : ""
                 }`}
               >
@@ -130,7 +144,7 @@ function Sidebar() {
             className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
               activeLink.startsWith(ROUTES.LOGIN) ||
               activeLink.startsWith(ROUTES.SIGNUP)
-                ? "bg-zinc-200 dark:bg-zinc-900 !text-black dark:!text-white"
+                ? `${bgColorSecondary} text-black dark:text-white`
                 : ""
             }`}
           >

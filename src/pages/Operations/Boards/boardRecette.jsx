@@ -11,6 +11,7 @@ import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../../composant/header";
 import Loader from "../../../composant/loader/loader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function BoardRecette() {
   const { isLoading, data, isFetching } = useQuery({
@@ -37,6 +38,12 @@ export default function BoardRecette() {
   const lastYears = getLastYears(2);
   const lastTransactions = getLastTransactionsByType(data, "Revenue", 5, true);
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <>
       <section className="w-full">
@@ -52,7 +59,7 @@ export default function BoardRecette() {
               <Link
                 key={lastMonths[0].code}
                 to={lastMonths[0].code}
-                className="flex flex-col hover:scale-95 justify-between w-3/5 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                className={`flex flex-col hover:scale-95 justify-between w-3/5 ${bgColor} rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer`}
               >
                 <div className="flex flex-col w-full gap-4">
                   <p className="text-3xl font-thin">
@@ -93,7 +100,7 @@ export default function BoardRecette() {
                   <Link
                     key={month.code}
                     to={month.code}
-                    className="flex flex-col hover:scale-95 justify-between w-full h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                    className={`flex flex-col hover:scale-95 justify-between w-full h-full ${bgColor} rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer`}
                   >
                     <p className="text-right italic">{month.month}</p>
                     <p className="text-3xl font-thin">
@@ -115,7 +122,7 @@ export default function BoardRecette() {
                 <Link
                   key={year}
                   to={`${year}`}
-                  className="w-1/2 relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+                  className={`w-1/2 relative flex flex-col items-center justify-center h-32 ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
                 >
                   <p className="italic absolute top-2">{year}</p>
                   <p className="text-3xl font-thin">
@@ -127,7 +134,7 @@ export default function BoardRecette() {
 
             <Link
               to="all"
-              className="w-full relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className={`w-full relative flex flex-col items-center justify-center h-32 ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
               <p className="text-3xl font-thin">

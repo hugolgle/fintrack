@@ -20,6 +20,7 @@ import "../styles/globals.css";
 import MainLayout from "./layout/mainLayout";
 import PageError from "./pages/404/pageError";
 import { ROUTES } from "./composant/routes";
+import Mark from "./pages/Mark/mark";
 
 function App() {
   const router = createBrowserRouter([
@@ -103,6 +104,11 @@ function App() {
         {
           path: ROUTES.PROFILE,
           element: <PrivateRoute element={<Profil />} />,
+        },
+
+        {
+          path: ROUTES.MARK,
+          element: <PrivateRoute element={<Mark />} />,
         },
 
         { path: ROUTES.LOGIN, element: <Connexion /> },

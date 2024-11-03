@@ -32,6 +32,7 @@ export function BreadcrumbDemo() {
     [ROUTES.DASHBOARD]: "Tableau de Bord",
     [ROUTES.STATISTICS]: "Statistiques",
     [ROUTES.PROFILE]: "Profil",
+    [ROUTES.MARK]: "Marque",
     [ROUTES.LOGIN]: "Connexion",
     [ROUTES.SIGNUP]: "Inscription",
     [ROUTES.SESSION_TIMED_OUT]: "Session expirée",

@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import Header from "../../../composant/header";
 import Loader from "../../../composant/loader/loader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function BoardDepense() {
   const { isLoading, data, isFetching } = useQuery({
@@ -58,6 +59,12 @@ export default function BoardDepense() {
     return total + parseFloat(subscription.amount);
   }, 0);
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <>
       <section className="w-full">
@@ -75,7 +82,7 @@ export default function BoardDepense() {
                 <Link
                   key={lastMonths[0].code}
                   to={lastMonths[0].code}
-                  className="flex flex-col hover:scale-95 justify-between w-3/5 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                  className={`flex flex-col hover:scale-95 justify-between w-3/5 ${bgColor} rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer`}
                 >
                   <div className="flex flex-col w-full gap-4">
                     <p className="text-3xl font-thin">
@@ -114,7 +121,7 @@ export default function BoardDepense() {
                     <Link
                       key={month.code}
                       to={month.code}
-                      className="flex flex-col hover:scale-95 justify-between w-full h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer"
+                      className={`flex flex-col hover:scale-95 justify-between w-full h-full ${bgColor} rounded-2xl hover:bg-opacity-80 transition-all p-4 gap-4 cursor-pointer`}
                     >
                       <p className="text-right italic">{month.month}</p>
                       <p className="text-3xl font-thin">
@@ -136,7 +143,7 @@ export default function BoardDepense() {
                   <Link
                     key={year}
                     to={`${year}`}
-                    className=" w-1/2 relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+                    className={`w-1/2 relative flex flex-col items-center justify-center h-32 ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
                   >
                     <p className="italic absolute top-2">{year}</p>
                     <p className="text-3xl font-thin">
@@ -154,7 +161,7 @@ export default function BoardDepense() {
 
               <Link
                 to="all"
-                className="w-full relative flex flex-col items-center justify-center h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-2"
+                className={`w-full relative flex flex-col items-center justify-center h-32 ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-2`}
               >
                 <p className="italic absolute top-2">Toutes les dépenses</p>
                 <p className="text-3xl font-thin">
@@ -163,9 +170,8 @@ export default function BoardDepense() {
               </Link>
             </div>
             <Separator orientation="vertical" className="h-80 my-auto" />
-            <Link
-              to={`${currentYearMonth}?categories=Abonnement`}
-              className="flex flex-col w-[500px] items-center justify-center bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95  transition-all p-4"
+            <div
+              className={`flex flex-col w-[350px] items-center h-fit justify-center ${bgColor} rounded-2xl p-4`}
             >
               <p className="text-xl mx-8 font-thin italic mb-4">
                 Mes abonnements
@@ -175,23 +181,25 @@ export default function BoardDepense() {
                   {sortMySubscribes.map((subscribe) => (
                     <tr
                       key={subscribe._id}
-                      className="w-full h-full bg-colorPrimaryLight dark:bg-colorSecondaryDark rounded-xl flex flex-row items-center py-1 text-sm "
+                      className="w-full flex flex-row text-sm justify-between items-center"
                     >
-                      <td className="w-full">
-                        {formatDateDayMonth(subscribe.date)}
+                      <td className="flex flex-row space-x-4 w-full">
+                        <span>{formatDateDayMonth(subscribe.date)}</span>
+                        <span className="truncate">{subscribe.title}</span>
                       </td>
-                      <td className="w-full truncate">{subscribe.title}</td>
-                      <td className="w-full">
+                      <td className="w-full italic text-right">
                         <b>{formatAmount(subscribe.amount)} €</b>
                       </td>
                     </tr>
                   ))}
+                  <Separator orientation="horizontal" />
+
                   <p className="text-xl mx-8 font-thin italic">
                     Total : <b>{formatAmount(lastSubscribeTotal)} €</b>
                   </p>
                 </tbody>
               </table>
-            </Link>
+            </div>
           </div>
         </div>
       </section>

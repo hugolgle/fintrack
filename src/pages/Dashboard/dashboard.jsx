@@ -22,6 +22,7 @@ import Header from "../../composant/header";
 import { fetchInvestments } from "../../service/investment.service";
 import Loader from "../../composant/loader/loader";
 import LoaderBis from "../../composant/loader/loaderBis";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function TableauDeBord() {
   const {
@@ -281,13 +282,21 @@ export default function TableauDeBord() {
 
   const theMonthGraph = `${firstMonthOfSix.month} ${firstMonthOfSix.year} - ${lastMonthOfSix.month} ${lastMonthOfSix.year}`;
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <>
       <section className="w-full">
         <Header title="Tableau de bord" isFetching={isFetching} />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark h-full rounded-xl p-4 flex flex-col gap-4">
+            <div
+              className={`w-full ${bgColor} h-full rounded-xl p-4 flex flex-col gap-4`}
+            >
               <h2 className="text-3xl font-extralight italic">
                 Dernières transactions
               </h2>
@@ -296,7 +305,7 @@ export default function TableauDeBord() {
                   {lastTransactions.map((transaction) => (
                     <tr
                       key={transaction._id}
-                      className={`bg-opacity-15 rounded-lg h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
+                      className={`rounded-lg h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
                     >
                       <td className="w-full">
                         {formatDateDayMonth(transaction.date)}
@@ -311,7 +320,9 @@ export default function TableauDeBord() {
                 </tbody>
               </table>
             </div>
-            <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
+            <div
+              className={`w-2/3 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
+            >
               <BoxTdb
                 title="Mois actuel"
                 amountExpense={amountExpensesMonth}
@@ -320,7 +331,9 @@ export default function TableauDeBord() {
                 montantInvest={InvestCurrentMonth}
               />
             </div>
-            <div className="w-2/3 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl p-4 flex flex-col gap-4">
+            <div
+              className={`w-2/3 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
+            >
               <BoxTdb
                 title="Mois dernier"
                 amountExpense={amountExpensesLastMonth}
@@ -331,7 +344,7 @@ export default function TableauDeBord() {
             </div>
           </div>
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-7/12 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl h-full p-4 relative">
+            <div className={`w-7/12 ${bgColor} rounded-xl h-full p-4 relative`}>
               <h2 className="text-3xl font-extralight italic">Graphique</h2>
               {!isFetching ? (
                 <GraphiqueTdb data={dataGraph} />
@@ -354,7 +367,7 @@ export default function TableauDeBord() {
                 />
               </div>
             </div>
-            <div className="w-5/12 bg-colorSecondaryLight  dark:bg-colorPrimaryDark rounded-xl p-4">
+            <div className={`w-5/12 ${bgColor} rounded-xl p-4`}>
               <h2 className="text-3xl font-extralight italic">Répartitions</h2>
               <div className="flex flex-row justify-between w-full py-3 px-16">
                 <ChevronLeft

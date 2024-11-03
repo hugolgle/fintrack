@@ -5,7 +5,7 @@ import Header from "../../composant/header";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import { Loader } from "lucide-react";
 import { formatDate } from "../../utils/fonctionnel";
-import { Button } from "@/components/ui/button";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Profil() {
   const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
@@ -14,11 +14,19 @@ export default function Profil() {
 
   const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
         <Header title="Profil" />
-        <div className="flex-col w-1/2 py-12 mx-auto bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-start items-center rounded-2xl animate-fade gap-1">
+        <div
+          className={`flex-col w-1/2 py-12 mx-auto ${bgColor} flex justify-start items-center rounded-2xl animate-fade gap-1`}
+        >
           <div className="relative">
             <Avatar className="w-28 h-28">
               <AvatarImage

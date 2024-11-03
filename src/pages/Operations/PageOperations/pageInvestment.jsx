@@ -158,7 +158,7 @@ export default function PageInvestment() {
           isFetching={isFetching}
         />
 
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-zinc-900 py-3 transition-all">
+        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white dark:bg-black hover:opacity-0 py-3 transition-all">
           Total : <b>{totalInvestissement}</b>
           <br />
           Transaction(s) : <b>{nombreTransactions}</b>

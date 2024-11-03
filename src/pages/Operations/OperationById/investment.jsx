@@ -35,6 +35,7 @@ import Header from "../../../composant/header";
 import { getInvestmentsByTitle } from "../../../utils/operations";
 import { useEffect } from "react";
 import Loader from "../../../composant/loader/loader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function Investment() {
   const { data } = useQuery({
@@ -182,6 +183,12 @@ export default function Investment() {
   if (error)
     return <div>Erreur lors de la récupération de la transaction.</div>;
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <section className="w-full">
       <Header
@@ -194,7 +201,9 @@ export default function Investment() {
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-row gap-4 animate-fade">
           <div className="flex flex-col gap-4 w-3/4">
-            <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div
+              className={`h-40 w-full  ${bgColor} flex justify-center items-center rounded-2xl`}
+            >
               {selectedUpdate ? (
                 <>
                   <Input
@@ -221,7 +230,9 @@ export default function Investment() {
             </div>
 
             <div className="flex flex-row gap-4">
-              <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+              <div
+                className={`h-40 w-full  ${bgColor} flex justify-center items-center rounded-2xl`}
+              >
                 {selectedUpdate ? (
                   <Select
                     value={selectedType}
@@ -231,10 +242,12 @@ export default function Investment() {
                     }}
                     required
                   >
-                    <SelectTrigger className="w-full h-40 px-2 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex items-center justify-center">
+                    <SelectTrigger
+                      className={`w-full h-40 px-2 text-4xl ${bgColor} rounded-2xl flex items-center justify-center`}
+                    >
                       <SelectValue placeholder="Entrez le type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+                    <SelectContent className={`${bgColor} rounded-2xl`}>
                       <SelectItem className="rounded-xl" value="Action">
                         Action
                       </SelectItem>
@@ -258,13 +271,15 @@ export default function Investment() {
               </div>
             </div>
             <div className="flex flex-row w-full gap-4">
-              <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+              <div
+                className={`h-40 w-full ${bgColor} overflow-hidden flex justify-center items-center rounded-2xl`}
+              >
                 {selectedUpdate ? (
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
-                        className="w-full h-40 px-40 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-center rounded-2xl"
+                        className={`w-full h-40 px-40 text-4xl ${bgColor} text-center rounded-2xl`}
                       >
                         {selectedDate ? (
                           format(new Date(selectedDate), "PPP", {
@@ -306,7 +321,9 @@ export default function Investment() {
                   </h2>
                 )}
               </div>
-              <div className="h-40 w-full  bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+              <div
+                className={`h-40 w-full overflow-hidden ${bgColor} flex justify-center items-center rounded-2xl`}
+              >
                 {selectedUpdate ? (
                   <Input
                     className="h-full w-full px-40 bg-transparent text-center text-4xl rounded-2xl"
@@ -325,7 +342,9 @@ export default function Investment() {
                 )}
               </div>
             </div>
-            <div className="h-40 w-full bg-colorSecondaryLight dark:bg-colorPrimaryDark flex justify-center items-center rounded-2xl">
+            <div
+              className={`h-40 w-full  ${bgColor} flex justify-center items-center rounded-2xl`}
+            >
               {selectedUpdate ? (
                 <Textarea
                   className="h-full w-full bg-transparent text-center text-xl p-4 rounded-2xl"
@@ -349,13 +368,17 @@ export default function Investment() {
 
           <div className="flex flex-col justify-between items-center w-1/4 gap-4">
             <div className="flex flex-col w-full gap-4">
-              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
+              <div
+                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
+              >
                 <p>
                   Ajouter le : <br />
                   <b>{formatDate(investment?.data?.createdAt, 1)}</b>
                 </p>
               </div>
-              <div className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center">
+              <div
+                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
+              >
                 <p>
                   Derniere modification le : <br />
                   <b>{formatDate(investment?.data?.updatedAt, 1)}</b>
@@ -416,13 +439,13 @@ export default function Investment() {
                   <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                   <div className="flex gap-4">
                     <div
-                      className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                      className={`p-8 border-2 border-red-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
                       onClick={() => handleEditConfirmation()}
                     >
                       Oui
                     </div>
                     <div
-                      className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                      className={`p-8 border-2 border-zinc-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900`}
                       onClick={() => {
                         setSelectedUpdate(false);
                         setUpdate(false);
@@ -435,14 +458,14 @@ export default function Investment() {
                 </div>
               ) : selectedUpdate ? (
                 <div
-                  className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                  className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95`}
                   onClick={() => setSelectedUpdate(false)}
                 >
                   Annuler
                 </div>
               ) : (
                 <div
-                  className="p-8 h-32 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95"
+                  className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:bg-opacity-80 cursor-pointer transition-all hover:scale-95`}
                   onClick={() => setSelectedUpdate(true)}
                 >
                   Modifier
@@ -451,7 +474,9 @@ export default function Investment() {
               <div className="flex flex-col gap-4 justify-center items-center">
                 <DialogDelete
                   btnDelete={
-                    <div className="w-full p-8 h-32 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95">
+                    <div
+                      className={`w-full p-8 h-32 border-2 border-red-900 ${bgColor}  rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
+                    >
                       Supprimer
                     </div>
                   }

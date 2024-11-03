@@ -26,6 +26,7 @@ import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader/loader";
 import { currentDate, months } from "../../utils/other";
 import LoaderBis from "../../composant/loader/loaderBis";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Statistique() {
   const { data: userInfo } = useCurrentUser();
@@ -205,6 +206,12 @@ export default function Statistique() {
     null
   );
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <section className="w-full">
       <Header title="Statistiques" isFetching={isFetching} />
@@ -314,10 +321,12 @@ export default function Statistique() {
           </div>
           <Separator orientation="vertical" className="h-80 my-auto" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
-            <p className="font-thin text-sm text-center p-2 rounded-2xl bg-colorSecondaryLight dark:bg-colorPrimaryDark w-full">
+            <p
+              className={`font-thin text-sm text-center p-2 rounded-2xl ${bgColor} w-full`}
+            >
               Répartitions
             </p>
-            <div className="flex flex-col w-full rounded-2xl  h-auto items-center p-4 bg-opacity-15 bg-green-600">
+            <div className="flex flex-col w-full rounded-2xl  h-auto items-center p-4 bg-green-600">
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Recettes de ${selectedYear}`
@@ -354,7 +363,7 @@ export default function Statistique() {
               </Button>
             </div>
 
-            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 bg-opacity-15 bg-red-600">
+            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 bg-red-600">
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Dépenses de ${selectedYear}`

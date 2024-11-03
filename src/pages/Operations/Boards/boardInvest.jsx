@@ -9,6 +9,7 @@ import { formatDateSlash } from "../../../utils/fonctionnel";
 import Header from "../../../composant/header";
 import { toast } from "sonner";
 import Loader from "../../../composant/loader/loader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function BoardInvest() {
   const { isLoading, data, isFetching } = useQuery({
@@ -76,6 +77,12 @@ export default function BoardInvest() {
 
   if (isLoading) return <Loader />;
 
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
@@ -89,7 +96,7 @@ export default function BoardInvest() {
           <div className="h-32 flex gap-4">
             <Link
               to="inprogress"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className={`w-full relative flex flex-col items-center justify-center h-full ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
             >
               <p className="italic font-thin absolute top-2">
                 Investissements en cours
@@ -98,7 +105,7 @@ export default function BoardInvest() {
             </Link>
             <Link
               to="all"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className={`w-full relative flex flex-col items-center justify-center h-full ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
             >
               <p className="italic font-thin absolute top-2">
                 Tous les investissements
@@ -107,7 +114,7 @@ export default function BoardInvest() {
             </Link>
             <Link
               to="sold"
-              className="w-full relative flex flex-col items-center justify-center h-full bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2"
+              className={`w-full relative flex flex-col items-center justify-center h-full ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
             >
               <p className="italic font-thin absolute top-2">
                 Investissements vendus
@@ -132,7 +139,7 @@ export default function BoardInvest() {
                   <Link
                     key={index}
                     to={linkInvest}
-                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl px-4 py-4 transition-all hover:scale-95 bg-opacity-20 hover:bg-opacity-50 ${getHoverClass(
+                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl px-4 py-4 transition-all hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
                       type
                     )} `}
                   >

@@ -20,7 +20,8 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove("light", "dark");
+    // Remove existing theme classes
+    root.classList.remove("light", "dark", "custom");
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -31,14 +32,19 @@ export function ThemeProvider({
       return;
     }
 
-    root.classList.add(theme);
+    // Add the selected theme class
+    if (theme === "custom") {
+      root.classList.add("custom"); // Add the custom class for your custom theme
+    } else {
+      root.classList.add(theme); // Add light or dark
+    }
   }, [theme]);
 
   const value = {
     theme,
-    setTheme: (theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
     },
   };
 
@@ -51,7 +57,8 @@ export function ThemeProvider({
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (context === undefined)
+  if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");
+  }
   return context;
 };

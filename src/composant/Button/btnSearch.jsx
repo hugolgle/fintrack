@@ -1,11 +1,17 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "../../context/ThemeContext";
 
 function BtnSearch({ searchTerm, handleSearchChange }) {
+  const { theme } = useTheme();
+  const bgColor =
+    theme === "custom"
+      ? "bg-colorPrimaryCustom"
+      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
   return (
     <div className="relative">
       <Input
-        className="rounded-[10px] bg-colorSecondaryLight dark:bg-colorPrimaryDark pl-8"
+        className={`rounded-[10px] ${bgColor} pl-8`}
         type="search"
         value={searchTerm}
         onChange={handleSearchChange}

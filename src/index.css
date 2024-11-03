@@ -30,6 +30,11 @@ body {
   background-color: var(--background-color-dark);
 }
 
+.custom body {
+  color: var(--color-text-custom);
+  background-color: var(--color-backGround-custom);
+}
+
 /* Masquer la scrollbar pour tous les navigateurs modernes */
 * {
   overflow: -moz-scrollbars-none; /* Pour Firefox */

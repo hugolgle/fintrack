@@ -20,6 +20,8 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { ROUTES } from "./routes";
+import { Highlighter } from "lucide-react";
+import { Paintbrush } from "lucide-react";
 
 export function DropdownProfil({ btnOpen, handleLogout }) {
   const navigate = useNavigate();
@@ -29,6 +31,11 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
   const handleProfileClick = () => {
     setOpen(false);
     navigate(ROUTES.PROFILE);
+  };
+
+  const handleMarkClick = () => {
+    setOpen(false);
+    navigate(ROUTES.MARK);
   };
 
   const handleThemeChange = (value) => {
@@ -54,6 +61,11 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
           <span>Profil</span>
         </DropdownMenuItem>
 
+        <DropdownMenuItem className="cursor-pointer" onClick={handleMarkClick}>
+          <Highlighter className="mr-2 h-4 w-4" />
+          <span>Marque</span>
+        </DropdownMenuItem>
+
         <DropdownMenuGroup>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
@@ -72,6 +84,10 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
                 <DropdownMenuRadioItem value="light">
                   <Sun className="mr-2 h-4 w-4" />
                   <span>Clair</span>
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="custom">
+                  <Paintbrush className="mr-2 h-4 w-4" />
+                  <span>Custom</span>
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
