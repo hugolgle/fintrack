@@ -10,8 +10,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { addSpace, formatAmount, formatDate } from "../../utils/fonctionnel";
 import { useState } from "react";
-import Fetcher from "../loader/fetcher";
 import { useTheme } from "../../context/ThemeContext";
+import { LoaderCircle } from "lucide-react";
 
 export default function Tableau({
   type,
@@ -164,7 +164,9 @@ export default function Tableau({
               </div>
             ))}
           </TableBody>
-          {isFetching && <Fetcher />}
+          {isFetching && (
+            <LoaderCircle className="absolute top-0 right-0 animate-spin" />
+          )}
         </Table>
       ) : (
         <p>Aucune transaction n'a été trouvée ...</p>

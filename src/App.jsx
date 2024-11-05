@@ -20,7 +20,7 @@ import "../styles/globals.css";
 import MainLayout from "./layout/mainLayout";
 import PageError from "./pages/404/pageError";
 import { ROUTES } from "./composant/routes";
-import Mark from "./pages/Mark/mark";
+import Branding from "./pages/Branding/branding";
 
 function App() {
   const router = createBrowserRouter([
@@ -107,8 +107,8 @@ function App() {
         },
 
         {
-          path: ROUTES.MARK,
-          element: <PrivateRoute element={<Mark />} />,
+          path: ROUTES.BRANDING,
+          element: <PrivateRoute element={<Branding />} />,
         },
 
         { path: ROUTES.LOGIN, element: <Connexion /> },

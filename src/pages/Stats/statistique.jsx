@@ -25,7 +25,7 @@ import Header from "../../composant/header";
 import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader/loader";
 import { currentDate, months } from "../../utils/other";
-import LoaderBis from "../../composant/loader/loaderBis";
+import LoaderDots from "../../composant/loader/loaderDots";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function Statistique() {
@@ -219,12 +219,8 @@ export default function Statistique() {
         <div className="flex flex-row gap-2">
           {generateYears().map((year, index) => (
             <Button
-              variant="outline"
-              className={`text-xs rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${
-                selectedYear === year
-                  ? "ring-1 ring-blue-400 text-black dark:text-white"
-                  : ""
-              }`}
+              variant={selectedYear === year ? "secondary" : "none"}
+              className="rounded-xl"
               key={index}
               onClick={() => clickYear(year)}
             >
@@ -235,12 +231,11 @@ export default function Statistique() {
           <div className="flex w-full gap-2">
             {generateMonths().map((monthIndex, index) => (
               <Button
-                variant="outline"
-                className={`w-full text-xs rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${
-                  selectedMonth === String(monthIndex).padStart(2, "0")
-                    ? "ring-1 ring-blue-400 text-black dark:text-white"
-                    : ""
-                }`}
+                variant={
+                  selectedMonth === String(monthIndex).padStart(2, "0") &&
+                  "secondary"
+                }
+                className="rounded-xl w-full"
                 key={index}
                 onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
               >
@@ -322,11 +317,13 @@ export default function Statistique() {
           <Separator orientation="vertical" className="h-80 my-auto" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
             <p
-              className={`font-thin text-sm text-center p-2 rounded-2xl ${bgColor} w-full`}
+              className={`w-full font-thin text-sm text-center p-2 rounded-2xl ${bgColor} w-full`}
             >
               Répartitions
             </p>
-            <div className="flex flex-col w-full rounded-2xl  h-auto items-center p-4 bg-green-600">
+            <div
+              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[3px] ring-green-500`}
+            >
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Recettes de ${selectedYear}`
@@ -341,29 +338,31 @@ export default function Statistique() {
                   category={categoryRecette}
                 />
               ) : (
-                <LoaderBis size={180} />
+                <LoaderDots size={180} />
               )}
             </div>
 
             <div className="flex gap-2 w-full">
               <Button
-                variant="outline"
+                variant={!selectedByYear ? "secondary" : "none"}
                 onClick={handleByMonth}
-                className={`font-thin italic w-full rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${!selectedByYear && "ring-1 ring-blue-400 text-black dark:text-white"}`}
+                className="rounded-xl w-full"
               >
                 {convertDate(selectedDate)}
               </Button>
 
               <Button
-                variant="outline"
+                variant={selectedByYear ? "secondary" : "none"}
                 onClick={handleByYear}
-                className={`font-thin italic w-full rounded-xl text-gray-500 hover:text-black hover:dark:text-white hover:bg-colorSecondaryLight hover:dark:bg-colorSecondaryDark ${selectedByYear && "ring-1 ring-blue-400 text-black dark:text-white"}`}
+                className="rounded-xl w-full"
               >
                 {selectedYear}
               </Button>
             </div>
 
-            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 bg-red-600">
+            <div
+              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[3px] ring-red-500`}
+            >
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Dépenses de ${selectedYear}`
@@ -377,7 +376,7 @@ export default function Statistique() {
                   category={categoryDepense}
                 />
               ) : (
-                <LoaderBis />
+                <LoaderDots />
               )}
             </div>
           </div>

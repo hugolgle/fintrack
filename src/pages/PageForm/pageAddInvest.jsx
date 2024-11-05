@@ -137,7 +137,7 @@ export default function PageAddInvest() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
+                className="w-96 h-10 px-2 rounded-xl  text-left font-normal"
               >
                 {selectedDate ? (
                   format(selectedDate, "PPP", { locale: fr })
@@ -147,10 +147,7 @@ export default function PageAddInvest() {
                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent
-              className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
-              align="start"
-            >
+            <PopoverContent className="w-auto rounded-xl p-0" align="start">
               <Calendar
                 mode="single"
                 selected={selectedDate}
@@ -171,7 +168,7 @@ export default function PageAddInvest() {
           <Input
             list="title-suggestions"
             value={formik.values.title}
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+            className="w-96 h-10 px-2 rounded-xl "
             type="text"
             maxLength={50}
             placeholder="Titre"
@@ -199,10 +196,10 @@ export default function PageAddInvest() {
             onValueChange={(value) => formik.setFieldValue("type", value)}
             required
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+            <SelectTrigger className="w-96 h-10 px-2 rounded-xl ">
               <SelectValue placeholder="Sélectionnez le type" />
             </SelectTrigger>
-            <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+            <SelectContent className=" rounded-2xl">
               <SelectItem className="rounded-xl" value="Action">
                 Action
               </SelectItem>
@@ -228,7 +225,7 @@ export default function PageAddInvest() {
         </div>
         <div>
           <Textarea
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+            className="w-96 h-10 px-2 rounded-xl "
             placeholder="Détails"
             {...formik.getFieldProps("detail")}
             name="detail"
@@ -242,7 +239,7 @@ export default function PageAddInvest() {
 
         <div>
           <Input
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+            className="w-96 h-10 px-2 rounded-xl "
             type="number"
             step="0.01"
             placeholder="Montant"

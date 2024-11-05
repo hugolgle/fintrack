@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/popover";
 import PopoverFilter from "./popoverFilter";
 import { BreadcrumbDemo } from "./breadCrumb";
-import Fetcher from "./loader/fetcher";
 import { useLocation } from "react-router";
 import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 function Header({
   title,
@@ -109,7 +109,9 @@ function Header({
           </>
         )}
       </div>
-      {isFetching && <Fetcher />}
+      {isFetching && (
+        <LoaderCircle className="absolute top-0 right-0 animate-spin" />
+      )}
     </div>
   );
 }

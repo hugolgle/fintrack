@@ -33,9 +33,9 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
     navigate(ROUTES.PROFILE);
   };
 
-  const handleMarkClick = () => {
+  const handleBrandingClick = () => {
     setOpen(false);
-    navigate(ROUTES.MARK);
+    navigate(ROUTES.BRANDING);
   };
 
   const handleThemeChange = (value) => {
@@ -61,7 +61,10 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
           <span>Profil</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="cursor-pointer" onClick={handleMarkClick}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleBrandingClick}
+        >
           <Highlighter className="mr-2 h-4 w-4" />
           <span>Marque</span>
         </DropdownMenuItem>

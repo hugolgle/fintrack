@@ -1,6 +1,6 @@
 import React from "react";
 
-function LoaderBis() {
+function LoaderDots() {
   return (
     <div className="flex space-x-3 justify-center items-center h-[200px]">
       <div className="w-2 h-2 bg-red-500 rounded-full animate-ping delay-0"></div>
@@ -10,4 +10,4 @@ function LoaderBis() {
   );
 }
 
-export default LoaderBis;
+export default LoaderDots;

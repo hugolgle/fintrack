@@ -166,7 +166,7 @@ export default function PageAddTransac(props) {
       >
         <div>
           <Input
-            className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark"
+            className="w-96 h-10 px-2 rounded-xl "
             list="title-suggestions"
             id="title"
             name="title"
@@ -190,10 +190,10 @@ export default function PageAddTransac(props) {
             value={formik.values.category}
             onValueChange={(value) => formik.setFieldValue("category", value)}
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark">
+            <SelectTrigger className="w-96 h-10 px-2 rounded-xl ">
               <SelectValue placeholder="Entrez la catégorie" />
             </SelectTrigger>
-            <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+            <SelectContent className=" rounded-2xl">
               {props.type === "Expense" &&
                 categoryD.map(({ name }) => (
                   <SelectItem key={name} value={name} className="rounded-xl">
@@ -220,7 +220,7 @@ export default function PageAddTransac(props) {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-96 h-10 px-2 rounded-xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-left font-normal"
+                className="w-96 h-10 px-2 rounded-xl  text-left font-normal"
               >
                 {formik.values.date ? (
                   format(formik.values.date, "PPP", { locale: fr })
@@ -230,10 +230,7 @@ export default function PageAddTransac(props) {
                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent
-              className="w-auto rounded-xl bg-colorSecondaryLight dark:bg-[#1a1a1a] p-0"
-              align="start"
-            >
+            <PopoverContent className="w-auto rounded-xl p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formik.values.date}
@@ -254,7 +251,7 @@ export default function PageAddTransac(props) {
         <div>
           <Textarea
             name="detail"
-            className="w-96 h-20 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
+            className="w-96 h-20 px-2  rounded-xl"
             placeholder="Détails"
             {...formik.getFieldProps("detail")}
           />
@@ -267,7 +264,7 @@ export default function PageAddTransac(props) {
         <div>
           <Input
             name="amount"
-            className="w-96 h-10 px-2 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-xl"
+            className="w-96 h-10 px-2  rounded-xl"
             type="number"
             step="0.01"
             placeholder="Montant"

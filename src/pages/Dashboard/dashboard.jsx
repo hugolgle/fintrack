@@ -21,7 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
 import { fetchInvestments } from "../../service/investment.service";
 import Loader from "../../composant/loader/loader";
-import LoaderBis from "../../composant/loader/loaderBis";
+import LoaderDots from "../../composant/loader/loaderDots";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function TableauDeBord() {
@@ -305,7 +305,7 @@ export default function TableauDeBord() {
                   {lastTransactions.map((transaction) => (
                     <tr
                       key={transaction._id}
-                      className={`rounded-lg h-full flex flex-row items-center py-1 text-sm ${transaction.type === "Revenue" ? "bg-green-600" : transaction.type === "Expense" ? "bg-red-600" : ""}`}
+                      className={`rounded-lg h-full flex flex-row items-center py-1 ring-1 text-sm ${transaction.type === "Revenue" ? "ring-green-500" : transaction.type === "Expense" ? "ring-red-500" : ""}`}
                     >
                       <td className="w-full">
                         {formatDateDayMonth(transaction.date)}
@@ -349,7 +349,7 @@ export default function TableauDeBord() {
               {!isFetching ? (
                 <GraphiqueTdb data={dataGraph} />
               ) : (
-                <LoaderBis />
+                <LoaderDots />
               )}{" "}
               <div
                 className={`flex flex-row gap-4 min-w-fit w-3/5 mx-auto px-20 items-center justify-between bottom-2`}
@@ -390,7 +390,7 @@ export default function TableauDeBord() {
                   total={formatData(total)}
                 />
               ) : (
-                <LoaderBis />
+                <LoaderDots />
               )}
             </div>
           </div>

@@ -266,10 +266,10 @@ export default function Transaction() {
                   }}
                   required
                 >
-                  <SelectTrigger className="w-full h-40 px-2 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl flex items-center justify-center">
+                  <SelectTrigger className="w-full h-40 px-2 text-4xl rounded-2xl flex items-center justify-center">
                     <SelectValue placeholder="Entrez la catégorie" />
                   </SelectTrigger>
-                  <SelectContent className="bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl">
+                  <SelectContent className="rounded-2xl">
                     {transaction?.data?.type === "Expense" &&
                       categoryD.map(({ name }) => (
                         <SelectItem
@@ -304,8 +304,8 @@ export default function Transaction() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
-                      className="w-full h-40 px-40 text-4xl bg-colorSecondaryLight dark:bg-colorPrimaryDark text-center rounded-2xl"
+                      variant="outline"
+                      className={`w-full h-40 px-40 text-4xl ${bgColor} text-center rounded-2xl`}
                     >
                       {selectedDate ? (
                         format(new Date(selectedDate), "PPP", { locale: fr })
@@ -316,7 +316,7 @@ export default function Transaction() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-auto bg-colorSecondaryLight dark:bg-[#1a1a1a] rounded-2xl p-0"
+                    className="w-auto  rounded-2xl p-0"
                     align="start"
                   >
                     <Calendar
@@ -337,6 +337,7 @@ export default function Transaction() {
                       disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                       locale={fr}
+                      variant
                     />
                   </PopoverContent>
                 </Popover>
@@ -425,13 +426,13 @@ export default function Transaction() {
                 <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
                 <div className="flex gap-4">
                   <div
-                    className="p-8 border-2 border-red-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95"
+                    className={`p-8 border-2 border-red-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
                     onClick={() => handleEditConfirmation()}
                   >
                     Oui
                   </div>
                   <div
-                    className="p-8 border-2 border-zinc-900 bg-colorSecondaryLight dark:bg-colorPrimaryDark rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900"
+                    className={`p-8 border-2 border-zinc-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900`}
                     onClick={() => {
                       setSelectedUpdate(false);
                       setUpdate(false);

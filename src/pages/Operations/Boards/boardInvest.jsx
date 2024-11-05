@@ -61,17 +61,17 @@ export default function BoardInvest() {
   const getHoverClass = (type) => {
     switch (type) {
       case "Action":
-        return "bg-pink-600";
+        return "ring-pink-500";
       case "ETF":
-        return "bg-blue-600";
+        return "ring-blue-500";
       case "Crypto":
-        return "bg-green-600";
+        return "ring-green-500";
       case "Obligation":
-        return "bg-purple-600";
+        return "ring-purple-500";
       case "Dérivé":
-        return "bg-red-600";
+        return "ring-red-500";
       default:
-        return "bg-gray-600";
+        return "ring-gray-500";
     }
   };
 
@@ -139,7 +139,7 @@ export default function BoardInvest() {
                   <Link
                     key={index}
                     to={linkInvest}
-                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl px-4 py-4 transition-all hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
+                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl ${bgColor} px-4 py-4 transition-all ring-[3px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
                       type
                     )} `}
                   >

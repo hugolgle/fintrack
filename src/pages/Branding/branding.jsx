@@ -5,14 +5,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useTheme } from "../../context/ThemeContext";
 
-export default function Mark() {
-  // États pour chaque couleur
+export default function Branding() {
   const [colorPrimaryCustom, setColorPrimaryCustom] = useState("#ababab");
   const [colorSecondaryCustom, setColorSecondaryCustom] = useState("#9c9c9c");
   const [colorBackGroundCustom, setColorBackGroundCustom] = useState("#878787");
   const [colorTextCustom, setColorTextCustom] = useState("#000000");
 
-  // Charger les couleurs sauvegardées
   useEffect(() => {
     const savedPrimaryCustom =
       localStorage.getItem("colorPrimaryCustom") || colorPrimaryCustom;
@@ -36,7 +34,6 @@ export default function Mark() {
     );
   }, []);
 
-  // Appliquer les couleurs
   const applyColors = (primary, secondary, background, text) => {
     document.documentElement.style.setProperty(
       "--color-primary-custom",
@@ -50,15 +47,14 @@ export default function Mark() {
       "--color-backGround-custom",
       background
     );
-    document.documentElement.style.setProperty("--color-text-custom", text); // Ajout de la couleur de texte
+    document.documentElement.style.setProperty("--color-text-custom", text);
   };
 
-  // Sauvegarder et appliquer les nouvelles couleurs
   const handleColorChange = () => {
     localStorage.setItem("colorPrimaryCustom", colorPrimaryCustom);
     localStorage.setItem("colorSecondaryCustom", colorSecondaryCustom);
     localStorage.setItem("colorBackGroundCustom", colorBackGroundCustom);
-    localStorage.setItem("colorTextCustom", colorTextCustom); // Sauvegarder la couleur de texte
+    localStorage.setItem("colorTextCustom", colorTextCustom);
 
     applyColors(
       colorPrimaryCustom,
@@ -80,15 +76,13 @@ export default function Mark() {
     setColorPrimaryCustom(defaultPrimaryCustom);
     setColorSecondaryCustom(defaultSecondaryCustom);
     setColorBackGroundCustom(defaultBackGroundCustom);
-    setColorTextCustom(defaultTextCustom); // Réinitialiser la couleur de texte
+    setColorTextCustom(defaultTextCustom);
 
-    // Mise à jour du localStorage
     localStorage.setItem("colorPrimaryCustom", defaultPrimaryCustom);
     localStorage.setItem("colorSecondaryCustom", defaultSecondaryCustom);
     localStorage.setItem("colorBackGroundCustom", defaultBackGroundCustom);
     localStorage.setItem("colorTextCustom", defaultTextCustom);
 
-    // Appliquer les couleurs par défaut
     applyColors(
       defaultPrimaryCustom,
       defaultSecondaryCustom,

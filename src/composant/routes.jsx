@@ -15,7 +15,7 @@ export const ROUTES = {
   INVESTMENT_BY_ID: "/investment/:status/:id",
   STATISTICS: "/statistics",
   PROFILE: "/profile",
-  MARK: "/mark",
+  BRANDING: "/branding",
   LOGIN: "/login",
   SIGNUP: "/signup",
   SESSION_TIMED_OUT: "/session-timed-out",

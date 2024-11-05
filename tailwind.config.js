@@ -16,10 +16,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        colorPrimaryDark: "rgb(9 9 11)",
-        colorSecondaryDark: "rgb(17 19 21)",
-        colorPrimaryLight: "rgb(244, 244, 245)",
-        colorSecondaryLight: "rgb(255, 255, 255)",
+        colorPrimaryDark: "rgb(0 0 0)",
+        colorSecondaryDark: "rgb(255, 255, 255)",
+        colorPrimaryLight: "rgb(240, 243, 247)",
+        colorSecondaryLight: "rgb(0, 0, 0)",
         colorPrimaryCustom: "var(--color-primary-custom, rgb(255, 255, 255))",
         colorSecondaryCustom:
           "var(--color-secondary-custom, rgb(255, 255, 255))",

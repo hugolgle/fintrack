@@ -108,7 +108,7 @@ function Sidebar() {
                 to={link}
                 className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
                   activeLink.startsWith(link)
-                    ? `${bgColorSecondary} text-black dark:text-white`
+                    ? `${bgColorSecondary} text-white dark:text-black hover:text-white dark:hover:!text-black`
                     : ""
                 }`}
               >

@@ -247,7 +247,7 @@ export default function Investment() {
                     >
                       <SelectValue placeholder="Entrez le type" />
                     </SelectTrigger>
-                    <SelectContent className={`${bgColor} rounded-2xl`}>
+                    <SelectContent className="rounded-2xl">
                       <SelectItem className="rounded-xl" value="Action">
                         Action
                       </SelectItem>
@@ -292,7 +292,7 @@ export default function Investment() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent
-                      className="w-auto bg-colorSecondaryLight dark:bg-[#1a1a1a] rounded-2xl p-0"
+                      className="w-auto rounded-2xl p-0"
                       align="start"
                     >
                       <Calendar
