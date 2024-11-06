@@ -108,7 +108,7 @@ export default function Branding() {
             type="color"
             value={colorPrimaryCustom}
             onChange={(e) => setColorPrimaryCustom(e.target.value)}
-            className="w-full border rounded-md p-1"
+            className="w-full border p-1"
           />
         </div>
 
@@ -118,7 +118,7 @@ export default function Branding() {
             type="color"
             value={colorSecondaryCustom}
             onChange={(e) => setColorSecondaryCustom(e.target.value)}
-            className="w-full border rounded-md p-1"
+            className="w-full border p-1"
           />
         </div>
 
@@ -128,7 +128,7 @@ export default function Branding() {
             type="color"
             value={colorBackGroundCustom}
             onChange={(e) => setColorBackGroundCustom(e.target.value)}
-            className="w-full border rounded-md p-1"
+            className="w-full border p-1"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function Branding() {
             type="color"
             value={colorTextCustom}
             onChange={(e) => setColorTextCustom(e.target.value)}
-            className="w-full border rounded-md p-1"
+            className="w-full border p-1"
           />
         </div>
 

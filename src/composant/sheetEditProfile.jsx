@@ -17,7 +17,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEditUser, useCurrentUser } from "../hooks/user.hooks";
+import { useMutation } from "@tanstack/react-query";
+import { editUser } from "../service/user.service";
+import { getUserIdFromToken } from "../utils/users";
 
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),
@@ -25,13 +27,26 @@ const validationSchema = yup.object({
   username: yup.string().email("Email invalide").required("Email est requis"),
 });
 
-export function SheetEditProfile({ btnOpen, dataProfil }) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false); // Gérer l'ouverture du Sheet
+export function SheetEditProfile({ refetch, dataProfil }) {
+  const userId = getUserIdFromToken();
+
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [isImageDeleted, setIsImageDeleted] = useState(false);
   const [hiddenImg, setHiddenImg] = useState(false);
-  const { mutate: editUser, isPending } = useEditUser();
-  const { refetch: refetchUser } = useCurrentUser();
+
+  const { mutate: editUserMutate, isPending } = useMutation({
+    mutationFn: (userData) => editUser(userId, userData),
+    onSuccess: (response) => {
+      refetch();
+      setIsSheetOpen(false);
+      toast.success(response.message);
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message || "Erreur lors de la mise à jour");
+      console.log(error);
+    },
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -49,12 +64,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
       if (!isImageDeleted && values.file) {
         formData.append("img", values.file);
       }
-      editUser(formData, {
-        onSuccess: async () => {
-          await refetchUser(); // Refetch user data on success
-          setIsSheetOpen(false); // Close the sheet
-        },
-      });
+      editUserMutate(formData);
     },
   });
 
@@ -75,9 +85,9 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
   };
 
   const handleSheetOpenChange = (open) => {
-    setIsSheetOpen(open); // Mettre à jour l'état d'ouverture
+    setIsSheetOpen(open);
     if (!open) {
-      formik.resetForm(); // Réinitialiser le formulaire à la fermeture
+      formik.resetForm();
       setPreview(null);
       setIsImageDeleted(false);
       setHiddenImg(false);
@@ -105,10 +115,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
   return (
     <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
       <SheetTrigger asChild>
-        <Button
-          className="mt-4 text-xs rounded-xl"
-          onClick={() => setIsSheetOpen(true)}
-        >
+        <Button className="mt-4 text-xs" onClick={() => setIsSheetOpen(true)}>
           Modifier
         </Button>
       </SheetTrigger>
@@ -208,9 +215,7 @@ export function SheetEditProfile({ btnOpen, dataProfil }) {
             )}
             <Button
               type="submit"
-              disabled={
-                formik.isSubmitting || !formik.isValid || isSaveDisabled
-              }
+              disabled={isPending || !formik.isValid || isSaveDisabled}
             >
               {isPending ? "Enregistrement ..." : "Enregistrer"}
             </Button>

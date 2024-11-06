@@ -1,15 +1,21 @@
+import { useQuery } from "@tanstack/react-query";
 import Loader from "../../composant/loader/loader";
 import Logo from "../../composant/logo";
 import { ROUTES } from "../../composant/routes";
 import { useTheme } from "../../context/ThemeContext";
-import { useCurrentUser } from "../../hooks/user.hooks";
+import { getUserIdFromToken } from "../../utils/users";
+import { getCurrentUser } from "../../service/user.service";
 import { useIsAuthenticated } from "../../utils/users";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+  const userId = getUserIdFromToken();
   const { isAuthenticated, isLoading: loadingAuth } = useIsAuthenticated();
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
-
+  const { data: userInfo, isLoading: loadingUser } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId,
+  });
   if (loadingAuth || loadingUser) return <Loader />;
 
   const { theme } = useTheme();

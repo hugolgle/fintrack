@@ -1,4 +1,5 @@
 export const versionApp = import.meta.env.VITE_APP_VERSION;
+import moment from "moment";
 
 // -----------------------------
 
@@ -18,15 +19,16 @@ export const months = [
 ];
 
 export const currentDate = () => {
-  const theDate = new Date();
+  const theDate = moment();
   return {
-    day: String(theDate.getDate()).padStart(2, "0"),
-    month: String(theDate.getMonth() + 1).padStart(2, "0"),
-    year: theDate.getFullYear(),
+    day: theDate.date().toString().padStart(2, "0"),
+    month: (theDate.month() + 1).toString().padStart(2, "0"),
+    year: theDate.year(),
   };
 };
 
 const date = currentDate();
+
 // -----------------------------
 export function getLastMonths(date, numberOfMonths) {
   const currentYear = parseInt(date.slice(0, 4), 10);

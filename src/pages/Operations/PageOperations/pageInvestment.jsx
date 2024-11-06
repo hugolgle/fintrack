@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom/dist/umd/react-router-dom.developmen
 import { useQuery } from "@tanstack/react-query";
 import { fetchInvestments } from "../../../service/investment.service";
 import Loader from "../../../composant/loader/loader";
+import { HttpStatusCode } from "axios";
 
 export default function PageInvestment() {
   const { status } = useParams();
@@ -27,35 +28,35 @@ export default function PageInvestment() {
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-      return response.data;
+      return response?.data;
     },
     refetchOnMount: true,
   });
 
   let investissements = [];
   let totalInvestissement = 0;
-  let nombreTransactions = 0;
+  let nbInvestissement = 0;
 
   if (!isLoading && data) {
     switch (status) {
       case "all":
         investissements = data;
         totalInvestissement = calculTotalInvestment(data, null, "");
-        nombreTransactions = data.length;
+        nbInvestissement = data.length;
         break;
       case "sold":
         investissements = getAllInvestments(data, true);
         totalInvestissement = calculTotalInvestment(data, true, "");
-        nombreTransactions = investissements.length;
+        nbInvestissement = investissements.length;
         break;
       case "inprogress":
         investissements = getAllInvestments(data, false);
         totalInvestissement = calculTotalInvestment(data, false, "");
-        nombreTransactions = investissements.length;
+        nbInvestissement = investissements.length;
         break;
       default:
         investissements = getInvestmentsByTitle(data, investmentTitle);
@@ -64,7 +65,7 @@ export default function PageInvestment() {
           null,
           investmentTitle
         );
-        nombreTransactions = investissements.length;
+        nbInvestissement = investissements.length;
         break;
     }
   }
@@ -161,7 +162,7 @@ export default function PageInvestment() {
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white dark:bg-black hover:opacity-0 py-3 transition-all">
           Total : <b>{totalInvestissement}</b>
           <br />
-          Transaction(s) : <b>{nombreTransactions}</b>
+          Investissement(s) : <b>{nbInvestissement}</b>
         </div>
       </section>
     </>

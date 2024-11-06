@@ -64,7 +64,10 @@ module.exports.editTransaction = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json(updatedOperation);
+    return res.status(200).json({
+      message: "Transition mis à jour avec succès !",
+      updatedOperation,
+    });
   } catch (error) {
     return res
       .status(500)
@@ -84,7 +87,7 @@ module.exports.deleteTransaction = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: `Opération supprimée avec succès: ${req.params.id}` });
+      .json({ message: "Transaction supprimée avec succès !" });
   } catch (error) {
     return res
       .status(500)

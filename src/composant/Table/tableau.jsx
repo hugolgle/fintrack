@@ -8,10 +8,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { addSpace, formatAmount, formatDate } from "../../utils/fonctionnel";
+import { addSpace, formatAmount } from "../../utils/fonctionnel";
 import { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { LoaderCircle } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export default function Tableau({
   type,
@@ -117,7 +119,7 @@ export default function Tableau({
                           {item.title}
                         </TableCell>
                         <TableCell className="w-full">
-                          {formatDate(item.date, 2)}
+                          {format(item.date, "EEEE, MMMM dd, yyyy")}
                         </TableCell>
                         {status === "all" && (
                           <TableCell className="w-full">
@@ -152,7 +154,7 @@ export default function Tableau({
                           {item.category}
                         </TableCell>
                         <TableCell className="w-full">
-                          {formatDate(item.date, 2)}
+                          {format(item.date, "d MMMM yyyy", { locale: fr })}
                         </TableCell>
                         <TableCell className="w-full">
                           <b>{addSpace(item.amount)} €</b>
@@ -169,10 +171,10 @@ export default function Tableau({
           )}
         </Table>
       ) : (
-        <p>Aucune transaction n'a été trouvée ...</p>
+        <p>Aucune opération n'a été trouvée ...</p>
       )}
       {selectOpe && (
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-colorPrimaryLight dark:bg-colorSecondaryDark py-3 transition-all">
+        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-white dark:bg-black py-3 transition-all">
           Total sélectionnés : <br />
           <b>{formatAmount(montantSelect)} €</b>
           <br />

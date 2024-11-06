@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "../service/user.service";
 
-const getUserIdFromToken = () => {
+export const getUserIdFromToken = () => {
   const token = sessionStorage.getItem("token");
   if (!token) {
     return null;

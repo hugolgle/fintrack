@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../service/user.service";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { HttpStatusCode } from "axios";
 
 export default function Connexion() {
   const navigate = useNavigate();
@@ -26,10 +27,13 @@ export default function Connexion() {
       navigate(ROUTES.HOME);
     },
     onError: (error) => {
-      if (error.response && error.response.status === 401) {
-        toast.error("Mot de passe ou nom d'utilisateur incorrect");
+      if (
+        error.response &&
+        error.response.status === HttpStatusCode.Unauthorized
+      ) {
+        toast.warning(error.response.data.message);
       } else {
-        toast.error("Une erreur s'est produite lors de la connexion.");
+        toast.error(error.response.data.message);
       }
     },
   });
@@ -125,7 +129,6 @@ export default function Connexion() {
 
         <Button
           variant="outline"
-          className="rounded-xl"
           type="submit"
           disabled={mutation.isPending || !formik.isValid}
         >
@@ -134,11 +137,7 @@ export default function Connexion() {
       </form>
       <div className="flex flex-col justify-center items-center gap-2 px-36">
         <p className="text-xs">Nouveau sur DashCash ?</p>
-        <Button
-          variant="secondary"
-          onClick={() => navigate(ROUTES.SIGNUP)}
-          className="rounded-xl"
-        >
+        <Button variant="secondary" onClick={() => navigate(ROUTES.SIGNUP)}>
           Créer un compte DashCash !
         </Button>
       </div>

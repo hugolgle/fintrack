@@ -10,19 +10,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export function DialogDelete({ btnDelete, handleDelete, isPending }) {
+export function DialogDelete({ handleDelete, isPending }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="none" className="w-full p-0 h-fit">
-          {btnDelete}
-        </Button>
+        <Button>Supprimer</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Suppression</DialogTitle>
           <DialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette transaction ?
+            Êtes-vous sûr de vouloir supprimer cette opération ?
           </DialogDescription>
         </DialogHeader>
 

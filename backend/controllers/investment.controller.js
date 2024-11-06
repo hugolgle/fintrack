@@ -106,7 +106,10 @@ module.exports.editInvestment = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json(updatedInvestment);
+    return res.status(200).json({
+      message: "Investissement mis à jour avec succès !",
+      updatedInvestment,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la mise à jour de l'investissement",
@@ -128,7 +131,7 @@ module.exports.deleteInvestment = async (req, res) => {
     await investment.deleteOne({ _id: req.params.id });
 
     return res.status(200).json({
-      message: `Investissement supprimé avec succès: ${req.params.id}`,
+      message: "Investissement supprimé avec succès",
     });
   } catch (error) {
     return res.status(500).json({

@@ -51,7 +51,7 @@
     --graph-loisir: var(--chart-1);
     --graph-epargn: var(--chart-2);
     --graph-depensesFixes: var(--chart-3);
-    --radius: 0.5rem;
+    --radius: 0.6rem;
   }
 
   .dark {

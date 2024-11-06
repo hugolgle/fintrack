@@ -22,14 +22,22 @@ import { Button } from "@/components/ui/button";
 import { fetchTransactions } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
-import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader/loader";
 import { currentDate, months } from "../../utils/other";
 import LoaderDots from "../../composant/loader/loaderDots";
 import { useTheme } from "../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { getUserIdFromToken } from "../../utils/users";
+import { getCurrentUser } from "../../service/user.service";
 
 export default function Statistique() {
-  const { data: userInfo } = useCurrentUser();
+  const userId = getUserIdFromToken();
+
+  const { data: userInfo } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId,
+  });
   const {
     data: transactionsData = [],
     isLoading,
@@ -38,11 +46,11 @@ export default function Statistique() {
     queryKey: ["fetchTransactions", userInfo?._id],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-      return response.data || [];
+      return response?.data;
     },
     refetchOnMount: true,
   });
@@ -220,7 +228,6 @@ export default function Statistique() {
           {generateYears().map((year, index) => (
             <Button
               variant={selectedYear === year ? "secondary" : "none"}
-              className="rounded-xl"
               key={index}
               onClick={() => clickYear(year)}
             >
@@ -235,7 +242,7 @@ export default function Statistique() {
                   selectedMonth === String(monthIndex).padStart(2, "0") &&
                   "secondary"
                 }
-                className="rounded-xl w-full"
+                className="w-full"
                 key={index}
                 onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
               >
@@ -322,7 +329,7 @@ export default function Statistique() {
               Répartitions
             </p>
             <div
-              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[3px] ring-green-500`}
+              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[2px] ring-green-500`}
             >
               <p className="italic font-thin text-center">
                 {selectedByYear
@@ -346,7 +353,7 @@ export default function Statistique() {
               <Button
                 variant={!selectedByYear ? "secondary" : "none"}
                 onClick={handleByMonth}
-                className="rounded-xl w-full"
+                className="w-full"
               >
                 {convertDate(selectedDate)}
               </Button>
@@ -354,14 +361,14 @@ export default function Statistique() {
               <Button
                 variant={selectedByYear ? "secondary" : "none"}
                 onClick={handleByYear}
-                className="rounded-xl w-full"
+                className="w-full"
               >
                 {selectedYear}
               </Button>
             </div>
 
             <div
-              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[3px] ring-red-500`}
+              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[2px] ring-red-500`}
             >
               <p className="italic font-thin text-center">
                 {selectedByYear

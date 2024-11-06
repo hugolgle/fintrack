@@ -40,10 +40,12 @@ import {
   fetchTransactions,
 } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
-import { useCurrentUser } from "../../hooks/user.hooks";
 import Loader from "../../composant/loader/loader";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { HttpStatusCode } from "axios";
+import { getUserIdFromToken } from "../../utils/users";
+import { getCurrentUser } from "../../service/user.service";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -61,19 +63,23 @@ const validationSchema = yup.object().shape({
 });
 
 export default function PageAddTransac(props) {
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
+  const userId = getUserIdFromToken();
+
+  const { data: userInfo, isLoading: loadingUser } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId,
+  });
   const navigate = useNavigate();
 
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
       return response?.data;
     },
     refetchOnMount: true,
@@ -107,8 +113,7 @@ export default function PageAddTransac(props) {
       );
     },
     onError: (error) => {
-      console.error("Error details:", error.response || error);
-      toast.error("Erreur lors de l'ajout de la transaction.");
+      toast.error(error?.response?.data?.message);
     },
   });
 
@@ -143,9 +148,9 @@ export default function PageAddTransac(props) {
   useEffect(() => {
     const dataByType = getTransactionsByType(data, props.type);
     if (dataByType && formik.values.title) {
-      const existingTransaction = dataByType
-        .reverse()
-        .find((transaction) => transaction.title === formik.values.title);
+      const existingTransaction = dataByType.find(
+        (transaction) => transaction.title === formik.values.title
+      );
 
       if (existingTransaction) {
         formik.setFieldValue("category", existingTransaction.category);
@@ -166,7 +171,7 @@ export default function PageAddTransac(props) {
       >
         <div>
           <Input
-            className="w-96 h-10 px-2 rounded-xl "
+            className="w-96 h-10 px-2 "
             list="title-suggestions"
             id="title"
             name="title"
@@ -190,19 +195,19 @@ export default function PageAddTransac(props) {
             value={formik.values.category}
             onValueChange={(value) => formik.setFieldValue("category", value)}
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl ">
+            <SelectTrigger className="w-96 h-10 px-2 ">
               <SelectValue placeholder="Entrez la catégorie" />
             </SelectTrigger>
-            <SelectContent className=" rounded-2xl">
+            <SelectContent>
               {props.type === "Expense" &&
                 categoryD.map(({ name }) => (
-                  <SelectItem key={name} value={name} className="rounded-xl">
+                  <SelectItem key={name} value={name}>
                     {name}
                   </SelectItem>
                 ))}
               {props.type === "Revenue" &&
                 categoryR.map(({ name }) => (
-                  <SelectItem key={name} value={name} className="rounded-xl">
+                  <SelectItem key={name} value={name}>
                     {name}
                   </SelectItem>
                 ))}
@@ -220,22 +225,21 @@ export default function PageAddTransac(props) {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-96 h-10 px-2 rounded-xl  text-left font-normal"
+                className="w-96 h-10 px-2 text-left font-normal"
               >
                 {formik.values.date ? (
-                  format(formik.values.date, "PPP", { locale: fr })
+                  format(formik.values.date, "PP", { locale: fr })
                 ) : (
                   <span>Choisir une date</span>
                 )}
                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto rounded-xl p-0" align="start">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formik.values.date}
                 onSelect={(date) => formik.setFieldValue("date", date)}
-                disabled={(date) => date < new Date("1900-01-01")}
                 initialFocus
                 locale={fr}
               />
@@ -251,7 +255,7 @@ export default function PageAddTransac(props) {
         <div>
           <Textarea
             name="detail"
-            className="w-96 h-20 px-2  rounded-xl"
+            className="w-96 h-20 px-2"
             placeholder="Détails"
             {...formik.getFieldProps("detail")}
           />
@@ -264,7 +268,7 @@ export default function PageAddTransac(props) {
         <div>
           <Input
             name="amount"
-            className="w-96 h-10 px-2  rounded-xl"
+            className="w-96 h-10 px-2"
             type="number"
             step="0.01"
             placeholder="Montant"
@@ -278,7 +282,6 @@ export default function PageAddTransac(props) {
         </div>
 
         <Button
-          className="rounded-xl"
           type="submit"
           disabled={addTransactionMutation.isPending || !formik.isValid}
         >

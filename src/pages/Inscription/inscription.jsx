@@ -7,14 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/routes";
-import { useAddUser } from "../../hooks/user.hooks";
 import Title from "../../composant/Text/title";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { addUser } from "../../service/user.service";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Inscription() {
   const navigate = useNavigate();
-  const { mutate: addUser, isPending } = useAddUser();
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -57,17 +57,26 @@ export default function Inscription() {
       if (image) {
         formData.append("img", image);
       }
-      addUser(formData, {
-        onSuccess: () => {
-          formik.resetForm();
-          setImage(null);
-          setImagePreview(null);
-          navigate(ROUTES.LOGIN);
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-      });
+
+      addUserMutation.mutate(formData);
+    },
+  });
+
+  const addUserMutation = useMutation({
+    mutationFn: addUser,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      formik.resetForm();
+      setImage(null);
+      setImagePreview(null);
+      navigate(ROUTES.LOGIN);
+    },
+    onError: (error) => {
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+      }
     },
   });
 
@@ -257,11 +266,10 @@ export default function Inscription() {
 
         <Button
           variant="outline"
-          className="rounded-xl"
           type="submit"
-          disabled={isPending || !formik.isValid}
+          disabled={addUserMutation.isLoading || !formik.isValid}
         >
-          {isPending ? "En cours ..." : "S'inscrire"}
+          {addUserMutation.isLoading ? "En cours ..." : "S'inscrire"}
         </Button>
       </form>
 

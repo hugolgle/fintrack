@@ -66,11 +66,7 @@ function PopoverFilter({
             ))}
         </div>
 
-        <Button
-          variant="outline"
-          onClick={clearFilters}
-          className="mt-2 rounded-xl"
-        >
+        <Button variant="outline" onClick={clearFilters} className="mt-2">
           Réinitialiser les filtres
         </Button>
       </div>

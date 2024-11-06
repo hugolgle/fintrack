@@ -46,9 +46,7 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="none" className="p-0 h-fit truncate">
-          {btnOpen}
-        </Button>
+        <Button variant="none">{btnOpen}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="mb-4">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
@@ -75,7 +73,12 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
               <SunMoon className="mr-2 h-4 w-4" />
               <span>Thème</span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent side="left" align="end" sideOffset={5}>
+            <DropdownMenuSubContent
+              className="mb-4"
+              side="left"
+              align="end"
+              sideOffset={5}
+            >
               <DropdownMenuRadioGroup
                 value={theme}
                 onValueChange={handleThemeChange}

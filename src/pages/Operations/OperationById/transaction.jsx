@@ -1,61 +1,37 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { addSpace, formatAmount, formatDate } from "../../../utils/fonctionnel";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { getTitleOfTransactionsByType } from "../../../utils/operations";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
-
+import { addSpace } from "../../../utils/fonctionnel";
 import {
   categoryRecette,
   categoryDepense,
 } from "../../../../public/categories.json";
-import { Input } from "@/components/ui/input";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 import { categorySort } from "../../../utils/other";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { DialogDelete } from "../../../composant/dialogDelete";
 import Header from "../../../composant/header";
 import {
   deleteTransactions,
-  editTransactions,
   fetchTransactionById,
   fetchTransactions,
 } from "../../../service/transaction.service";
-import { useEffect } from "react";
 import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { DialogEdit } from "../../../composant/dialogEdit";
+import { fr } from "date-fns/locale";
+import { format } from "date-fns";
 
 export default function Transaction() {
-  const categoryD = categorySort(categoryDepense);
-  const categoryR = categorySort(categoryRecette);
   const { id } = useParams();
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
       return response?.data;
     },
     refetchOnMount: true,
@@ -74,127 +50,24 @@ export default function Transaction() {
     refetchOnMount: true,
   });
 
-  const suggestions = getTitleOfTransactionsByType(
-    data,
-    transaction?.data?.type
-  );
-
-  const [selectedUpdate, setSelectedUpdate] = useState(false);
-  const [selectedTitle, setSelectedTitle] = useState(transaction?.data?.title);
-  const [selectedCategory, setSelectedCategory] = useState(
-    transaction?.data?.category
-  );
-  const [selectedDate, setSelectedDate] = useState(transaction?.data?.date);
-  const [selectedDetail, setSelectedDetail] = useState(
-    transaction?.data?.detail
-  );
-  const [selectedAmount, setSelectedAmount] = useState(
-    transaction?.data?.amount
-  );
-
-  const dataBase = [
-    transaction?.data?.title,
-    transaction?.data?.detail,
-    transaction?.data?.amount,
-    transaction?.data?.category,
-    transaction?.data?.date,
-  ];
-
-  const dataEdit = [
-    selectedTitle,
-    selectedDetail,
-    selectedAmount,
-    selectedCategory,
-    selectedDate,
-  ];
-
-  const isSaveDisabled = dataBase.every(
-    (value, index) => value === dataEdit[index]
-  );
-
-  useEffect(() => {
-    if (transaction) {
-      setSelectedTitle(transaction.data.title);
-      setSelectedDetail(transaction.data.detail);
-      setSelectedAmount(transaction.data.amount);
-      setSelectedCategory(transaction.data.category);
-      setSelectedDate(transaction.data.date);
-    }
-  }, [transaction]);
-
-  const resetForm = () => {
-    if (transaction) {
-      setSelectedTitle(transaction?.data?.title);
-      setSelectedDetail(transaction?.data?.detail);
-      setSelectedAmount(transaction?.data?.amount);
-      setSelectedCategory(transaction?.data?.category);
-      setSelectedDate(transaction?.data?.date);
-    }
-  };
-
-  const handleTitle = (event) => {
-    setSelectedTitle(event.target.value);
-  };
-
-  const handleDetail = (event) => {
-    setSelectedDetail(event.target.value);
-  };
-
-  const handleMontant = (event) => {
-    setSelectedAmount(event.target.value);
-  };
-
   const navigate = useNavigate();
+  const categoryD = categorySort(categoryDepense);
+  const categoryR = categorySort(categoryRecette);
 
   const mutationDelete = useMutation({
     mutationFn: async () => {
-      await deleteTransactions(id);
-      toast.success("Votre transaction a été supprimée !");
+      return await deleteTransactions(id);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       navigate(-1);
+      toast.success(response?.data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
     },
   });
 
-  const handleDeleteConfirmation = () => {
-    mutationDelete.mutate();
-  };
-
-  const mutationEdit = useMutation({
-    mutationFn: async () => {
-      const editData = {
-        id: transaction?.data?._id,
-        type: transaction?.data?.type,
-        title: selectedTitle,
-        category: selectedCategory,
-        date: selectedDate,
-        detail: selectedDetail,
-        amount: formatAmount(
-          removeTiret(selectedAmount),
-          transaction?.data?.type
-        ),
-      };
-      await editTransactions(editData);
-      toast.success("L'opération a été modifiée avec succès !");
-    },
-    onSuccess: () => {
-      refetch();
-      resetForm();
-      setSelectedUpdate(false);
-    },
-  });
-
-  const removeTiret = (number) => {
-    if (typeof number === "string") {
-      return parseFloat(number.replace(/-/g, ""));
-    } else {
-      return NaN;
-    }
-  };
-
-  const handleEditConfirmation = () => {
-    mutationEdit.mutate();
-  };
+  const handleDeleteConfirmation = () => mutationDelete.mutate();
 
   const typeProps =
     transaction?.data?.type === "Expense"
@@ -203,16 +76,15 @@ export default function Transaction() {
         ? "revenue"
         : undefined;
 
-  if (isLoading) return <Loader />;
-
-  if (error)
-    return <div>Erreur lors de la récupération de la transaction.</div>;
-
   const { theme } = useTheme();
   const bgColor =
     theme === "custom"
       ? "bg-colorPrimaryCustom"
       : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+
+  if (isLoading || isFetching) {
+    return <Loader />;
+  }
 
   return (
     <section className="w-full">
@@ -223,181 +95,42 @@ export default function Transaction() {
         btnReturn
         isFetching={isFetching}
       />
-
       <div className="flex flex-row gap-4 animate-fade">
         <div className="flex flex-col w-3/4 gap-4 ">
-          <div
-            className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
-          >
-            {selectedUpdate ? (
-              <>
-                <Input
-                  className="text-4xl rounded-2xl text-center h-full font-thin bg-transparent"
-                  list="title-suggestions"
-                  id="title"
-                  name="title"
-                  maxLength={50}
-                  placeholder="Titre"
-                  value={selectedTitle}
-                  onChange={(e) => {
-                    handleTitle(e);
-                  }}
-                  required
-                />
-                <datalist id="title-suggestions">
-                  {suggestions.map((suggestion, index) => (
-                    <option key={index} value={suggestion} />
-                  ))}
-                </datalist>
-              </>
-            ) : (
-              <h2 className="text-4xl">{transaction?.data?.title}</h2>
-            )}
-          </div>
           <div className="flex flex-row gap-4">
             <div
-              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden`}
             >
-              {selectedUpdate ? (
-                <Select
-                  value={selectedCategory}
-                  onValueChange={(value) => {
-                    setSelectedCategory(value);
-                  }}
-                  required
-                >
-                  <SelectTrigger className="w-full h-40 px-2 text-4xl rounded-2xl flex items-center justify-center">
-                    <SelectValue placeholder="Entrez la catégorie" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    {transaction?.data?.type === "Expense" &&
-                      categoryD.map(({ name }) => (
-                        <SelectItem
-                          key={name}
-                          value={name}
-                          className="rounded-xl"
-                        >
-                          {name}
-                        </SelectItem>
-                      ))}
-                    {transaction?.data?.type === "Revenue" &&
-                      categoryR.map(({ name }) => (
-                        <SelectItem
-                          key={name}
-                          value={name}
-                          className="rounded-xl"
-                        >
-                          {name}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <h2 className="text-4xl">{transaction?.data?.category}</h2>
-              )}
+              <h2 className="text-4xl">{transaction?.data?.category}</h2>
             </div>
 
             <div
-              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden`}
             >
-              {selectedUpdate ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={`w-full h-40 px-40 text-4xl ${bgColor} text-center rounded-2xl`}
-                    >
-                      {selectedDate ? (
-                        format(new Date(selectedDate), "PPP", { locale: fr })
-                      ) : (
-                        <span>Choisir une date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-6 w-6 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto  rounded-2xl p-0"
-                    align="start"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={
-                        selectedDate ? new Date(selectedDate) : undefined
-                      }
-                      onSelect={(date) => {
-                        if (date) {
-                          const newDate = new Date(date);
-                          newDate.setUTCHours(0, 0, 0, 0);
-                          newDate.setUTCFullYear(date.getFullYear());
-                          newDate.setUTCMonth(date.getMonth());
-                          newDate.setUTCDate(date.getDate());
-                          setSelectedDate(newDate);
-                        }
-                      }}
-                      disabled={(date) => date < new Date("1900-01-01")}
-                      initialFocus
-                      locale={fr}
-                      variant
-                    />
-                  </PopoverContent>
-                </Popover>
-              ) : (
+              <h2 className="text-4xl">
+                {format(transaction?.data?.date, "d MMMM yyyy", { locale: fr })}
+              </h2>
+            </div>
+          </div>
+          <div className="flex flex-row gap-4">
+            <div
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden`}
+            >
+              <div className="flex flex-col">
                 <h2 className="text-4xl">
-                  {formatDate(transaction?.data?.date, 2)}
+                  {addSpace(parseFloat(transaction?.data?.amount).toFixed(2))} €
                 </h2>
-              )}
+              </div>
             </div>
           </div>
-          <div className="flex flex-row gap-4">
+
+          {transaction?.data?.detail && (
             <div
-              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
+              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden`}
             >
-              {selectedUpdate ? (
-                <Input
-                  className="h-full w-full px-80 bg-transparent text-center text-4xl rounded-2xl"
-                  value={removeTiret(selectedAmount)}
-                  type="number"
-                  step="0.5"
-                  min="0"
-                  name=""
-                  onChange={(e) => {
-                    handleMontant(e);
-                  }}
-                  placeholder="Montant"
-                />
-              ) : (
-                <div className="flex flex-col">
-                  <h2 className="text-4xl">
-                    {addSpace(parseFloat(transaction?.data?.amount).toFixed(2))}{" "}
-                    €
-                  </h2>
-                </div>
-              )}
+              <h2 className="text-xl">{transaction?.data?.detail}</h2>
             </div>
-          </div>
-          <div className="flex flex-row gap-4">
-            <div
-              className={`h-40 w-full ${bgColor} flex justify-center items-center rounded-2xl overflow-hidden"`}
-            >
-              {selectedUpdate ? (
-                <Textarea
-                  className="h-full w-full bg-transparent text-center text-xl p-4 rounded-2xl"
-                  value={selectedDetail}
-                  name=""
-                  onChange={(e) => {
-                    handleDetail(e);
-                  }}
-                  placeholder="Détails"
-                />
-              ) : (
-                <h2 className="text-xl">
-                  {transaction?.data?.detail
-                    ? transaction?.data?.detail
-                    : "Aucun détail ajouté"}
-                </h2>
-              )}
-            </div>
-          </div>
+          )}
         </div>
         <div className="flex flex-col w-1/4 justify-between">
           <div className="flex flex-col gap-4">
@@ -406,7 +139,10 @@ export default function Transaction() {
             >
               <p>
                 Ajouter le : <br />
-                <b>{formatDate(transaction?.data?.createdAt, 1)}</b>
+                <b>
+                  {" "}
+                  {format(transaction?.data?.createdAt, "dd/MM/yyyy à HH:mm")}
+                </b>
               </p>
             </div>
             {transaction?.data?.updatedAt !== transaction?.data?.createdAt && (
@@ -415,58 +151,22 @@ export default function Transaction() {
               >
                 <p>
                   Dernière modification le : <br />
-                  <b>{formatDate(transaction?.data?.updatedAt, 1)}</b>
+                  <b>
+                    {format(transaction?.data?.updatedAt, "dd/MM/yyyy à HH:mm")}
+                  </b>
                 </p>
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-4">
-            {selectedUpdate && !isSaveDisabled ? (
-              <div className="flex flex-col gap-4 justify-center items-center">
-                <p className="text-sm">Êtes-vous sûr de vouloir modifier ?</p>
-                <div className="flex gap-4">
-                  <div
-                    className={`p-8 border-2 border-red-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
-                    onClick={() => handleEditConfirmation()}
-                  >
-                    Oui
-                  </div>
-                  <div
-                    className={`p-8 border-2 border-zinc-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95 hover:border-green-900`}
-                    onClick={() => {
-                      setSelectedUpdate(false);
-                      setUpdate(false);
-                      resetForm();
-                    }}
-                  >
-                    Non
-                  </div>
-                </div>
-              </div>
-            ) : selectedUpdate ? (
-              <div
-                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:scale-95 cursor-pointer transition-all `}
-                onClick={() => setSelectedUpdate(false)}
-              >
-                Annuler
-              </div>
-            ) : (
-              <div
-                className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center hover:scale-95 cursor-pointer transition-all`}
-                onClick={() => setSelectedUpdate(true)}
-              >
-                Modifier
-              </div>
-            )}
+          <div className="flex justify-center gap-4">
+            <DialogEdit
+              transaction={transaction}
+              refetch={refetch}
+              data={data}
+            />
+
             <div className="flex flex-col gap-4 justify-center items-center">
               <DialogDelete
-                btnDelete={
-                  <div
-                    className={`w-full p-8 h-32 border-2 border-red-900 ${bgColor} rounded-2xl cursor-pointer flex justify-center items-center transition-all hover:bg-opacity-80 hover:scale-95`}
-                  >
-                    Supprimer
-                  </div>
-                }
                 handleDelete={handleDeleteConfirmation}
                 isPending={mutationDelete.isPending}
               />

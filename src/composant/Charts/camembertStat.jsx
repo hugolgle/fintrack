@@ -105,8 +105,8 @@ export function CamembertStat(props) {
               data={transformedData}
               dataKey="value"
               nameKey="name"
-              innerRadius={35}
-              outerRadius={60}
+              innerRadius={40}
+              outerRadius={55}
             >
               {transformedData.map((entry, index) => (
                 <Cell

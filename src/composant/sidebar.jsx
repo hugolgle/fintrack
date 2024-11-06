@@ -19,26 +19,45 @@ import { toast } from "sonner";
 import { DropdownProfil } from "./dropDownProfil";
 import Logo from "./logo";
 import { ROUTES } from "./routes";
-import { useCurrentUser, useLogout } from "../hooks/user.hooks";
+import { getUserIdFromToken } from "../utils/users";
 import { useTheme } from "../context/ThemeContext";
+import { getCurrentUser, logoutUser } from "../service/user.service";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 
 function Sidebar() {
+  const userId = getUserIdFromToken();
+  const queryClient = new QueryClient();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
   const { isAuthenticated } = useIsAuthenticated();
+  const navigate = useNavigate();
+  const { mutate } = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      sessionStorage.removeItem("token");
+      queryClient.clear();
+      navigate("/login");
+      toast.success("Vous vous êtes déconnecté !");
+    },
+    onError: (error) => {
+      toast.error(error);
+    },
+  });
 
-  const logoutMutation = useLogout();
-
-  const logout = () => {
-    logoutMutation.mutate();
-    toast.success("Vous vous êtes déconnecté !");
+  const handleLogout = () => {
+    mutate();
   };
 
   useEffect(() => {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
+  const { data: userInfo, isLoading: loadingUser } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId,
+  });
   if (loadingUser) {
     return null;
   }
@@ -126,7 +145,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 rounded-xl hover:scale-95 transition-all">
+              <Avatar className="w-12 h-12 hover:scale-95 transition-all">
                 <AvatarImage
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}
@@ -136,7 +155,7 @@ function Sidebar() {
                 </AvatarFallback>
               </Avatar>
             }
-            handleLogout={logout}
+            handleLogout={handleLogout}
           />
         ) : (
           <Link

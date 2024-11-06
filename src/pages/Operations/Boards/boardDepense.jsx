@@ -4,11 +4,7 @@ import {
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../../utils/calcul";
-import {
-  addSpace,
-  formatDateDayMonth,
-  formatAmount,
-} from "../../../utils/fonctionnel";
+import { addSpace, formatAmount } from "../../../utils/fonctionnel";
 import {
   getLastSubscribe,
   getLastTransactionsByType,
@@ -20,19 +16,19 @@ import { Separator } from "@/components/ui/separator";
 import Header from "../../../composant/header";
 import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { format } from "date-fns";
 
 export default function BoardDepense() {
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
-      return response.data;
+      return response?.data;
     },
     refetchOnMount: true,
   });
@@ -100,7 +96,7 @@ export default function BoardDepense() {
                         <tbody>
                           {lastTransactions.map((transaction) => (
                             <tr key={transaction._id}>
-                              <td>{formatDateDayMonth(transaction.date)}</td>
+                              <td>{format(transaction.date, "dd/MM")}</td>
                               <td>{transaction.title}</td>
                               <td>{transaction.category}</td>
                               <td>
@@ -184,7 +180,7 @@ export default function BoardDepense() {
                       className="w-full flex flex-row text-sm justify-between items-center"
                     >
                       <td className="flex flex-row space-x-4 w-full">
-                        <span>{formatDateDayMonth(subscribe.date)}</span>
+                        <span>{format(subscribe.date, "dd/MM")}</span>
                         <span className="truncate">{subscribe.title}</span>
                       </td>
                       <td className="w-full italic text-right">

@@ -4,11 +4,7 @@ import {
   calculInvestByMonth,
   calculTotalByMonth,
 } from "../../utils/calcul";
-import {
-  addSpace,
-  convertDate,
-  formatDateDayMonth,
-} from "../../utils/fonctionnel";
+import { addSpace, convertDate } from "../../utils/fonctionnel";
 import { CamembertTdb } from "../../composant/Charts/camembertTdb";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
@@ -23,6 +19,9 @@ import { fetchInvestments } from "../../service/investment.service";
 import Loader from "../../composant/loader/loader";
 import LoaderDots from "../../composant/loader/loaderDots";
 import { useTheme } from "../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { Dot } from "lucide-react";
+import { format } from "date-fns";
 
 export default function TableauDeBord() {
   const {
@@ -33,12 +32,10 @@ export default function TableauDeBord() {
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
       return response.data;
     },
     refetchOnMount: true,
@@ -48,19 +45,15 @@ export default function TableauDeBord() {
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
       return response?.data;
     },
     refetchOnMount: true,
     staleTime: 60_000,
   });
-
-  // ---------------------
 
   const { month: currentMonth, year: currentYear } = currentDate();
   const currentYearMonth = `${currentYear}${currentMonth}`;
@@ -301,14 +294,25 @@ export default function TableauDeBord() {
                 Dernières transactions
               </h2>
               <table className="h-full">
-                <tbody className="w-full h-full flex flex-col gap-2">
+                <tbody className="w-full h-full flex flex-col">
                   {lastTransactions.map((transaction) => (
                     <tr
                       key={transaction._id}
-                      className={`rounded-lg h-full flex flex-row items-center py-1 ring-1 text-sm ${transaction.type === "Revenue" ? "ring-green-500" : transaction.type === "Expense" ? "ring-red-500" : ""}`}
+                      className="relative rounded-lg h-full flex flex-row items-center py-1 text-sm"
                     >
+                      <Dot
+                        className="absolute left-0"
+                        size={40}
+                        color={
+                          transaction.type === "Revenue"
+                            ? "green"
+                            : transaction.type === "Expense"
+                              ? "red"
+                              : ""
+                        }
+                      />
                       <td className="w-full">
-                        {formatDateDayMonth(transaction.date)}
+                        {format(transaction.date, "dd/MM")}
                       </td>
                       <td className="w-full truncate">{transaction.title}</td>
                       <td className="w-full">{transaction.category}</td>

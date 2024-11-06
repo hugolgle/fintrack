@@ -5,24 +5,23 @@ import {
   calculTotalInvestment,
   calculTotalInvestmentByTitle,
 } from "../../../utils/calcul";
-import { formatDateSlash } from "../../../utils/fonctionnel";
 import Header from "../../../composant/header";
 import { toast } from "sonner";
 import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { format } from "date-fns";
 
 export default function BoardInvest() {
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
-      return response.data;
+      return response?.data;
     },
     refetchOnMount: true,
   });
@@ -139,13 +138,13 @@ export default function BoardInvest() {
                   <Link
                     key={index}
                     to={linkInvest}
-                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl ${bgColor} px-4 py-4 transition-all ring-[3px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
+                    className={`w-60 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl ${bgColor} px-4 py-4 transition-all ring-[2px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
                       type
                     )} `}
                   >
                     <div className="flex justify-between">
                       <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
-                        {formatDateSlash(date)}
+                        {format(date, "dd/MM/yyyy")}
                       </p>
                       <p className="text-right text-sm text-gray-700 dark:text-gray-300 italic">
                         {type}

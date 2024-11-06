@@ -140,7 +140,7 @@ export function GraphiqueTdb({ data }) {
 
           <Line
             dataKey="amountRevenue"
-            type="natural"
+            type="bump"
             stroke={chartConfig.amountRevenue.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.amountRevenue.color }}
@@ -158,7 +158,7 @@ export function GraphiqueTdb({ data }) {
 
           <Line
             dataKey="amountExpense"
-            type="natural"
+            type="bump"
             stroke={chartConfig.amountExpense.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.amountExpense.color }}
@@ -175,7 +175,7 @@ export function GraphiqueTdb({ data }) {
           </Line>
           <Line
             dataKey="montantInvest"
-            type="natural"
+            type="bump"
             stroke={chartConfig.montantInvest.color}
             strokeWidth={1.5}
             dot={{ fill: chartConfig.montantInvest.color }}

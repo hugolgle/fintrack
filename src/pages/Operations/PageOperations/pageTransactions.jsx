@@ -22,19 +22,18 @@ import Tableau from "../../../composant/Table/tableau";
 import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../../composant/loader/loader";
+import { HttpStatusCode } from "axios";
 
 export default function PageTransactions(props) {
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
-      return response.data;
+      return response?.data;
     },
     refetchOnMount: true,
   });
@@ -282,7 +281,7 @@ export default function PageTransactions(props) {
           isFetching={isFetching}
         />
 
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-colorPrimaryLight hover:opacity-0 dark:bg-colorPrimaryDark py-3 transition-all">
+        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white hover:opacity-0 dark:bg-black py-3 transition-all">
           Total :{" "}
           <b>
             {date === "all"

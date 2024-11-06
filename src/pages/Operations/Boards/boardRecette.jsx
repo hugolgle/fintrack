@@ -4,7 +4,7 @@ import {
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../../utils/calcul";
-import { addSpace, formatDateDayMonth } from "../../../utils/fonctionnel";
+import { addSpace } from "../../../utils/fonctionnel";
 import { getLastTransactionsByType } from "../../../utils/operations";
 import { currentDate, getLastMonths, getLastYears } from "../../../utils/other";
 import { fetchTransactions } from "../../../service/transaction.service";
@@ -12,19 +12,19 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "../../../composant/header";
 import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
+import { HttpStatusCode } from "axios";
+import { format } from "date-fns";
 
 export default function BoardRecette() {
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
-
-      return response.data;
+      return response?.data;
     },
     refetchOnMount: true,
   });
@@ -77,7 +77,7 @@ export default function BoardRecette() {
                       <tbody>
                         {lastTransactions.map((transaction) => (
                           <tr key={transaction._id}>
-                            <td>{formatDateDayMonth(transaction.date)}</td>
+                            <td>{format(transaction.date, "dd/MM")}</td>
                             <td>{transaction.title}</td>
                             <td>{transaction.category}</td>
                             <td>

@@ -28,21 +28,42 @@ import {
   fetchInvestments,
 } from "../../service/investment.service";
 import { useQuery } from "@tanstack/react-query";
-import { useCurrentUser } from "../../hooks/user.hooks";
 import { Loader } from "lucide-react";
 import { formatAmount } from "../../utils/fonctionnel";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { HttpStatusCode } from "axios";
+import { getUserIdFromToken } from "../../utils/users";
+import { getCurrentUser } from "../../service/user.service";
+
+const validationSchema = yup.object().shape({
+  title: yup
+    .string()
+    .max(50, "Le titre est trop long")
+    .required("Le titre est requis"),
+  type: yup.string().required("Le type est requis"),
+  detail: yup.string().max(250, "Les détails sont trop longs"),
+  amount: yup
+    .number()
+    .typeError("Le montant est requis")
+    .positive("Le montant doit être positif")
+    .required("Le montant est requis"),
+});
 
 export default function PageAddInvest() {
-  const { data: userInfo, isLoading: loadingUser } = useCurrentUser();
+  const userId = getUserIdFromToken();
 
+  const { data: userInfo, isLoading: loadingUser } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUser(userId),
+    enabled: !!userId,
+  });
   const { data } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments(userInfo?._id);
-      if (response?.response?.data?.message) {
-        const message = response.response.data.message;
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
       return response?.data;
@@ -53,22 +74,6 @@ export default function PageAddInvest() {
   const suggestionsTitle = Array.from(
     new Set(data?.map((investment) => investment.title))
   );
-
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const validationSchema = yup.object().shape({
-    title: yup
-      .string()
-      .max(50, "Le titre est trop long")
-      .required("Le titre est requis"),
-    type: yup.string().required("Le type est requis"),
-    detail: yup.string().max(250, "Les détails sont trop longs"),
-    amount: yup
-      .number()
-      .typeError("Le montant est requis")
-      .positive("Le montant doit être positif")
-      .required("Le montant est requis"),
-  });
 
   const formik = useFormik({
     initialValues: {
@@ -85,9 +90,7 @@ export default function PageAddInvest() {
         type: values.type,
         title: values.title,
         detail: values.detail,
-        date: new Date(selectedDate.setHours(0, 0, 0, 0)).toLocaleDateString(
-          "fr-CA"
-        ),
+        date: values.date.toLocaleDateString("fr-CA"),
         amount: formatAmount(values.amount),
       };
 
@@ -104,8 +107,8 @@ export default function PageAddInvest() {
     onSuccess: () => {
       toast.success("Votre investissement a été ajouté !");
     },
-    onError: () => {
-      toast.error("Une erreur s'est produite lors de l'ajout de l'opération");
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
     },
   });
 
@@ -137,22 +140,22 @@ export default function PageAddInvest() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-96 h-10 px-2 rounded-xl  text-left font-normal"
+                className="w-96 h-10 px-2 text-left font-normal"
               >
-                {selectedDate ? (
-                  format(selectedDate, "PPP", { locale: fr })
+                {formik.values.date ? (
+                  format(formik.values.date, "PP", { locale: fr })
                 ) : (
                   <span>Choisir une date</span>
                 )}
                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto rounded-xl p-0" align="start">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                disabled={(date) => date < new Date("1900-01-01")}
+                selected={formik.values.date}
+                onSelect={(date) => formik.setFieldValue("date", date)}
+                initialFocus
                 locale={fr}
               />
             </PopoverContent>
@@ -168,7 +171,7 @@ export default function PageAddInvest() {
           <Input
             list="title-suggestions"
             value={formik.values.title}
-            className="w-96 h-10 px-2 rounded-xl "
+            className="w-96 h-10 px-2 "
             type="text"
             maxLength={50}
             placeholder="Titre"
@@ -196,25 +199,15 @@ export default function PageAddInvest() {
             onValueChange={(value) => formik.setFieldValue("type", value)}
             required
           >
-            <SelectTrigger className="w-96 h-10 px-2 rounded-xl ">
+            <SelectTrigger className="w-96 h-10 px-2 ">
               <SelectValue placeholder="Sélectionnez le type" />
             </SelectTrigger>
-            <SelectContent className=" rounded-2xl">
-              <SelectItem className="rounded-xl" value="Action">
-                Action
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="ETF">
-                ETF
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Crypto">
-                Crypto
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Obligation">
-                Obligation
-              </SelectItem>
-              <SelectItem className="rounded-xl" value="Dérivé">
-                Dérivé
-              </SelectItem>
+            <SelectContent>
+              <SelectItem value="Action">Action</SelectItem>
+              <SelectItem value="ETF">ETF</SelectItem>
+              <SelectItem value="Crypto">Crypto</SelectItem>
+              <SelectItem value="Obligation">Obligation</SelectItem>
+              <SelectItem value="Dérivé">Dérivé</SelectItem>
             </SelectContent>
           </Select>
           {formik.touched.type && formik.errors.type && (
@@ -225,7 +218,7 @@ export default function PageAddInvest() {
         </div>
         <div>
           <Textarea
-            className="w-96 h-10 px-2 rounded-xl "
+            className="w-96 h-10 px-2 "
             placeholder="Détails"
             {...formik.getFieldProps("detail")}
             name="detail"
@@ -239,7 +232,7 @@ export default function PageAddInvest() {
 
         <div>
           <Input
-            className="w-96 h-10 px-2 rounded-xl "
+            className="w-96 h-10 px-2 "
             type="number"
             step="0.01"
             placeholder="Montant"
@@ -253,10 +246,7 @@ export default function PageAddInvest() {
           )}
         </div>
 
-        <Button
-          className="rounded-xl"
-          disabled={addInvestmentMutation.isPending || !formik.isValid}
-        >
+        <Button disabled={addInvestmentMutation.isPending || !formik.isValid}>
           {addInvestmentMutation.isPending
             ? "En cours ..."
             : "Soumettre l'investissement"}

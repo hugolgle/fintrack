@@ -149,7 +149,7 @@ export function CamembertTdb(props) {
             data={chartData}
             dataKey="amount"
             nameKey="category"
-            innerRadius={50}
+            innerRadius={60}
             outerRadius={80}
           >
             {chartData.map((entry, index) => (
