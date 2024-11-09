@@ -20,6 +20,7 @@ import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { editUser } from "../service/user.service";
 import { getUserIdFromToken } from "../utils/users";
+import { LoaderCircle } from "lucide-react";
 
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),
@@ -217,7 +218,18 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               type="submit"
               disabled={isPending || !formik.isValid || isSaveDisabled}
             >
-              {isPending ? "Enregistrement ..." : "Enregistrer"}
+              {isPending ? (
+                <>
+                  Enregistrement{" "}
+                  <LoaderCircle
+                    size={15}
+                    strokeWidth={1}
+                    className="ml-2 animate-spin"
+                  />
+                </>
+              ) : (
+                "Enregistrer"
+              )}
             </Button>
           </SheetFooter>
         </form>

@@ -25,11 +25,20 @@ import {
 } from "../../../public/categories.json";
 import { formatAmount } from "../../utils/fonctionnel";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { categorySort, nameType, normalizeText } from "../../utils/other";
 import {
   getTitleOfTransactionsByType,
   getTransactionsByType,
 } from "../../utils/operations";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -46,15 +55,26 @@ import * as yup from "yup";
 import { HttpStatusCode } from "axios";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../service/user.service";
+import { useState } from "react";
+import { ChevronsUpDown } from "lucide-react";
+import { Check } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 const validationSchema = yup.object().shape({
   title: yup
     .string()
-    .max(50, "Le titre est trop longs")
+    .max(50, "Le titre est trop long")
     .required("Le titre est requis"),
+  titleBis: yup
+    .string()
+    .max(50, "Le titre est trop long")
+    .when("title", {
+      is: true,
+      then: yup.string().required("Le titre est requis"),
+    }),
   category: yup.string().required("La catégorie est requise"),
   date: yup.date().required("La date est requise"),
-  detail: yup.string().max(250, "Les détails sont trop long"),
+  detail: yup.string().max(250, "Les détails sont trop longs"),
   amount: yup
     .number()
     .typeError("Le montant est requis")
@@ -85,10 +105,16 @@ export default function PageAddTransac(props) {
     refetchOnMount: true,
   });
 
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+
   const categoryD = categorySort(categoryDepense);
   const categoryR = categorySort(categoryRecette);
 
-  const suggestions = getTitleOfTransactionsByType(data, props.type);
+  const suggestions = [
+    "Autre",
+    ...getTitleOfTransactionsByType(data, props.type),
+  ];
 
   const addTransactionMutation = useMutation({
     mutationFn: async (postData) => {
@@ -120,6 +146,7 @@ export default function PageAddTransac(props) {
   const formik = useFormik({
     initialValues: {
       title: "",
+      titleBis: "",
       category: "",
       date: new Date(),
       detail: "",
@@ -132,7 +159,7 @@ export default function PageAddTransac(props) {
         user: userInfo?._id,
         type: props.type,
         category: values.category,
-        title: values.title,
+        title: values.title === "Autre" ? values.titleBis : values.title,
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
         amount: formatAmount(values.amount, props.type),
@@ -142,6 +169,7 @@ export default function PageAddTransac(props) {
           resetForm();
         },
       });
+      console.log(values.titleBis);
     },
   });
 
@@ -167,127 +195,160 @@ export default function PageAddTransac(props) {
       <Header title={`Ajouter une ${props.title}`} btnReturn />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
-        <div>
-          <Input
-            className="w-96 h-10 px-2 "
-            list="title-suggestions"
-            id="title"
-            name="title"
-            placeholder="Titre"
-            {...formik.getFieldProps("title")}
-          />
-          {formik.touched.title && formik.errors.title && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.title}
-            </p>
-          )}
-          <datalist id="title-suggestions">
-            {suggestions.map((suggestion, index) => (
-              <option key={index} value={suggestion} />
-            ))}
-          </datalist>
-        </div>
-        <div>
-          <Select
-            name="category"
-            value={formik.values.category}
-            onValueChange={(value) => formik.setFieldValue("category", value)}
-          >
-            <SelectTrigger className="w-96 h-10 px-2 ">
-              <SelectValue placeholder="Entrez la catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              {props.type === "Expense" &&
-                categoryD.map(({ name }) => (
-                  <SelectItem key={name} value={name}>
-                    {name}
-                  </SelectItem>
-                ))}
-              {props.type === "Revenue" &&
-                categoryR.map(({ name }) => (
-                  <SelectItem key={name} value={name}>
-                    {name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-          {formik.touched.category && formik.errors.category && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.category}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-96 h-10 px-2 text-left font-normal"
-              >
-                {formik.values.date ? (
-                  format(formik.values.date, "PP", { locale: fr })
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="input" role="combobox" aria-expanded={open}>
+              {formik.values.title || "Sélectionnez un titre..."}
+              <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Rechercher un titre..." />
+              <CommandList>
+                {suggestions.length === 0 ? (
+                  <CommandEmpty>Aucune suggestion trouvée.</CommandEmpty>
                 ) : (
-                  <span>Choisir une date</span>
+                  <CommandGroup>
+                    {suggestions.map((suggestion, index) => (
+                      <CommandItem
+                        key={index}
+                        onSelect={() => {
+                          formik.setFieldValue("title", suggestion);
+                          setValue(suggestion);
+                          setOpen(false);
+                        }}
+                      >
+                        {suggestion}
+                        {value === suggestion && (
+                          <Check className="ml-auto h-4 w-4 opacity-100" />
+                        )}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
                 )}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={formik.values.date}
-                onSelect={(date) => formik.setFieldValue("date", date)}
-                initialFocus
-                locale={fr}
-              />
-            </PopoverContent>
-          </Popover>
-          {formik.touched.date && formik.errors.date && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.date}
-            </p>
-          )}
-        </div>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
 
-        <div>
-          <Textarea
-            name="detail"
-            className="w-96 h-20 px-2"
-            placeholder="Détails"
-            {...formik.getFieldProps("detail")}
-          />
-          {formik.touched.detail && formik.errors.detail && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.detail}
-            </p>
-          )}
-        </div>
-        <div>
-          <Input
-            name="amount"
-            className="w-96 h-10 px-2"
-            type="number"
-            step="0.01"
-            placeholder="Montant"
-            {...formik.getFieldProps("amount")}
-          />
-          {formik.touched.amount && formik.errors.amount && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.amount}
-            </p>
-          )}
-        </div>
+        {formik.values.title === "Autre" && (
+          <>
+            <Input
+              id="titleBis"
+              name="titleBis"
+              placeholder="Titre"
+              {...formik.getFieldProps("titleBis")}
+            />
+            {formik.touched.titleBis && formik.errors.titleBis && (
+              <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                {formik.errors.titleBis}
+              </p>
+            )}
+          </>
+        )}
+
+        <Select
+          name="category"
+          value={formik.values.category}
+          onValueChange={(value) => formik.setFieldValue("category", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Entrez la catégorie" />
+          </SelectTrigger>
+          <SelectContent>
+            {props.type === "Expense" &&
+              categoryD.map(({ name }) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            {props.type === "Revenue" &&
+              categoryR.map(({ name }) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+        {formik.touched.category && formik.errors.category && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.category}
+          </p>
+        )}
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="input">
+              {formik.values.date ? (
+                format(formik.values.date, "PP", { locale: fr })
+              ) : (
+                <span>Choisir une date</span>
+              )}
+              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={formik.values.date}
+              onSelect={(date) => formik.setFieldValue("date", date)}
+              initialFocus
+              locale={fr}
+            />
+          </PopoverContent>
+        </Popover>
+        {formik.touched.date && formik.errors.date && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.date}
+          </p>
+        )}
+
+        <Textarea
+          name="detail"
+          placeholder="Détails"
+          {...formik.getFieldProps("detail")}
+        />
+        {formik.touched.detail && formik.errors.detail && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.detail}
+          </p>
+        )}
+
+        <Input
+          name="amount"
+          type="number"
+          step="0.01"
+          placeholder="Montant"
+          value={formik.values.amount}
+          onChange={(e) => {
+            formik.setFieldValue("amount", e.target.value);
+          }}
+        />
+        {formik.touched.amount && formik.errors.amount && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.amount}
+          </p>
+        )}
 
         <Button
           type="submit"
           disabled={addTransactionMutation.isPending || !formik.isValid}
         >
-          {addTransactionMutation.isPending
-            ? "En cours ..."
-            : `Soumettre la ${props.title}`}
+          {addTransactionMutation.isPending ? (
+            <>
+              En cours{" "}
+              <LoaderCircle
+                size={15}
+                strokeWidth={1}
+                className="ml-2 animate-spin"
+              />
+            </>
+          ) : (
+            `Soumettre la ${props.title}`
+          )}
         </Button>
       </form>
     </section>

@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { LoaderCircle } from "lucide-react";
 
 export function DialogDelete({ handleDelete, isPending }) {
   return (
@@ -30,7 +31,18 @@ export function DialogDelete({ handleDelete, isPending }) {
             disabled={isPending}
             onClick={handleDelete}
           >
-            {isPending ? "Suppression ..." : "Oui"}
+            {isPending ? (
+              <>
+                Suppression{" "}
+                <LoaderCircle
+                  size={15}
+                  strokeWidth={1}
+                  className="ml-2 animate-spin"
+                />
+              </>
+            ) : (
+              "Oui"
+            )}
           </Button>
           <DialogClose asChild>
             <Button type="button" variant="outline">

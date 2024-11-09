@@ -13,6 +13,7 @@ import { loginUser } from "../../service/user.service";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { HttpStatusCode } from "axios";
+import { LoaderCircle } from "lucide-react";
 
 export default function Connexion() {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ export default function Connexion() {
           required
         />
         {formik.touched.username && formik.errors.username && (
-          <p className="text-xs text-red-500 mt-1">{formik.errors.username}</p>
+          <p className="text-xs text-red-500">{formik.errors.username}</p>
         )}
 
         <div className="relative w-96" ref={passwordRef}>
@@ -124,7 +125,7 @@ export default function Connexion() {
           </div>
         </div>
         {formik.touched.password && formik.errors.password && (
-          <p className="text-xs text-red-500 mt-1">{formik.errors.password}</p>
+          <p className="text-xs text-red-500">{formik.errors.password}</p>
         )}
 
         <Button
@@ -132,7 +133,18 @@ export default function Connexion() {
           type="submit"
           disabled={mutation.isPending || !formik.isValid}
         >
-          {mutation.isPending ? "Chargement ..." : "Connexion"}
+          {mutation.isPending ? (
+            <>
+              Connexion{" "}
+              <LoaderCircle
+                size={15}
+                strokeWidth={1}
+                className="ml-2 animate-spin"
+              />
+            </>
+          ) : (
+            "Connexion"
+          )}
         </Button>
       </form>
       <div className="flex flex-col justify-center items-center gap-2 px-36">

@@ -273,7 +273,7 @@ export function getTitleOfTransactionsByType(data, type) {
     return [];
   }
   const currentDate = new Date();
-  const startDate = startOfMonth(subMonths(currentDate, 2));
+  const startDate = startOfMonth(subMonths(currentDate, 3));
 
   const filteredTransactions = data?.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
@@ -282,17 +282,7 @@ export function getTitleOfTransactionsByType(data, type) {
 
   const titles = filteredTransactions.map((transaction) => transaction.title);
 
-  const sortedTitles = titles.sort((a, b) => {
-    if (a.toLowerCase() < b.toLowerCase()) {
-      return -1;
-    }
-    if (a.toLowerCase() > b.toLowerCase()) {
-      return 1;
-    }
-    return 0;
-  });
-
-  const uniqueTitles = Array.from(new Set(sortedTitles));
+  const uniqueTitles = Array.from(new Set(titles));
 
   return uniqueTitles;
 }

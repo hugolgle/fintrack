@@ -37,6 +37,7 @@ import { categoryRecette, categoryDepense } from "../../public/categories.json";
 import { formatAmount } from "../utils/fonctionnel";
 import { editTransactions } from "../service/transaction.service";
 import { getTitleOfTransactionsByType } from "../utils/operations";
+import { LoaderCircle } from "lucide-react";
 
 // Define validation schema for form fields
 const validationSchema = yup.object().shape({
@@ -138,28 +139,21 @@ export function DialogEdit({ transaction, refetch, data }) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <Input
-              list="title-suggestions"
               name="title"
               placeholder="Titre"
-              className="w-96 h-10 px-2 "
               {...formik.getFieldProps("title")}
             />
             {formik.touched.title && formik.errors.title && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              <p className="text-xs text-left text-red-500 -mt-3 ml-2">
                 {formik.errors.title}
               </p>
             )}
-            <datalist id="title-suggestions">
-              {suggestions.map((suggestion, index) => (
-                <option key={index} value={suggestion} />
-              ))}
-            </datalist>
             <Select
               name="category"
               value={formik.values.category}
               onValueChange={(value) => formik.setFieldValue("category", value)}
             >
-              <SelectTrigger className="w-96 h-10 px-2 ">
+              <SelectTrigger>
                 <SelectValue placeholder="Entrez la catégorie" />
               </SelectTrigger>
               <SelectContent>
@@ -174,17 +168,14 @@ export function DialogEdit({ transaction, refetch, data }) {
               </SelectContent>
             </Select>
             {formik.touched.category && formik.errors.category && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              <p className="text-xs text-left text-red-500 -mt-3 ml-2">
                 {formik.errors.category}
               </p>
             )}
 
             <Popover modal={true}>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-96 h-10 px-2  text-left font-normal"
-                >
+                <Button variant="outline">
                   {formik.values.date ? (
                     format(formik.values.date, "PP", { locale: fr })
                   ) : (
@@ -207,7 +198,7 @@ export function DialogEdit({ transaction, refetch, data }) {
             </Popover>
 
             {formik.touched.date && formik.errors.date && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              <p className="text-xs text-left text-red-500 -mt-3 ml-2">
                 {formik.errors.date}
               </p>
             )}
@@ -215,11 +206,10 @@ export function DialogEdit({ transaction, refetch, data }) {
             <Textarea
               name="detail"
               placeholder="Détails"
-              className="w-96 h-20 px-2 "
               {...formik.getFieldProps("detail")}
             />
             {formik.touched.detail && formik.errors.detail && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              <p className="text-xs text-left text-red-500 -mt-3 ml-2">
                 {formik.errors.detail}
               </p>
             )}
@@ -229,11 +219,10 @@ export function DialogEdit({ transaction, refetch, data }) {
               type="number"
               step="0.01"
               placeholder="Montant"
-              className="w-96 h-10 px-2 "
               {...formik.getFieldProps("amount")}
             />
             {formik.touched.amount && formik.errors.amount && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+              <p className="text-xs text-left text-red-500 -mt-3 ml-2">
                 {formik.errors.amount}
               </p>
             )}
@@ -244,7 +233,18 @@ export function DialogEdit({ transaction, refetch, data }) {
               disabled={mutationEdit.isPending || isSaveDisabled}
               type="submit"
             >
-              {mutationEdit.isPending ? "Chargement ..." : "Modifier"}
+              {mutationEdit.isPending ? (
+                <>
+                  Chargement{" "}
+                  <LoaderCircle
+                    size={15}
+                    strokeWidth={1}
+                    className="ml-2 animate-spin"
+                  />
+                </>
+              ) : (
+                "Modifier"
+              )}
             </Button>
             <DialogClose asChild>
               <Button type="button" variant="outline">

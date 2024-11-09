@@ -33,6 +33,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { editInvestments } from "../service/investment.service";
 import { formatAmount } from "../utils/fonctionnel";
+import { LoaderCircle } from "lucide-react";
 
 // Define validation schema for form fields
 const validationSchema = yup.object().shape({
@@ -131,7 +132,7 @@ export function DialogEditInvest({ investment, refetch, data }) {
           <div className="grid gap-4 py-4">
             <Popover modal={true}>
               <PopoverTrigger asChild>
-                <Button variant="outline">
+                <Button variant="input">
                   {formik.values.date ? (
                     format(formik.values.date, "PP", { locale: fr })
                   ) : (
@@ -164,7 +165,6 @@ export function DialogEditInvest({ investment, refetch, data }) {
               </p>
             )}
             <Input
-              list="title-suggestions"
               value={formik.values.title}
               type="text"
               maxLength={50}
@@ -178,12 +178,6 @@ export function DialogEditInvest({ investment, refetch, data }) {
                 {formik.errors.title}
               </p>
             )}
-
-            <datalist id="title-suggestions">
-              {suggestionsTitle.map((suggestion, index) => (
-                <option key={index} value={suggestion} />
-              ))}
-            </datalist>
 
             <Select
               name="type"
@@ -238,7 +232,18 @@ export function DialogEditInvest({ investment, refetch, data }) {
               disabled={mutationEdit.isPending || isSaveDisabled}
               type="submit"
             >
-              {mutationEdit.isPending ? "Chargement ..." : "Modifier"}
+              {mutationEdit.isPending ? (
+                <>
+                  Chargement{" "}
+                  <LoaderCircle
+                    size={15}
+                    strokeWidth={1}
+                    className="ml-2 animate-spin"
+                  />
+                </>
+              ) : (
+                "Modifier"
+              )}
             </Button>
             <DialogClose asChild>
               <Button type="button" variant="outline">

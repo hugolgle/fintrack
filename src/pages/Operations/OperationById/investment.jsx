@@ -133,7 +133,7 @@ export default function Investment() {
                 className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
               >
                 <p>
-                  Derniere modification le : <br />
+                  Modifié le : <br />
                   <b>
                     {format(investment?.data?.updatedAt, "dd/MM/yyyy à HH:mm")}
                   </b>

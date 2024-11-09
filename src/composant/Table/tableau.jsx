@@ -119,7 +119,7 @@ export default function Tableau({
                           {item.title}
                         </TableCell>
                         <TableCell className="w-full">
-                          {format(item.date, "EEEE, MMMM dd, yyyy")}
+                          {format(item.date, "d MMMM yyyy", { locale: fr })}
                         </TableCell>
                         {status === "all" && (
                           <TableCell className="w-full">

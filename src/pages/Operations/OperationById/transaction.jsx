@@ -150,7 +150,7 @@ export default function Transaction() {
                 className={`p-8 h-32 ${bgColor} rounded-2xl flex justify-center items-center`}
               >
                 <p>
-                  Dernière modification le : <br />
+                  Modifié le : <br />{" "}
                   <b>
                     {format(transaction?.data?.updatedAt, "dd/MM/yyyy à HH:mm")}
                   </b>

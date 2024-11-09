@@ -35,12 +35,30 @@ import * as yup from "yup";
 import { HttpStatusCode } from "axios";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../service/user.service";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { ChevronsUpDown } from "lucide-react";
+import { Check } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 const validationSchema = yup.object().shape({
   title: yup
     .string()
     .max(50, "Le titre est trop long")
     .required("Le titre est requis"),
+  titleBis: yup
+    .string()
+    .max(50, "Le titre est trop long")
+    .when("title", {
+      is: true,
+      then: yup.string().required("Le titre est requis"),
+    }),
   type: yup.string().required("Le type est requis"),
   detail: yup.string().max(250, "Les détails sont trop longs"),
   amount: yup
@@ -71,15 +89,23 @@ export default function PageAddInvest() {
     refetchOnMount: true,
   });
 
-  const suggestionsTitle = Array.from(
-    new Set(data?.map((investment) => investment.title))
-  );
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  // const suggestions = [ "Autre", ...getTitleOfTransactionsByType(data,
+  //   props.type), ];
+
+  const suggestions = [
+    "Autre",
+    ...new Set(data?.map((investment) => investment.title)),
+  ];
 
   const formik = useFormik({
     initialValues: {
       title: "",
+      titleBis: "",
       type: "",
       detail: "",
+      date: new Date(),
       amount: "",
     },
     validationSchema,
@@ -88,7 +114,7 @@ export default function PageAddInvest() {
       const postData = {
         user: userInfo?._id,
         type: values.type,
-        title: values.title,
+        title: values.title === "Autre" ? values.titleBis : values.title,
         detail: values.detail,
         date: values.date.toLocaleDateString("fr-CA"),
         amount: formatAmount(values.amount),
@@ -128,128 +154,150 @@ export default function PageAddInvest() {
 
   if (loadingUser) return <Loader />;
 
+  console.log(formik.errors);
+
   return (
     <section className="h-full">
       <Header title="Ajouter un investissement" btnReturn />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
-        <div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-96 h-10 px-2 text-left font-normal"
-              >
-                {formik.values.date ? (
-                  format(formik.values.date, "PP", { locale: fr })
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="input">
+              {formik.values.date ? (
+                format(formik.values.date, "PP", { locale: fr })
+              ) : (
+                <span>Choisir une date</span>
+              )}
+              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={formik.values.date}
+              onSelect={(date) => formik.setFieldValue("date", date)}
+              initialFocus
+              locale={fr}
+            />
+          </PopoverContent>
+        </Popover>
+        {formik.touched.date && formik.errors.date && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.date}
+          </p>
+        )}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="input" role="combobox" aria-expanded={open}>
+              {formik.values.title || "Sélectionnez un titre..."}
+              <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Rechercher un titre..." />
+              <CommandList>
+                {suggestions.length === 0 ? (
+                  <CommandEmpty>Aucune suggestion trouvée.</CommandEmpty>
                 ) : (
-                  <span>Choisir une date</span>
+                  <CommandGroup>
+                    {suggestions.map((suggestion, index) => (
+                      <CommandItem
+                        key={index}
+                        onSelect={() => {
+                          formik.setFieldValue("title", suggestion);
+                          setValue(suggestion);
+                          setOpen(false);
+                        }}
+                      >
+                        {suggestion}
+                        {value === suggestion && (
+                          <Check className="ml-auto h-4 w-4 opacity-100" />
+                        )}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
                 )}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={formik.values.date}
-                onSelect={(date) => formik.setFieldValue("date", date)}
-                initialFocus
-                locale={fr}
-              />
-            </PopoverContent>
-          </Popover>
-          {formik.touched.date && formik.errors.date && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.date}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <Input
-            list="title-suggestions"
-            value={formik.values.title}
-            className="w-96 h-10 px-2 "
-            type="text"
-            maxLength={50}
-            placeholder="Titre"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            name="title"
-          />
-          {formik.touched.title && formik.errors.title && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.title}
-            </p>
-          )}
-        </div>
-
-        <datalist id="title-suggestions">
-          {suggestionsTitle.map((suggestion, index) => (
-            <option key={index} value={suggestion} />
-          ))}
-        </datalist>
-        <div>
-          <Select
-            name="type"
-            // {...formik.getFieldProps("type")} peut ton ajouter ceci ici  ??
-            value={formik.values.type}
-            onValueChange={(value) => formik.setFieldValue("type", value)}
-            required
-          >
-            <SelectTrigger className="w-96 h-10 px-2 ">
-              <SelectValue placeholder="Sélectionnez le type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Action">Action</SelectItem>
-              <SelectItem value="ETF">ETF</SelectItem>
-              <SelectItem value="Crypto">Crypto</SelectItem>
-              <SelectItem value="Obligation">Obligation</SelectItem>
-              <SelectItem value="Dérivé">Dérivé</SelectItem>
-            </SelectContent>
-          </Select>
-          {formik.touched.type && formik.errors.type && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.type}
-            </p>
-          )}
-        </div>
-        <div>
-          <Textarea
-            className="w-96 h-10 px-2 "
-            placeholder="Détails"
-            {...formik.getFieldProps("detail")}
-            name="detail"
-          />
-          {formik.touched.detail && formik.errors.detail && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.detail}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <Input
-            className="w-96 h-10 px-2 "
-            type="number"
-            step="0.01"
-            placeholder="Montant"
-            {...formik.getFieldProps("amount")}
-            name="amount"
-          />
-          {formik.touched.amount && formik.errors.amount && (
-            <p className="text-xs text-left text-red-500 mt-1 ml-2">
-              {formik.errors.amount}
-            </p>
-          )}
-        </div>
-
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {formik.values.title === "Autre" && (
+          <>
+            <Input
+              list="titleBis-suggestions"
+              id="titleBis"
+              name="titleBis"
+              placeholder="Titre"
+              {...formik.getFieldProps("titleBis")}
+            />
+            {formik.touched.titleBis && formik.errors.titleBis && (
+              <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                {formik.errors.titleBis}
+              </p>
+            )}
+          </>
+        )}
+        <Select
+          name="type"
+          value={formik.values.type}
+          onValueChange={(value) => formik.setFieldValue("type", value)}
+          required
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez le type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Action">Action</SelectItem>
+            <SelectItem value="ETF">ETF</SelectItem>
+            <SelectItem value="Crypto">Crypto</SelectItem>
+            <SelectItem value="Obligation">Obligation</SelectItem>
+            <SelectItem value="Dérivé">Dérivé</SelectItem>
+          </SelectContent>
+        </Select>
+        {formik.touched.type && formik.errors.type && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.type}
+          </p>
+        )}
+        <Textarea
+          placeholder="Détails"
+          {...formik.getFieldProps("detail")}
+          name="detail"
+        />
+        {formik.touched.detail && formik.errors.detail && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.detail}
+          </p>
+        )}
+        <Input
+          type="number"
+          step="0.01"
+          placeholder="Montant"
+          {...formik.getFieldProps("amount")}
+          name="amount"
+        />
+        {formik.touched.amount && formik.errors.amount && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.amount}
+          </p>
+        )}
         <Button disabled={addInvestmentMutation.isPending || !formik.isValid}>
-          {addInvestmentMutation.isPending
-            ? "En cours ..."
-            : "Soumettre l'investissement"}
+          {addInvestmentMutation.isPending ? (
+            <>
+              En cours{" "}
+              <LoaderCircle
+                size={15}
+                strokeWidth={1}
+                className="ml-2 animate-spin"
+              />
+            </>
+          ) : (
+            "Soumettre l'investissement"
+          )}
         </Button>
       </form>
     </section>
