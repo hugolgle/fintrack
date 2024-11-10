@@ -12,21 +12,20 @@ import Inscription from "./pages/Inscription/inscription";
 import BoardInvest from "./pages/Operations/Boards/boardInvest";
 import PageAddInvest from "./pages/PageForm/pageAddInvest";
 import PageInvestment from "./pages/Operations/PageOperations/pageInvestment";
-import Investment from "./pages/Operations/OperationById/investment";
 import PrivateRoute from "./composant/privateRoute";
-import BoardRecette from "./pages/Operations/Boards/boardRecette";
-import BoardDepense from "./pages/Operations/Boards/boardDepense";
 import "../styles/globals.css";
 import MainLayout from "./layout/mainLayout";
 import PageError from "./pages/404/pageError";
 import { ROUTES } from "./composant/routes";
 import Branding from "./pages/Branding/branding";
+import PageAddTransacInvest from "./pages/PageForm/pageAddTransacInvest";
+import OrdreInvest from "./pages/Operations/ordreInvest";
+import BoardTransactions from "./pages/Operations/Boards/boardTransactions";
 
 function App() {
   const router = createBrowserRouter([
     {
       element: <MainLayout />,
-      errorElement: <PageError />,
       children: [
         { path: ROUTES.HOME, element: <Home /> },
 
@@ -37,7 +36,11 @@ function App() {
 
         {
           path: ROUTES.EXPENSE,
-          element: <PrivateRoute element={<BoardDepense />} />,
+          element: (
+            <PrivateRoute
+              element={<BoardTransactions key="Expense" type="Expense" />}
+            />
+          ),
         },
         {
           path: ROUTES.ADD_EXPENSE,
@@ -59,7 +62,11 @@ function App() {
         },
         {
           path: ROUTES.REVENUE,
-          element: <PrivateRoute element={<BoardRecette />} />,
+          element: (
+            <PrivateRoute
+              element={<BoardTransactions key="Revenue" type="Revenue" />}
+            />
+          ),
         },
         {
           path: ROUTES.ADD_REVENUE,
@@ -88,14 +95,17 @@ function App() {
           element: <PrivateRoute element={<PageAddInvest />} />,
         },
         {
-          path: ROUTES.INVESTMENT_BY_STATUS,
-          element: <PrivateRoute element={<PageInvestment />} />,
+          path: ROUTES.ADD_TRANSACTION_INVESTMENT,
+          element: <PrivateRoute element={<PageAddTransacInvest />} />,
         },
         {
           path: ROUTES.INVESTMENT_BY_ID,
-          element: <PrivateRoute element={<Investment />} />,
+          element: <PrivateRoute element={<PageInvestment />} />,
         },
-
+        {
+          path: ROUTES.INVESTMENT_ORDER,
+          element: <PrivateRoute element={<OrdreInvest />} />,
+        },
         {
           path: ROUTES.STATISTICS,
           element: <PrivateRoute element={<Statistique />} />,
@@ -116,6 +126,10 @@ function App() {
         {
           path: ROUTES.SESSION_TIMED_OUT,
           element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
+        },
+        {
+          path: "*",
+          element: <PageError />,
         },
       ],
     },

@@ -169,7 +169,6 @@ export default function PageAddTransac(props) {
           resetForm();
         },
       });
-      console.log(values.titleBis);
     },
   });
 

@@ -48,24 +48,12 @@ import { Check } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 
 const validationSchema = yup.object().shape({
-  title: yup
+  name: yup
     .string()
     .max(50, "Le titre est trop long")
     .required("Le titre est requis"),
-  titleBis: yup
-    .string()
-    .max(50, "Le titre est trop long")
-    .when("title", {
-      is: true,
-      then: yup.string().required("Le titre est requis"),
-    }),
   type: yup.string().required("Le type est requis"),
-  detail: yup.string().max(250, "Les détails sont trop longs"),
-  amount: yup
-    .number()
-    .typeError("Le montant est requis")
-    .positive("Le montant doit être positif")
-    .required("Le montant est requis"),
+  symbol: yup.string(),
 });
 
 export default function PageAddInvest() {
@@ -76,48 +64,41 @@ export default function PageAddInvest() {
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
-  const { data } = useQuery({
-    queryKey: ["fetchInvestments"],
-    queryFn: async () => {
-      const response = await fetchInvestments(userInfo?._id);
-      if (response?.status !== HttpStatusCode.Ok) {
-        const message = response?.response?.data?.message || "Erreur";
-        toast.warn(message);
-      }
-      return response?.data;
-    },
-    refetchOnMount: true,
-  });
+  // const { data } = useQuery({
+  //   queryKey: ["fetchInvestments"],
+  //   queryFn: async () => {
+  //     const response = await fetchInvestments(userInfo?._id);
+  //     if (response?.status !== HttpStatusCode.Ok) {
+  //       const message = response?.response?.data?.message || "Erreur";
+  //       toast.warn(message);
+  //     }
+  //     return response?.data;
+  //   },
+  //   refetchOnMount: true,
+  // });
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   // const suggestions = [ "Autre", ...getTitleOfTransactionsByType(data,
   //   props.type), ];
 
-  const suggestions = [
-    "Autre",
-    ...new Set(data?.map((investment) => investment.title)),
-  ];
+  // const suggestions = [...new Set(data?.map((investment) => investment.title))];
+  const suggestions = ["Test"];
 
   const formik = useFormik({
     initialValues: {
-      title: "",
-      titleBis: "",
+      name: "",
       type: "",
-      detail: "",
-      date: new Date(),
-      amount: "",
+      symbol: "",
     },
     validationSchema,
     validateOnMount: true,
     onSubmit: async (values, { resetForm }) => {
       const postData = {
         user: userInfo?._id,
+        name: values.name,
         type: values.type,
-        title: values.title === "Autre" ? values.titleBis : values.title,
-        detail: values.detail,
-        date: values.date.toLocaleDateString("fr-CA"),
-        amount: formatAmount(values.amount),
+        symbol: values.symbol,
       };
 
       addInvestmentMutation.mutate(postData);
@@ -138,23 +119,21 @@ export default function PageAddInvest() {
     },
   });
 
-  useEffect(() => {
-    if (formik.values.title) {
-      const lastInvestment = data
-        .filter((investment) => investment.title === formik.values.title)
-        .sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        )[0];
+  // useEffect(() => {
+  //   if (formik.values.name) {
+  //     const lastInvestment = data
+  //       .filter((investment) => investment.title === formik.values.name)
+  //       .sort(
+  //         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  //       )[0];
 
-      if (lastInvestment) {
-        formik.setFieldValue("type", lastInvestment.type || "");
-      }
-    }
-  }, [formik.values.title, data]);
+  //     if (lastInvestment) {
+  //       formik.setFieldValue("type", lastInvestment.type || "");
+  //     }
+  //   }
+  // }, [formik.values.name, data]);
 
   if (loadingUser) return <Loader />;
-
-  console.log(formik.errors);
 
   return (
     <section className="h-full">
@@ -163,7 +142,7 @@ export default function PageAddInvest() {
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
-        <Popover>
+        {/* <Popover>
           <PopoverTrigger asChild>
             <Button variant="input">
               {formik.values.date ? (
@@ -188,11 +167,11 @@ export default function PageAddInvest() {
           <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.date}
           </p>
-        )}
-        <Popover open={open} onOpenChange={setOpen}>
+        )} */}
+        {/* <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="input" role="combobox" aria-expanded={open}>
-              {formik.values.title || "Sélectionnez un titre..."}
+              {formik.values.name || "Sélectionnez un titre..."}
               <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -224,22 +203,23 @@ export default function PageAddInvest() {
               </CommandList>
             </Command>
           </PopoverContent>
-        </Popover>
-        {formik.values.title === "Autre" && (
-          <>
-            <Input
-              list="titleBis-suggestions"
-              id="titleBis"
-              name="titleBis"
-              placeholder="Titre"
-              {...formik.getFieldProps("titleBis")}
-            />
-            {formik.touched.titleBis && formik.errors.titleBis && (
-              <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
-                {formik.errors.titleBis}
-              </p>
-            )}
-          </>
+        </Popover> */}
+        <Input
+          id="name"
+          name="name"
+          placeholder="Nom"
+          {...formik.getFieldProps("name")}
+        />
+        <Input
+          id="symbol"
+          name="symbol"
+          placeholder="Symbole"
+          {...formik.getFieldProps("symbol")}
+        />
+        {formik.touched.symbol && formik.errors.symbol && (
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.symbol}
+          </p>
         )}
         <Select
           name="type"
@@ -261,28 +241,6 @@ export default function PageAddInvest() {
         {formik.touched.type && formik.errors.type && (
           <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.type}
-          </p>
-        )}
-        <Textarea
-          placeholder="Détails"
-          {...formik.getFieldProps("detail")}
-          name="detail"
-        />
-        {formik.touched.detail && formik.errors.detail && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
-            {formik.errors.detail}
-          </p>
-        )}
-        <Input
-          type="number"
-          step="0.01"
-          placeholder="Montant"
-          {...formik.getFieldProps("amount")}
-          name="amount"
-        />
-        {formik.touched.amount && formik.errors.amount && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
-            {formik.errors.amount}
           </p>
         )}
         <Button disabled={addInvestmentMutation.isPending || !formik.isValid}>

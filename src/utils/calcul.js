@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function calculTotal(data, type, filterCategory, filterTitle) {
   if (!Array.isArray(data)) {
     return [];
@@ -95,8 +97,8 @@ export function calculTotalByYear(
   }
 
   const filteredOperations = data?.filter((transaction) => {
-    const transactionYear = transaction.date.slice(0, 4);
-    return transaction.type === type && transactionYear === year;
+    const transactionYear = format(transaction.date, "yyyy");
+    return transaction.type === type && transactionYear === `${year}`;
   });
 
   const filteredOperationsByCategory =
@@ -187,6 +189,7 @@ export function calculEconomie(data, year, month) {
 
   return resultat.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
+
 export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
   const depensesMoyennesString = String(depensesMoyennes || 0);
   const recettesMoyennesString = String(recettesMoyennes || 0);
@@ -205,66 +208,6 @@ export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
     .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return economieMoyenneFormatted;
-}
-
-export function calculTotalInvestment(data, isSold, title) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  const filteredOperations = data?.filter((investment) => {
-    const matchSoldStatus =
-      isSold !== null ? investment.isSold === isSold : true;
-    const matchTitle = title
-      ? investment.title.toLowerCase() === title.toLowerCase()
-      : true;
-    return matchSoldStatus && matchTitle;
-  });
-
-  const totalAmount = filteredOperations.reduce((total, investment) => {
-    if (isSold && investment.montantVendu !== undefined) {
-      return total + parseFloat(investment.montantVendu);
-    } else {
-      return total + parseFloat(investment.amount);
-    }
-  }, 0.0);
-
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
-  return formattedTotal;
-}
-
-export function calculTotalInvestmentByTitle(data, isSold, title) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  const formattedTitle = title ? title.toLowerCase().replace(/\s+/g, "") : "";
-
-  const filteredOperations = data?.filter((investment) => {
-    const investTitle = investment.title
-      ? investment.title.toLowerCase().replace(/\s+/g, "")
-      : "";
-
-    const titleMatches = !title || investTitle === formattedTitle;
-    const soldMatches = isSold !== null ? investment.isSold === isSold : true;
-
-    return titleMatches && soldMatches;
-  });
-
-  const totalAmount = filteredOperations.reduce((total, investment) => {
-    if (isSold && investment.montantVendu !== undefined) {
-      return total + parseFloat(investment.montantVendu);
-    } else {
-      return total + parseFloat(investment.amount);
-    }
-  }, 0.0);
-
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
-  return formattedTotal;
 }
 
 export function calculInvestByMonth(data, date) {

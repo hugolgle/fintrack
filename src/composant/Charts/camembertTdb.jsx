@@ -133,6 +133,7 @@ export function CamembertTdb(props) {
             innerRadius={50}
             outerRadius={70}
             paddingAngle={2}
+            animationDuration={500}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} strokeWidth={1} />

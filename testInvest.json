@@ -1,0 +1,44 @@
+{
+  "_id": {
+    "$oid": "66e5be9edb63bc0380d4e7b3"
+  },
+  "user": "65f08469c6df47824a6c2379",
+  "name": "Apple",
+  "symbol": "AAPL",
+  "type": "Action",
+  "transaction": [
+    {
+      "amount": "10.00",
+      "date": "2024-10-12",
+      "isSale": false
+    },
+    {
+      "amount": "15.00",
+      "date": "2024-10-12",
+      "isSale": true
+    },
+    {
+      "amount": "50.00",
+      "date": "2024-10-12",
+      "isSale": true
+    },
+    {
+      "amount": "50.00",
+      "date": "2024-10-12",
+      "isSale": false
+    }
+  ],
+  //    ce montant est l'addition de toutes les transactions de type non vente
+  "amountBuy": "60.00",
+  //    ce montant est l'addition de toutes les transactions de type vente
+  "amountSale": "65.00",
+  //    ce montant est la difference
+  "amountResult": "5.00",
+  "createdAt": {
+    "$date": "2024-09-14T16:49:34.604Z"
+  },
+  "updatedAt": {
+    "$date": "2024-09-14T16:49:34.604Z"
+  },
+  "__v": 0
+}

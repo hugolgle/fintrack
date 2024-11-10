@@ -108,6 +108,7 @@ export function CamembertStat(props) {
               innerRadius={40}
               outerRadius={55}
               paddingAngle={2}
+              animationDuration={500}
             >
               {transformedData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.fill} strokeWidth={1} />

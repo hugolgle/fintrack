@@ -4,14 +4,18 @@ import {
   calculInvestByMonth,
   calculTotalByMonth,
 } from "../../utils/calcul";
-import { addSpace, convertDate } from "../../utils/fonctionnel";
+import {
+  addSpace,
+  convertDate,
+  formatAmountWithoutSpace,
+  removeSpace,
+} from "../../utils/fonctionnel";
 import { CamembertTdb } from "../../composant/Charts/camembertTdb";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
 import { categoryDepense } from "../../../public/categories.json";
 import { currentDate, getLastMonths } from "../../utils/other";
-import BoxTdb from "../../composant/Box/boxDB";
 import { fetchTransactions } from "../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/header";
@@ -27,8 +31,11 @@ import { DollarSign } from "lucide-react";
 import { WalletCards } from "lucide-react";
 import { Landmark } from "lucide-react";
 import { HandCoins } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function TableauDeBord() {
+  const navigate = useNavigate();
+
   const {
     isLoading,
     data: dataTransac,
@@ -60,6 +67,14 @@ export default function TableauDeBord() {
     staleTime: 60_000,
   });
 
+  const dataTransacInvest = dataInvest?.flatMap((investment) => {
+    return investment.transaction.map((trans) => ({
+      title: investment.name,
+      amount: trans.amount,
+      date: trans.date,
+    }));
+  });
+
   const { month: currentMonth, year: currentYear } = currentDate();
   const currentYearMonth = `${currentYear}${currentMonth}`;
 
@@ -78,7 +93,10 @@ export default function TableauDeBord() {
     null
   );
 
-  const investCurrentMonth = calculInvestByMonth(dataInvest, currentYearMonth);
+  const investCurrentMonth = calculInvestByMonth(
+    dataTransacInvest,
+    currentYearMonth
+  );
 
   const getPreviousMonthAndYear = (month, year) => {
     let previousMonth = month - 1;
@@ -118,9 +136,11 @@ export default function TableauDeBord() {
     currentMonth
   );
 
-  const epargnCurrentMonth = economieCurrentMonth - investCurrentMonth;
+  const epargnCurrentMonth =
+    formatAmountWithoutSpace(economieCurrentMonth) -
+    formatAmountWithoutSpace(investCurrentMonth);
 
-  const investLastMonth = calculInvestByMonth(dataInvest, previousDate);
+  const investLastMonth = calculInvestByMonth(dataTransacInvest, previousDate);
 
   const economieLastMonth = calculEconomie(
     dataTransac,
@@ -129,10 +149,10 @@ export default function TableauDeBord() {
   );
 
   const epargnLastMonth = economieLastMonth - investLastMonth;
-
+  console.log(epargnLastMonth);
   const dataOperations = [
     ...(Array.isArray(dataTransac) ? dataTransac : []),
-    ...(Array.isArray(dataInvest) ? dataInvest : []),
+    ...(Array.isArray(dataTransacInvest) ? dataTransacInvest : []),
   ];
 
   const lastOperations = getLastOperations(dataOperations, null, 8, false);
@@ -211,7 +231,7 @@ export default function TableauDeBord() {
 
   const total = calculTotalByMonth(dataTransac, "Revenue", month, null, null);
 
-  const montantInvest = calculInvestByMonth(dataInvest, month);
+  const montantInvest = calculInvestByMonth(dataTransacInvest, month);
 
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
@@ -262,7 +282,7 @@ export default function TableauDeBord() {
       null,
       null
     );
-    const montantInvests = calculInvestByMonth(dataInvest, code);
+    const montantInvests = calculInvestByMonth(dataTransacInvest, code);
 
     amountExpenseByMonth.push(formatData(amountExpenses));
     amountRevenueByMonth.push(formatData(amountRevenues));
@@ -291,30 +311,10 @@ export default function TableauDeBord() {
       : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
   const chevronIsVisible = month < currentYearMonth;
 
-  // ------------ percent box ------------
-
-  const percentRevenue =
-    ((amountRevenuesMonth - amountRevenuesLastMonth) /
-      amountRevenuesLastMonth) *
-    100;
-
-  const percentExpense =
-    ((Math.abs(amountExpensesMonth) - Math.abs(amountExpensesLastMonth)) /
-      Math.abs(amountExpensesLastMonth)) *
-    100;
-
-  const percentEpargn =
-    ((Math.abs(epargnCurrentMonth) - Math.abs(epargnLastMonth)) /
-      Math.abs(epargnLastMonth)) *
-    100;
-
-  const percentInvestment =
-    ((investCurrentMonth - investLastMonth) / investLastMonth) * 100;
-
   // ------------ loader ------------
 
   if (isLoading) return <Loader />;
-  console.log(lastOperations);
+  console.log(epargnCurrentMonth);
   return (
     <>
       <section className="w-full">
@@ -322,33 +322,36 @@ export default function TableauDeBord() {
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex gap-4 w-full">
             <BoxInfos
+              onClick={() => navigate("/revenue")}
               type="revenue"
               title="Revenu"
               icon={<DollarSign size={15} color="grey" />}
-              amount={amountRevenuesMonth}
-              percent={percentRevenue}
+              value={amountRevenuesMonth}
+              valueLast={amountRevenuesLastMonth}
             />
 
             <BoxInfos
+              onClick={() => navigate("/expense")}
               type="depense"
               title="Dépense"
               icon={<WalletCards size={15} color="grey" />}
-              amount={amountExpensesMonth}
-              percent={percentExpense}
+              value={amountExpensesMonth}
+              valueLast={amountExpensesLastMonth}
             />
             <BoxInfos
               type="epargn"
               title="Épargne"
               icon={<Landmark size={15} color="grey" />}
-              amount={epargnCurrentMonth}
-              percent={percentEpargn}
+              value={epargnCurrentMonth}
+              valueLast={epargnLastMonth}
             />
             <BoxInfos
+              onClick={() => navigate("/investment")}
               type="investment"
               title="Investissement"
               icon={<HandCoins size={15} color="grey" />}
-              amount={investCurrentMonth}
-              percent={percentInvestment}
+              value={investCurrentMonth}
+              valueLast={investLastMonth}
             />
           </div>
           <div className="flex flex-row gap-4 h-full">

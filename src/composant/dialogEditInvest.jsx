@@ -37,30 +37,21 @@ import { LoaderCircle } from "lucide-react";
 
 // Define validation schema for form fields
 const validationSchema = yup.object().shape({
-  title: yup
+  name: yup
     .string()
     .max(50, "Le titre est trop long")
     .required("Le titre est requis"),
+  symbol: yup.string().max(250, "Les détails sont trop longs"),
   type: yup.string().required("Le type est requis"),
-  detail: yup.string().max(250, "Les détails sont trop longs"),
-  amount: yup
-    .number()
-    .typeError("Le montant est requis")
-    .positive("Le montant doit être positif")
-    .required("Le montant est requis"),
 });
 
-export function DialogEditInvest({ investment, refetch, data }) {
+export function DialogEditInvest({ investment, refetch, data, btnOpen }) {
   const initialValues = {
-    title: investment?.data?.title || "",
-    type: investment?.data?.type || "",
-    date: investment?.data?.date
-      ? new Date(investment?.data?.date)
-      : new Date(),
-    detail: investment?.data?.detail || "",
-    amount: investment?.data?.amount || "",
+    name: investment?.name || "",
+    symbol: investment?.symbol || "",
+    type: investment?.type || "",
   };
-
+  // console.log(investment);
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -73,43 +64,29 @@ export function DialogEditInvest({ investment, refetch, data }) {
   const mutationEdit = useMutation({
     mutationFn: async (values) => {
       const editData = {
-        id: investment?.data?._id,
+        id: investment?._id,
+        name: values.name,
+        symbol: values.symbol,
         type: values.type,
-        title: values.title,
-        date: values.date.toLocaleDateString("fr-CA"),
-        detail: values.detail,
-        amount: formatAmount(values.amount),
       };
       return await editInvestments(editData);
     },
     onSuccess: (response) => {
       refetch();
       formik.resetForm();
-      toast.success(response?.data?.message);
+      toast.success(response?.message);
     },
     onError: (error) => {
       console.log(error);
     },
   });
 
-  const suggestionsTitle = Array.from(
-    new Set(data?.map((investment) => investment.title))
-  );
-
-  const dataBase = [
-    investment?.data?.title,
-    investment?.data?.detail,
-    investment?.data?.amount,
-    investment?.data?.type,
-    investment?.data?.date,
-  ];
+  const dataBase = [investment?.name, investment?.symbol, investment?.type];
 
   const dataEdit = [
-    formik.values?.title,
-    formik.values?.detail,
-    formik.values?.amount,
+    formik.values?.name,
+    formik.values?.symbol,
     formik.values?.type,
-    formik.values?.date.toLocaleDateString("fr-CA"),
   ];
 
   const isSaveDisabled = dataBase.every(
@@ -118,9 +95,7 @@ export function DialogEditInvest({ investment, refetch, data }) {
 
   return (
     <Dialog asChild>
-      <DialogTrigger>
-        <Button>Modifier</Button>
-      </DialogTrigger>
+      <DialogTrigger>{btnOpen}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={formik.handleSubmit}>
           <DialogHeader>
@@ -130,52 +105,33 @@ export function DialogEditInvest({ investment, refetch, data }) {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <Popover modal={true}>
-              <PopoverTrigger asChild>
-                <Button variant="input">
-                  {formik.values.date ? (
-                    format(formik.values.date, "PP", { locale: fr })
-                  ) : (
-                    <span>Choisir une date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={formik.values.date}
-                  onSelect={(date) => {
-                    formik.setFieldValue("date", date);
-                  }}
-                  initialFocus
-                  locale={fr}
-                />
-              </PopoverContent>
-            </Popover>
-
-            {formik.touched.date && formik.errors.date && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
-                {formik.errors.date}
-              </p>
-            )}
-            {formik.touched.date && formik.errors.date && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
-                {formik.errors.date}
-              </p>
-            )}
             <Input
-              value={formik.values.title}
+              value={formik.values.name}
               type="text"
               maxLength={50}
-              placeholder="Titre"
+              placeholder="Nom"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              name="title"
+              name="name"
             />
-            {formik.touched.title && formik.errors.title && (
+            {formik.touched.name && formik.errors.name && (
               <p className="text-xs text-left text-red-500 mt-1 ml-2">
-                {formik.errors.title}
+                {formik.errors.name}
+              </p>
+            )}
+
+            <Input
+              value={formik.values.symbol}
+              type="text"
+              maxLength={50}
+              placeholder="Symbole"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="symbol"
+            />
+            {formik.touched.symbol && formik.errors.symbol && (
+              <p className="text-xs text-left text-red-500 mt-1 ml-2">
+                {formik.errors.symbol}
               </p>
             )}
 
@@ -199,30 +155,6 @@ export function DialogEditInvest({ investment, refetch, data }) {
             {formik.touched.type && formik.errors.type && (
               <p className="text-xs text-left text-red-500 mt-1 ml-2">
                 {formik.errors.type}
-              </p>
-            )}
-
-            <Textarea
-              placeholder="Détails"
-              {...formik.getFieldProps("detail")}
-              name="detail"
-            />
-            {formik.touched.detail && formik.errors.detail && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
-                {formik.errors.detail}
-              </p>
-            )}
-
-            <Input
-              type="number"
-              step="0.01"
-              placeholder="Montant"
-              {...formik.getFieldProps("amount")}
-              name="amount"
-            />
-            {formik.touched.amount && formik.errors.amount && (
-              <p className="text-xs text-left text-red-500 mt-1 ml-2">
-                {formik.errors.amount}
               </p>
             )}
           </div>

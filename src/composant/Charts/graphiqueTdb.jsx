@@ -139,7 +139,7 @@ export function GraphiqueTdb({ data }) {
             dot={{ fill: chartConfig.amountRevenue.color, r: 2 }}
             activeDot={false}
             isAnimationActive={true} // Active l'animation
-            animationDuration={1500} // Durée de l'animation en ms
+            animationDuration={500} // Durée de l'animation en ms
             animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList
@@ -160,7 +160,7 @@ export function GraphiqueTdb({ data }) {
             dot={{ fill: chartConfig.amountExpense.color, r: 2 }}
             activeDot={false}
             isAnimationActive={true} // Active l'animation
-            animationDuration={1500} // Durée de l'animation en ms
+            animationDuration={500} // Durée de l'animation en ms
             animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList
@@ -180,7 +180,7 @@ export function GraphiqueTdb({ data }) {
             dot={{ fill: chartConfig.montantInvest.color, r: 2 }}
             activeDot={false}
             isAnimationActive={true} // Active l'animation
-            animationDuration={1500} // Durée de l'animation en ms
+            animationDuration={500} // Durée de l'animation en ms
             animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList

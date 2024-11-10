@@ -235,26 +235,6 @@ export function getAllInvestments(data, isSold) {
   });
 }
 
-export function getInvestmentsByTitle(data, title) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  if (title) {
-    const formattedTitle = title.toLowerCase().replace(/\s+/g, "");
-
-    const filteredInvestments = data?.filter((investment) => {
-      const investTitle = investment.title
-        ? investment.title.toLowerCase().replace(/\s+/g, "")
-        : "";
-      return investTitle === formattedTitle;
-    });
-
-    return filteredInvestments;
-  } else {
-    return [];
-  }
-}
-
 export function getInvestmentById(data, id) {
   if (!Array.isArray(data)) {
     return [];

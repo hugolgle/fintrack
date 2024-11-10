@@ -16,6 +16,8 @@ import { BreadcrumbDemo } from "./breadCrumb";
 import { useLocation } from "react-router";
 import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
+import { Pencil } from "lucide-react";
+import { DialogEditInvest } from "./dialogEditInvest";
 
 function Header({
   title,
@@ -52,7 +54,7 @@ function Header({
         <BreadcrumbDemo />
         <div className="flex gap-2">
           {btnReturn && canReturn && <BtnReturn />}
-          {btnAdd && <BtnAdd to={`/${typeProps}`} />}
+          {btnAdd && <BtnAdd to={``} />}
           {btnSelect && (
             <ListCollapse
               className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
@@ -83,7 +85,7 @@ function Header({
           )}
         </div>
       </div>
-      <Title title={title} className="w-2/4" />
+      <Title title={title} className="w-2/4 truncate" />
       <div className="w-1/4 flex justify-end">
         {btnSearch && (
           <>

@@ -1,7 +1,5 @@
 import { currentDate, months } from "./other";
 
-const date = currentDate();
-export const getCurrentDate = `${date.year}-${date.month}-${date.day}`;
 // ---------------------------------
 
 export function Path(lePath, level) {
@@ -53,3 +51,18 @@ export function formatAmount(amount, type) {
     return formattedAmount;
   }
 }
+
+export function formatAmountWithoutSpace(amount, toPositive) {
+  const amountStr = `${amount}`;
+  const formattedStr = amountStr.replace(/\s/g, "");
+
+  if (toPositive) {
+    return Math.abs(parseFloat(formattedStr));
+  } else {
+    return formattedStr;
+  }
+}
+
+// Exemple d'utilisation
+// const result = formatAmount("-1 543,25");
+// console.log(result); // 1543.25
