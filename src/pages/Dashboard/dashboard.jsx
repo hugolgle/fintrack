@@ -1,4 +1,4 @@
-import { getLastTransactionsByType } from "../../utils/operations";
+import { getLastOperations } from "../../utils/operations";
 import {
   calculEconomie,
   calculInvestByMonth,
@@ -22,6 +22,11 @@ import { useTheme } from "../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { Dot } from "lucide-react";
 import { format } from "date-fns";
+import BoxInfos from "../../composant/boxInfos";
+import { DollarSign } from "lucide-react";
+import { WalletCards } from "lucide-react";
+import { Landmark } from "lucide-react";
+import { HandCoins } from "lucide-react";
 
 export default function TableauDeBord() {
   const {
@@ -73,7 +78,7 @@ export default function TableauDeBord() {
     null
   );
 
-  const InvestCurrentMonth = calculInvestByMonth(dataInvest, currentYearMonth);
+  const investCurrentMonth = calculInvestByMonth(dataInvest, currentYearMonth);
 
   const getPreviousMonthAndYear = (month, year) => {
     let previousMonth = month - 1;
@@ -107,11 +112,13 @@ export default function TableauDeBord() {
     null
   );
 
-  const economiesCurrentMonth = calculEconomie(
+  const economieCurrentMonth = calculEconomie(
     dataTransac,
     `${currentYear}`,
     currentMonth
   );
+
+  const epargnCurrentMonth = economieCurrentMonth - investCurrentMonth;
 
   const investLastMonth = calculInvestByMonth(dataInvest, previousDate);
 
@@ -121,12 +128,14 @@ export default function TableauDeBord() {
     newPreviousMonth
   );
 
-  const lastTransactions = getLastTransactionsByType(
-    dataTransac,
-    null,
-    6,
-    false
-  );
+  const epargnLastMonth = economieLastMonth - investLastMonth;
+
+  const dataOperations = [
+    ...(Array.isArray(dataTransac) ? dataTransac : []),
+    ...(Array.isArray(dataInvest) ? dataInvest : []),
+  ];
+
+  const lastOperations = getLastOperations(dataOperations, null, 8, false);
 
   const formatData = (data) => {
     if (data === null || data === undefined) {
@@ -232,13 +241,13 @@ export default function TableauDeBord() {
     setGraphMonth(newDate);
   };
 
-  const lastSixMonths = getLastMonths(graphMonth, 6);
+  const monthsGraph = getLastMonths(graphMonth, 6);
 
   const amountExpenseByMonth = [];
   const amountRevenueByMonth = [];
   const montantInvestByMonth = [];
 
-  lastSixMonths.forEach(({ code }) => {
+  monthsGraph.forEach(({ code }) => {
     const amountExpenses = calculTotalByMonth(
       dataTransac,
       "Expense",
@@ -260,7 +269,7 @@ export default function TableauDeBord() {
     montantInvestByMonth.push(formatData(montantInvests));
   });
 
-  const dataGraph = lastSixMonths.map((monthData, index) => ({
+  const dataGraph = monthsGraph.map((monthData, index) => ({
     month: monthData.month,
     year: monthData.year,
     amountExpense: amountExpenseByMonth[index],
@@ -268,124 +277,145 @@ export default function TableauDeBord() {
     montantInvest: montantInvestByMonth[index],
   }));
 
-  if (isLoading) return <Loader />;
+  const firstMonthGraph = monthsGraph[0];
+  const lastMonthGraph = monthsGraph[monthsGraph.length - 1];
 
-  const firstMonthOfSix = lastSixMonths[0];
-  const lastMonthOfSix = lastSixMonths[lastSixMonths.length - 1];
+  const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
 
-  const theMonthGraph = `${firstMonthOfSix.month} ${firstMonthOfSix.year} - ${lastMonthOfSix.month} ${lastMonthOfSix.year}`;
+  // -------------- bgColor --------------
 
   const { theme } = useTheme();
   const bgColor =
     theme === "custom"
       ? "bg-colorPrimaryCustom"
       : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+  const chevronIsVisible = month < currentYearMonth;
 
+  // ------------ percent box ------------
+
+  const percentRevenue =
+    ((amountRevenuesMonth - amountRevenuesLastMonth) /
+      amountRevenuesLastMonth) *
+    100;
+
+  const percentExpense =
+    ((Math.abs(amountExpensesMonth) - Math.abs(amountExpensesLastMonth)) /
+      Math.abs(amountExpensesLastMonth)) *
+    100;
+
+  const percentEpargn =
+    ((Math.abs(epargnCurrentMonth) - Math.abs(epargnLastMonth)) /
+      Math.abs(epargnLastMonth)) *
+    100;
+
+  const percentInvestment =
+    ((investCurrentMonth - investLastMonth) / investLastMonth) * 100;
+
+  // ------------ loader ------------
+
+  if (isLoading) return <Loader />;
+  console.log(lastOperations);
   return (
     <>
       <section className="w-full">
         <Header title="Tableau de bord" isFetching={isFetching} />
         <div className="flex flex-col gap-4 animate-fade">
+          <div className="flex gap-4 w-full">
+            <BoxInfos
+              type="revenue"
+              title="Revenu"
+              icon={<DollarSign size={15} color="grey" />}
+              amount={amountRevenuesMonth}
+              percent={percentRevenue}
+            />
+
+            <BoxInfos
+              type="depense"
+              title="Dépense"
+              icon={<WalletCards size={15} color="grey" />}
+              amount={amountExpensesMonth}
+              percent={percentExpense}
+            />
+            <BoxInfos
+              type="epargn"
+              title="Épargne"
+              icon={<Landmark size={15} color="grey" />}
+              amount={epargnCurrentMonth}
+              percent={percentEpargn}
+            />
+            <BoxInfos
+              type="investment"
+              title="Investissement"
+              icon={<HandCoins size={15} color="grey" />}
+              amount={investCurrentMonth}
+              percent={percentInvestment}
+            />
+          </div>
           <div className="flex flex-row gap-4 h-full">
             <div
-              className={`w-full ${bgColor} h-full rounded-xl p-4 flex flex-col gap-4`}
+              className={`w-1/4 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
             >
-              <h2 className="text-3xl font-extralight italic">
-                Dernières transactions
+              <h2 className="text-2xl font-extralight italic">
+                Dernières opérations
               </h2>
               <table className="h-full">
                 <tbody className="w-full h-full flex flex-col">
-                  {lastTransactions.map((transaction) => (
+                  {lastOperations.map((operation) => (
                     <tr
-                      key={transaction._id}
+                      key={operation._id}
                       className="relative rounded-lg h-full flex flex-row items-center py-1 text-sm"
                     >
                       <Dot
-                        className="absolute left-0"
+                        className="absolute right-0"
                         size={40}
                         color={
-                          transaction.type === "Revenue"
-                            ? "green"
-                            : transaction.type === "Expense"
-                              ? "red"
-                              : ""
+                          operation.type === "Revenue"
+                            ? "hsl(var(--graph-recette))"
+                            : operation.type === "Expense"
+                              ? "hsl(var(--graph-depense))"
+                              : "hsl(var(--graph-invest))"
                         }
                       />
-                      <td className="w-full">
-                        {format(transaction.date, "dd/MM")}
+                      <td className="flex flex-row space-x-4 w-full">
+                        <span>{format(operation.date, "dd/MM")}</span>
+                        <span className="truncate">{operation.title}</span>
                       </td>
-                      <td className="w-full truncate">{transaction.title}</td>
-                      <td className="w-full">{transaction.category}</td>
-                      <td className="w-full">
-                        <b>{addSpace(transaction.amount)} €</b>
+                      <td className="w-full italic">
+                        <b>{addSpace(operation.amount)} €</b>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div
-              className={`w-2/3 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
-            >
-              <BoxTdb
-                title="Mois actuel"
-                amountExpense={amountExpensesMonth}
-                amountRevenue={amountRevenuesMonth}
-                montantEconomie={economiesCurrentMonth}
-                montantInvest={InvestCurrentMonth}
-              />
-            </div>
-            <div
-              className={`w-2/3 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
-            >
-              <BoxTdb
-                title="Mois dernier"
-                amountExpense={amountExpensesLastMonth}
-                amountRevenue={amountRevenuesLastMonth}
-                montantEconomie={economieLastMonth}
-                montantInvest={investLastMonth}
-              />
-            </div>
-          </div>
-          <div className="flex flex-row gap-4 h-full">
-            <div className={`w-7/12 ${bgColor} rounded-xl h-full p-4 relative`}>
-              <h2 className="text-3xl font-extralight italic">Graphique</h2>
+            <div className={`w-2/4 ${bgColor} rounded-xl p-4`}>
+              <h2 className="text-2xl font-extralight italic">Graphique</h2>
               {!isFetching ? (
                 <GraphiqueTdb data={dataGraph} />
               ) : (
                 <LoaderDots />
               )}{" "}
               <div
-                className={`flex flex-row gap-4 min-w-fit w-3/5 mx-auto px-20 items-center justify-between bottom-2`}
+                className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
               >
                 <ChevronLeft
-                  size={30}
-                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
+                  size={25}
+                  className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
                   onClick={clickLastMonthGraph}
                 />
-                <p className="text-sm italic">{theMonthGraph}</p>
+                <p className="font-thin text-sm w-10/12 italic">
+                  {theMonthGraph}
+                </p>
                 <ChevronRight
-                  size={30}
-                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
+                  size={25}
+                  className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
                   onClick={clickNextMonthGraph}
                 />
               </div>
             </div>
-            <div className={`w-5/12 ${bgColor} rounded-xl p-4`}>
-              <h2 className="text-3xl font-extralight italic">Répartitions</h2>
-              <div className="flex flex-row justify-between w-full py-3 px-16">
-                <ChevronLeft
-                  size={30}
-                  onClick={clickLastMonth}
-                  className="hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all"
-                />
-                <p className="font-thin italic">{convertDate(month)}</p>
-                <ChevronRight
-                  size={30}
-                  onClick={clickNextMonth}
-                  className={`hover:bg-colorPrimaryLight hover:dark:bg-colorSecondaryDark rounded-full p-2 cursor-pointer duration-300 transition-all ${month >= currentYearMonth ? "invisible" : ""}`}
-                />
-              </div>
+            <div className={`w-1/4 ${bgColor} rounded-xl p-4`}>
+              <h2 className="text-2xl font-extralight italic">Répartitions</h2>
+
               {!isFetching ? (
                 <CamembertTdb
                   dataDf={formatData(dataDf)}
@@ -396,8 +426,32 @@ export default function TableauDeBord() {
               ) : (
                 <LoaderDots />
               )}
+              <div className="flex flex-row justify-between w-3/4 mx-auto">
+                <div className="w-1/12">
+                  <ChevronLeft
+                    size={25}
+                    onClick={clickLastMonth}
+                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                  />
+                </div>
+
+                <p className="font-thin text-sm w-10/12 italic">
+                  {convertDate(month)}
+                </p>
+
+                <div className="w-1/12">
+                  {chevronIsVisible && (
+                    <ChevronRight
+                      size={25}
+                      onClick={clickNextMonth}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
+          <div className="flex flex-row gap-4 h-full"></div>
         </div>
       </section>
     </>

@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   BarChart,
-  Euro,
   HandCoins,
   LayoutDashboard,
   Power,
@@ -24,6 +23,7 @@ import { useTheme } from "../context/ThemeContext";
 import { getCurrentUser, logoutUser } from "../service/user.service";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
+import { DollarSign } from "lucide-react";
 
 function Sidebar() {
   const userId = getUserIdFromToken();
@@ -81,7 +81,7 @@ function Sidebar() {
       id: 3,
       name: "Board recette",
       link: ROUTES.REVENUE,
-      icon: <Euro />,
+      icon: <DollarSign />,
     },
     {
       id: 4,
@@ -145,7 +145,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 hover:scale-95 transition-all">
+              <Avatar className="w-12 h-12 cursor-pointer hover:scale-95 transition-all">
                 <AvatarImage
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}

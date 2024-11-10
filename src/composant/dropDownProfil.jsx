@@ -45,9 +45,7 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="none">{btnOpen}</Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{btnOpen}</DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="mb-4">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />

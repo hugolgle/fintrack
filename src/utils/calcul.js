@@ -26,7 +26,9 @@ export function calculTotal(data, type, filterCategory, filterTitle) {
     0.0
   );
 
-  const formattedTotal = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  const formattedTotal = totalAmount
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return formattedTotal;
 }
@@ -74,7 +76,9 @@ export function calculTotalByMonth(
     0.0
   );
 
-  const formattedTotal = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  const formattedTotal = totalAmount
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return formattedTotal;
 }
@@ -114,7 +118,9 @@ export function calculTotalByYear(
     0.0
   );
 
-  const formattedTotal = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  const formattedTotal = totalAmount
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return formattedTotal;
 }
@@ -146,7 +152,7 @@ export function calculMoyenne(data, type, year, nbMonth) {
     return "0.00 €";
   }
 
-  return `${resultat.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  return resultat.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 export function calculEconomie(data, year, month) {
@@ -222,7 +228,9 @@ export function calculTotalInvestment(data, isSold, title) {
     }
   }, 0.0);
 
-  const formattedTotal = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  const formattedTotal = totalAmount
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return formattedTotal;
 }
@@ -252,7 +260,9 @@ export function calculTotalInvestmentByTitle(data, isSold, title) {
     }
   }, 0.0);
 
-  const formattedTotal = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+  const formattedTotal = totalAmount
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return formattedTotal;
 }

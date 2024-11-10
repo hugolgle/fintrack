@@ -99,10 +99,6 @@ export function DialogEdit({ transaction, refetch, data }) {
 
   const categoryD = categorySort(categoryDepense);
   const categoryR = categorySort(categoryRecette);
-  const suggestions = getTitleOfTransactionsByType(
-    data,
-    transaction?.data?.type
-  );
 
   const dataBase = [
     transaction?.data?.title,
@@ -127,7 +123,7 @@ export function DialogEdit({ transaction, refetch, data }) {
   return (
     <Dialog asChild>
       <DialogTrigger>
-        <Button>Modifier</Button>
+        <Button variant="outline">Modifier</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={formik.handleSubmit}>

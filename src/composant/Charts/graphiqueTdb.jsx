@@ -30,7 +30,7 @@ export function GraphiqueTdb({ data }) {
           <div className="flex flex-col">
             <div className="flex flex-row justify-between gap-4">
               <div className="flex flex-row justify-center items-center gap-1">
-                <div className="w-[5px] h-[5px] rounded bg-colorRecette"></div>
+                <div className="w-[5px] h-[5px] rounded bg-colorRevenue"></div>
                 <p className=" opacity-75">Recette</p>
               </div>
               <p className="italic font-black">
@@ -39,7 +39,7 @@ export function GraphiqueTdb({ data }) {
             </div>
             <div className="flex flex-row justify-between gap-4">
               <div className="flex flex-row justify-center items-center gap-1">
-                <div className="w-[5px] h-[5px] rounded bg-colorDepense"></div>
+                <div className="w-[5px] h-[5px] rounded bg-colorExpense"></div>
                 <p className=" opacity-75">Dépense</p>
               </div>
               <p className="italic font-black">
@@ -108,18 +108,11 @@ export function GraphiqueTdb({ data }) {
 
   return (
     <CardContent>
-      <ResponsiveContainer width="100%" height={275}>
+      <ResponsiveContainer width="100%" height={225}>
         <LineChart
           data={data}
           margin={{ top: 20, left: 0, right: 40, bottom: 10 }}
         >
-          <CartesianGrid
-            strokeDasharray="3"
-            stroke={chartConfig.text.color}
-            e
-            vertical={false}
-          />
-
           <XAxis
             dataKey="month"
             tick={{ fontSize: 12, fill: chartConfig.text.color }}
@@ -140,11 +133,14 @@ export function GraphiqueTdb({ data }) {
 
           <Line
             dataKey="amountRevenue"
-            type="bump"
+            type="natural"
             stroke={chartConfig.amountRevenue.color}
             strokeWidth={1.5}
-            dot={{ fill: chartConfig.amountRevenue.color }}
-            activeDot={{ r: 6 }}
+            dot={{ fill: chartConfig.amountRevenue.color, r: 2 }}
+            activeDot={false}
+            isAnimationActive={true} // Active l'animation
+            animationDuration={1500} // Durée de l'animation en ms
+            animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList
               fontWeight={100}
@@ -158,11 +154,14 @@ export function GraphiqueTdb({ data }) {
 
           <Line
             dataKey="amountExpense"
-            type="bump"
+            type="natural"
             stroke={chartConfig.amountExpense.color}
             strokeWidth={1.5}
-            dot={{ fill: chartConfig.amountExpense.color }}
-            activeDot={{ r: 6 }}
+            dot={{ fill: chartConfig.amountExpense.color, r: 2 }}
+            activeDot={false}
+            isAnimationActive={true} // Active l'animation
+            animationDuration={1500} // Durée de l'animation en ms
+            animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList
               fontWeight={100}
@@ -175,11 +174,14 @@ export function GraphiqueTdb({ data }) {
           </Line>
           <Line
             dataKey="montantInvest"
-            type="bump"
+            type="natural"
             stroke={chartConfig.montantInvest.color}
             strokeWidth={1.5}
-            dot={{ fill: chartConfig.montantInvest.color }}
-            activeDot={{ r: 6 }}
+            dot={{ fill: chartConfig.montantInvest.color, r: 2 }}
+            activeDot={false}
+            isAnimationActive={true} // Active l'animation
+            animationDuration={1500} // Durée de l'animation en ms
+            animationEasing="ease-out" // Courbe de l'animation
           >
             <LabelList
               fontWeight={100}

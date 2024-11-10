@@ -23,9 +23,10 @@ module.exports = {
         colorPrimaryCustom: "var(--color-primary-custom, rgb(255, 255, 255))",
         colorSecondaryCustom:
           "var(--color-secondary-custom, rgb(255, 255, 255))",
-        colorDepense: "hsl(var(--graph-depense))",
-        colorRecette: "hsl(var(--graph-recette))",
+        colorExpense: "hsl(var(--graph-depense))",
+        colorRevenue: "hsl(var(--graph-recette))",
         colorInvest: "hsl(var(--graph-invest))",
+        colorEpargn: "hsl(var(--graph-epargn))",
         fontBg: "#242424",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

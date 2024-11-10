@@ -86,7 +86,7 @@ export default function Connexion() {
       <Title title="S'identifier" />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+        className="flex flex-col justify-center items-center gap-5 mt-20 animate-fade"
       >
         <Input
           className="w-96 h-10 px-2"
@@ -147,7 +147,7 @@ export default function Connexion() {
           )}
         </Button>
       </form>
-      <div className="flex flex-col justify-center items-center gap-2 px-36">
+      <div className="flex flex-col justify-center items-center mt-5 gap-2">
         <p className="text-xs">Nouveau sur DashCash ?</p>
         <Button variant="secondary" onClick={() => navigate(ROUTES.SIGNUP)}>
           Créer un compte DashCash !

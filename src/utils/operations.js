@@ -135,7 +135,7 @@ export function getTransactionsByYear(
   return transactionsInYear;
 }
 
-export function getLastTransactionsByType(data, type, number, month) {
+export function getLastOperations(data, type, number, month) {
   if (!Array.isArray(data)) {
     return [];
   }

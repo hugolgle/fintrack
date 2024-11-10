@@ -15,7 +15,7 @@ export function DialogDelete({ handleDelete, isPending }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Supprimer</Button>
+        <Button variant="destructive">Supprimer</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

@@ -11,6 +11,10 @@ import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { format } from "date-fns";
+import BoxInvestment from "../../../composant/boxInvestment";
+import { Pickaxe } from "lucide-react";
+import { Shield } from "lucide-react";
+import { HandCoins } from "lucide-react";
 
 export default function BoardInvest() {
   const { isLoading, data, isFetching } = useQuery({
@@ -93,14 +97,32 @@ export default function BoardInvest() {
         />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
           <div className="h-32 flex gap-4">
-            <Link
+            <BoxInvestment
+              title="Investissements en cours"
+              amount={montantInvestInProgress}
+              icon={<Pickaxe size={15} color="grey" />}
               to="inprogress"
+            />
+            <BoxInvestment
+              title="Tous les investissements"
+              amount={montantInvest}
+              icon={<HandCoins size={15} color="grey" />}
+              to="all"
+            />
+            <BoxInvestment
+              title="Investissements vendus"
+              amount={montantInvestSold}
+              icon={<Shield size={15} color="grey" />}
+              to="sold"
+            />
+            {/*<Link
+              to=
               className={`w-full relative flex flex-col items-center justify-center h-full ${bgColor} rounded-2xl hover:bg-opacity-80 hover:scale-95 transition-all p-2`}
             >
               <p className="italic font-thin absolute top-2">
                 Investissements en cours
               </p>
-              <p className="text-3xl font-thin">{montantInvestInProgress}</p>
+              <p className="text-3xl font-thin">{montantInvestInProgress} €</p>
             </Link>
             <Link
               to="all"
@@ -109,7 +131,7 @@ export default function BoardInvest() {
               <p className="italic font-thin absolute top-2">
                 Tous les investissements
               </p>
-              <p className="text-3xl font-thin">{montantInvest}</p>
+              <p className="text-3xl font-thin">{montantInvest} €</p>
             </Link>
             <Link
               to="sold"
@@ -118,8 +140,8 @@ export default function BoardInvest() {
               <p className="italic font-thin absolute top-2">
                 Investissements vendus
               </p>
-              <p className="text-3xl font-thin">{montantInvestSold}</p>
-            </Link>
+              <p className="text-3xl font-thin">{montantInvestSold} €</p>
+            </Link>*/}
           </div>
 
           <div className="flex items-center justify-center mb-1 px-8">
@@ -130,7 +152,7 @@ export default function BoardInvest() {
 
           <div className="flex flex-wrap gap-4 justify-center mb-4">
             {uniqueInvest.length > 0 ? (
-              uniqueInvest.map(({ title, type, date }, index) => {
+              uniqueInvest.map(({ title, type, date, symbol }, index) => {
                 const linkInvest = title.toLowerCase().replace(/\s+/g, "");
                 const amount = calculTotalInvestmentByTitle(data, null, title);
                 const count = investmentCountByTitle[title];
@@ -153,7 +175,7 @@ export default function BoardInvest() {
 
                     <p className="text-xl truncate">{title}</p>
                     <div className="flex justify-between">
-                      <p className="font-medium italic">{amount}</p>
+                      <p className="font-medium italic">{amount} €</p>
                       <p className="text-lg italic">({count})</p>
                     </div>
                   </Link>

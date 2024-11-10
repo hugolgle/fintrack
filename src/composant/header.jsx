@@ -96,11 +96,11 @@ function Header({
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
                     <ChevronLeft
-                      className="hover:scale-105 rounded-full p-2 cursor-pointer transition-all size-9"
+                      className="hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-full p-1 cursor-pointer transition-all"
                       onClick={clickLastMonth}
                     />
                     <ChevronRight
-                      className="hover:scale-105 rounded-full p-2 cursor-pointer transition-all size-9"
+                      className="hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-full p-1 cursor-pointer transition-all"
                       onClick={clickNextMonth}
                     />
                   </div>

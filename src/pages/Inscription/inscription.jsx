@@ -120,7 +120,7 @@ export default function Inscription() {
       <Title title="Inscription" />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 px-36 py-10 animate-fade"
+        className="flex flex-col justify-center items-center gap-5 mt-20 animate-fade"
         encType="multipart/form-data"
       >
         <div className="flex gap-4 w-96">
@@ -273,14 +273,11 @@ export default function Inscription() {
         </Button>
       </form>
 
-      <div className="flex flex-col justify-center items-center gap-2 px-36">
+      <div className="flex flex-col justify-center items-center mt-5 gap-2">
         <p className="text-xs">Vous possédez déjà un compte ?</p>
-        <Link
-          to={ROUTES.LOGIN}
-          className="rounded-xl bg-transparent border-2 border-zinc-700 py-2 text-sm px-4 transition-all hover:bg-zinc-200 hover:dark:bg-zinc-700"
-        >
+        <Button variant="secondary" onClick={() => navigate(ROUTES.LOGIN)}>
           Identifiez-vous !
-        </Link>
+        </Button>
       </div>
     </>
   );

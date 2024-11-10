@@ -5,7 +5,7 @@ import {
   calculTotalByYear,
 } from "../../../utils/calcul";
 import { addSpace } from "../../../utils/fonctionnel";
-import { getLastTransactionsByType } from "../../../utils/operations";
+import { getLastOperations } from "../../../utils/operations";
 import { currentDate, getLastMonths, getLastYears } from "../../../utils/other";
 import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
@@ -36,7 +36,7 @@ export default function BoardRecette() {
 
   const lastMonths = getLastMonths(currentYearMonth, 3).reverse();
   const lastYears = getLastYears(2);
-  const lastTransactions = getLastTransactionsByType(data, "Revenue", 5, true);
+  const lastTransactions = getLastOperations(data, "Revenue", 5, true);
 
   const { theme } = useTheme();
   const bgColor =
@@ -69,7 +69,8 @@ export default function BoardRecette() {
                       lastMonths[0].code,
                       null,
                       null
-                    )}
+                    )}{" "}
+                    €
                   </p>
 
                   {lastTransactions && lastTransactions.length > 0 ? (
@@ -110,7 +111,8 @@ export default function BoardRecette() {
                         month.code,
                         null,
                         null
-                      )}
+                      )}{" "}
+                      €
                     </p>
                   </Link>
                 ))}
@@ -126,7 +128,8 @@ export default function BoardRecette() {
                 >
                   <p className="italic absolute top-2">{year}</p>
                   <p className="text-3xl font-thin">
-                    {calculTotalByYear(data, "Revenue", `${year}`, null, null)}
+                    {calculTotalByYear(data, "Revenue", `${year}`, null, null)}{" "}
+                    €
                   </p>
                 </Link>
               ))}
@@ -138,7 +141,7 @@ export default function BoardRecette() {
             >
               <p className="italic absolute top-2">Toutes les recettes</p>
               <p className="text-3xl font-thin">
-                {calculTotal(data, "Revenue", null, null)}
+                {calculTotal(data, "Revenue", null, null)} €
               </p>
             </Link>
           </div>

@@ -5,10 +5,7 @@ import {
   calculTotalByYear,
 } from "../../../utils/calcul";
 import { addSpace, formatAmount } from "../../../utils/fonctionnel";
-import {
-  getLastSubscribe,
-  getLastTransactionsByType,
-} from "../../../utils/operations";
+import { getLastSubscribe, getLastOperations } from "../../../utils/operations";
 import { currentDate, getLastMonths, getLastYears } from "../../../utils/other";
 import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +15,8 @@ import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { format } from "date-fns";
+import { DollarSign } from "lucide-react";
+import BoxInfos from "../../../composant/boxInfos";
 
 export default function BoardDepense() {
   const { isLoading, data, isFetching } = useQuery({
@@ -40,7 +39,7 @@ export default function BoardDepense() {
 
   const lastMonths = getLastMonths(currentYearMonth, 3).reverse();
   const lastYears = getLastYears(2);
-  const lastTransactions = getLastTransactionsByType(data, "Expense", 5, true);
+  const lastTransactions = getLastOperations(data, "Expense", 5, true);
 
   const mySubscribes = getLastSubscribe(data);
 
@@ -72,9 +71,8 @@ export default function BoardDepense() {
             isFetching={isFetching}
           />
           <div className="flex gap-4 animate-fade">
-            <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-3 w-full">
               <div className="flex w-full gap-4">
-                {/* Mois en cours à gauche */}
                 <Link
                   key={lastMonths[0].code}
                   to={lastMonths[0].code}
@@ -88,7 +86,8 @@ export default function BoardDepense() {
                         lastMonths[0].code,
                         null,
                         null
-                      )}
+                      )}{" "}
+                      €
                     </p>
 
                     {lastTransactions && lastTransactions.length > 0 ? (
@@ -127,7 +126,8 @@ export default function BoardDepense() {
                           month.code,
                           null,
                           null
-                        )}
+                        )}{" "}
+                        €
                       </p>
                     </Link>
                   ))}
@@ -149,7 +149,8 @@ export default function BoardDepense() {
                         `${year}`,
                         null,
                         null
-                      )}
+                      )}{" "}
+                      €
                     </p>
                   </Link>
                 ))}
@@ -161,7 +162,7 @@ export default function BoardDepense() {
               >
                 <p className="italic absolute top-2">Toutes les dépenses</p>
                 <p className="text-3xl font-thin">
-                  {calculTotal(data, "Expense", null, null)}
+                  {calculTotal(data, "Expense", null, null)} €
                 </p>
               </Link>
             </div>

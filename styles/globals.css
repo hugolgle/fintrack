@@ -49,9 +49,9 @@
 
     --graph-invest: var(--chart-17);
     --graph-loisir: var(--chart-1);
-    --graph-epargn: var(--chart-2);
+    --graph-epargn: var(--chart-9);
     --graph-depensesFixes: var(--chart-3);
-    --radius: 0.6rem;
+    --radius: 1rem;
   }
 
   .dark {

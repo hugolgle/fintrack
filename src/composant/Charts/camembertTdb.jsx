@@ -73,25 +73,6 @@ export function CamembertTdb(props) {
     },
   };
 
-  const renderCustomLegend = (props) => {
-    const { payload } = props;
-    return (
-      <ul className="flex items-center justify-around gap-4 mt-4 w-full">
-        {payload?.map((entry, index) => (
-          <li key={`item-${index}`} className="flex items-center gap-2">
-            <div
-              className="w-[10px] h-[10px] rounded-full"
-              style={{ backgroundColor: entry.color }}
-            ></div>
-            <span className="text-xs italic">
-              {entry.value} ({entry.payload.pourcentage.toFixed(2)}%)
-            </span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
   const CustomTooltipContent = (props) => {
     const { active, payload } = props;
     if (active && payload && payload.length) {
@@ -138,7 +119,7 @@ export function CamembertTdb(props) {
   };
 
   return (
-    <ResponsiveContainer width="100%" height={240}>
+    <ResponsiveContainer width="100%" height={225}>
       <ChartContainer
         config={chartConfig}
         className="aspect-square max-h-[250px]"
@@ -149,16 +130,12 @@ export function CamembertTdb(props) {
             data={chartData}
             dataKey="amount"
             nameKey="category"
-            innerRadius={60}
-            outerRadius={80}
+            innerRadius={50}
+            outerRadius={70}
+            paddingAngle={2}
           >
             {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={entry.fill}
-                strokeWidth={1}
-                stroke="white"
-              />
+              <Cell key={`cell-${index}`} fill={entry.fill} strokeWidth={1} />
             ))}
             <Label
               content={({ viewBox }) => {
@@ -174,7 +151,7 @@ export function CamembertTdb(props) {
                       <tspan
                         x={viewBox.cx}
                         y={viewBox.cy}
-                        className="text-xs italic font-thin fill-foreground"
+                        className="text-sm italic font-thin fill-foreground"
                       >
                         {`${addSpace(total)} €`}
                       </tspan>
@@ -184,7 +161,6 @@ export function CamembertTdb(props) {
               }}
             />
           </Pie>
-          <Legend content={renderCustomLegend} />
         </PieChart>
       </ChartContainer>
     </ResponsiveContainer>
