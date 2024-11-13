@@ -8,9 +8,9 @@ import {
 } from "../../utils/calcul";
 import { convertDate } from "../../utils/fonctionnel";
 import BoxStat from "../../composant/Box/boxStat";
-import { CamembertStat } from "../../composant/Charts/camembertStat";
 import { Separator } from "@/components/ui/separator";
 import {
+  aggregateTransactions,
   getTransactionsByMonth,
   getTransactionsByYear,
 } from "../../utils/operations";
@@ -29,6 +29,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../service/user.service";
+import { RadialChart } from "../../composant/Charts/radialChart";
 
 export default function Statistique() {
   const userId = getUserIdFromToken();
@@ -220,6 +221,96 @@ export default function Statistique() {
       ? "bg-colorPrimaryCustom"
       : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
 
+  // -------------
+
+  const transactionsExpense = selectedByYear
+    ? expensePieChartYear
+    : expensePieChartMonth;
+
+  const categoryColorsExpense = categoryDepense.reduce((acc, category) => {
+    acc[category.name] = category.color;
+    return acc;
+  }, {});
+
+  const chartDataExpense = aggregateTransactions(transactionsExpense);
+  const totalAmountExpense = chartDataExpense.reduce(
+    (sum, item) => sum + parseFloat(item.amount),
+    0
+  );
+
+  const transformedDataExpense = chartDataExpense.map((item) => ({
+    name: item.nomCate,
+    amount: parseFloat(item.amount),
+    pourcentage: (parseFloat(item.amount) / totalAmountExpense) * 100,
+    fill: categoryColorsExpense[item.nomCate],
+  }));
+
+  const chartConfigExpense = {
+    ...Object.keys(categoryColorsExpense).reduce((acc, category) => {
+      acc[category.toLocaleLowerCase()] = {
+        label: category,
+        color: categoryColorsExpense[category],
+      };
+      return acc;
+    }, {}),
+  };
+
+  const transactionsRevenue = selectedByYear
+    ? revenuePieChartYear
+    : revenuePieChartMonth;
+
+  const categoryColorsRevenue = categoryRecette.reduce((acc, category) => {
+    acc[category.name] = category.color;
+    return acc;
+  }, {});
+
+  const chartDataRevenue = aggregateTransactions(transactionsRevenue);
+  const totalAmountRevenue = chartDataRevenue.reduce(
+    (sum, item) => sum + parseFloat(item.amount),
+    0
+  );
+
+  const transformedDataRevenue = chartDataRevenue.map((item) => ({
+    name: item.nomCate,
+    amount: parseFloat(item.amount),
+    pourcentage: (parseFloat(item.amount) / totalAmountRevenue) * 100,
+    fill: categoryColorsRevenue[item.nomCate],
+  }));
+
+  const chartConfigRevenue = {
+    ...Object.keys(categoryColorsRevenue).reduce((acc, category) => {
+      acc[category.toLocaleLowerCase()] = {
+        label: category,
+        color: categoryColorsRevenue[category],
+      };
+      return acc;
+    }, {}),
+  };
+
+  const renderCustomLegend = (props) => {
+    const { payload, topN = 5 } = props;
+    const payloadSort = payload.sort(
+      (a, b) => b.payload.pourcentage - a.payload.pourcentage
+    );
+    const payloadTopN = payloadSort.slice(0, topN);
+
+    return (
+      <ul className="flex flex-col justify-center w-40">
+        {payloadTopN.map((entry, index) => (
+          <li key={`item-${index}`} className="flex items-center my-1">
+            <div
+              className="w-[10px] h-[10px] rounded-full mr-2"
+              style={{ backgroundColor: entry.color }}
+            ></div>
+            <span className="text-xs font-thin italic truncate">
+              {entry.value} ({entry.payload.pourcentage.toFixed(2)}%)
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <section className="w-full">
       <Header title="Statistiques" isFetching={isFetching} />
@@ -338,11 +429,13 @@ export default function Statistique() {
               </p>
 
               {!isFetching ? (
-                <CamembertStat
-                  transactions={
-                    selectedByYear ? revenuePieChartYear : revenuePieChartMonth
-                  }
-                  category={categoryRecette}
+                <RadialChart
+                  chartData={transformedDataRevenue}
+                  chartConfig={chartConfigRevenue}
+                  legend={renderCustomLegend}
+                  inner={40}
+                  outer={50}
+                  height={200}
                 />
               ) : (
                 <LoaderDots size={180} />
@@ -376,11 +469,13 @@ export default function Statistique() {
                   : `Dépenses de ${convertDate(selectedDate)}`}
               </p>
               {!isFetching ? (
-                <CamembertStat
-                  transactions={
-                    selectedByYear ? expensePieChartYear : expensePieChartMonth
-                  }
-                  category={categoryDepense}
+                <RadialChart
+                  chartData={transformedDataExpense}
+                  chartConfig={chartConfigExpense}
+                  legend={renderCustomLegend}
+                  inner={40}
+                  outer={50}
+                  height={200}
                 />
               ) : (
                 <LoaderDots />

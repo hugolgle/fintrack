@@ -1,5 +1,7 @@
+import { TrendingDown } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { addSpace, formatAmountWithoutSpace } from "../utils/fonctionnel";
+import { TrendingUp } from "lucide-react";
 
 function BoxInfos({
   type,
@@ -50,8 +52,13 @@ function BoxInfos({
         {icon}
       </div>
       <div className="w-full flex flex-col h-full justify-end items-start">
-        <p className="font-bold italic text-2xl">
-          {addSpace(value)} {isAmount && "€"}
+        <p className="font-bold flex italic items-end gap-2 text-2xl">
+          {addSpace(value)} {isAmount && "€"}{" "}
+          {valueLast && percent < 0 ? (
+            <TrendingDown size={15} color="red" />
+          ) : percent > 0 ? (
+            <TrendingUp size={15} color="green" />
+          ) : null}
         </p>
 
         {valueLast && (

@@ -1,19 +1,17 @@
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInvestments } from "../../../service/investment.service";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Header from "../../../composant/header";
 import { toast } from "sonner";
 import Loader from "../../../composant/loader/loader";
 import { useTheme } from "../../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
-import { format } from "date-fns";
 import { Pickaxe } from "lucide-react";
 import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { addSpace, formatAmount } from "../../../utils/fonctionnel";
 import { BookA } from "lucide-react";
 import BoxInfos from "../../../composant/boxInfos";
+import { RadialChart } from "../../../composant/Charts/radialChart";
 
 export default function BoardInvest() {
   const { isLoading, data, isFetching } = useQuery({
@@ -55,6 +53,47 @@ export default function BoardInvest() {
       ? "bg-colorPrimaryCustom"
       : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
 
+  const totalAmountBuy = data.reduce(
+    (total, item) => total + (parseFloat(item.amountBuy) || 0),
+    0
+  );
+
+  const categorySums = data.reduce((acc, investment) => {
+    const type = investment.type;
+    const amountBuy = parseFloat(investment.amountBuy) || 0;
+
+    if (acc[type]) {
+      acc[type].amount += amountBuy;
+    } else {
+      acc[type] = {
+        category: type,
+        amount: amountBuy,
+      };
+    }
+    return acc;
+  }, {});
+
+  const chartData = Object.values(categorySums).map((category, key) => {
+    const pourcentage = (category.amount / totalAmountBuy) * 100;
+    return {
+      name: category.category,
+      amount: category.amount,
+      pourcentage: pourcentage,
+      fill: `hsl(var(--chart-${key}))`,
+    };
+  });
+
+  const chartConfig = Object.values(categorySums).reduce(
+    (config, category, key) => {
+      config[category.category] = {
+        label: category.category,
+        color: `hsl(var(--chart-${key}))`,
+      };
+      return config;
+    },
+    {}
+  );
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
@@ -94,7 +133,16 @@ export default function BoardInvest() {
               onClick={() => navigate("/order")}
             />
           </div>
-          <div className="flex gap-4"></div>
+          <div className="flex gap-4">
+            <RadialChart
+              chartData={chartData}
+              chartConfig={chartConfig}
+              total={amountBuy.toFixed(2)}
+              inner={70}
+              outer={90}
+              height={200}
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -7,10 +7,9 @@ import {
 import {
   addSpace,
   convertDate,
+  formatAmount,
   formatAmountWithoutSpace,
-  removeSpace,
 } from "../../utils/fonctionnel";
-import { CamembertTdb } from "../../composant/Charts/camembertTdb";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { GraphiqueTdb } from "../../composant/Charts/graphiqueTdb";
@@ -32,6 +31,7 @@ import { WalletCards } from "lucide-react";
 import { Landmark } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { useNavigate } from "react-router";
+import { RadialChart } from "../../composant/Charts/radialChart";
 
 export default function TableauDeBord() {
   const navigate = useNavigate();
@@ -313,8 +313,66 @@ export default function TableauDeBord() {
 
   // ------------ loader ------------
 
+  const dFix = parseFloat(Math.abs(dataDf));
+  const dLoisir = parseFloat(Math.abs(dataLoisir));
+  const mInvest = parseFloat(montantInvest);
+
   if (isLoading) return <Loader />;
-  console.log(epargnCurrentMonth);
+
+  let epargne = total - (dFix + dLoisir + mInvest);
+
+  if (epargne < 0) {
+    epargne = 0;
+  }
+
+  const chartData = [
+    {
+      name: "Dépenses fixes",
+      amount: dFix,
+      pourcentage: (dFix / parseFloat(total)) * 100,
+      fill: "var(--color-depensesFixes)",
+    },
+    {
+      name: "Loisir",
+      amount: dLoisir,
+      pourcentage: (dLoisir / parseFloat(total)) * 100,
+      fill: "var(--color-loisir)",
+    },
+    {
+      name: "Investissements",
+      amount: mInvest,
+      pourcentage: (mInvest / parseFloat(total)) * 100,
+      fill: "var(--color-invest)",
+    },
+    {
+      name: "Épargne",
+      amount: parseFloat(epargne),
+      pourcentage: (parseFloat(epargne) / total) * 100,
+      fill: "var(--color-epargne)",
+    },
+  ];
+
+  const chartConfig = {
+    depensesFixes: {
+      label: "Dépenses fixes",
+      color: "hsl(var(--graph-depensesFixes))",
+    },
+    loisir: {
+      label: "Loisir",
+      color: "hsl(var(--graph-loisir))",
+    },
+    invest: {
+      label: "Investissements",
+      color: "hsl(var(--graph-invest))",
+    },
+    epargne: {
+      label: "Épargne",
+      color: "hsl(var(--graph-epargn))",
+    },
+  };
+
+  console.log("dashboard", chartData);
+
   return (
     <>
       <section className="w-full">
@@ -420,11 +478,13 @@ export default function TableauDeBord() {
               <h2 className="text-2xl font-extralight italic">Répartitions</h2>
 
               {!isFetching ? (
-                <CamembertTdb
-                  dataDf={formatData(dataDf)}
-                  dataLoisir={formatData(dataLoisir)}
-                  dataInvest={montantInvest}
-                  total={formatData(total)}
+                <RadialChart
+                  chartData={chartData}
+                  chartConfig={chartConfig}
+                  total={total}
+                  inner={50}
+                  outer={70}
+                  height={200}
                 />
               ) : (
                 <LoaderDots />
