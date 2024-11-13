@@ -118,7 +118,7 @@ export const editInvestmentsTransaction = async (editData, idInvestment) => {
   );
 };
 
-export const deleteInvestments = async (id) => {
+export const deleteInvestment = async (id) => {
   const token = sessionStorage.getItem("token");
 
   return await axios.delete(`http://localhost:5001/investments/${id}`, {

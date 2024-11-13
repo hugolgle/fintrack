@@ -1,0 +1,7 @@
+.truncateCustom {
+  display: inline-block;
+  max-width: 10ch; /* Limite à 10 caractères */
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  overflow: hidden; /* Cache le texte qui dépasse */
+  text-overflow: ellipsis; /* Affiche "..." lorsque le texte dépasse */
+}

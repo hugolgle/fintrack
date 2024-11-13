@@ -267,3 +267,31 @@ module.exports.deleteTransaction = async (req, res) => {
     });
   }
 };
+
+module.exports.deleteInvestement = async (req, res) => {
+  try {
+    const investement = await InvestmentModel.findById(req.params.id);
+
+    if (!investement) {
+      return res
+        .status(400)
+        .json({ message: "Cet investissement n'existe pas" });
+    }
+
+    if (investement.transaction.length > 0) {
+      return res.status(400).json({
+        message:
+          "Impossible de supprimer l'investissement : il contient des transactions",
+      });
+    }
+
+    await investement.deleteOne({ _id: req.params.id });
+
+    return res.status(200).json({ message: "Ordre supprimé avec succès !" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la suppression de l'investissement",
+      error,
+    });
+  }
+};

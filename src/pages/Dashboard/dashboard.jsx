@@ -21,7 +21,6 @@ import Header from "../../composant/header";
 import { fetchInvestments } from "../../service/investment.service";
 import Loader from "../../composant/loader/loader";
 import LoaderDots from "../../composant/loader/loaderDots";
-import { useTheme } from "../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { Dot } from "lucide-react";
 import { format } from "date-fns";
@@ -302,13 +301,6 @@ export default function TableauDeBord() {
 
   const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
 
-  // -------------- bgColor --------------
-
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
   const chevronIsVisible = month < currentYearMonth;
 
   // ------------ loader ------------
@@ -371,8 +363,6 @@ export default function TableauDeBord() {
     },
   };
 
-  console.log("dashboard", chartData);
-
   return (
     <>
       <section className="w-full">
@@ -386,6 +376,7 @@ export default function TableauDeBord() {
               icon={<DollarSign size={15} color="grey" />}
               value={amountRevenuesMonth}
               valueLast={amountRevenuesLastMonth}
+              isAmount
             />
 
             <BoxInfos
@@ -395,6 +386,7 @@ export default function TableauDeBord() {
               icon={<WalletCards size={15} color="grey" />}
               value={amountExpensesMonth}
               valueLast={amountExpensesLastMonth}
+              isAmount
             />
             <BoxInfos
               type="epargn"
@@ -402,6 +394,7 @@ export default function TableauDeBord() {
               icon={<Landmark size={15} color="grey" />}
               value={epargnCurrentMonth}
               valueLast={epargnLastMonth}
+              isAmount
             />
             <BoxInfos
               onClick={() => navigate("/investment")}
@@ -410,12 +403,11 @@ export default function TableauDeBord() {
               icon={<HandCoins size={15} color="grey" />}
               value={investCurrentMonth}
               valueLast={investLastMonth}
+              isAmount
             />
           </div>
           <div className="flex flex-row gap-4 h-full">
-            <div
-              className={`w-1/4 ${bgColor} rounded-xl p-4 flex flex-col gap-4`}
-            >
+            <div className="w-1/4 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
               <h2 className="text-2xl font-extralight italic">
                 Dernières opérations
               </h2>
@@ -449,7 +441,7 @@ export default function TableauDeBord() {
                 </tbody>
               </table>
             </div>
-            <div className={`w-2/4 ${bgColor} rounded-xl p-4`}>
+            <div className={`w-2/4 bg-primary-foreground rounded-xl p-4`}>
               <h2 className="text-2xl font-extralight italic">Graphique</h2>
               {!isFetching ? (
                 <GraphiqueTdb data={dataGraph} />
@@ -474,7 +466,7 @@ export default function TableauDeBord() {
                 />
               </div>
             </div>
-            <div className={`w-1/4 ${bgColor} rounded-xl p-4`}>
+            <div className={`w-1/4 bg-primary-foreground rounded-xl p-4`}>
               <h2 className="text-2xl font-extralight italic">Répartitions</h2>
 
               {!isFetching ? (

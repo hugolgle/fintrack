@@ -11,16 +11,12 @@ import Loader from "../../../composant/loader/loader";
 import { HttpStatusCode } from "axios";
 import { formatAmount } from "../../../utils/fonctionnel";
 import { useLocation } from "react-router";
+import { FormEditTransac } from "../../../composant/Form/FormEditTransac";
 
 export default function PageInvestment() {
   const { id } = useParams();
 
   const location = useLocation().pathname;
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectOpe, setSelectOpe] = useState(false);
-  const [clickResearch, setClickResearch] = useState(false);
 
   const { isLoading, data, isFetching, refetch } = useQuery({
     queryKey: ["fetchInvestments"],
@@ -73,10 +69,6 @@ export default function PageInvestment() {
       }
     });
   };
-  // const isPageById =
-  //   !location.includes("inprogress") &&
-  //   !location.includes("sold") &&
-  //   !location.includes("all");
 
   const normalizedData = processTransactions(data || []);
   const dataAll = normalizedData;
@@ -89,90 +81,44 @@ export default function PageInvestment() {
   const dataById = processTransactions([dataTransactions] || []);
 
   let investissements = [];
-  let totalInvestissement = 0.0;
-  let nbInvestissement = 0.0;
 
   if (location.includes("all")) {
     investissements = dataAll;
-    totalInvestissement = formatAmount(
-      dataAll.reduce(
-        (total, item) => total + parseFloat(item.transaction.amount),
-        0.0
-      )
-    );
-    nbInvestissement = dataAll.length;
   } else if (location.includes("sold")) {
     investissements = dataSold;
-    totalInvestissement = formatAmount(
-      dataSold.reduce(
-        (total, item) => total + parseFloat(item.transaction.amount),
-        0.0
-      )
-    );
-    nbInvestissement = dataSold.length;
   } else if (location.includes("inprogress")) {
     investissements = dataInProgress;
-    totalInvestissement = formatAmount(
-      dataInProgress.reduce(
-        (total, item) => total + parseFloat(item.transaction.amount),
-        0.0
-      )
-    );
-    nbInvestissement = dataInProgress.length;
   } else {
     investissements = dataById;
-    totalInvestissement = formatAmount(
-      dataById?.reduce(
-        (total, item) => total + parseFloat(item.transaction.amount),
-        0.0
-      )
-    );
-    nbInvestissement = dataById?.length;
   }
 
-  const handleSelectOpe = () => {
-    setSelectOpe(!selectOpe);
-  };
-
-  const performSearch = (term) => {
-    const filteredInvestments = investissements.filter((investment) => {
-      const titleMatches = investment.title
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const typeMatches = investment.type
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const montantMatches = investment.amount
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = investment.date
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      return titleMatches || typeMatches || montantMatches || dateMatches;
-    });
-    setSearchResults(filteredInvestments);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
-  };
-
-  useEffect(() => {
-    if (searchTerm === "") {
-      setSearchResults(investissements);
-    }
-  }, [searchTerm, investissements]);
-
   const columns = [
-    { id: 1, name: "ID" },
+    { id: 2, name: "Type" },
     { id: 3, name: "Symbole" },
-    { id: 2, name: "Nom" },
-    { id: 4, name: "Date" },
-    { id: 5, name: "Montant" },
-    { id: 6, name: "Action" },
+    { id: 4, name: "Nom" },
+    { id: 5, name: "Date" },
+    { id: 6, name: "Montant" },
+    { id: 7, name: "Action" },
   ];
 
+  const formatData = investissements.map(
+    ({ _id, name, type, symbol, transaction }) => {
+      return {
+        _id: transaction._id,
+        idInvest: _id,
+        type,
+        symbol,
+        name,
+        date: transaction.date,
+        amount: transaction.amount,
+        isSale: transaction.isSale,
+      };
+    }
+  );
+  const isId =
+    location.includes("inprogress") ||
+    location.includes("all") ||
+    location.includes("sold");
   const title =
     dataTransactions?.name ??
     (location.includes("inprogress")
@@ -191,31 +137,20 @@ export default function PageInvestment() {
         <Header
           title={title}
           typeProps="investment"
-          handleSelectOpe={handleSelectOpe}
-          handleSearchChange={handleSearchChange}
-          setClickResearch={setClickResearch}
-          clickResearch={clickResearch}
           btnSearch
           btnReturn
-          btnAdd
-          btnFilter
+          btnAdd={!isId}
           btnSelect
+          btnTrash
         />
 
         <Tableau
-          data={searchTerm ? searchResults : investissements}
+          data={formatData}
           columns={columns}
           type="investments"
-          selectOpe={selectOpe}
           isFetching={isFetching || fetchingTransac}
-          refetch={refetch}
+          refetchTransacInvest={refetch}
         />
-
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white dark:bg-black hover:opacity-0 py-3 transition-all">
-          Total : <b>{totalInvestissement} €</b>
-          <br />
-          <b>{nbInvestissement}</b> transaction{nbInvestissement > 0 && "s"}
-        </div>
       </section>
     </>
   );

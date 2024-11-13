@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { convertDate } from "../../../utils/fonctionnel";
 import {
@@ -23,9 +23,10 @@ import { fetchTransactions } from "../../../service/transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../../composant/loader/loader";
 import { HttpStatusCode } from "axios";
+import { FormEditTransac } from "../../../composant/Form/FormEditTransac";
 
 export default function PageTransactions(props) {
-  const { isLoading, data, isFetching } = useQuery({
+  const { isLoading, data, isFetching, refetch } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -48,11 +49,6 @@ export default function PageTransactions(props) {
       : props.type === "Revenue"
         ? "revenue"
         : undefined;
-
-  const [selectOpe, setSelectOpe] = useState(false);
-  const handleSelectOpe = () => {
-    setSelectOpe(!selectOpe);
-  };
 
   const categories =
     props.type === "Expense"
@@ -92,41 +88,6 @@ export default function PageTransactions(props) {
 
   const check = selectedCategorys.length + selectedTitles.length;
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [clickResearch, setClickResearch] = useState(false);
-
-  const performSearch = (term) => {
-    const filteredTransactions = transactions.filter((transaction) => {
-      const idMatches = transaction._id
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const titleMatches = transaction.title
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const categoryMatches = transaction.category
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const montantMatches = transaction.amount
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = transaction.date
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      return (
-        idMatches ||
-        titleMatches ||
-        categoryMatches ||
-        montantMatches ||
-        dateMatches
-      );
-    });
-    setSearchResults(filteredTransactions);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
-  };
 
   const transactions =
     date === "all"
@@ -152,11 +113,17 @@ export default function PageTransactions(props) {
             selectedTitles
           );
 
-  useEffect(() => {
-    if (searchTerm === "") {
-      setSearchResults(transactions);
+  const formatData = transactions.map(
+    ({ _id, title, category, amount, date }) => {
+      return {
+        _id,
+        title,
+        category,
+        date,
+        amount,
+      };
     }
-  }, [searchTerm, transactions]);
+  );
 
   const clearFilters = () => {
     setSelectedCategorys([]);
@@ -216,22 +183,18 @@ export default function PageTransactions(props) {
   const columns = [
     {
       id: 1,
-      name: "ID",
-    },
-    {
-      id: 2,
       name: "Titre",
     },
     {
-      id: 3,
+      id: 2,
       name: "Catégorie",
     },
     {
-      id: 4,
+      id: 3,
       name: "Date",
     },
     {
-      id: 5,
+      id: 4,
       name: "Montant",
     },
   ];
@@ -252,14 +215,9 @@ export default function PageTransactions(props) {
           typeProps={normalizeText(props.type)}
           categories={categories}
           check={check}
-          selectOpe={selectOpe}
-          setClickResearch={setClickResearch}
-          clickResearch={clickResearch}
-          handleSelectOpe={handleSelectOpe}
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
           date={date}
-          handleSearchChange={handleSearchChange}
           searchTerm={searchTerm}
           titles={titles}
           clearFilters={clearFilters}
@@ -274,63 +232,12 @@ export default function PageTransactions(props) {
         />
 
         <Tableau
-          data={searchTerm ? searchResults : transactions}
-          selectOpe={selectOpe}
+          data={formatData}
           columns={columns}
           type="transactions"
           isFetching={isFetching}
+          refetchTransaction={refetch}
         />
-
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white hover:opacity-0 dark:bg-black py-3 transition-all">
-          Total :{" "}
-          <b>
-            {date === "all"
-              ? calculTotal(data, props.type, selectedCategorys, selectedTitles)
-              : date && date.length === 4
-                ? calculTotalByYear(
-                    data,
-                    props.type,
-                    date,
-                    selectedCategorys,
-                    selectedTitles
-                  )
-                : date
-                  ? calculTotalByMonth(
-                      data,
-                      props.type,
-                      date,
-                      selectedCategorys,
-                      selectedTitles
-                    )
-                  : "Date non définie"}
-          </b>
-          <br />
-          Transaction(s) :{" "}
-          <b>
-            {date === "all"
-              ? getTransactionsByType(
-                  data,
-                  props.type,
-                  selectedCategorys,
-                  selectedTitles
-                ).length
-              : date?.length === 4
-                ? getTransactionsByYear(
-                    data,
-                    date,
-                    props.type,
-                    selectedCategorys,
-                    selectedTitles
-                  ).length
-                : getTransactionsByMonth(
-                    data,
-                    date,
-                    props.type,
-                    selectedCategorys,
-                    selectedTitles
-                  ).length}
-          </b>
-        </div>
       </section>
     </>
   );

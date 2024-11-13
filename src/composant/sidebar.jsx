@@ -97,21 +97,8 @@ function Sidebar() {
     },
   ];
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
-  const bgColorSecondary =
-    theme === "custom"
-      ? "bg-colorSecondaryCustom"
-      : "bg-colorSecondaryLight dark:bg-colorSecondaryDark";
-
   return (
-    <div
-      className={`flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 ${bgColor}`}
-    >
+    <div className="flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 bg-primary-foreground">
       <Link
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center h-11 w-auto overflow-hidden"
@@ -125,9 +112,9 @@ function Sidebar() {
             <TooltipTrigger asChild>
               <Link
                 to={link}
-                className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+                className={`my-1 p-3 rounded-xl font-thin overflow-hidden transition-all ${
                   activeLink.startsWith(link)
-                    ? `${bgColorSecondary} text-white dark:text-black hover:text-white dark:hover:!text-black`
+                    ? "bg-primary text-white dark:text-black text-foreground"
                     : ""
                 }`}
               >
@@ -150,7 +137,7 @@ function Sidebar() {
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}
                 />
-                <AvatarFallback className="bg-colorPrimaryLight dark:bg-colorSecondaryDark">
+                <AvatarFallback className="bg-secondary">
                   {initialName}
                 </AvatarFallback>
               </Avatar>
@@ -163,7 +150,7 @@ function Sidebar() {
             className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
               activeLink.startsWith(ROUTES.LOGIN) ||
               activeLink.startsWith(ROUTES.SIGNUP)
-                ? `${bgColorSecondary} text-black dark:text-white`
+                ? "text-black dark:text-white"
                 : ""
             }`}
           >

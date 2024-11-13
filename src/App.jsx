@@ -6,7 +6,6 @@ import Profil from "./pages/Profile/profil";
 import TableauDeBord from "./pages/Dashboard/dashboard";
 import PageAddTransac from "./pages/PageForm/pageAddTransac";
 import PageTransactions from "./pages/Operations/PageOperations/pageTransactions";
-import Transaction from "./pages/Operations/OperationById/transaction";
 import Statistique from "./pages/Stats/statistique";
 import Inscription from "./pages/Inscription/inscription";
 import BoardInvest from "./pages/Operations/Boards/boardInvest";
@@ -17,7 +16,6 @@ import "../styles/globals.css";
 import MainLayout from "./layout/mainLayout";
 import PageError from "./pages/404/pageError";
 import { ROUTES } from "./composant/routes";
-import Branding from "./pages/Branding/branding";
 import PageAddTransacInvest from "./pages/PageForm/pageAddTransacInvest";
 import OrdreInvest from "./pages/Operations/ordreInvest";
 import BoardTransactions from "./pages/Operations/Boards/boardTransactions";
@@ -57,10 +55,6 @@ function App() {
           ),
         },
         {
-          path: ROUTES.EXPENSE_BY_ID,
-          element: <PrivateRoute element={<Transaction />} />,
-        },
-        {
           path: ROUTES.REVENUE,
           element: (
             <PrivateRoute
@@ -81,10 +75,6 @@ function App() {
           element: (
             <PrivateRoute element={<PageTransactions type="Revenue" />} />
           ),
-        },
-        {
-          path: ROUTES.REVENUE_BY_ID,
-          element: <PrivateRoute element={<Transaction />} />,
         },
         {
           path: ROUTES.INVESTMENT,
@@ -115,12 +105,6 @@ function App() {
           path: ROUTES.PROFILE,
           element: <PrivateRoute element={<Profil />} />,
         },
-
-        {
-          path: ROUTES.BRANDING,
-          element: <PrivateRoute element={<Branding />} />,
-        },
-
         { path: ROUTES.LOGIN, element: <Connexion /> },
         { path: ROUTES.SIGNUP, element: <Inscription /> },
         {

@@ -112,98 +112,22 @@ export default function PageAddInvest() {
       return response;
     },
     onSuccess: () => {
-      toast.success("Votre investissement a été ajouté !");
+      toast.success("Votre ordre a été ajouté !");
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
     },
   });
 
-  // useEffect(() => {
-  //   if (formik.values.name) {
-  //     const lastInvestment = data
-  //       .filter((investment) => investment.title === formik.values.name)
-  //       .sort(
-  //         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  //       )[0];
-
-  //     if (lastInvestment) {
-  //       formik.setFieldValue("type", lastInvestment.type || "");
-  //     }
-  //   }
-  // }, [formik.values.name, data]);
-
   if (loadingUser) return <Loader />;
 
   return (
     <section className="h-full">
-      <Header title="Ajouter un investissement" btnReturn />
+      <Header title="Ajouter un ordre" btnReturn />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
-        {/* <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="input">
-              {formik.values.date ? (
-                format(formik.values.date, "PP", { locale: fr })
-              ) : (
-                <span>Choisir une date</span>
-              )}
-              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={formik.values.date}
-              onSelect={(date) => formik.setFieldValue("date", date)}
-              initialFocus
-              locale={fr}
-            />
-          </PopoverContent>
-        </Popover>
-        {formik.touched.date && formik.errors.date && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
-            {formik.errors.date}
-          </p>
-        )} */}
-        {/* <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="input" role="combobox" aria-expanded={open}>
-              {formik.values.name || "Sélectionnez un titre..."}
-              <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Rechercher un titre..." />
-              <CommandList>
-                {suggestions.length === 0 ? (
-                  <CommandEmpty>Aucune suggestion trouvée.</CommandEmpty>
-                ) : (
-                  <CommandGroup>
-                    {suggestions.map((suggestion, index) => (
-                      <CommandItem
-                        key={index}
-                        onSelect={() => {
-                          formik.setFieldValue("title", suggestion);
-                          setValue(suggestion);
-                          setOpen(false);
-                        }}
-                      >
-                        {suggestion}
-                        {value === suggestion && (
-                          <Check className="ml-auto h-4 w-4 opacity-100" />
-                        )}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover> */}
         <Input
           id="name"
           name="name"

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogClose,
@@ -9,48 +10,76 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { useNavigate } from "react-router";
+import { Trash } from "lucide-react";
+import { deleteInvestment } from "../service/investment.service";
+import { useParams } from "react-router-dom/dist/umd/react-router-dom.development";
+import { toast } from "sonner";
 
-export function DialogDelete({ handleDelete, isPending }) {
+export function DialogDelete() {
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+  const mutationDelete = useMutation({
+    mutationFn: async () => {
+      return await deleteInvestment(id);
+    },
+    onSuccess: (response) => {
+      console.log(response);
+      toast.success(response?.data?.message);
+      navigate(-1);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error?.response?.data?.message);
+    },
+  });
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive">Supprimer</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Suppression</DialogTitle>
-          <DialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette opération ?
-          </DialogDescription>
-        </DialogHeader>
+    <div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Trash
+            size={20}
+            className="cursor-pointer hover:scale-110 transition-all"
+          />
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              Êtes-vous sûr de vouloir supprimer cette ordre ?
+            </DialogTitle>
+          </DialogHeader>
 
-        <DialogFooter className="sm:justify-start">
-          <Button
-            variant="destructive"
-            disabled={isPending}
-            onClick={handleDelete}
-          >
-            {isPending ? (
-              <>
-                Suppression{" "}
-                <LoaderCircle
-                  size={15}
-                  strokeWidth={1}
-                  className="ml-2 animate-spin"
-                />
-              </>
-            ) : (
-              "Oui"
-            )}
-          </Button>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Non
+          <DialogFooter className="sm:justify-start">
+            <Button
+              variant="destructive"
+              disabled={mutationDelete.isPending}
+              onClick={() => mutationDelete.mutate()}
+            >
+              {mutationDelete.isPending ? (
+                <>
+                  Suppression{" "}
+                  <LoaderCircle
+                    size={15}
+                    strokeWidth={1}
+                    className="ml-2 animate-spin"
+                  />
+                </>
+              ) : (
+                "Oui"
+              )}
             </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Non
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

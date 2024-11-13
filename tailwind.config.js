@@ -16,19 +16,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        colorFontBlack: "rgb(18, 18, 18)",
-        colorPrimaryDark: "rgb(0, 0, 0)",
-        colorSecondaryDark: "rgb(255, 255, 255)",
-        colorPrimaryLight: "rgb(240, 243, 247)",
-        colorSecondaryLight: "rgb(0, 0, 0)",
-        colorPrimaryCustom: "var(--color-primary-custom, rgb(255, 255, 255))",
-        colorSecondaryCustom:
-          "var(--color-secondary-custom, rgb(255, 255, 255))",
         colorExpense: "hsl(var(--graph-depense))",
         colorRevenue: "hsl(var(--graph-recette))",
         colorInvest: "hsl(var(--graph-invest))",
         colorEpargn: "hsl(var(--graph-epargn))",
-        fontBg: "#242424",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

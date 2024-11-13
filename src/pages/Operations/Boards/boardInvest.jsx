@@ -7,13 +7,19 @@ import { useTheme } from "../../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { Pickaxe } from "lucide-react";
 import { Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { HandCoins } from "lucide-react";
 import { addSpace, formatAmount } from "../../../utils/fonctionnel";
 import { BookA } from "lucide-react";
 import BoxInfos from "../../../composant/boxInfos";
 import { RadialChart } from "../../../composant/Charts/radialChart";
+import { useNavigate } from "react-router";
+import { useState } from "react";
+import { renderCustomLegend } from "../../../composant/legend";
+import LoaderDots from "../../../composant/loader/loaderDots";
 
 export default function BoardInvest() {
+  const navigate = useNavigate();
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
@@ -26,6 +32,16 @@ export default function BoardInvest() {
     },
     refetchOnMount: true,
   });
+
+  const [selectedByType, setSelectedByType] = useState(false); // état pour "Par type"
+
+  const handleByName = () => {
+    setSelectedByType(false);
+  };
+
+  const handleByType = () => {
+    setSelectedByType(true);
+  };
 
   const amountBuy = Array.isArray(data)
     ? data.reduce((total, item) => {
@@ -47,12 +63,6 @@ export default function BoardInvest() {
 
   if (isLoading) return <Loader />;
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   const totalAmountBuy = data.reduce(
     (total, item) => total + (parseFloat(item.amountBuy) || 0),
     0
@@ -73,7 +83,22 @@ export default function BoardInvest() {
     return acc;
   }, {});
 
-  const chartData = Object.values(categorySums).map((category, key) => {
+  const titleSums = data.reduce((acc, investment) => {
+    const name = investment.name;
+    const amountBuy = parseFloat(investment.amountBuy) || 0;
+
+    if (acc[name]) {
+      acc[name].amount += amountBuy;
+    } else {
+      acc[name] = {
+        name: name,
+        amount: amountBuy,
+      };
+    }
+    return acc;
+  }, {});
+
+  const chartDataByType = Object.values(categorySums).map((category, key) => {
     const pourcentage = (category.amount / totalAmountBuy) * 100;
     return {
       name: category.category,
@@ -83,10 +108,31 @@ export default function BoardInvest() {
     };
   });
 
-  const chartConfig = Object.values(categorySums).reduce(
+  const chartConfigByType = Object.values(categorySums).reduce(
     (config, category, key) => {
       config[category.category] = {
         label: category.category,
+        color: `hsl(var(--chart-${key}))`,
+      };
+      return config;
+    },
+    {}
+  );
+
+  const chartDataByName = Object.values(titleSums).map((title, key) => {
+    const pourcentage = (title.amount / totalAmountBuy) * 100;
+    return {
+      name: title.name,
+      amount: title.amount,
+      pourcentage: pourcentage,
+      fill: `hsl(var(--chart-${key}))`,
+    };
+  });
+
+  const chartConfigByName = Object.values(titleSums).reduce(
+    (config, title, key) => {
+      config[title.name] = {
+        label: title.name,
         color: `hsl(var(--chart-${key}))`,
       };
       return config;
@@ -109,39 +155,66 @@ export default function BoardInvest() {
               title="Investissements en cours"
               value={addSpace(formatAmount(amountBuy))}
               icon={<Pickaxe size={15} color="grey" />}
-              onClick={() => navigate("/inprogress")}
+              onClick={() => navigate("inprogress")}
               isAmount
             />
             <BoxInfos
               title="Tous les investissements"
               value={addSpace(formatAmount(amountResult))}
               icon={<HandCoins size={15} color="grey" />}
-              onClick={() => navigate("/all")}
+              onClick={() => navigate("all")}
               isAmount
             />
             <BoxInfos
               title="Investissements vendus"
               value={addSpace(formatAmount(amountSale))}
               icon={<Shield size={15} color="grey" />}
-              onClick={() => navigate("/sold")}
+              onClick={() => navigate("sold")}
               isAmount
             />
             <BoxInfos
               title="Mes ordres"
               value={data.length}
               icon={<BookA size={15} color="grey" />}
-              onClick={() => navigate("/order")}
+              onClick={() => navigate("order")}
             />
           </div>
-          <div className="flex gap-4">
-            <RadialChart
-              chartData={chartData}
-              chartConfig={chartConfig}
-              total={amountBuy.toFixed(2)}
-              inner={70}
-              outer={90}
-              height={200}
-            />
+          <div className="w-1/2 flex flex-col gap-4">
+            <div className="flex gap-2 w-full">
+              <Button
+                variant={!selectedByType ? "secondary" : "none"}
+                onClick={handleByName}
+                className="w-full"
+              >
+                Par action
+              </Button>
+
+              <Button
+                variant={selectedByType ? "secondary" : "none"}
+                onClick={handleByType}
+                className="w-full"
+              >
+                Par type
+              </Button>
+            </div>
+
+            <div className="flex gap-4 rounded-xl bg-primary-foreground">
+              {!isFetching ? (
+                <RadialChart
+                  chartData={selectedByType ? chartDataByType : chartDataByName}
+                  chartConfig={
+                    selectedByType ? chartConfigByType : chartConfigByName
+                  }
+                  total={amountBuy.toFixed(2)}
+                  inner={60}
+                  outer={90}
+                  height={200}
+                  legend={renderCustomLegend}
+                />
+              ) : (
+                <LoaderDots />
+              )}
+            </div>
           </div>
         </div>
       </div>

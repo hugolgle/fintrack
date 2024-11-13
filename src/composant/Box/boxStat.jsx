@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTheme } from "../../context/ThemeContext";
-
 function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
@@ -59,15 +57,9 @@ function BoxStat(props) {
     );
   };
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   return (
     <div
-      className={`w-full flex flex-col-reverse italic gap-10 justify-between font-thin ${bgColor} rounded-2xl ring-[2px] transition-all px-4 py-2 ${ringColor} hover:bg-opacity-95`}
+      className={`w-full flex flex-col-reverse italic gap-10 justify-between font-thin rounded-2xl ring-[2px] transition-all px-4 py-2 ${ringColor} hover:bg-opacity-95`}
     >
       <div className="flex justify-between">
         <p className="text-xs text-left">{props.title}</p>

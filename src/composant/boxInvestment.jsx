@@ -4,15 +4,10 @@ import { addSpace } from "../utils/fonctionnel";
 
 function BoxInvestment({ title, icon, value, to }) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
 
   return (
     <div
-      className={`p-5 w-full cursor-pointer hover:border-zinc-500 transition-all h-fit rounded-xl ${bgColor} border flex flex-col gap-3`}
+      className="p-5 w-full cursor-pointer hover:border-zinc-500 transition-all h-fit rounded-xl bg-primary-foreground border flex flex-col gap-3"
       onClick={() => navigate(to)}
     >
       <div className="flex justify-between items-center">

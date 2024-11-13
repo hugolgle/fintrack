@@ -8,7 +8,6 @@ import { format } from "date-fns";
 import { fetchInvestments } from "../../service/investment.service";
 import Header from "../../composant/header";
 import Loader from "../../composant/loader/loader";
-import { useTheme } from "../../context/ThemeContext";
 import { formatAmount } from "../../utils/fonctionnel";
 
 function OrdreInvest() {
@@ -54,12 +53,6 @@ function OrdreInvest() {
 
   if (isLoading) return <Loader />;
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   return (
     <section className="w-full">
       <div className="flex flex-col">
@@ -87,7 +80,7 @@ function OrdreInvest() {
                       <Link
                         key={index}
                         to={`/investment/${_id}`}
-                        className={`w-72 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl ${bgColor} px-4 py-4 transition-all ring-[2px] hover:scale-95 hover:bg-opacity-80  ${getHoverClass(
+                        className={`w-72 h-40 flex flex-col gap-4 justify-between font-thin rounded-2xl bg-primary-foreground px-4 py-4 transition-all ring-[2px] hover:scale-95 hover:bg-opacity-80  ${getHoverClass(
                           type
                         )}`}
                       >
@@ -102,7 +95,7 @@ function OrdreInvest() {
                             <AvatarImage
                               src={`https://assets.parqet.com/logos/${category}/${symbol}`}
                             />
-                            <AvatarFallback className="font-semibold bg-white dark:bg-colorFontBlack">
+                            <AvatarFallback className="font-thin text-xs">
                               {name.toUpperCase().substring(0, 2)}
                             </AvatarFallback>
                           </Avatar>

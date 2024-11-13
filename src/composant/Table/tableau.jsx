@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -10,29 +9,69 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { addSpace, formatAmount } from "../../utils/fonctionnel";
+import { addSpace } from "../../utils/fonctionnel";
 import { useState } from "react";
-import { useTheme } from "../../context/ThemeContext";
-import { LoaderCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { DialogEditTransacInvest } from "../dialogEditInvestTransac";
+import { MoreHorizontal } from "lucide-react";
+import { Pencil } from "lucide-react";
+import { Trash } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { deleteTransactions } from "../../service/transaction.service";
+import { toast } from "sonner";
+import { FormEditTransac } from "../Form/FormEditTransac";
+import { FormEditInvestmentTransac } from "../Form/FormEditInvestmentTransac";
+import { deleteTransaction } from "../../service/investment.service";
 
 export default function Tableau({
-  type,
   columns,
   data,
-  selectOpe,
+  type,
   isFetching,
-  refetch,
+  refetchTransaction,
+  refetchTransacInvest,
 }) {
+  const mutationDeleteTransaction = useMutation({
+    mutationFn: async (itemId) => {
+      return await deleteTransactions(itemId);
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      refetchTransaction();
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
+  const mutationDeleteInvestmentTransaction = useMutation({
+    mutationFn: async (itemId) => {
+      return await deleteTransaction(data[0].idInvest, itemId);
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      refetchTransacInvest();
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
   const [selectAllRow, setSelectAllRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
 
   const handleSelectAllRow = (checked) => {
     setSelectAllRow(checked);
     const newSelectedRows = {};
-    data?.forEach((transaction) => {
+    data.forEach((transaction) => {
       newSelectedRows[transaction._id] = checked;
     });
     setSelectedRows(newSelectedRows);
@@ -47,7 +86,6 @@ export default function Tableau({
         data.every((transaction) => updatedRows[transaction._id]);
 
       setSelectAllRow(allSelected);
-
       return updatedRows;
     });
   };
@@ -56,35 +94,42 @@ export default function Tableau({
     let total = 0;
     data?.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
-        total += parseFloat(transaction.amount);
+        total += transaction.isSale
+          ? parseFloat(transaction.amount)
+          : -parseFloat(transaction.amount);
       }
     });
     return total;
   };
 
-  const montantSelect = calculMontantSelect();
+  const calculTotalAmount = () => {
+    let total = 0;
+    data?.forEach((transaction) => {
+      total += transaction.isSale
+        ? parseFloat(transaction.amount)
+        : -parseFloat(transaction.amount);
+    });
+    return total;
+  };
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
+  const amountSelect = calculMontantSelect();
+  const amountTotal = calculTotalAmount();
 
   return (
     <>
       {data && data.length > 0 ? (
         <Table className="w-full flex flex-col px-1 animate-fade relative">
           <TableHeader className="flex w-full items-center">
-            {selectOpe && (
-              <div className="mr-5 text-xs">
-                <Checkbox
-                  checked={selectAllRow}
-                  onCheckedChange={handleSelectAllRow}
-                  aria-label="Select all rows"
-                />
-              </div>
-            )}
             <TableRow className="w-full flex h-7 italic">
+              {type === "transactions" && (
+                <TableHead>
+                  <Checkbox
+                    checked={selectAllRow}
+                    onCheckedChange={handleSelectAllRow}
+                    aria-label="Select all rows"
+                  />
+                </TableHead>
+              )}
               {columns.map(({ name }) => (
                 <TableHead key={name} className="w-full text-center">
                   {name}
@@ -92,139 +137,123 @@ export default function Tableau({
               ))}
             </TableRow>
           </TableHeader>
-          {type === "transactions" && (
-            <TableBody className="flex flex-col justify-center items-center w-full">
-              {data.map((item) => (
-                <div className="flex w-full items-center" key={item._id}>
-                  {selectOpe && (
-                    <div className="mr-5">
-                      <Checkbox
-                        checked={!!selectedRows[item._id]}
-                        onCheckedChange={(checked) =>
-                          handleSelectRow(item._id, checked)
-                        }
-                        aria-label={`Select row ${item._id}`}
-                      />
-                    </div>
-                  )}
-                  <Link to={item._id} className="w-full">
-                    <TableRow
-                      className={`rounded-[14px] flex my-1 flex-row items-center h-10 ${bgColor} animate-fade cursor-pointer hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${selectOpe && selectedRows[item._id] ? "ring-1 ring-zinc-400" : ""}`}
-                    >
-                      <TableCell className="w-full">
-                        {item._id.substring(4, 8)}
-                      </TableCell>
-
-                      <>
-                        <TableCell className="w-full truncate">
-                          {item.title}
-                        </TableCell>
-                        <TableCell className="w-full">
-                          {item.category}
-                        </TableCell>
-                        <TableCell className="w-full">
-                          {format(item.date, "d MMMM yyyy", { locale: fr })}
-                        </TableCell>
-                        <TableCell className="w-full">
-                          <b>{addSpace(item.amount)} €</b>
-                        </TableCell>
-                      </>
-                    </TableRow>
-                  </Link>
-                </div>
-              ))}
-            </TableBody>
-          )}
-          {type === "investments" ? (
-            <TableBody className="flex flex-col justify-center items-center w-full">
-              {data
-                .sort((a, b) => {
-                  const dateA = new Date(a.transaction.date);
-                  const dateB = new Date(b.transaction.date);
-                  return dateB - dateA; // Tri décroissant pour afficher les dates les plus récentes en premier
-                })
-                .map((item) => {
-                  const category = item.type === "Crypto" ? "crypto" : "symbol";
-                  return (
-                    <div
-                      className="flex w-full items-center"
-                      key={item.transaction._id}
-                    >
-                      {selectOpe && (
-                        <div className="mr-5">
-                          <Checkbox
-                            checked={!!selectedRows[item.transaction._id]}
-                            onCheckedChange={(checked) =>
-                              handleSelectRow(item.transaction._id, checked)
-                            }
-                            aria-label={`Select row ${item.transaction._id}`}
-                          />
-                        </div>
-                      )}
-
-                      <TableRow
-                        className={`rounded-[14px] w-full flex my-1 relative flex-row justify-center items-center h-10 ${bgColor} animate-fade hover:bg-opacity-75 hover:dark:bg-opacity-75 transition-all ${
-                          selectOpe && selectedRows[item.transaction._id]
-                            ? "ring-1 ring-zinc-400"
-                            : ""
-                        }`}
-                      >
-                        <Avatar className="w-6 h-6 absolute left-2">
-                          <AvatarImage
-                            src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
-                          />
-                          <AvatarFallback className="text-xs font-semibold bg-white dark:bg-colorFontBlack">
-                            {item.name.toUpperCase().substring(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <TableCell className="w-full">
-                          {item._id.substring(2, 6)}
-                        </TableCell>
-                        <TableCell className="w-full truncate">
-                          {item.symbol ?? "/"}
-                        </TableCell>
-                        <TableCell className="w-full truncate">
-                          {item.name}
-                        </TableCell>
-                        <TableCell className="w-full">
-                          {format(
-                            new Date(item.transaction.date),
-                            "d MMMM yyyy",
-                            {
-                              locale: fr,
-                            }
-                          )}
-                        </TableCell>
-                        <TableCell className="w-full">
-                          <b>
-                            {!item.transaction.isSale && "-"}
-                            {addSpace(item.transaction.amount)} €
-                          </b>
-                        </TableCell>
-                        <TableCell className="w-full">
-                          <p>{item.transaction.isSale ? "Vente" : "Achat"}</p>
-                        </TableCell>
-
-                        <DialogEditTransacInvest
-                          transaction={item.transaction}
-                          idInvestment={item?._id}
-                          refetch={refetch}
+          <TableBody className="flex flex-col overflow-hidden justify-center items-center w-full">
+            {data.map((item) => (
+              <TableRow
+                key={item._id}
+                className={`w-full flex flex-row h-12 hover:bg-muted items-center animate-fade ${selectedRows[item._id] ? "bg-muted dark:bg-muted" : ""}`}
+              >
+                {type === "transactions" && (
+                  <TableCell>
+                    <Checkbox
+                      checked={!!selectedRows[item._id]}
+                      onCheckedChange={(checked) =>
+                        handleSelectRow(item._id, checked)
+                      }
+                      aria-label={`Select row ${item._id}`}
+                    />
+                  </TableCell>
+                )}
+                {type === "investments" &&
+                  (() => {
+                    const category =
+                      item.type === "Crypto" ? "crypto" : "symbol";
+                    return (
+                      <Avatar className="w-6 h-6 absolute left-4">
+                        <AvatarImage
+                          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
                         />
-                      </TableRow>
-                    </div>
-                  );
-                })}
-            </TableBody>
-          ) : null}
+                        <AvatarFallback className="text-[10px] font-thin">
+                          {item.name.toUpperCase().substring(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                    );
+                  })()}
+
+                {Object.keys(item)
+                  .filter((key) => key !== "_id" && key !== "idInvest")
+                  .map((key) => (
+                    <TableCell key={key} className="w-full truncate">
+                      {key === "date"
+                        ? format(new Date(item[key]), "d MMMM yyyy", {
+                            locale: fr,
+                          })
+                        : key === "amount"
+                          ? `${item.isSale ? "+" : "-"}${parseFloat(item[key]).toFixed(2)} €`
+                          : key === "isSale" && item["isSale"] === false
+                            ? "Achat"
+                            : key === "isSale" && item["isSale"] === true
+                              ? "Vente"
+                              : item[key]}
+                    </TableCell>
+                  ))}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="h-fit w-fit p-1 absolute right-4"
+                    >
+                      <MoreHorizontal />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Modifier
+                        </DropdownMenuItem>
+                      </DialogTrigger>
+                      <DialogContent>
+                        {type === "transactions" ? (
+                          <FormEditTransac
+                            transaction={item}
+                            refetch={refetchTransaction}
+                          />
+                        ) : type === "investments" ? (
+                          <FormEditInvestmentTransac
+                            transaction={item}
+                            refetch={refetchTransacInvest}
+                          />
+                        ) : null}
+                      </DialogContent>
+                    </Dialog>
+
+                    <DropdownMenuItem
+                      onClick={() => {
+                        if (type === "transactions") {
+                          mutationDeleteTransaction.mutate(item._id);
+                        } else if (type === "investments") {
+                          mutationDeleteInvestmentTransaction.mutate(item._id);
+                        }
+                      }}
+                      onSelect={(e) => e.preventDefault()}
+                      className="text-red-500"
+                    >
+                      <Trash className="mr-2 h-4 w-4" />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       ) : (
         <p>Aucune opération n'a été trouvée ...</p>
       )}
-      {selectOpe && (
+
+      {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
         <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-white dark:bg-black py-3 transition-all">
           Total sélectionnés : <br />
-          <b>{formatAmount(montantSelect)} €</b>
+          <b>{addSpace(amountSelect.toFixed(2))} €</b>
           <br />
+        </div>
+      ) : (
+        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white hover:opacity-0 dark:bg-black py-3 transition-all">
+          Total : <b>{addSpace(amountTotal.toFixed(2))} €</b>
+          <br />
+          Opération(s) : <b>{data.length}</b>
         </div>
       )}
     </>

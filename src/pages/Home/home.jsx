@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "../../composant/loader/loader";
 import Logo from "../../composant/logo";
 import { ROUTES } from "../../composant/routes";
-import { useTheme } from "../../context/ThemeContext";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../service/user.service";
 import { useIsAuthenticated } from "../../utils/users";
@@ -18,16 +17,10 @@ export default function Home() {
   });
   if (loadingAuth || loadingUser) return <Loader />;
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   return (
     <section className="flex flex-col justify-center items-center h-full gap-14 animate-fade">
       <div>
-        <h1 className="font-light">
+        <h1 className="font-light text-5xl">
           Bienvenue <span className="font-bold">{userInfo?.prenom}</span> sur
         </h1>
         <Logo />
@@ -35,14 +28,14 @@ export default function Home() {
       {isAuthenticated ? (
         <Link
           to={ROUTES.DASHBOARD}
-          className={`p-4 ${bgColor} rounded-xl transition-all duration-500 hover:!bg-cyan-500`}
+          className="p-4 bg-primary-foreground rounded-xl transition-all duration-500 hover:!bg-cyan-500"
         >
           C'est parti !
         </Link>
       ) : (
         <Link
           to={ROUTES.LOGIN}
-          className={`p-4 ${bgColor} rounded-xl transition-all duration-500 hover:!bg-lime-500`}
+          className="p-4 bg-primary-foreground rounded-xl transition-all duration-500 hover:!bg-lime-500"
         >
           Connectez-vous !
         </Link>

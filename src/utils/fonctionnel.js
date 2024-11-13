@@ -13,7 +13,11 @@ export function Path(lePath, level) {
 }
 
 export function addSpace(number) {
-  const numStr = typeof number === "number" ? number.toString() : number;
+  const numStr = number != null ? number.toString() : "";
+
+  if (typeof numStr !== "string") {
+    return "";
+  }
 
   const [integerPart, decimalPart] = numStr.split(".");
 

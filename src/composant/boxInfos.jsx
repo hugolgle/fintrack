@@ -30,12 +30,6 @@ function BoxInfos({
       break;
   }
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   const percent =
     ((formatAmountWithoutSpace(value, true) -
       formatAmountWithoutSpace(valueLast, true)) /
@@ -45,7 +39,7 @@ function BoxInfos({
   return (
     <div
       onClick={onClick}
-      className={`p-5 w-full h-auto rounded-xl ${bgColor} hover:bg-transparent dark:hover:bg-transparent transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground hover:bg-transparent dark:hover:bg-transparent transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>

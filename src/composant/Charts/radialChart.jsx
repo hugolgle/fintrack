@@ -86,7 +86,7 @@ export function RadialChart({
             outerRadius={outer}
             paddingAngle={2}
             animationDuration={500}
-            cornerRadius={5}
+            cornerRadius={4}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} strokeWidth={1} />

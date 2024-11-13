@@ -16,15 +16,12 @@ import { BreadcrumbDemo } from "./breadCrumb";
 import { useLocation } from "react-router";
 import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
-import { Pencil } from "lucide-react";
-import { DialogEditInvest } from "./dialogEditInvest";
+import { DialogDelete } from "./dialogDelete";
 
 function Header({
   title,
   typeProps,
   check,
-  selectOpe,
-  handleSelectOpe,
   clickLastMonth,
   clickNextMonth,
   date,
@@ -38,9 +35,10 @@ function Header({
   selectedCategorys,
   btnReturn,
   btnAdd,
+  btnAddTo,
   btnFilter,
   btnSearch,
-  btnSelect,
+  btnTrash,
   isFetching,
 }) {
   const location = useLocation();
@@ -54,14 +52,13 @@ function Header({
         <BreadcrumbDemo />
         <div className="flex gap-2">
           {btnReturn && canReturn && <BtnReturn />}
-          {btnAdd && <BtnAdd to={``} />}
-          {btnSelect && (
-            <ListCollapse
-              className={`cursor-pointer hover:scale-110 transition-all ${selectOpe ? "text-zinc-500" : ""}`}
-              onClick={handleSelectOpe}
-              size={20}
-            />
+          {btnAdd && <BtnAdd to={btnAddTo} />}
+          {btnTrash && (
+            <>
+              <DialogDelete />
+            </>
           )}
+
           {btnFilter && (
             <>
               <Popover>
@@ -98,11 +95,11 @@ function Header({
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
                     <ChevronLeft
-                      className="hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-full p-1 cursor-pointer transition-all"
+                      className="rounded-full p-1 cursor-pointer transition-all"
                       onClick={clickLastMonth}
                     />
                     <ChevronRight
-                      className="hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-full p-1 cursor-pointer transition-all"
+                      className="rounded-full p-1 cursor-pointer transition-all"
                       onClick={clickNextMonth}
                     />
                   </div>

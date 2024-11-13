@@ -25,11 +25,11 @@ import Header from "../../composant/header";
 import Loader from "../../composant/loader/loader";
 import { currentDate, months } from "../../utils/other";
 import LoaderDots from "../../composant/loader/loaderDots";
-import { useTheme } from "../../context/ThemeContext";
 import { HttpStatusCode } from "axios";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../service/user.service";
 import { RadialChart } from "../../composant/Charts/radialChart";
+import { renderCustomLegend } from "../../composant/legend";
 
 export default function Statistique() {
   const userId = getUserIdFromToken();
@@ -215,12 +215,6 @@ export default function Statistique() {
     null
   );
 
-  const { theme } = useTheme();
-  const bgColor =
-    theme === "custom"
-      ? "bg-colorPrimaryCustom"
-      : "bg-colorPrimaryLight dark:bg-colorPrimaryDark";
-
   // -------------
 
   const transactionsExpense = selectedByYear
@@ -285,30 +279,6 @@ export default function Statistique() {
       };
       return acc;
     }, {}),
-  };
-
-  const renderCustomLegend = (props) => {
-    const { payload, topN = 5 } = props;
-    const payloadSort = payload.sort(
-      (a, b) => b.payload.pourcentage - a.payload.pourcentage
-    );
-    const payloadTopN = payloadSort.slice(0, topN);
-
-    return (
-      <ul className="flex flex-col justify-center w-40">
-        {payloadTopN.map((entry, index) => (
-          <li key={`item-${index}`} className="flex items-center my-1">
-            <div
-              className="w-[10px] h-[10px] rounded-full mr-2"
-              style={{ backgroundColor: entry.color }}
-            ></div>
-            <span className="text-xs font-thin italic truncate">
-              {entry.value} ({entry.payload.pourcentage.toFixed(2)}%)
-            </span>
-          </li>
-        ))}
-      </ul>
-    );
   };
 
   return (
@@ -414,14 +384,10 @@ export default function Statistique() {
           </div>
           <Separator orientation="vertical" className="h-80 my-auto" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
-            <p
-              className={`w-full font-thin text-sm text-center p-2 rounded-2xl ${bgColor} w-full`}
-            >
+            <p className="w-full font-thin text-sm text-center p-2 rounded-2xl bg-secondary">
               Répartitions
             </p>
-            <div
-              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[2px] ring-green-500`}
-            >
+            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 ring-[2px] ring-green-500">
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Recettes de ${selectedYear}`
@@ -460,9 +426,7 @@ export default function Statistique() {
               </Button>
             </div>
 
-            <div
-              className={`flex flex-col w-full rounded-2xl h-full items-center ${bgColor} p-4 ring-[2px] ring-red-500`}
-            >
+            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 ring-[2px] ring-red-500">
               <p className="italic font-thin text-center">
                 {selectedByYear
                   ? `Dépenses de ${selectedYear}`

@@ -33,11 +33,6 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
     navigate(ROUTES.PROFILE);
   };
 
-  const handleBrandingClick = () => {
-    setOpen(false);
-    navigate(ROUTES.BRANDING);
-  };
-
   const handleThemeChange = (value) => {
     setTheme(value);
     setOpen(false);
@@ -55,14 +50,6 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
         >
           <User className="mr-2 h-4 w-4" />
           <span>Profil</span>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={handleBrandingClick}
-        >
-          <Highlighter className="mr-2 h-4 w-4" />
-          <span>Marque</span>
         </DropdownMenuItem>
 
         <DropdownMenuGroup>
@@ -88,10 +75,6 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
                 <DropdownMenuRadioItem value="light">
                   <Sun className="mr-2 h-4 w-4" />
                   <span>Clair</span>
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="custom">
-                  <Paintbrush className="mr-2 h-4 w-4" />
-                  <span>Custom</span>
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>

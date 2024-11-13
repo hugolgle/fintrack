@@ -6,19 +6,19 @@ const transactionSchema = mongoose.Schema(
     date: { type: String, required: true },
     isSale: { type: Boolean, required: true },
   },
-  { _id: true } // Pas de _id pour chaque transaction
+  { _id: true }
 );
 
 const investmentSchema = mongoose.Schema(
   {
     user: { type: String, required: true },
-    name: { type: String, required: true }, // Correspond au "title" dans l'ancien schéma
+    name: { type: String, required: true },
     symbol: { type: String, required: false },
     type: { type: String, required: true },
-    transaction: [transactionSchema], // Tableau de transactions
-    amountBuy: { type: String, required: true }, // Montant total des achats
-    amountSale: { type: String, required: true }, // Montant total des ventes
-    amountResult: { type: String, required: true }, // Différence entre les ventes et les achats
+    transaction: [transactionSchema],
+    amountBuy: { type: String, required: true },
+    amountSale: { type: String, required: true },
+    amountResult: { type: String, required: true },
   },
   { timestamps: true }
 );

@@ -126,16 +126,7 @@ export default function PageAddTransac(props) {
       const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
 
       toast.success(
-        `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `,
-        {
-          action: {
-            label: "Voir",
-            onClick: () =>
-              navigate(
-                `/${normalizeText(response?.data?.type)}/${formattedDate}/${newOperationId}`
-              ),
-          },
-        }
+        `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `
       );
     },
     onError: (error) => {
