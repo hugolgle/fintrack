@@ -101,11 +101,9 @@ module.exports.editUser = async (req, res) => {
       });
 
       if (existingUser) {
-        return res
-          .status(400)
-          .json({
-            message: "Cet e-mail est déjà utilisé par un autre utilisateur",
-          });
+        return res.status(400).json({
+          message: "Cet e-mail est déjà utilisé par un autre utilisateur",
+        });
       }
     }
 

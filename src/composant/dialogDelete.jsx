@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -14,8 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Trash } from "lucide-react";
-import { deleteInvestment } from "../service/investment.service";
-import { useParams } from "react-router-dom/dist/umd/react-router-dom.development";
+import { deleteInvestment } from "../Service/Investment.service";
 import { toast } from "sonner";
 
 export function DialogDelete() {
@@ -27,12 +25,10 @@ export function DialogDelete() {
       return await deleteInvestment(id);
     },
     onSuccess: (response) => {
-      console.log(response);
       toast.success(response?.data?.message);
       navigate(-1);
     },
     onError: (error) => {
-      console.log(error);
       toast.error(error?.response?.data?.message);
     },
   });

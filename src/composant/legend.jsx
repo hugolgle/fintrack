@@ -1,4 +1,4 @@
-import "./legend.css";
+import "./Legend.css";
 
 export const renderCustomLegend = (props) => {
   const { payload, topN = 5 } = props;

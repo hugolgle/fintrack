@@ -50,6 +50,9 @@ export function getTransactionsByMonth(
   filterCategory,
   filterTitle
 ) {
+  if (!month || typeof month !== "string") {
+    return [];
+  }
   const targetMonth = `${month.slice(0, 4)}-${month.slice(4)}`;
 
   if (!Array.isArray(data)) {

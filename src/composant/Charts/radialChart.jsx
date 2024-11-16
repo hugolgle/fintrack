@@ -85,7 +85,7 @@ export function RadialChart({
             innerRadius={inner}
             outerRadius={outer}
             paddingAngle={2}
-            animationDuration={500}
+            animationDuration={1000}
             cornerRadius={4}
           >
             {chartData.map((entry, index) => (

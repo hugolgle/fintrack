@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import Loader from "../../composant/loader/loader";
-import Logo from "../../composant/logo";
-import { ROUTES } from "../../composant/routes";
+import Loader from "../../composant/Loader/Loader";
+import Logo from "../../composant/Logo";
+import { ROUTES } from "../../composant/Routes.jsx";
 import { getUserIdFromToken } from "../../utils/users";
-import { getCurrentUser } from "../../service/user.service";
+import { getCurrentUser } from "../../Service/User.service";
 import { useIsAuthenticated } from "../../utils/users";
 import { Link } from "react-router-dom";
 

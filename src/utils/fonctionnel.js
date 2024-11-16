@@ -1,4 +1,4 @@
-import { currentDate, months } from "./other";
+import { months } from "./other";
 
 // ---------------------------------
 
@@ -31,15 +31,6 @@ export function addSpace(number) {
     : formattedIntegerPart;
 }
 
-export function convertDate(code) {
-  const annee = code.substring(0, 4);
-  const moisNumero = parseInt(code.substring(4), 10);
-
-  const nomMois = months[moisNumero - 1];
-
-  return nomMois + " " + annee;
-}
-
 export function formatAmount(amount, type) {
   const montantNumerique =
     typeof amount === "number" ? amount : parseFloat(amount) || 0;
@@ -66,7 +57,3 @@ export function formatAmountWithoutSpace(amount, toPositive) {
     return formattedStr;
   }
 }
-
-// Exemple d'utilisation
-// const result = formatAmount("-1 543,25");
-// console.log(result); // 1543.25

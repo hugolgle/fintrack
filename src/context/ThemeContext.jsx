@@ -20,7 +20,6 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    // Remove existing theme classes
     root.classList.remove("light", "dark", "custom");
 
     if (theme === "system") {
@@ -32,11 +31,10 @@ export function ThemeProvider({
       return;
     }
 
-    // Add the selected theme class
     if (theme === "custom") {
-      root.classList.add("custom"); // Add the custom class for your custom theme
+      root.classList.add("custom");
     } else {
-      root.classList.add(theme); // Add light or dark
+      root.classList.add(theme);
     }
   }, [theme]);
 

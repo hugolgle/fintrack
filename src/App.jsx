@@ -1,24 +1,24 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home/home";
-import Connexion from "./pages/Connexion/connexion";
-import Profil from "./pages/Profile/profil";
-import TableauDeBord from "./pages/Dashboard/dashboard";
-import PageAddTransac from "./pages/PageForm/pageAddTransac";
-import PageTransactions from "./pages/Operations/PageOperations/pageTransactions";
-import Statistique from "./pages/Stats/statistique";
-import Inscription from "./pages/Inscription/inscription";
-import BoardInvest from "./pages/Operations/Boards/boardInvest";
-import PageAddInvest from "./pages/PageForm/pageAddInvest";
-import PageInvestment from "./pages/Operations/PageOperations/pageInvestment";
-import PrivateRoute from "./composant/privateRoute";
 import "../styles/globals.css";
-import MainLayout from "./layout/mainLayout";
-import PageError from "./pages/404/pageError";
-import { ROUTES } from "./composant/routes";
-import PageAddTransacInvest from "./pages/PageForm/pageAddTransacInvest";
-import OrdreInvest from "./pages/Operations/ordreInvest";
-import BoardTransactions from "./pages/Operations/Boards/boardTransactions";
+import { ROUTES } from "./composant/Routes.jsx";
+import PrivateRoute from "./composant/PrivateRoute.jsx";
+import BoardTransactions from "./Pages/Transaction/BoardTransactions.jsx";
+import PageTransactions from "./Pages/Transaction/PageTransactions.jsx";
+import PageAddTransac from "./Pages/Transaction/PageAddTransaction.jsx";
+import BoardInvest from "./Pages/Investment/BoardInvest.jsx";
+import PageAddOrder from "./Pages/Investment/PageAddOrder.jsx";
+import PageAddInvestment from "./Pages/Investment/PageAddInvestment.jsx";
+import PageInvestment from "./Pages/Investment/PageInvestment.jsx";
+import Login from "./Pages/Login/Login.jsx";
+import SignUp from "./Pages/SignUp/SignUp.jsx";
+import PageError from "./Pages/404/404.jsx";
+import Home from "./Pages/Home/Home.jsx";
+import { PageOrder } from "./Pages/Investment/PageOrder.jsx";
+import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
+import Statistic from "./Pages/Statistic/Statistic.jsx";
+import { MainLayout } from "./Layout/MainLayout.jsx";
+import Profile from "./Pages/Profile/Profile.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -29,7 +29,7 @@ function App() {
 
         {
           path: ROUTES.DASHBOARD,
-          element: <PrivateRoute element={<TableauDeBord />} />,
+          element: <PrivateRoute element={<Dashboard />} />,
         },
 
         {
@@ -44,7 +44,7 @@ function App() {
           path: ROUTES.ADD_EXPENSE,
           element: (
             <PrivateRoute
-              element={<PageAddTransac type="Expense" title="dépense" />}
+              element={<PageTransactions type="Expense" title="dépense" />}
             />
           ),
         },
@@ -81,12 +81,12 @@ function App() {
           element: <PrivateRoute element={<BoardInvest />} />,
         },
         {
-          path: ROUTES.ADD_INVESTMENT,
-          element: <PrivateRoute element={<PageAddInvest />} />,
+          path: ROUTES.ADD_ORDER,
+          element: <PrivateRoute element={<PageAddOrder />} />,
         },
         {
-          path: ROUTES.ADD_TRANSACTION_INVESTMENT,
-          element: <PrivateRoute element={<PageAddTransacInvest />} />,
+          path: ROUTES.ADD_INVESTMENT,
+          element: <PrivateRoute element={<PageAddInvestment />} />,
         },
         {
           path: ROUTES.INVESTMENT_BY_ID,
@@ -94,19 +94,19 @@ function App() {
         },
         {
           path: ROUTES.INVESTMENT_ORDER,
-          element: <PrivateRoute element={<OrdreInvest />} />,
+          element: <PrivateRoute element={<PageOrder />} />,
         },
         {
           path: ROUTES.STATISTICS,
-          element: <PrivateRoute element={<Statistique />} />,
+          element: <PrivateRoute element={<Statistic />} />,
         },
 
         {
           path: ROUTES.PROFILE,
-          element: <PrivateRoute element={<Profil />} />,
+          element: <PrivateRoute element={<Profile />} />,
         },
-        { path: ROUTES.LOGIN, element: <Connexion /> },
-        { path: ROUTES.SIGNUP, element: <Inscription /> },
+        { path: ROUTES.LOGIN, element: <Login /> },
+        { path: ROUTES.SIGNUP, element: <SignUp /> },
         {
           path: ROUTES.SESSION_TIMED_OUT,
           element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
