@@ -17,8 +17,14 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import LoaderDots from "../../composant/Loader/LoaderDots";
+import { currentDate, getLastMonths } from "../../utils/other.js";
+import { getLastOperations } from "../../utils/operations.js";
+import { format } from "date-fns";
+import { Dot } from "lucide-react";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
-// import { ChartLineColor } from "../../composant/Charts/ChartLineColor.jsx";
+import { ChevronLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { calculInvestByMonth } from "../../utils/calcul.js";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
@@ -35,15 +41,9 @@ export default function BoardInvest() {
     refetchOnMount: true,
   });
 
-  const [selectedByType, setSelectedByType] = useState(false);
-
-  const handleByName = () => {
-    setSelectedByType(false);
-  };
-
-  const handleByType = () => {
-    setSelectedByType(true);
-  };
+  const { month: currentMonth, year: currentYear } = currentDate();
+  const currentYearMonth = `${currentYear}${currentMonth}`;
+  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
   const amountBuy = Array.isArray(data)
     ? data.reduce((total, item) => {
@@ -142,29 +142,99 @@ export default function BoardInvest() {
     {}
   );
 
-  const chartData = [
-    { month: "January", desktop: 186, mobile: 80, mac: 90 },
-    { month: "February", desktop: 305, mobile: 200, mac: 20 },
-    { month: "March", desktop: 237, mobile: 120, mac: 80 },
-    { month: "April", desktop: 73, mobile: 190, mac: 20 },
-    { month: "May", desktop: 209, mobile: 130, mac: 60 },
-    { month: "June", desktop: 214, mobile: 140, mac: 200 },
-  ];
+  const formatData = (data) => {
+    if (data === null || data === undefined) {
+      return "0.00";
+    }
 
-  const chartConfig = {
-    desktop: {
-      label: "Desktop",
-      color: "hsl(var(--chart-3))",
+    const cleanedData = String(data)
+      .replace(/[^\d.-]/g, "")
+      .replace(/ /g, "");
+    const absoluteValue = Math.abs(parseFloat(cleanedData));
+
+    return absoluteValue.toFixed(2);
+  };
+
+  const monthsGraph = getLastMonths(graphMonth, 6);
+
+  const montantInvestByMonth = [];
+  const dataTransacInvest = data?.flatMap((investment) => {
+    return investment.transaction.map((trans) => ({
+      title: investment.name,
+      amount: trans.amount,
+      date: trans.date,
+    }));
+  });
+
+  monthsGraph.forEach(({ code }) => {
+    const montantInvests = calculInvestByMonth(dataTransacInvest, code);
+    montantInvestByMonth.push(formatData(montantInvests));
+  });
+
+  const dataGraph = monthsGraph.map((monthData, index) => ({
+    month: monthData.month,
+    year: monthData.year,
+    amount: montantInvestByMonth[index],
+  }));
+
+  const defaultConfig = {
+    amount: {
+      label: "Investissements",
+      color: "hsl(var(--graph-invest))",
+      visible: true,
     },
-    mac: {
-      label: "Mac",
-      color: "hsl(var(--chart-1))",
-    },
-    mobile: {
-      label: "Mobile",
-      color: "hsl(var(--chart-2))",
+    text: {
+      color: "hsl(var(--foreground))",
     },
   };
+
+  const firstMonthGraph = monthsGraph[0];
+  const lastMonthGraph = monthsGraph[monthsGraph.length - 1];
+
+  const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
+
+  const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
+
+  const clickNextMonthGraph = () => {
+    let yearNum = parseInt(graphMonth.slice(0, 4), 10);
+    let monthNum = parseInt(graphMonth.slice(4), 10);
+    monthNum += 1;
+    if (monthNum === 13) {
+      monthNum = 1;
+      yearNum += 1;
+    }
+    const newMonth = monthNum.toString().padStart(2, "0");
+    const newDate = `${yearNum}${newMonth}`;
+    setGraphMonth(newDate);
+  };
+
+  const clickLastMonthGraph = () => {
+    let yearNum = parseInt(graphMonth.slice(0, 4), 10);
+    let monthNum = parseInt(graphMonth.slice(4), 10);
+    monthNum -= 1;
+    if (monthNum === 0) {
+      monthNum = 12;
+      yearNum -= 1;
+    }
+    const newMonth = monthNum.toString().padStart(2, "0");
+    const newDate = `${yearNum}${newMonth}`;
+    setGraphMonth(newDate);
+  };
+
+  const simplifiedData = data.flatMap((investment) =>
+    investment.transaction.map((trans) => ({
+      name: investment.name,
+      type: investment.type,
+      amount: parseFloat(trans.amount) || 0,
+      date: trans.date,
+    }))
+  );
+
+  const lastTransactions = simplifiedData
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 8);
+
+  const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
 
   return (
     <section className="w-full">
@@ -176,7 +246,7 @@ export default function BoardInvest() {
           isFetching={isFetching}
         />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
-          <div className="h-32 flex gap-4">
+          <div className=" flex gap-4">
             <BoxInfos
               title="Investissements en cours"
               value={addSpace(formatAmount(amountBuy))}
@@ -206,47 +276,105 @@ export default function BoardInvest() {
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-1/4 flex flex-col gap-4">
-              <div className="flex gap-2 w-full">
-                <Button
-                  variant={!selectedByType ? "secondary" : "none"}
-                  onClick={handleByName}
-                  className="w-full"
-                >
-                  Par action
-                </Button>
-
-                <Button
-                  variant={selectedByType ? "secondary" : "none"}
-                  onClick={handleByType}
-                  className="w-full"
-                >
-                  Par type
-                </Button>
-              </div>
-
-              <div className="flex gap-4 rounded-xl bg-primary-foreground">
-                {!isFetching ? (
-                  <RadialChart
-                    chartData={
-                      selectedByType ? chartDataByType : chartDataByName
-                    }
-                    chartConfig={
-                      selectedByType ? chartConfigByType : chartConfigByName
-                    }
-                    total={amountBuy.toFixed(2)}
-                    inner={50}
-                    outer={70}
-                    height={200}
-                    legend={renderCustomLegend}
+            <div className="w-2/5 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
+              <h2 className="text-xl font-extralight italic">
+                Dernières opérations
+              </h2>
+              <table className="h-full">
+                <tbody className="w-full h-full flex flex-col">
+                  {lastTransactions.map((operation, index) => (
+                    <tr
+                      key={index}
+                      className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                    >
+                      <td className="flex flex-row space-x-4 w-full">
+                        <span>{format(new Date(operation.date), "dd/MM")}</span>
+                        <span className="truncate">{operation.name}</span>
+                      </td>
+                      <td className="flex items-center flex-row w-full">
+                        <td className="w-full text-right italic">
+                          <b>{addSpace(operation.amount.toFixed(2))} €</b>
+                        </td>
+                        <Dot
+                          strokeWidth={6}
+                          color={
+                            operation.type === "Revenue"
+                              ? "hsl(var(--graph-recette))"
+                              : operation.type === "Expense"
+                                ? "hsl(var(--graph-depense))"
+                                : "hsl(var(--graph-invest))"
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="w-full flex flex-col justify-between bg-primary-foreground rounded-xl p-4">
+              <h2 className="text-xl font-extralight italic">Graphique</h2>
+              {!isFetching ? (
+                <ChartLine
+                  data={dataGraph}
+                  defaultConfig={defaultConfig}
+                  maxValue={maxValue}
+                />
+              ) : (
+                <LoaderDots />
+              )}{" "}
+              <div
+                className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
+              >
+                <div className="w-1/12">
+                  <ChevronLeft
+                    size={25}
+                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                    onClick={clickLastMonthGraph}
                   />
-                ) : (
-                  <LoaderDots />
-                )}
+                </div>
+                <p className="font-thin text-sm w-10/12 italic">
+                  {theMonthGraph}
+                </p>
+                <div className="w-1/12">
+                  {chevronGraphIsVisible && (
+                    <ChevronRight
+                      size={25}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      onClick={clickNextMonthGraph}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-            <div className="w-2/4 p-4 flex flex-col gap-4 rounded-xl bg-primary-foreground">
-              {/* <ChartLineColor /> */}
+            <div className="w-2/4 bg-primary-foreground rounded-xl p-4">
+              <h2 className="text-xl font-extralight italic">Position</h2>
+
+              {!isFetching ? (
+                <RadialChart
+                  chartData={chartDataByType}
+                  chartConfig={chartConfigByType}
+                  total={amountBuy.toFixed(2)}
+                  inner={40}
+                  outer={55}
+                  height={140}
+                  legend={renderCustomLegend}
+                />
+              ) : (
+                <LoaderDots />
+              )}
+              {!isFetching ? (
+                <RadialChart
+                  chartData={chartDataByName}
+                  chartConfig={chartConfigByName}
+                  total={amountBuy.toFixed(2)}
+                  inner={40}
+                  outer={55}
+                  height={140}
+                  legend={renderCustomLegend}
+                />
+              ) : (
+                <LoaderDots />
+              )}
             </div>
           </div>
         </div>

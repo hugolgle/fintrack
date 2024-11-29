@@ -14,32 +14,13 @@ import { addSpace } from "../../utils/fonctionnel";
 
 export function ChartLine({
   data,
+  defaultConfig,
   config = {},
+  maxValue,
   width = "100%",
   height = 225,
   isAnimationActive = true,
 }) {
-  const defaultConfig = {
-    amountRevenue: {
-      label: "Recette",
-      color: "hsl(var(--graph-recette))",
-      visible: true,
-    },
-    amountExpense: {
-      label: "Dépense",
-      color: "hsl(var(--graph-depense))",
-      visible: true,
-    },
-    montantInvest: {
-      label: "Investissements",
-      color: "hsl(var(--graph-invest))",
-      visible: true,
-    },
-    text: {
-      color: "hsl(var(--foreground))",
-    },
-  };
-
   const chartConfig = { ...defaultConfig, ...config };
 
   const CustomTooltip = (props) => {
@@ -94,11 +75,6 @@ export function ChartLine({
     return null;
   };
 
-  const maxValue = Math.max(
-    ...data.map((item) =>
-      Math.max(item.amountExpense, item.amountRevenue, item.montantInvest)
-    )
-  );
   const yAxisDomain = [0, maxValue * 1.1];
   const ticks = Array.from(
     { length: 4 },
@@ -115,7 +91,7 @@ export function ChartLine({
           <XAxis
             dataKey="month"
             tick={{ fontSize: 12, fill: chartConfig.text.color }}
-            tickFormatter={(value) => `${value}`}
+            tickFormatter={(value) => value.slice(0, 3)} // Affiche les 3 premières lettres
             axisLine={{ stroke: chartConfig.text.color, strokeWidth: 1 }}
           />
 
@@ -145,11 +121,12 @@ export function ChartLine({
                 animationEasing="ease-out"
               >
                 <LabelList
-                  fontWeight={100}
+                  strokeWidth={0.4}
                   position="top"
                   stroke={chartConfig[key].color}
                   offset={10}
-                  fontSize={12}
+                  fontSize={10}
+                  color={chartConfig[key].color}
                   formatter={(value) => `${addSpace(value)} €`}
                 />
               </Line>

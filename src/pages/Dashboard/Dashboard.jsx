@@ -26,6 +26,7 @@ import { Landmark } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { useNavigate } from "react-router";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
+import { renderCustomLegend } from "../../composant/Legend.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -134,18 +135,12 @@ export default function Dashboard() {
 
   const investLastMonth = calculInvestByMonth(dataTransacInvest, previousDate);
 
-  const economyLastMonth = calculEconomie(
-    dataTransac,
-    `${previousYear}`,
-    newPreviousMonth
-  );
-
   const dataOperations = [
     ...(Array.isArray(dataTransac) ? dataTransac : []),
     ...(Array.isArray(dataTransacInvest) ? dataTransacInvest : []),
   ];
 
-  const lastOperations = getLastOperations(dataOperations, null, 7, false);
+  const lastOperations = getLastOperations(dataOperations, null, 8, false);
 
   const formatData = (data) => {
     if (data === null || data === undefined) {
@@ -219,7 +214,7 @@ export default function Dashboard() {
     null
   );
 
-  const total = calculTotalByMonth(dataTransac, "Revenue", month, null, null);
+  const total = calculTotalByMonth(dataTransac, "Revenue", month);
 
   const montantInvest = calculInvestByMonth(dataTransacInvest, month);
 
@@ -287,12 +282,34 @@ export default function Dashboard() {
     montantInvest: montantInvestByMonth[index],
   }));
 
+  const defaultConfig = {
+    amountRevenue: {
+      label: "Recette",
+      color: "hsl(var(--graph-recette))",
+      visible: true,
+    },
+    amountExpense: {
+      label: "Dépense",
+      color: "hsl(var(--graph-depense))",
+      visible: true,
+    },
+    montantInvest: {
+      label: "Investissements",
+      color: "hsl(var(--graph-invest))",
+      visible: true,
+    },
+    text: {
+      color: "hsl(var(--foreground))",
+    },
+  };
+
   const firstMonthGraph = monthsGraph[0];
   const lastMonthGraph = monthsGraph[monthsGraph.length - 1];
 
   const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
 
   const chevronIsVisible = month < currentYearMonth;
+  const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
 
   const dFix = parseFloat(Math.abs(dataDf));
   const dLoisir = parseFloat(Math.abs(dataLoisir));
@@ -310,25 +327,27 @@ export default function Dashboard() {
     {
       name: "Dépenses fixes",
       amount: dFix,
-      pourcentage: (dFix / parseFloat(total)) * 100,
+      pourcentage: (dFix / parseFloat(formatAmountWithoutSpace(total))) * 100,
       fill: "var(--color-depensesFixes)",
     },
     {
       name: "Loisir",
       amount: dLoisir,
-      pourcentage: (dLoisir / parseFloat(total)) * 100,
+      pourcentage:
+        (dLoisir / parseFloat(formatAmountWithoutSpace(total))) * 100,
       fill: "var(--color-loisir)",
     },
     {
       name: "Investissements",
       amount: mInvest,
-      pourcentage: (mInvest / parseFloat(total)) * 100,
+      pourcentage:
+        (mInvest / parseFloat(formatAmountWithoutSpace(total))) * 100,
       fill: "var(--color-invest)",
     },
     {
       name: "Épargne",
       amount: parseFloat(epargne),
-      pourcentage: (parseFloat(epargne) / total) * 100,
+      pourcentage: (parseFloat(epargne) / total) * 100 || 0,
       fill: "var(--color-epargne)",
     },
   ];
@@ -353,10 +372,16 @@ export default function Dashboard() {
   };
 
   const convertDate = (date) => {
-    const annee = Math.floor(date / 100);
-    const mois = date % 100;
-    return `${months[mois - 1]} ${annee}`;
+    const year = Math.floor(date / 100);
+    const month = date % 100;
+    return `${months[month - 1]} ${year}`;
   };
+
+  const maxValue = Math.max(
+    ...dataGraph.map((item) =>
+      Math.max(item.amountExpense, item.amountRevenue, item.montantInvest)
+    )
+  );
 
   return (
     <>
@@ -384,14 +409,6 @@ export default function Dashboard() {
               isAmount
             />
             <BoxInfos
-              type="economy"
-              title={economyCurrentMonth < 0 ? "Déficit" : "Économie"}
-              icon={<Landmark size={15} color="grey" />}
-              value={economyCurrentMonth}
-              valueLast={economyLastMonth}
-              isAmount
-            />
-            <BoxInfos
               onClick={() => navigate("/investment")}
               type="investment"
               title="Investissement"
@@ -400,10 +417,17 @@ export default function Dashboard() {
               valueLast={investLastMonth}
               isAmount
             />
+            <BoxInfos
+              type="economy"
+              title="Épargne"
+              icon={<Landmark size={15} color="grey" />}
+              value={economyCurrentMonth}
+              isAmount
+            />
           </div>
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-1/4 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
-              <h2 className="text-2xl font-extralight italic">
+            <div className="w-2/5 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
+              <h2 className="text-xl font-extralight italic">
                 Dernières opérations
               </h2>
               <table className="h-full">
@@ -411,13 +435,13 @@ export default function Dashboard() {
                   {lastOperations.map((operation) => (
                     <tr
                       key={operation._id}
-                      className="justify-between rounded-lg h-full flex flex-row items-center py-1 text-sm"
+                      className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
                     >
                       <td className="flex flex-row space-x-4 w-full">
                         <span>{format(operation.date, "dd/MM")}</span>
                         <span className="truncate">{operation.title}</span>
                       </td>
-                      <td className="flex flex-row space-x-4 w-full">
+                      <td className="flex items-center flex-row w-full">
                         <td className="w-full text-right italic">
                           <b>{addSpace(operation.amount)} €</b>
                         </td>
@@ -437,42 +461,51 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <div className={`w-2/4 bg-primary-foreground rounded-xl p-4`}>
-              <h2 className="text-2xl font-extralight italic">Graphique</h2>
+            <div className="w-full flex flex-col justify-between bg-primary-foreground rounded-xl p-4">
+              <h2 className="text-xl font-extralight italic">Graphique</h2>
               {!isFetching ? (
-                <ChartLine data={dataGraph} />
+                <ChartLine
+                  data={dataGraph}
+                  defaultConfig={defaultConfig}
+                  maxValue={maxValue}
+                />
               ) : (
                 <LoaderDots />
               )}{" "}
               <div
                 className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
               >
-                <ChevronLeft
-                  size={25}
-                  className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                  onClick={clickLastMonthGraph}
-                />
+                <div className="w-1/12">
+                  <ChevronLeft
+                    size={25}
+                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                    onClick={clickLastMonthGraph}
+                  />
+                </div>
                 <p className="font-thin text-sm w-10/12 italic">
                   {theMonthGraph}
                 </p>
-                <ChevronRight
-                  size={25}
-                  className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                  onClick={clickNextMonthGraph}
-                />
+                <div className="w-1/12">
+                  {chevronGraphIsVisible && (
+                    <ChevronRight
+                      size={25}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      onClick={clickNextMonthGraph}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-            <div className={`w-1/4 bg-primary-foreground rounded-xl p-4`}>
-              <h2 className="text-2xl font-extralight italic">Répartitions</h2>
-
+            <div className="w-2/4 bg-primary-foreground rounded-xl p-4">
+              <h2 className="text-xl font-extralight italic">Répartitions</h2>
               {!isFetching ? (
                 <RadialChart
                   chartData={chartDataRadial}
                   chartConfig={chartConfigRadial}
                   total={total}
-                  inner={50}
-                  outer={70}
-                  height={225}
+                  legend={renderCustomLegend}
+                  inner={40}
+                  outer={55}
                 />
               ) : (
                 <LoaderDots />

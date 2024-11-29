@@ -1,19 +1,51 @@
 import { useNavigate } from "react-router-dom";
+
 import {
   calculTotal,
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../utils/calcul";
-import { currentDate } from "../../utils/other";
+import {
+  categoryDepense,
+  categoryRecette,
+} from "../../../public/categories.json";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { currentDate, getLastMonths, months } from "../../utils/other";
 import { fetchTransactions } from "../../Service/Transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/Header.jsx";
+import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import { DollarSign, Calendar, PieChart } from "lucide-react";
 import BoxInfos from "../../composant/Box/BoxInfos";
+import {
+  aggregateTransactions,
+  getLastOperations,
+  getTransactionsByMonth,
+} from "../../utils/operations.js";
+import { renderCustomLegend } from "../../composant/Legend.jsx";
+import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
+import LoaderDots from "../../composant/Loader/LoaderDots.jsx";
+import { format } from "date-fns";
+import { addSpace } from "../../utils/fonctionnel.js";
+import { Dot } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 export default function BoardTransactions({ type }) {
+  const { day, month, year } = currentDate();
+  const currentYearMonth = `${year}${month}`;
+  const [selectNbMonth, setSelectNbMonth] = useState(6);
+  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
+  const [monthChartRadial, setMonth] = useState(currentYearMonth);
   const navigate = useNavigate();
   const { isLoading, data, isFetching, refetch } = useQuery({
     queryKey: ["fetchTransactions"],
@@ -30,9 +62,6 @@ export default function BoardTransactions({ type }) {
 
   if (isLoading) return <Loader />;
 
-  const { day, month, year } = currentDate();
-  const currentYearMonth = `${year}${month}`;
-
   let lastYear = year;
   let lastMonth = month - 1;
 
@@ -44,6 +73,167 @@ export default function BoardTransactions({ type }) {
   lastMonth = lastMonth < 10 ? `0${lastMonth}` : lastMonth;
 
   const lastMonthYear = `${lastYear}${lastMonth}`;
+
+  const revenuePieChartMonth = getTransactionsByMonth(
+    data,
+    monthChartRadial,
+    type,
+    null,
+    null
+  );
+
+  const chartData = aggregateTransactions(revenuePieChartMonth);
+  const totalAmount = chartData.reduce(
+    (sum, item) => sum + parseFloat(item.amount),
+    0
+  );
+
+  const categoryTransaction =
+    type === "Expense" ? categoryDepense : categoryRecette;
+
+  const categoryColorsTransaction = categoryTransaction.reduce(
+    (acc, category) => {
+      acc[category.name] = category.color;
+      return acc;
+    },
+    {}
+  );
+
+  const transformedData = chartData.map((item) => ({
+    name: item.nomCate,
+    amount: parseFloat(item.amount),
+    pourcentage: (parseFloat(item.amount) / totalAmount) * 100,
+    fill: categoryColorsTransaction[item.nomCate],
+  }));
+
+  const chartConfig = {
+    ...Object.keys(categoryColorsTransaction).reduce((acc, category) => {
+      acc[category.toLocaleLowerCase()] = {
+        label: category,
+        color: categoryColorsTransaction[category],
+      };
+      return acc;
+    }, {}),
+  };
+
+  const defaultConfig = {
+    amount: {
+      label: type === "Expense" ? "Dépense" : "Recette",
+      color:
+        type === "Expense"
+          ? "hsl(var(--graph-depense))"
+          : "hsl(var(--graph-recette))",
+      visible: true,
+    },
+    text: {
+      color: "hsl(var(--foreground))",
+    },
+  };
+
+  const amountMonth = [];
+
+  const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
+
+  const formatData = (data) => {
+    if (data === null || data === undefined) {
+      return "0.00";
+    }
+
+    const cleanedData = String(data)
+      .replace(/[^\d.-]/g, "")
+      .replace(/ /g, "");
+    const absoluteValue = Math.abs(parseFloat(cleanedData));
+
+    return absoluteValue.toFixed(2);
+  };
+
+  monthsGraph.forEach(({ code }) => {
+    const amount = calculTotalByMonth(data, type, code, null, null);
+    amountMonth.push(formatData(amount));
+  });
+
+  const dataGraph = monthsGraph.map((monthData, index) => ({
+    month: monthData.month,
+    year: monthData.year,
+    amount: amountMonth[index],
+  }));
+
+  const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
+
+  const dataOperations = [...(Array.isArray(data) ? data : [])];
+
+  const lastOperations = getLastOperations(dataOperations, type, 8, false);
+
+  const convertDate = (date) => {
+    const annee = Math.floor(date / 100);
+    const mois = date % 100;
+    return `${months[mois - 1]} ${annee}`;
+  };
+
+  const clickNextMonthGraph = () => {
+    let yearNum = parseInt(graphMonth.slice(0, 4), 10);
+    let monthNum = parseInt(graphMonth.slice(4), 10);
+    monthNum += 1;
+    if (monthNum === 13) {
+      monthNum = 1;
+      yearNum += 1;
+    }
+    const newMonth = monthNum.toString().padStart(2, "0");
+    const newDate = `${yearNum}${newMonth}`;
+    setGraphMonth(newDate);
+  };
+
+  const clickLastMonthGraph = () => {
+    let yearNum = parseInt(graphMonth.slice(0, 4), 10);
+    let monthNum = parseInt(graphMonth.slice(4), 10);
+    monthNum -= 1;
+    if (monthNum === 0) {
+      monthNum = 12;
+      yearNum -= 1;
+    }
+    const newMonth = monthNum.toString().padStart(2, "0");
+    const newDate = `${yearNum}${newMonth}`;
+    setGraphMonth(newDate);
+  };
+
+  const firstMonthGraph = monthsGraph[0];
+  const lastMonthGraph = monthsGraph[monthsGraph.length - 1];
+
+  const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
+
+  const clickLastMonth = () => {
+    let yearNum = parseInt(monthChartRadial.slice(0, 4), 10);
+    let monthNum = parseInt(monthChartRadial.slice(4), 10);
+    monthNum -= 1;
+    if (monthNum === 0) {
+      monthNum = 12;
+      yearNum -= 1;
+    }
+    const newMonth = monthNum.toString().padStart(2, "0");
+    const newDate = `${yearNum}${newMonth}`;
+    setMonth(newDate);
+  };
+
+  const clickNextMonth = () => {
+    let yearNum = parseInt(monthChartRadial.slice(0, 4), 10);
+    let monthNum = parseInt(monthChartRadial.slice(4), 10);
+
+    monthNum += 1;
+
+    if (monthNum === 13) {
+      monthNum = 1;
+      yearNum += 1;
+    }
+
+    const newMonth = monthNum.toString().padStart(2, "0");
+
+    const newDate = `${yearNum}${newMonth}`;
+    setMonth(newDate);
+  };
+
+  const chevronIsVisible = monthChartRadial < currentYearMonth;
+  const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
+  const total = calculTotalByMonth(data, type, monthChartRadial, null, null);
 
   return (
     <>
@@ -96,6 +286,132 @@ export default function BoardTransactions({ type }) {
                 icon={<DollarSign size={15} color="grey" />}
                 isAmount
               />
+            </div>
+            <div className="flex gap-4">
+              <div className="w-2/5 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
+                <h2 className="text-xl font-extralight italic">
+                  Dernières opérations
+                </h2>
+                <table className="h-full">
+                  <tbody className="w-full h-full flex flex-col">
+                    {lastOperations.map((operation) => (
+                      <tr
+                        key={operation._id}
+                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                      >
+                        <td className="flex flex-row space-x-4 w-full">
+                          <span>{format(operation.date, "dd/MM")}</span>
+                          <span className="truncate">{operation.title}</span>
+                        </td>
+                        <td className="flex items-center flex-row w-full">
+                          <td className="w-full text-right italic">
+                            <b>{addSpace(operation.amount)} €</b>
+                          </td>
+                          <Dot
+                            strokeWidth={6}
+                            color={
+                              operation.type === "Revenue"
+                                ? "hsl(var(--graph-recette))"
+                                : operation.type === "Expense"
+                                  ? "hsl(var(--graph-depense))"
+                                  : "hsl(var(--graph-invest))"
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="w-full relative flex flex-col justify-between bg-primary-foreground rounded-xl p-4">
+                <h2 className="text-xl font-extralight italic">Graphique</h2>
+                {!isFetching ? (
+                  <ChartLine
+                    data={dataGraph}
+                    defaultConfig={defaultConfig}
+                    maxValue={maxValue}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}{" "}
+                <div
+                  className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
+                >
+                  <div className="w-1/12">
+                    <ChevronLeft
+                      size={25}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      onClick={clickLastMonthGraph}
+                    />
+                  </div>
+                  <p className="font-thin text-sm w-10/12 italic">
+                    {theMonthGraph}
+                  </p>
+                  <div className="w-1/12">
+                    {chevronGraphIsVisible && (
+                      <ChevronRight
+                        size={25}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        onClick={clickNextMonthGraph}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 m-2">
+                  <Select
+                    name="selectNbMonth"
+                    value={selectNbMonth}
+                    onValueChange={(value) => setSelectNbMonth(Number(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Nombre de mois" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={3}>3 mois</SelectItem>
+                      <SelectItem value={6}>6 mois</SelectItem>
+                      <SelectItem value={12}>12 mois</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="w-2/4 bg-primary-foreground rounded-xl p-4">
+                <h2 className="text-xl font-extralight italic">Répartitions</h2>
+                {!isFetching ? (
+                  <RadialChart
+                    chartData={transformedData}
+                    chartConfig={chartConfig}
+                    total={total}
+                    legend={renderCustomLegend}
+                    inner={40}
+                    outer={55}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}
+                <div className="flex flex-row justify-between w-3/4 mx-auto">
+                  <div className="w-1/12">
+                    <ChevronLeft
+                      size={25}
+                      onClick={clickLastMonth}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                    />
+                  </div>
+
+                  <p className="font-thin text-sm w-10/12 italic">
+                    {convertDate(monthChartRadial)}
+                  </p>
+
+                  <div className="w-1/12">
+                    {chevronIsVisible && (
+                      <ChevronRight
+                        size={25}
+                        onClick={clickNextMonth}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

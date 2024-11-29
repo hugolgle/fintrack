@@ -16,16 +16,16 @@ function BoxInfos({
 
   switch (type) {
     case "depense":
-      color = "ring-colorExpense";
+      color = "ring-colorExpense/65 hover:ring-colorExpense";
       break;
     case "revenue":
-      color = "ring-colorRevenue";
+      color = "ring-colorRevenue/65 hover:ring-colorRevenue";
       break;
     case "economy":
-      color = "ring-colorEconomy";
+      color = "ring-colorEconomy/65 hover:ring-colorEconomy";
       break;
     case "investment":
-      color = "ring-colorInvest";
+      color = "ring-colorInvest/65 hover:ring-colorInvest";
       break;
   }
 
@@ -37,7 +37,7 @@ function BoxInfos({
   return (
     <div
       onClick={onClick}
-      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground ring-opacity-50 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>

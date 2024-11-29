@@ -16,7 +16,7 @@ export function RadialChart({
   chartConfig,
   total,
   legend,
-  height,
+  height = 225,
   inner,
   outer,
 }) {
@@ -106,7 +106,7 @@ export function RadialChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="text-sm italic font-thin fill-foreground"
+                          className="text-[10px] italic font-thin fill-foreground"
                         >
                           {`${addSpace(total)} €`}
                         </tspan>

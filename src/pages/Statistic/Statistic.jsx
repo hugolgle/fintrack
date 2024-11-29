@@ -403,8 +403,8 @@ export default function Statistic() {
                   chartConfig={chartConfigRevenue}
                   legend={renderCustomLegend}
                   inner={40}
-                  outer={50}
-                  height={200}
+                  outer={55}
+                  height={150}
                 />
               ) : (
                 <LoaderDots size={180} />
@@ -441,8 +441,8 @@ export default function Statistic() {
                   chartConfig={chartConfigExpense}
                   legend={renderCustomLegend}
                   inner={40}
-                  outer={50}
-                  height={200}
+                  outer={55}
+                  height={150}
                 />
               ) : (
                 <LoaderDots />
