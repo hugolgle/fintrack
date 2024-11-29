@@ -70,7 +70,6 @@ export function FormEditTransac({ transaction, refetch }) {
       mutationEdit.mutate(values);
     },
   });
-
   const mutationEdit = useMutation({
     mutationFn: async (values) => {
       const editData = {
@@ -80,7 +79,7 @@ export function FormEditTransac({ transaction, refetch }) {
         category: values.category,
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
-        amount: formatAmount(Math.abs(values.amount), transaction.type),
+        amount: formatAmount(values.amount, transaction.type),
       };
       return await editTransactions(editData);
     },

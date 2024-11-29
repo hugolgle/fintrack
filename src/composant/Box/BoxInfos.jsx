@@ -21,8 +21,8 @@ function BoxInfos({
     case "revenue":
       color = "ring-colorRevenue";
       break;
-    case "epargn":
-      color = "ring-colorEpargn";
+    case "economy":
+      color = "ring-colorEconomy";
       break;
     case "investment":
       color = "ring-colorInvest";
@@ -30,15 +30,14 @@ function BoxInfos({
   }
 
   const percent =
-    ((formatAmountWithoutSpace(value, true) -
-      formatAmountWithoutSpace(valueLast, true)) /
-      formatAmountWithoutSpace(valueLast, true)) *
+    ((formatAmountWithoutSpace(value) - formatAmountWithoutSpace(valueLast)) /
+      formatAmountWithoutSpace(valueLast)) *
     100;
 
   return (
     <div
       onClick={onClick}
-      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground hover:ring-opacity-50 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground ring-opacity-50 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>

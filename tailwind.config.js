@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      logo: ["Nanum Brush Script", "ui-serif", "system-ui"],
+      logo: ["Montserrat", "sans-serif", "system-ui"],
     },
     extend: {
       colors: {
@@ -20,6 +20,7 @@ module.exports = {
         colorRevenue: "hsl(var(--graph-recette))",
         colorInvest: "hsl(var(--graph-invest))",
         colorEpargn: "hsl(var(--graph-epargn))",
+        colorEconomy: "hsl(var(--graph-economy))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Tableau from "../../composant/Table/Table";
 import Header from "../../composant/Header.jsx";
-import { useParams } from "react-router-dom/dist/umd/react-router-dom.development";
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchInvestmentById,
@@ -10,6 +9,7 @@ import {
 import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
+import { useParams } from "react-router";
 
 export default function PageInvestment() {
   const { id } = useParams();

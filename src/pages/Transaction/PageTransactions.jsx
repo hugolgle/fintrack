@@ -22,7 +22,6 @@ import { fetchTransactions } from "../../Service/Transaction.service";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
-import { format } from "date-fns";
 
 export default function PageTransactions(props) {
   const { isLoading, data, isFetching, refetch } = useQuery({
@@ -113,12 +112,14 @@ export default function PageTransactions(props) {
           );
 
   const formatData = transactions.map(
-    ({ _id, title, category, amount, date }) => {
+    ({ _id, type, title, category, detail, amount, date }) => {
       return {
         _id,
+        type,
         title,
         category,
         date,
+        detail,
         amount,
       };
     }
@@ -230,6 +231,7 @@ export default function PageTransactions(props) {
           selectedCategorys={selectedCategorys}
           btnSearch
           btnAdd
+          btnAddTo={`/${props.type.toLowerCase()}`}
           btnReturn
           btnFilter
           btnSelect

@@ -147,9 +147,9 @@ export default function Login() {
         </Button>
       </form>
       <div className="flex flex-col justify-center items-center mt-5 gap-2">
-        <p className="text-xs">Nouveau sur DashCash ?</p>
+        <p className="text-xs">Nouveau sur FinTrack ?</p>
         <Button variant="secondary" onClick={() => navigate(ROUTES.SIGNUP)}>
-          Créer un compte DashCash !
+          Créer un compte FinTrack !
         </Button>
       </div>
     </>

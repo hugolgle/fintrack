@@ -170,7 +170,13 @@ export default function Tableau({
                   })()}
 
                 {Object.keys(item)
-                  .filter((key) => key !== "_id" && key !== "idInvest")
+                  .filter(
+                    (key) =>
+                      key !== "_id" &&
+                      key !== "idInvest" &&
+                      key !== "detail" &&
+                      !(type === "transactions" && key === "type")
+                  )
                   .map((key) => (
                     <TableCell key={key} className="w-full truncate">
                       {key === "date"
@@ -178,7 +184,7 @@ export default function Tableau({
                             locale: fr,
                           })
                         : key === "amount"
-                          ? `${item.isSale ? "+" : "-"}${parseFloat(item[key]).toFixed(2)} €`
+                          ? `${item.isSale ? "+" : !item.isSale ? "" : ""}${parseFloat(item[key]).toFixed(2)} €`
                           : key === "isSale" && item["isSale"] === false
                             ? "Achat"
                             : key === "isSale" && item["isSale"] === true
@@ -242,19 +248,20 @@ export default function Tableau({
         <p>Aucune opération n'a été trouvée ...</p>
       )}
 
-      {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl z-50 bg-white dark:bg-black py-3 transition-all">
-          Total sélectionnés : <br />
-          <b>{addSpace(amountSelect.toFixed(2))} €</b>
-          <br />
-        </div>
-      ) : (
-        <div className="fixed w-44 bottom-10 right-0 rounded-l-xl shadow-2xl shadow-black bg-white hover:opacity-0 dark:bg-black py-3 transition-all">
-          Total : <b>{addSpace(amountTotal.toFixed(2))} €</b>
-          <br />
-          Opération(s) : <b>{data.length}</b>
-        </div>
-      )}
+      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-border rounded-xl z-50 bg-white dark:bg-black p-3 transition-all">
+        {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
+          <>
+            Total sélectionnés : <br />
+            <b>{addSpace(amountSelect.toFixed(2))} €</b>
+          </>
+        ) : (
+          <>
+            Total : <b>{addSpace(amountTotal.toFixed(2))} €</b>
+            <br />
+            <b>{data.length}</b> opération(s)
+          </>
+        )}
+      </div>
     </>
   );
 }

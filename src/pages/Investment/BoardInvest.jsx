@@ -17,6 +17,8 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import LoaderDots from "../../composant/Loader/LoaderDots";
+import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
+// import { ChartLineColor } from "../../composant/Charts/ChartLineColor.jsx";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
@@ -140,6 +142,30 @@ export default function BoardInvest() {
     {}
   );
 
+  const chartData = [
+    { month: "January", desktop: 186, mobile: 80, mac: 90 },
+    { month: "February", desktop: 305, mobile: 200, mac: 20 },
+    { month: "March", desktop: 237, mobile: 120, mac: 80 },
+    { month: "April", desktop: 73, mobile: 190, mac: 20 },
+    { month: "May", desktop: 209, mobile: 130, mac: 60 },
+    { month: "June", desktop: 214, mobile: 140, mac: 200 },
+  ];
+
+  const chartConfig = {
+    desktop: {
+      label: "Desktop",
+      color: "hsl(var(--chart-3))",
+    },
+    mac: {
+      label: "Mac",
+      color: "hsl(var(--chart-1))",
+    },
+    mobile: {
+      label: "Mobile",
+      color: "hsl(var(--chart-2))",
+    },
+  };
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
@@ -179,41 +205,48 @@ export default function BoardInvest() {
               onClick={() => navigate("order")}
             />
           </div>
-          <div className="w-1/2 flex flex-col gap-4">
-            <div className="flex gap-2 w-full">
-              <Button
-                variant={!selectedByType ? "secondary" : "none"}
-                onClick={handleByName}
-                className="w-full"
-              >
-                Par action
-              </Button>
+          <div className="flex gap-4">
+            <div className="w-1/4 flex flex-col gap-4">
+              <div className="flex gap-2 w-full">
+                <Button
+                  variant={!selectedByType ? "secondary" : "none"}
+                  onClick={handleByName}
+                  className="w-full"
+                >
+                  Par action
+                </Button>
 
-              <Button
-                variant={selectedByType ? "secondary" : "none"}
-                onClick={handleByType}
-                className="w-full"
-              >
-                Par type
-              </Button>
+                <Button
+                  variant={selectedByType ? "secondary" : "none"}
+                  onClick={handleByType}
+                  className="w-full"
+                >
+                  Par type
+                </Button>
+              </div>
+
+              <div className="flex gap-4 rounded-xl bg-primary-foreground">
+                {!isFetching ? (
+                  <RadialChart
+                    chartData={
+                      selectedByType ? chartDataByType : chartDataByName
+                    }
+                    chartConfig={
+                      selectedByType ? chartConfigByType : chartConfigByName
+                    }
+                    total={amountBuy.toFixed(2)}
+                    inner={50}
+                    outer={70}
+                    height={200}
+                    legend={renderCustomLegend}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}
+              </div>
             </div>
-
-            <div className="flex gap-4 rounded-xl bg-primary-foreground">
-              {!isFetching ? (
-                <RadialChart
-                  chartData={selectedByType ? chartDataByType : chartDataByName}
-                  chartConfig={
-                    selectedByType ? chartConfigByType : chartConfigByName
-                  }
-                  total={amountBuy.toFixed(2)}
-                  inner={60}
-                  outer={90}
-                  height={200}
-                  legend={renderCustomLegend}
-                />
-              ) : (
-                <LoaderDots />
-              )}
+            <div className="w-2/4 p-4 flex flex-col gap-4 rounded-xl bg-primary-foreground">
+              {/* <ChartLineColor /> */}
             </div>
           </div>
         </div>

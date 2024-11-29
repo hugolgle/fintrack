@@ -44,7 +44,7 @@ function App() {
           path: ROUTES.ADD_EXPENSE,
           element: (
             <PrivateRoute
-              element={<PageTransactions type="Expense" title="dépense" />}
+              element={<PageAddTransac type="Expense" title="dépense" />}
             />
           ),
         },

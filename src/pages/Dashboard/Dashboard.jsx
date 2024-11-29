@@ -7,7 +7,7 @@ import {
 import { addSpace, formatAmountWithoutSpace } from "../../utils/fonctionnel.js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { GraphiqueTdb } from "../../composant/Charts/LineChart.jsx";
+import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import { categoryDepense } from "../../../public/categories.json";
 import { currentDate, getLastMonths, months } from "../../utils/other.js";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
@@ -130,25 +130,22 @@ export default function Dashboard() {
     currentMonth
   );
 
-  const epargnCurrentMonth =
-    formatAmountWithoutSpace(economieCurrentMonth) -
-    formatAmountWithoutSpace(investCurrentMonth);
+  const economyCurrentMonth = formatAmountWithoutSpace(economieCurrentMonth);
 
   const investLastMonth = calculInvestByMonth(dataTransacInvest, previousDate);
 
-  const economieLastMonth = calculEconomie(
+  const economyLastMonth = calculEconomie(
     dataTransac,
     `${previousYear}`,
     newPreviousMonth
   );
 
-  const epargnLastMonth = economieLastMonth - investLastMonth;
   const dataOperations = [
     ...(Array.isArray(dataTransac) ? dataTransac : []),
     ...(Array.isArray(dataTransacInvest) ? dataTransacInvest : []),
   ];
 
-  const lastOperations = getLastOperations(dataOperations, null, 8, false);
+  const lastOperations = getLastOperations(dataOperations, null, 7, false);
 
   const formatData = (data) => {
     if (data === null || data === undefined) {
@@ -309,7 +306,7 @@ export default function Dashboard() {
     epargne = 0;
   }
 
-  const chartData = [
+  const chartDataRadial = [
     {
       name: "Dépenses fixes",
       amount: dFix,
@@ -336,7 +333,7 @@ export default function Dashboard() {
     },
   ];
 
-  const chartConfig = {
+  const chartConfigRadial = {
     depensesFixes: {
       label: "Dépenses fixes",
       color: "hsl(var(--graph-depensesFixes))",
@@ -387,11 +384,11 @@ export default function Dashboard() {
               isAmount
             />
             <BoxInfos
-              type="epargn"
-              title="Épargne"
+              type="economy"
+              title={economyCurrentMonth < 0 ? "Déficit" : "Économie"}
               icon={<Landmark size={15} color="grey" />}
-              value={epargnCurrentMonth}
-              valueLast={epargnLastMonth}
+              value={economyCurrentMonth}
+              valueLast={economyLastMonth}
               isAmount
             />
             <BoxInfos
@@ -414,25 +411,26 @@ export default function Dashboard() {
                   {lastOperations.map((operation) => (
                     <tr
                       key={operation._id}
-                      className="relative rounded-lg h-full flex flex-row items-center py-1 text-sm"
+                      className="justify-between rounded-lg h-full flex flex-row items-center py-1 text-sm"
                     >
-                      <Dot
-                        className="absolute right-0"
-                        size={40}
-                        color={
-                          operation.type === "Revenue"
-                            ? "hsl(var(--graph-recette))"
-                            : operation.type === "Expense"
-                              ? "hsl(var(--graph-depense))"
-                              : "hsl(var(--graph-invest))"
-                        }
-                      />
                       <td className="flex flex-row space-x-4 w-full">
                         <span>{format(operation.date, "dd/MM")}</span>
                         <span className="truncate">{operation.title}</span>
                       </td>
-                      <td className="w-full italic">
-                        <b>{addSpace(operation.amount)} €</b>
+                      <td className="flex flex-row space-x-4 w-full">
+                        <td className="w-full text-right italic">
+                          <b>{addSpace(operation.amount)} €</b>
+                        </td>
+                        <Dot
+                          strokeWidth={6}
+                          color={
+                            operation.type === "Revenue"
+                              ? "hsl(var(--graph-recette))"
+                              : operation.type === "Expense"
+                                ? "hsl(var(--graph-depense))"
+                                : "hsl(var(--graph-invest))"
+                          }
+                        />
                       </td>
                     </tr>
                   ))}
@@ -442,7 +440,7 @@ export default function Dashboard() {
             <div className={`w-2/4 bg-primary-foreground rounded-xl p-4`}>
               <h2 className="text-2xl font-extralight italic">Graphique</h2>
               {!isFetching ? (
-                <GraphiqueTdb data={dataGraph} />
+                <ChartLine data={dataGraph} />
               ) : (
                 <LoaderDots />
               )}{" "}
@@ -469,8 +467,8 @@ export default function Dashboard() {
 
               {!isFetching ? (
                 <RadialChart
-                  chartData={chartData}
-                  chartConfig={chartConfig}
+                  chartData={chartDataRadial}
+                  chartConfig={chartConfigRadial}
                   total={total}
                   inner={50}
                   outer={70}

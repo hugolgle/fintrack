@@ -15,6 +15,7 @@ import { useNavigate } from "react-router";
 import { Trash } from "lucide-react";
 import { deleteInvestment } from "../Service/Investment.service";
 import { toast } from "sonner";
+import { useParams } from "react-router";
 
 export function DialogDelete() {
   const { id } = useParams();

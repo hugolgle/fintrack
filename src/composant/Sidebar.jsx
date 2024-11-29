@@ -21,7 +21,6 @@ import { getCurrentUser, logoutUser } from "../Service/User.service";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { DollarSign } from "lucide-react";
-import Logo from "./Logo";
 import { ROUTES } from "./Routes.jsx";
 
 function Sidebar() {
@@ -102,7 +101,7 @@ function Sidebar() {
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center h-11 w-auto overflow-hidden"
       >
-        <Logo sidebar />
+        <img src="/public/logoFinTrack.png" alt="logo" />
       </Link>
 
       <div className="flex flex-col justify-between gap-2">
