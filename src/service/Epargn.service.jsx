@@ -4,8 +4,12 @@ import { jwtDecode } from "jwt-decode";
 const API_URL = "http://localhost:5001/epargns";
 
 export const fetchAccounts = async () => {
-  const response = await axios.get(`${API_URL}/accounts`);
-  return response.data;
+  const token = sessionStorage.getItem("token");
+  return await axios.get(`${API_URL}/accounts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const addAccount = async (accountData) => {
@@ -18,7 +22,16 @@ export const addAccount = async (accountData) => {
     ...accountData,
   };
 
-  const response = await axios.post(`${API_URL}/accounts`, newAccountData, {
+  return await axios.post(`${API_URL}/accounts`, newAccountData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const addTransfer = async (transferData) => {
+  const token = sessionStorage.getItem("token");
+  const response = await axios.post(`${API_URL}/transfers`, transferData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -26,15 +39,6 @@ export const addAccount = async (accountData) => {
   return response.data;
 };
 
-export const transferBetweenAccounts = async (transferData) => {
-  const response = await axios.post(
-    `${API_URL}/accounts/transfer`,
-    transferData
-  );
-  return response.data;
-};
-
 export const calculateInterests = async () => {
-  const response = await axios.post(`${API_URL}/accounts/calculate-interest`);
-  return response.data;
+  return await axios.post(`${API_URL}/accounts/calculate-interest`);
 };

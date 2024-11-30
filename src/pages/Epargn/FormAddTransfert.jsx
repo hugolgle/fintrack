@@ -1,0 +1,165 @@
+import React from "react";
+import { useParams } from "react-router";
+import Header from "../../composant/Header";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { addTransfer, fetchAccounts } from "../../Service/Epargn.service";
+import { useState } from "react";
+import { useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Loader from "../../composant/Loader/Loader";
+
+const validationSchema = Yup.object({
+  fromAccountId: Yup.string()
+    .required("Sélectionnez un compte source")
+    .min(24, "ID du compte invalide"),
+  toAccountId: Yup.string()
+    .required("Sélectionnez un compte de destination")
+    .min(24, "ID du compte invalide"),
+  amount: Yup.number()
+    .required("Le montant est requis")
+    .min(0, "Le montant ne peut pas être négatif")
+    .max(999999, "Montant trop élevé"),
+});
+
+export default function FormAddTransfert() {
+  const {
+    isLoading,
+    data: accounts,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchAccounts"],
+    queryFn: async () => {
+      const response = await fetchAccounts();
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
+        toast.warn(message);
+      }
+      return response?.data;
+    },
+    refetchOnMount: true,
+  });
+
+  const [accountOptions, setAccountOptions] = useState([]);
+
+  useEffect(() => {
+    setAccountOptions(
+      accounts?.map((account) => ({
+        value: account._id,
+        label: account.name,
+      }))
+    );
+  }, [accounts]);
+
+  const mutation = useMutation({
+    mutationFn: addTransfer,
+    onSuccess: () => {
+      toast.success("Succès");
+      formik.resetForm();
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description:
+          error?.response?.data?.message || "Une erreur est survenue.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      fromAccountId: "",
+      toAccountId: "",
+      amount: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      mutation.mutate(values);
+    },
+  });
+  // if (isLoading) return <Loader />;
+
+  return (
+    <section className="w-full">
+      <Header title="Virement" btnReturn />
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
+      >
+        {" "}
+        <Select
+          value={formik.values.fromAccountId}
+          onValueChange={(value) =>
+            formik.setFieldValue("fromAccountId", value)
+          }
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un compte source" />
+          </SelectTrigger>
+          <SelectContent>
+            {accountOptions?.map((account) => (
+              <SelectItem key={account.value} value={account.value}>
+                {account.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {formik.touched.fromAccountId && formik.errors.fromAccountId && (
+          <p className="text-red-500 text-sm">{formik.errors.fromAccountId}</p>
+        )}
+        <Select
+          value={formik.values.toAccountId}
+          onValueChange={(value) => formik.setFieldValue("toAccountId", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un compte de destination" />
+          </SelectTrigger>
+          <SelectContent>
+            {accountOptions?.map(
+              (account) =>
+                account.value !== formik.values.fromAccountId && (
+                  <SelectItem key={account.value} value={account.value}>
+                    {account.label}
+                  </SelectItem>
+                )
+            )}
+          </SelectContent>
+        </Select>
+        {formik.touched.toAccountId && formik.errors.toAccountId && (
+          <p className="text-red-500 text-sm">{formik.errors.toAccountId}</p>
+        )}
+        <Input
+          type="number"
+          id="amount"
+          name="amount"
+          value={formik.values.amount}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          placeholder="0.00"
+          step="0.01"
+        />
+        {formik.touched.amount && formik.errors.amount && (
+          <p className="text-red-500 text-sm">{formik.errors.amount}</p>
+        )}
+        <Button type="submit" disabled={mutation.isLoading}>
+          {mutation.isLoading
+            ? "Transfert en cours..."
+            : "Effectuer le transfert"}
+        </Button>
+      </form>
+    </section>
+  );
+}

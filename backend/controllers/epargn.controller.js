@@ -103,29 +103,56 @@ module.exports.calculateInterest = async (req, res) => {
       const diffDays = (today - lastCalc) / (1000 * 60 * 60 * 24); // Différence en jours
 
       if (diffDays > 0) {
-        const dailyRate = account.interestRate / 100 / 365; // Taux journalier
-        const interest = account.balance * dailyRate * diffDays;
+        // Calcul des intérêts
+        let interest = 0;
 
-        // Ajouter les intérêts au solde
-        account.balance = (account.balance + interest).toFixed(2);
-        account.lastInterestCalculation = today;
+        // Si plus d'un an, on calcule l'année entière
+        if (diffDays >= 365) {
+          const dailyRate = account.interestRate / 100 / 365; // Taux journalier
+
+          // Période 1 : Janvier à Mai (151 jours)
+          interest += account.balance * dailyRate * 151;
+
+          // Période 2 : Juin à Décembre (214 jours)
+          interest += account.balance * dailyRate * 214;
+        } else {
+          // Si moins d'un an, calculez selon les jours exacts restants
+          const dailyRate = account.interestRate / 100 / 365; // Taux journalier
+          interest = account.balance * dailyRate * diffDays;
+        }
+
+        // Enregistrer les intérêts
+        const calculatedInterest = parseFloat(interest).toFixed(2);
+
+        // Mettre à jour le montant total des intérêts
+        account.amountInterest = (
+          parseFloat(account.amountInterest) + parseFloat(calculatedInterest)
+        ).toFixed(2);
 
         // Ajouter une transaction pour les intérêts
         account.transactions.push({
           type: "interest",
-          amount: parseFloat(interest).toFixed(2),
+          amount: parseFloat(calculatedInterest),
+          date: today,
         });
+
+        // Mettre à jour le solde et la date de calcul des intérêts
+        account.balance = (
+          parseFloat(account.balance) + parseFloat(calculatedInterest)
+        ).toFixed(2);
+        account.lastInterestCalculation = today;
 
         await account.save();
       }
     }
 
-    return res
-      .status(200)
-      .json({ message: "Intérêts calculés et mis à jour avec succès" });
+    return res.status(200).json({
+      message: "Intérêts calculés et mis à jour avec succès",
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Erreur lors du calcul des intérêts", error });
+    return res.status(500).json({
+      message: "Erreur lors du calcul des intérêts",
+      error,
+    });
   }
 };

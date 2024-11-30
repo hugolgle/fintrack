@@ -21,6 +21,7 @@ import { MainLayout } from "./Layout/MainLayout.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
 import Epargn from "./Pages/Epargn/Epargn.jsx";
 import FormAddAccount from "./Pages/Epargn/FormAddAccount.jsx";
+import FormAddTransfert from "./Pages/Epargn/FormAddTransfert.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -105,6 +106,10 @@ function App() {
         {
           path: ROUTES.ADD_ACCOUNT,
           element: <PrivateRoute element={<FormAddAccount />} />,
+        },
+        {
+          path: ROUTES.ADD_TRANSFERT,
+          element: <PrivateRoute element={<FormAddTransfert />} />,
         },
         {
           path: ROUTES.STATISTICS,

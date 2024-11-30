@@ -16,6 +16,7 @@ import { useLocation } from "react-router";
 import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 import { DialogDelete } from "./DialogDelete.jsx";
+import BtnAddTransfer from "./Button/ButtonAddTransfer.jsx";
 
 function Header({
   title,
@@ -39,6 +40,7 @@ function Header({
   btnSearch,
   btnTrash,
   isFetching,
+  btnAddTransfert,
 }) {
   const location = useLocation();
 
@@ -52,6 +54,7 @@ function Header({
         <div className="flex gap-2">
           {btnReturn && canReturn && <BtnReturn />}
           {btnAdd && <BtnAdd to={btnAddTo} />}
+          {btnAddTransfert && <BtnAddTransfer />}
           {btnTrash && (
             <>
               <DialogDelete />

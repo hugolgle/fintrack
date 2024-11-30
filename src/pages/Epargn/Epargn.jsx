@@ -1,50 +1,48 @@
-import { HandCoins } from "lucide-react";
 import Header from "../../composant/Header";
-import { WalletCards } from "lucide-react";
-import { DollarSign } from "lucide-react";
 import { useNavigate } from "react-router";
 import BoxInfos from "../../composant/Box/BoxInfos";
-import { Landmark } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAccounts } from "../../Service/Epargn.service";
+import { HttpStatusCode } from "axios";
+import Loader from "../../composant/Loader/Loader";
 
 export default function Epargn() {
   const navigate = useNavigate();
+
+  const {
+    isLoading,
+    data: accounts,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchAccounts"],
+    queryFn: async () => {
+      const response = await fetchAccounts();
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
+        toast.warn(message);
+      }
+      return response?.data;
+    },
+    refetchOnMount: true,
+  });
+
+  if (isLoading) return <Loader />;
+
   return (
     <section className="w-full">
-      <Header title="Épargne" isFetching={false} btnAdd />
+      <Header title="Épargne" btnAdd btnAddTransfert />
       <div className="flex flex-col w-full gap-4 animate-fade">
         <div className="flex gap-4 w-full">
-          <BoxInfos
-            onClick={() => navigate("/revenue")}
-            type="revenue"
-            title="Livret A"
-            icon={<DollarSign size={15} color="grey" />}
-            value={100}
-            isAmount
-          />
-
-          <BoxInfos
-            onClick={() => navigate("/expense")}
-            type="depense"
-            title="LEP"
-            icon={<WalletCards size={15} color="grey" />}
-            value={100}
-            isAmount
-          />
-          <BoxInfos
-            onClick={() => navigate("/investment")}
-            type="Lvret Jeune"
-            title="Livret Jeune"
-            icon={<HandCoins size={15} color="grey" />}
-            value={100}
-            isAmount
-          />
-          <BoxInfos
-            type="economy"
-            title="Épargne"
-            icon={<Landmark size={15} color="grey" />}
-            value={100}
-            isAmount
-          />
+          {accounts.map((account) => (
+            <BoxInfos
+              key={account.id}
+              onClick={() => navigate(`/epargn/${account._id}`)}
+              title={account.name}
+              value={account.balance}
+              isAmount
+            />
+          ))}
         </div>
       </div>
     </section>

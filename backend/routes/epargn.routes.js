@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/accounts", auth, getAccounts);
 router.post("/accounts", auth, addAccount);
-router.post("/accounts/transfer", auth, addTransfert);
+router.post("/transfers", auth, addTransfert);
 router.post("/accounts/calculate-interest", auth, calculateInterest);
 
 module.exports = router;
