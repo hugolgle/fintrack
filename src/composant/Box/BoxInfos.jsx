@@ -1,6 +1,9 @@
 import { TrendingDown } from "lucide-react";
-import { addSpace, formatAmountWithoutSpace } from "../../utils/fonctionnel";
+import { formatEuro } from "../../utils/fonctionnel";
 import { TrendingUp } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { useState } from "react";
+import { useEffect } from "react";
 
 function BoxInfos({
   type,
@@ -11,7 +14,10 @@ function BoxInfos({
   onClick,
   year,
   isAmount,
+  plafond,
 }) {
+  const [progress, setProgress] = useState(0);
+
   let color = "ring-zinc-500";
 
   switch (type) {
@@ -21,23 +27,24 @@ function BoxInfos({
     case "revenue":
       color = "ring-colorRevenue/65 hover:ring-colorRevenue";
       break;
-    case "economy":
-      color = "ring-colorEconomy/65 hover:ring-colorEconomy";
-      break;
+
     case "investment":
       color = "ring-colorInvest/65 hover:ring-colorInvest";
       break;
   }
 
-  const percent =
-    ((formatAmountWithoutSpace(value) - formatAmountWithoutSpace(valueLast)) /
-      formatAmountWithoutSpace(valueLast)) *
-    100;
+  const diffAmount =
+    value < 0 && valueLast < 0 ? valueLast - value : value - valueLast;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setProgress((value * 100) / plafond), 400);
+    return () => clearTimeout(timer);
+  }, [value]);
 
   return (
     <div
       onClick={onClick}
-      className={`p-5 w-full h-auto rounded-xl bg-primary-foreground ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-5 w-full max-w-2xl bg-primary-foreground h-auto rounded-xl ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>
@@ -45,20 +52,28 @@ function BoxInfos({
       </div>
       <div className="w-full flex flex-col h-full justify-end items-start">
         <p className="font-bold flex italic items-end gap-2 text-2xl">
-          {addSpace(value)} {isAmount && "€"}{" "}
-          {valueLast && percent < 0 ? (
+          {isAmount ? formatEuro.format(value) : value}
+          {valueLast && diffAmount < 0 ? (
             <TrendingDown size={15} color="red" />
-          ) : percent > 0 ? (
+          ) : diffAmount > 0 ? (
             <TrendingUp size={15} color="green" />
           ) : null}
         </p>
 
         {valueLast && (
           <p className="text-muted-foreground text-xs">
-            {percent > 0 && "+"}
-            {percent.toFixed(2)}% par rapport{" "}
-            {year ? "à l'année dernière" : "au mois dernier"}
+            {diffAmount > 0 && "+"}
+            {formatEuro.format(diffAmount)} par rapport
+            {year ? " à l'année dernière" : " au mois dernier"}
           </p>
+        )}
+        {plafond && (
+          <div className="relative flex gap-2 items-center w-full">
+            <Progress value={progress} className="w-full h-1" />
+            <p className="text-gray-500 italic text-[10px] text-nowrap">
+              {progress.toFixed(2)} %
+            </p>
+          </div>
         )}
       </div>
     </div>

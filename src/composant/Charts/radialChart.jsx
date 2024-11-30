@@ -9,7 +9,7 @@ import {
   Legend,
 } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { addSpace } from "../../utils/fonctionnel";
+import { formatEuro } from "../../utils/fonctionnel";
 
 export function RadialChart({
   chartData,
@@ -17,6 +17,7 @@ export function RadialChart({
   total,
   legend,
   height = 225,
+  fontSizeTotal = 10,
   inner,
   outer,
 }) {
@@ -26,7 +27,7 @@ export function RadialChart({
     if (active && payload && payload.length) {
       const { payload: data } = payload[0];
       return (
-        <div className="bg-white dark:bg-black text-xs p-2 rounded-xl shadow-2xl">
+        <div className="bg-white dark:bg-black text-[10px] p-2 rounded-xl shadow-2xl">
           <div className="text-left mb-1 flex items-center gap-2">
             <div
               className="w-2 h-2 rounded"
@@ -53,9 +54,9 @@ export function RadialChart({
                     </div>
                     <p className="italic font-black">
                       {key === "amount"
-                        ? addSpace(value.toFixed(2))
-                        : value.toFixed(2)}{" "}
-                      {key === "amount" ? "€" : "%"}
+                        ? formatEuro.format(value)
+                        : value.toFixed(2)}
+                      {key !== "amount" && "%"}
                     </p>
                   </div>
                 );
@@ -106,9 +107,9 @@ export function RadialChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="text-[10px] italic font-thin fill-foreground"
+                          className={`text-[${fontSizeTotal}px] italic font-thin fill-foreground`}
                         >
-                          {`${addSpace(total)} €`}
+                          {formatEuro.format(total)}
                         </tspan>
                       </text>
                     );

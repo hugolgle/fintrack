@@ -7,6 +7,13 @@ import {
   getTitleOfTransactionsByType,
 } from "../../utils/operations";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
   categorySort,
   months,
   nameType,
@@ -18,13 +25,34 @@ import {
 } from "../../../public/categories.json";
 import Header from "../../composant/Header.jsx";
 import Tableau from "../../composant/Table/Table";
-import { fetchTransactions } from "../../Service/Transaction.service";
-import { useQuery } from "@tanstack/react-query";
+import {
+  deleteTransactions,
+  fetchTransactions,
+} from "../../Service/Transaction.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
+import { MoreHorizontal } from "lucide-react";
+import { Pencil } from "lucide-react";
+import { FormEditTransac } from "./FormEditTransac.jsx";
+import { Trash } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { formatEuro } from "../../utils/fonctionnel.js";
 
 export default function PageTransactions(props) {
-  const { isLoading, data, isFetching, refetch } = useQuery({
+  const { date } = useParams();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const {
+    isLoading,
+    data,
+    isFetching,
+    refetch: refectTransac,
+  } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -37,9 +65,23 @@ export default function PageTransactions(props) {
     refetchOnMount: true,
   });
 
-  const { date } = useParams();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const mutationDeleteTransaction = useMutation({
+    mutationFn: async (itemId) => {
+      return await deleteTransactions(itemId);
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      refectTransac();
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    performSearch(event.target.value);
+  };
 
   const typeProps =
     props.type === "Expense"
@@ -85,7 +127,6 @@ export default function PageTransactions(props) {
   };
 
   const check = selectedCategorys.length + selectedTitles.length;
-  const [searchTerm, setSearchTerm] = useState("");
 
   const transactions =
     date === "all"
@@ -111,8 +152,8 @@ export default function PageTransactions(props) {
             selectedTitles
           );
 
-  const formatData = transactions.map(
-    ({ _id, type, title, category, detail, amount, date }) => {
+  const theData = transactions.map(
+    ({ _id, type, title, category, detail, amount, date, createdAt }) => {
       return {
         _id,
         type,
@@ -121,9 +162,26 @@ export default function PageTransactions(props) {
         date,
         detail,
         amount,
+        createdAt,
       };
     }
   );
+
+  const performSearch = (term) => {
+    const filteredData = theData.filter((item) => {
+      const titleMatches = item.title
+        .toLowerCase()
+        .includes(term.toLowerCase());
+      const typeMatches = item.type.toLowerCase().includes(term.toLowerCase());
+      const amountMatches = item.amount
+        .toString()
+        .toLowerCase()
+        .includes(term.toLowerCase());
+      const dateMatches = item.date?.includes(term);
+      return titleMatches || typeMatches || amountMatches || dateMatches;
+    });
+    setSearchResults(filteredData);
+  };
 
   const clearFilters = () => {
     setSelectedCategorys([]);
@@ -205,6 +263,49 @@ export default function PageTransactions(props) {
     return `${months[mois - 1]} ${annee}`;
   };
 
+  const formatData = (row) => {
+    return [
+      row.title,
+      row.category,
+      format(row.date, "PP", { locale: fr }),
+      formatEuro.format(row.amount),
+    ];
+  };
+
+  const action = (item) => {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <MoreHorizontal className="cursor-pointer" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="left">
+          <Dialog>
+            <DialogTrigger asChild>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Modifier
+              </DropdownMenuItem>
+            </DialogTrigger>
+            <DialogContent>
+              <FormEditTransac transaction={item} refetch={refectTransac} />
+            </DialogContent>
+          </Dialog>
+
+          <DropdownMenuItem
+            onClick={() => {
+              mutationDeleteTransaction.mutate(item._id);
+            }}
+            onSelect={(e) => e.preventDefault()}
+            className="text-red-500"
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            Supprimer
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   if (isLoading) return <Loader />;
   return (
     <>
@@ -230,19 +331,20 @@ export default function PageTransactions(props) {
           selectedTitles={selectedTitles}
           selectedCategorys={selectedCategorys}
           btnSearch
-          btnAdd
-          btnAddTo={`/${props.type.toLowerCase()}`}
+          handleSearchChange={handleSearchChange}
+          btnAdd={`/${props.type.toLowerCase()}/add`}
           btnReturn
           btnFilter
-          btnSelect
         />
 
         <Tableau
-          data={formatData}
+          data={searchTerm ? searchResults : theData}
           columns={columns}
+          action={action}
           type="transactions"
           isFetching={isFetching}
-          refetchTransaction={refetch}
+          formatData={formatData}
+          multiselect
         />
       </section>
     </>

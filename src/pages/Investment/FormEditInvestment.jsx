@@ -21,9 +21,8 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { formatAmount } from "../../utils/fonctionnel";
-import { LoaderCircle } from "lucide-react";
 import { editInvestmentsTransaction } from "../../Service/Investment.service";
+import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = yup.object().shape({
   date: yup.date().required("La date est requise"),
@@ -52,7 +51,7 @@ export function FormEditInvestment({ transaction, refetch }) {
       const editData = {
         id: transaction?._id,
         date: values.date.toLocaleDateString("fr-CA"),
-        amount: formatAmount(Math.abs(values.amount)),
+        amount: Math.abs(values.amount),
       };
       return await editInvestmentsTransaction(editData, transaction?.idInvest);
     },
@@ -70,7 +69,7 @@ export function FormEditInvestment({ transaction, refetch }) {
 
   const dataEdit = [
     formik.values?.action,
-    `${formatAmount(formik.values?.amount)}`,
+    formik.values?.amount,
     formik.values?.date.toLocaleDateString("fr-CA"),
   ];
 
@@ -132,23 +131,12 @@ export function FormEditInvestment({ transaction, refetch }) {
       </div>
 
       <DialogFooter className="sm:justify-start">
-        <Button
-          disabled={mutationEdit.isPending || isSaveDisabled}
+        <ButtonLoading
           type="submit"
-        >
-          {mutationEdit.isPending ? (
-            <>
-              Chargement{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            "Modifier"
-          )}
-        </Button>
+          text="Modifier"
+          textBis="Chargement"
+          isPending={mutationEdit.isPending || isSaveDisabled}
+        />
         <DialogClose asChild>
           <Button type="button" variant="outline">
             Annuler

@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.developm
 import { DollarSign } from "lucide-react";
 import { ROUTES } from "./Routes.jsx";
 import { Landmark } from "lucide-react";
+import { Swords } from "lucide-react";
 
 function Sidebar() {
   const userId = getUserIdFromToken();
@@ -36,7 +37,7 @@ function Sidebar() {
     onSuccess: () => {
       sessionStorage.removeItem("token");
       queryClient.clear();
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       toast.success("Vous vous êtes déconnecté !");
     },
     onError: (error) => {
@@ -72,30 +73,36 @@ function Sidebar() {
     },
     {
       id: 2,
-      name: "Board dépense",
+      name: "Dépenses",
       link: ROUTES.EXPENSE,
       icon: <WalletCards />,
     },
     {
       id: 3,
-      name: "Board recette",
+      name: "Revenus",
       link: ROUTES.REVENUE,
       icon: <DollarSign />,
     },
     {
       id: 4,
-      name: "Board investissement",
+      name: "Investissements",
       link: ROUTES.INVESTMENT,
       icon: <HandCoins />,
     },
     {
       id: 4,
-      name: "Épargn",
+      name: "Épargne",
       link: ROUTES.EPARGN,
       icon: <Landmark />,
     },
     {
       id: 5,
+      name: "Patrimoine",
+      link: ROUTES.HERITAGE,
+      icon: <Swords />,
+    },
+    {
+      id: 6,
       name: "Statistiques",
       link: ROUTES.STATISTICS,
       icon: <BarChart />,
@@ -103,36 +110,34 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 bg-primary-foreground">
+    <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-primary-foreground">
       <Link
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center w-auto overflow-hidden"
       >
         <img
           src="/public/logoFinTrack.png"
-          className="h-11 hover:scale-95 transition-all"
+          className="size-10 hover:scale-95 transition-all"
           alt="logo"
         />
       </Link>
 
-      <div className="flex flex-col justify-between gap-2">
+      <div className="flex flex-col justify-between gap-1">
         {menu.map(({ id, name, link, icon }) => (
-          <Tooltip key={id} delayDuration={0}>
+          <Tooltip key={id} delayDuration={false}>
             <TooltipTrigger asChild>
               <Link
                 to={link}
-                className={`my-1 p-3 rounded-xl font-thin overflow-hidden transition-all ${
+                className={`my-1 p-3 rounded-full overflow-hidden transition-all ${
                   activeLink.startsWith(link)
-                    ? "bg-primary text-white dark:text-black text-foreground"
+                    ? "bg-primary text-foreground"
                     : ""
                 }`}
               >
                 {icon}
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>{name}</p>
-            </TooltipContent>
+            <TooltipContent side="right">{name}</TooltipContent>
           </Tooltip>
         ))}
       </div>

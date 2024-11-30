@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const transactionSchema = mongoose.Schema(
+const transactionSchema = new mongoose.Schema(
   {
-    amount: { type: String, required: true },
+    amount: { type: Number, required: true },
     date: { type: String, required: true },
     isSale: { type: Boolean, required: true },
   },
-  { _id: true }
+  { _id: true, timestamps: true }
 );
 
 const investmentSchema = mongoose.Schema(
@@ -16,9 +16,9 @@ const investmentSchema = mongoose.Schema(
     symbol: { type: String, required: false },
     type: { type: String, required: true },
     transaction: [transactionSchema],
-    amountBuy: { type: String, required: true },
-    amountSale: { type: String, required: true },
-    amountResult: { type: String, required: true },
+    amountBuy: { type: Number, required: true },
+    amountSale: { type: Number, required: true },
+    amountResult: { type: Number, required: true },
   },
   { timestamps: true }
 );

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  LabelList,
   Line,
   LineChart,
   XAxis,
@@ -10,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CardContent } from "@/components/ui/card";
-import { addSpace } from "../../utils/fonctionnel";
+import { formatEuro } from "../../utils/fonctionnel";
 
 export function ChartLine({
   data,
@@ -30,7 +29,7 @@ export function ChartLine({
       const year = data.find((d) => d.month === label)?.year;
       const economieMonth = payload[0]?.value - payload[1]?.value;
       return (
-        <div className="bg-background text-xs p-2 rounded-xl shadow-2xl ">
+        <div className="bg-background text-[10px] p-2 rounded-xl shadow-2xl ">
           <div className="text-left mb-1">
             <p style={{ color: "hsl(var(--primary))" }}>
               {label} {year}
@@ -48,7 +47,9 @@ export function ChartLine({
                     {chartConfig[entry.dataKey].label}
                   </p>
                 </div>
-                <p className="italic font-black">{addSpace(entry.value)} €</p>
+                <p className="italic font-black">
+                  {formatEuro.format(entry.value)}
+                </p>
               </div>
             ))}
             {payload[0] && payload[1] && (
@@ -63,7 +64,7 @@ export function ChartLine({
                   className={`italic font-black ${economieMonth < 0 ? "text-red-500" : "text-green-500"}`}
                 >
                   {economieMonth > 0 ? "+" : ""}
-                  {addSpace(economieMonth.toFixed(2))} €
+                  {formatEuro.format(economieMonth)}
                 </p>
               </div>
             )}
@@ -90,18 +91,17 @@ export function ChartLine({
         >
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 12, fill: chartConfig.text.color }}
+            tick={{ fontSize: 10, fill: chartConfig.text.color }}
             tickFormatter={(value) => value.slice(0, 3)} // Affiche les 3 premières lettres
-            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 1 }}
+            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
           />
 
           <YAxis
             domain={yAxisDomain}
             ticks={ticks}
-            tickFormatter={(value) => `${addSpace(value)} €`}
-            tick={{ fontSize: 12, fill: chartConfig.text.color }}
-            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 1 }}
-            tickLine={{ stroke: chartConfig.text.color }}
+            tickFormatter={(value) => formatEuro.format(value)}
+            tick={{ fontSize: 10, fill: chartConfig.text.color }}
+            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
           />
 
           <Tooltip content={<CustomTooltip />} />
@@ -113,23 +113,13 @@ export function ChartLine({
                 dataKey={key}
                 type="natural"
                 stroke={chartConfig[key].color}
-                strokeWidth={1.5}
-                dot={{ fill: chartConfig[key].color, r: 2 }}
+                strokeWidth={1.2}
+                dot={false}
                 activeDot={false}
                 isAnimationActive={isAnimationActive}
                 animationDuration={1000}
-                animationEasing="ease-out"
-              >
-                <LabelList
-                  strokeWidth={0.4}
-                  position="top"
-                  stroke={chartConfig[key].color}
-                  offset={10}
-                  fontSize={10}
-                  color={chartConfig[key].color}
-                  formatter={(value) => `${addSpace(value)} €`}
-                />
-              </Line>
+                animationEasing="ease-in-out"
+              ></Line>
             ) : null
           )}
         </LineChart>

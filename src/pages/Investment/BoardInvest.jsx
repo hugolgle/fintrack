@@ -1,15 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchInvestments } from "../../Service/Investment.service";
+import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import Header from "../../composant/Header.jsx";
 import { toast } from "sonner";
 import Loader from "../../composant/Loader/Loader";
-import { useTheme } from "../../Context/ThemeContext";
+import { ROUTES } from "../../composant/Routes.jsx";
 import { HttpStatusCode } from "axios";
 import { Pickaxe } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { HandCoins } from "lucide-react";
-import { addSpace, formatAmount } from "../../utils/fonctionnel";
+import { formatEuro } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
 import BoxInfos from "../../composant/Box/BoxInfos";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
@@ -18,9 +25,7 @@ import { useState } from "react";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import LoaderDots from "../../composant/Loader/LoaderDots";
 import { currentDate, getLastMonths } from "../../utils/other.js";
-import { getLastOperations } from "../../utils/operations.js";
 import { format } from "date-fns";
-import { Dot } from "lucide-react";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
@@ -28,6 +33,7 @@ import { calculInvestByMonth } from "../../utils/calcul.js";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
+  const [selectNbMonth, setSelectNbMonth] = useState(6);
   const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
@@ -155,7 +161,7 @@ export default function BoardInvest() {
     return absoluteValue.toFixed(2);
   };
 
-  const monthsGraph = getLastMonths(graphMonth, 6);
+  const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   const montantInvestByMonth = [];
   const dataTransacInvest = data?.flatMap((investment) => {
@@ -221,18 +227,14 @@ export default function BoardInvest() {
     setGraphMonth(newDate);
   };
 
-  const simplifiedData = data.flatMap((investment) =>
-    investment.transaction.map((trans) => ({
-      name: investment.name,
-      type: investment.type,
+  const simplifiedData = data.flatMap((item) =>
+    item.transaction.map((trans) => ({
+      name: item.name,
+      type: item.type,
       amount: parseFloat(trans.amount) || 0,
       date: trans.date,
     }))
   );
-
-  const lastTransactions = simplifiedData
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 8);
 
   const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
 
@@ -240,79 +242,81 @@ export default function BoardInvest() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header
-          title="Board investissement"
+          title="Investissement"
           typeProps="investment"
-          btnAdd
+          btnAdd={ROUTES.ADD_ORDER}
           isFetching={isFetching}
         />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
           <div className=" flex gap-4">
             <BoxInfos
               title="Investissements en cours"
-              value={addSpace(formatAmount(amountBuy))}
+              value={amountBuy}
               icon={<Pickaxe size={15} color="grey" />}
-              onClick={() => navigate("inprogress")}
+              onClick={() =>
+                navigate(
+                  ROUTES.INVESTMENT_BY_DATE.replace(":date", "inprogress")
+                )
+              }
               isAmount
             />
             <BoxInfos
               title="Tous les investissements"
-              value={addSpace(formatAmount(amountResult))}
+              value={amountResult}
               icon={<HandCoins size={15} color="grey" />}
-              onClick={() => navigate("all")}
+              onClick={() =>
+                navigate(ROUTES.INVESTMENT_BY_DATE.replace(":date", "all"))
+              }
               isAmount
             />
             <BoxInfos
               title="Investissements vendus"
-              value={addSpace(formatAmount(amountSale))}
+              value={amountSale}
               icon={<Shield size={15} color="grey" />}
-              onClick={() => navigate("sold")}
+              onClick={() =>
+                navigate(ROUTES.INVESTMENT_BY_DATE.replace(":date", "sold"))
+              }
               isAmount
             />
             <BoxInfos
               title="Mes ordres"
               value={data.length}
               icon={<BookA size={15} color="grey" />}
-              onClick={() => navigate("order")}
+              onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-2/5 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
-              <h2 className="text-xl font-extralight italic">
-                Dernières opérations
-              </h2>
+            <div className="w-2/5 bg-primary-foreground h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <h2 className=" text-left">Dernières opérations</h2>
               <table className="h-full">
-                <tbody className="w-full h-full flex flex-col">
-                  {lastTransactions.map((operation, index) => (
-                    <tr
-                      key={index}
-                      className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
-                    >
-                      <td className="flex flex-row space-x-4 w-full">
-                        <span>{format(new Date(operation.date), "dd/MM")}</span>
-                        <span className="truncate">{operation.name}</span>
-                      </td>
-                      <td className="flex items-center flex-row w-full">
-                        <td className="w-full text-right italic">
-                          <b>{addSpace(operation.amount.toFixed(2))} €</b>
+                <tbody className="w-full h-full gap-2 flex flex-col">
+                  {simplifiedData
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 6)
+                    .map((operation, index) => (
+                      <tr
+                        key={index}
+                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                      >
+                        <td className="flex flex-row space-x-4 w-4/5">
+                          <span>
+                            {format(new Date(operation.date), "dd/MM")}
+                          </span>
+                          <span className="truncate max-w-40">
+                            {operation.name}
+                          </span>
                         </td>
-                        <Dot
-                          strokeWidth={6}
-                          color={
-                            operation.type === "Revenue"
-                              ? "hsl(var(--graph-recette))"
-                              : operation.type === "Expense"
-                                ? "hsl(var(--graph-depense))"
-                                : "hsl(var(--graph-invest))"
-                          }
-                        />
-                      </td>
-                    </tr>
-                  ))}
+
+                        <p className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-blue-300 text-blue-900 dark:bg-blue-300 dark:text-blue-900">
+                          {formatEuro.format(operation?.amount)}
+                        </p>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
-            <div className="w-full flex flex-col justify-between bg-primary-foreground rounded-xl p-4">
-              <h2 className="text-xl font-extralight italic">Graphique</h2>
+            <div className="w-full relative flex flex-col h-fit justify-between bg-primary-foreground ring-1 ring-border rounded-xl p-4">
+              <h2 className=" text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
                   data={dataGraph}
@@ -321,9 +325,9 @@ export default function BoardInvest() {
                 />
               ) : (
                 <LoaderDots />
-              )}{" "}
+              )}
               <div
-                className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
+                className={`flex flex-row w-3/4 mx-auto px-20 items-center justify-between bottom-2`}
               >
                 <div className="w-1/12">
                   <ChevronLeft
@@ -345,9 +349,25 @@ export default function BoardInvest() {
                   )}
                 </div>
               </div>
+              <div className="absolute top-0 right-0 m-2">
+                <Select
+                  name="selectNbMonth"
+                  value={selectNbMonth}
+                  onValueChange={(value) => setSelectNbMonth(Number(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Nombre de mois" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={3}>3 mois</SelectItem>
+                    <SelectItem value={6}>6 mois</SelectItem>
+                    <SelectItem value={12}>12 mois</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="w-2/4 bg-primary-foreground rounded-xl p-4">
-              <h2 className="text-xl font-extralight italic">Position</h2>
+            <div className="w-2/4 bg-primary-foreground ring-1 ring-border rounded-xl p-4">
+              <h2 className=" text-left">Position</h2>
 
               {!isFetching ? (
                 <RadialChart
@@ -362,6 +382,7 @@ export default function BoardInvest() {
               ) : (
                 <LoaderDots />
               )}
+              <Separator className="w-5/6 mx-auto" />
               {!isFetching ? (
                 <RadialChart
                   chartData={chartDataByName}

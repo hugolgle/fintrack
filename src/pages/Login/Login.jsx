@@ -13,6 +13,7 @@ import * as Yup from "yup";
 import { HttpStatusCode } from "axios";
 import { LoaderCircle } from "lucide-react";
 import Header from "../../composant/Header.jsx";
+import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -126,25 +127,14 @@ export default function Login() {
         {formik.touched.password && formik.errors.password && (
           <p className="text-xs text-red-500">{formik.errors.password}</p>
         )}
-
-        <Button
+        <ButtonLoading
           variant="outline"
           type="submit"
+          text="Connexion"
+          textBis="Connexion"
           disabled={mutation.isPending || !formik.isValid}
-        >
-          {mutation.isPending ? (
-            <>
-              Connexion{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            "Connexion"
-          )}
-        </Button>
+          isPending={mutation.isPending}
+        />
       </form>
       <div className="flex flex-col justify-center items-center mt-5 gap-2">
         <p className="text-xs">Nouveau sur FinTrack ?</p>

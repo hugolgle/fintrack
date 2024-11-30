@@ -28,10 +28,7 @@ export function calculTotal(data, type, filterCategory, filterTitle) {
     0.0
   );
 
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
+  const formattedTotal = totalAmount.toFixed(2);
   return formattedTotal;
 }
 
@@ -78,10 +75,7 @@ export function calculTotalByMonth(
     0.0
   );
 
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
+  const formattedTotal = totalAmount.toFixed(2);
   return formattedTotal;
 }
 
@@ -120,16 +114,13 @@ export function calculTotalByYear(
     0.0
   );
 
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
+  const formattedTotal = totalAmount.toFixed(2);
   return formattedTotal;
 }
 
 export function calculMoyenne(data, type, year, nbMonth) {
   if (!Array.isArray(data) || nbMonth <= 0) {
-    return "0.00 €";
+    return "0.00";
   }
 
   let filteredOperations = data.filter((transaction) => {
@@ -151,10 +142,10 @@ export function calculMoyenne(data, type, year, nbMonth) {
   const resultat = totalAmount / nbMonth;
 
   if (isNaN(resultat)) {
-    return "0.00 €";
+    return "0.00";
   }
 
-  return resultat.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return resultat.toFixed(2);
 }
 
 export function calculEconomie(data, year, month) {
@@ -187,7 +178,7 @@ export function calculEconomie(data, year, month) {
 
   const resultat = totalRecettes + totalDepenses;
 
-  return resultat.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return resultat.toFixed(2);
 }
 
 export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
@@ -203,10 +194,7 @@ export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
 
   const economieMoyenne = recettesMoyennesNumber + depensesMoyennesNumber;
 
-  const economieMoyenneFormatted = economieMoyenne
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
+  const economieMoyenneFormatted = economieMoyenne.toFixed(2);
   return economieMoyenneFormatted;
 }
 
@@ -229,9 +217,6 @@ export function calculInvestByMonth(data, date) {
     return total + parseFloat(investment.amount || 0);
   }, 0.0);
 
-  const formattedTotal = totalAmount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
+  const formattedTotal = totalAmount.toFixed(2);
   return formattedTotal;
 }

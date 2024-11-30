@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router";
-import Header from "../../composant/Header";
+import Header from "../../../composant/Header";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { addTransfer, fetchAccounts } from "../../Service/Epargn.service";
+import { addTransfer, fetchAccounts } from "../../../Service/Epargn.service";
 import { useState } from "react";
 import { useEffect } from "react";
 import {
@@ -18,7 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Loader from "../../composant/Loader/Loader";
+import Loader from "../../../composant/Loader/Loader";
+import { HttpStatusCode } from "axios";
+import ButtonLoading from "../../../composant/Button/ButtonLoading";
 
 const validationSchema = Yup.object({
   fromAccountId: Yup.string()
@@ -34,12 +36,7 @@ const validationSchema = Yup.object({
 });
 
 export default function FormAddTransfert() {
-  const {
-    isLoading,
-    data: accounts,
-    isFetching,
-    refetch,
-  } = useQuery({
+  const { isLoading, data: accounts } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
       const response = await fetchAccounts();
@@ -65,17 +62,12 @@ export default function FormAddTransfert() {
 
   const mutation = useMutation({
     mutationFn: addTransfer,
-    onSuccess: () => {
-      toast.success("Succès");
+    onSuccess: (response) => {
+      toast.success(response?.message);
       formik.resetForm();
     },
     onError: (error) => {
-      toast({
-        title: "Erreur",
-        description:
-          error?.response?.data?.message || "Une erreur est survenue.",
-        variant: "destructive",
-      });
+      toast.error(error?.response?.data?.message);
     },
   });
 
@@ -90,7 +82,7 @@ export default function FormAddTransfert() {
       mutation.mutate(values);
     },
   });
-  // if (isLoading) return <Loader />;
+  if (isLoading) return <Loader />;
 
   return (
     <section className="w-full">
@@ -99,7 +91,6 @@ export default function FormAddTransfert() {
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
-        {" "}
         <Select
           value={formik.values.fromAccountId}
           onValueChange={(value) =>
@@ -154,11 +145,12 @@ export default function FormAddTransfert() {
         {formik.touched.amount && formik.errors.amount && (
           <p className="text-red-500 text-sm">{formik.errors.amount}</p>
         )}
-        <Button type="submit" disabled={mutation.isLoading}>
-          {mutation.isLoading
-            ? "Transfert en cours..."
-            : "Effectuer le transfert"}
-        </Button>
+        <ButtonLoading
+          type="submit"
+          text="Effectuer le transfert"
+          textBis="Transfert en cours"
+          isPending={mutation.isPending}
+        />
       </form>
     </section>
   );

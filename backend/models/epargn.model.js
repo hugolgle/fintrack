@@ -7,18 +7,38 @@ const epargnSchema = new mongoose.Schema({
   interestRate: { type: Number, required: true, default: 0.0 },
   lastInterestCalculation: { type: Date, required: true, default: new Date() },
   amountInterest: { type: Number, default: 0.0 },
+  maxBalance: { type: Number, required: true, default: 100000.0 },
   transactions: [
-    {
-      type: {
-        type: String,
-        enum: ["deposit", "withdraw", "transfer", "interest"],
-        required: true,
+    new mongoose.Schema(
+      {
+        type: {
+          type: String,
+          enum: ["deposit", "withdraw", "transfer", "interest"],
+          required: true,
+        },
+        amount: { type: Number, required: true },
+        date: { type: Date, required: true, default: new Date() },
+        toAccount: { type: mongoose.Schema.Types.ObjectId, ref: "epargn" },
+        fromAccount: { type: mongoose.Schema.Types.ObjectId, ref: "epargn" },
       },
-      amount: { type: Number, required: true },
-      date: { type: Date, required: true, default: new Date() },
-      toAccount: { type: mongoose.Schema.Types.ObjectId, ref: "epargn" },
+      { timestamps: true }
+    ),
+  ],
+  monthlyStatements: [
+    {
+      date: { type: Date, required: true },
+      balance: { type: Number, required: true },
     },
   ],
+});
+
+epargnSchema.pre("save", function (next) {
+  if (this.balance > this.maxBalance) {
+    return next(
+      new Error(`Le solde dépasse le plafond autorisé de ${this.maxBalance}€`)
+    );
+  }
+  next();
 });
 
 module.exports = mongoose.model("epargn", epargnSchema);

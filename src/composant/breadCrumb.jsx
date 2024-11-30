@@ -17,6 +17,7 @@ export function BreadcrumbDemo() {
 
   const pathMap = {
     [ROUTES.HOME]: "Home",
+    [ROUTES.DASHBOARD]: "Tableau de Bord",
     [ROUTES.EXPENSE]: "Board Dépense",
     [ROUTES.ADD_EXPENSE]: "Ajouter",
     [ROUTES.EXPENSE_BY_DATE]: "Transactions Dépenses",
@@ -24,10 +25,19 @@ export function BreadcrumbDemo() {
     [ROUTES.ADD_REVENUE]: "Ajouter",
     [ROUTES.REVENUE_BY_DATE]: "Transactions Recettes",
     [ROUTES.INVESTMENT]: "Investissements",
-    [ROUTES.ADD_INVEST]: "Ajouter",
-    [ROUTES.INVESTMENT_BY_ID]: "Investissement Détails",
+    [ROUTES.ADD_ORDER]: "Ajouter un ordre",
+    [ROUTES.ADD_INVESTMENT]: "Ajouter un investissement",
+    [ROUTES.INVESTMENT_BY_ID]: "Investissement Détails id",
     [ROUTES.INVESTMENT_ORDER]: "Mes ordres",
-    [ROUTES.DASHBOARD]: "Tableau de Bord",
+    [ROUTES.EPARGN]: "Épargne",
+    [ROUTES.ACCOUNT_BY_ID]: "Compte Id",
+    [ROUTES.ACCOUNT_TRANSACTION]: "Transaction du compte",
+    [ROUTES.ACTION_EPARGN]: "Action",
+    [ROUTES.ADD_ACCOUNT]: "Ajouter un compte",
+    [ROUTES.ADD_TRANSFERT]: "Faire un transfert",
+    [ROUTES.ADD_DEPOSIT]: "Faire un dépôt",
+    [ROUTES.ADD_WITHDRAW]: "Faire un retrait",
+    [ROUTES.HERITAGE]: "Patrimoine",
     [ROUTES.STATISTICS]: "Statistiques",
     [ROUTES.PROFILE]: "Profil",
     [ROUTES.LOGIN]: "Connexion",
@@ -45,6 +55,12 @@ export function BreadcrumbDemo() {
 
         {pathParts.map((part, index) => {
           const href = `/${pathParts.slice(0, index + 1).join("/")}`;
+
+          // Vérifier si la partie du chemin correspond à un ID
+          if (/^\d+$/.test(part)) {
+            return null; // Ignorer les IDs
+          }
+
           let displayName =
             pathMap[href] || part.charAt(0).toUpperCase() + part.slice(1);
 
@@ -52,8 +68,6 @@ export function BreadcrumbDemo() {
             const year = part.slice(0, 4);
             const monthIndex = parseInt(part.slice(4), 10) - 1;
             displayName = `${months[monthIndex]} ${year}`;
-          } else if (/^[0-9a-fA-F]{24}$/.test(part)) {
-            displayName = part.slice(0, 4);
           }
 
           const isLast = index === pathParts.length - 1;
@@ -61,7 +75,9 @@ export function BreadcrumbDemo() {
           return (
             <BreadcrumbItem key={index}>
               {isLast ? (
-                <BreadcrumbPage>{displayName}</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {displayName === "All" ? "Tout" : displayName}
+                </BreadcrumbPage>
               ) : (
                 <>
                   <BreadcrumbLink href={href}>{displayName}</BreadcrumbLink>

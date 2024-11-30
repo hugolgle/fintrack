@@ -20,12 +20,12 @@ import {
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/Header.jsx";
 import { addTransaction } from "../../Service/Investment.service.jsx";
-import { formatAmount } from "../../utils/fonctionnel.js";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
 import { LoaderCircle } from "lucide-react";
 import { useParams } from "react-router";
+import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 const validationSchema = yup.object().shape({
   action: yup.string().required("L'action est requise"),
@@ -41,13 +41,14 @@ export default function PageAddInvestment() {
       action: "",
       amount: "",
       data: "",
+      date: new Date(),
     },
     validationSchema,
     validateOnMount: true,
     onSubmit: async (values, { resetForm }) => {
       const postData = {
         action: values.action === "true",
-        amount: formatAmount(values.amount),
+        amount: values.amount,
         date: values.date.toLocaleDateString("fr-CA"),
       };
 
@@ -129,24 +130,13 @@ export default function PageAddInvestment() {
           </p>
         )}
 
-        <Button
-          disabled={
+        <ButtonLoading
+          text="Soumettre l'investissement"
+          textBis="En cours"
+          isPending={
             addTransactionInvestmentMutation.isPending || !formik.isValid
           }
-        >
-          {addTransactionInvestmentMutation.isPending ? (
-            <>
-              En cours{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            "Soumettre l'investissement"
-          )}
-        </Button>
+        />
       </form>
     </section>
   );

@@ -16,6 +16,7 @@ import { Trash } from "lucide-react";
 import { deleteInvestment } from "../Service/Investment.service";
 import { toast } from "sonner";
 import { useParams } from "react-router";
+import ButtonLoading from "./Button/ButtonLoading";
 
 export function DialogDelete() {
   const { id } = useParams();
@@ -51,24 +52,13 @@ export function DialogDelete() {
           </DialogHeader>
 
           <DialogFooter className="sm:justify-start">
-            <Button
+            <ButtonLoading
+              text="Oui"
+              textBis="Suppression"
+              isPending={mutationDelete.isPending}
+              onClick={mutationDelete.mutate}
               variant="destructive"
-              disabled={mutationDelete.isPending}
-              onClick={() => mutationDelete.mutate()}
-            >
-              {mutationDelete.isPending ? (
-                <>
-                  Suppression{" "}
-                  <LoaderCircle
-                    size={15}
-                    strokeWidth={1}
-                    className="ml-2 animate-spin"
-                  />
-                </>
-              ) : (
-                "Oui"
-              )}
-            </Button>
+            />
             <DialogClose asChild>
               <Button type="button" variant="outline">
                 Non

@@ -5,7 +5,18 @@ const API_URL = "http://localhost:5001/epargns";
 
 export const fetchAccounts = async () => {
   const token = sessionStorage.getItem("token");
-  return await axios.get(`${API_URL}/accounts`, {
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
+  return await axios.get(`${API_URL}/accounts/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const fetchAccount = async (id) => {
+  const token = sessionStorage.getItem("token");
+  return await axios.get(`${API_URL}/accounts/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -41,4 +52,24 @@ export const addTransfer = async (transferData) => {
 
 export const calculateInterests = async () => {
   return await axios.post(`${API_URL}/accounts/calculate-interest`);
+};
+
+export const depositAccount = async (depositData) => {
+  const token = sessionStorage.getItem("token");
+  const response = await axios.post(`${API_URL}/deposit`, depositData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const withdrawAccount = async (withdrawData) => {
+  const token = sessionStorage.getItem("token");
+  const response = await axios.post(`${API_URL}/withdraw`, withdrawData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };

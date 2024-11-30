@@ -22,7 +22,6 @@ import {
   categoryRecette,
   categoryDepense,
 } from "../../../public/categories.json";
-import { formatAmount } from "../../utils/fonctionnel";
 import { useEffect } from "react";
 import { categorySort, nameType } from "../../utils/other";
 import {
@@ -57,6 +56,7 @@ import { useState } from "react";
 import { ChevronsUpDown } from "lucide-react";
 import { Check } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
+import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -119,10 +119,6 @@ export default function PageAddTransac(props) {
       return await addTransaction(postData, userInfo?._id);
     },
     onSuccess: (response) => {
-      const newOperationId = response?.data?._id;
-      const transactionDate = new Date(response?.data?.date);
-      const formattedDate = `${transactionDate.getFullYear()}${(transactionDate.getMonth() + 1).toString().padStart(2, "0")}`;
-
       toast.success(
         `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `
       );
@@ -151,7 +147,7 @@ export default function PageAddTransac(props) {
         title: values.title === "Autre" ? values.titleBis : values.title,
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
-        amount: formatAmount(values.amount, props.type),
+        amount: values.amount,
       };
       addTransactionMutation.mutate(postData, {
         onSuccess: () => {
@@ -321,23 +317,13 @@ export default function PageAddTransac(props) {
           </p>
         )}
 
-        <Button
+        <ButtonLoading
           type="submit"
+          text={`Soumettre la ${props.title}`}
+          textBis="En cours"
+          isPending={addTransactionMutation.isPending}
           disabled={addTransactionMutation.isPending || !formik.isValid}
-        >
-          {addTransactionMutation.isPending ? (
-            <>
-              En cours{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            `Soumettre la ${props.title}`
-          )}
-        </Button>
+        />
       </form>
     </section>
   );

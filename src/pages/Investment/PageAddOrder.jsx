@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/Header.jsx";
-import { addInvestment } from "../../Service/Investment.service";
+import { addInvestment } from "../../Service/Investment.service.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import { useFormik } from "formik";
@@ -20,6 +20,7 @@ import * as yup from "yup";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../..//Service/User.service";
 import { LoaderCircle } from "lucide-react";
+import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -121,20 +122,12 @@ export default function PageAddOrder() {
             {formik.errors.type}
           </p>
         )}
-        <Button disabled={addInvestmentMutation.isPending || !formik.isValid}>
-          {addInvestmentMutation.isPending ? (
-            <>
-              En cours{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            "Soumettre l'investissement"
-          )}
-        </Button>
+        <ButtonLoading
+          text="Soumettre l'investissement"
+          textBis="En cours"
+          isPending={addInvestmentMutation.isPending}
+          disabled={addInvestmentMutation.isPending || !formik.isValid}
+        />
       </form>
     </section>
   );

@@ -26,8 +26,6 @@ export function getTransactionsByType(data, type, filterCategory, filterTitle) {
   return filteredTransactions.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 }
 
@@ -87,8 +85,6 @@ export function getTransactionsByMonth(
   transactionsInMonth.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return transactionsInMonth;
@@ -131,8 +127,6 @@ export function getTransactionsByYear(
   transactionsInYear.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return transactionsInYear;
@@ -233,8 +227,6 @@ export function getAllInvestments(data, isSold) {
   return filteredInvestments.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 }
 

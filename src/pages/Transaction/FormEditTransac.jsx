@@ -35,9 +35,8 @@ import {
   categoryRecette,
   categoryDepense,
 } from "../../../public/categories.json";
-import { formatAmount } from "../../utils/fonctionnel";
 import { editTransactions } from "../../Service/Transaction.service";
-import { LoaderCircle } from "lucide-react";
+import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -79,7 +78,7 @@ export function FormEditTransac({ transaction, refetch }) {
         category: values.category,
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
-        amount: formatAmount(values.amount, transaction.type),
+        amount: values.amount,
       };
       return await editTransactions(editData);
     },
@@ -97,17 +96,17 @@ export function FormEditTransac({ transaction, refetch }) {
   const categoryR = categorySort(categoryRecette);
 
   const dataBase = [
-    transaction?.data?.title,
-    transaction?.data?.detail,
-    transaction?.data?.amount,
-    transaction?.data?.category,
-    transaction?.data?.date,
+    transaction?.title,
+    transaction?.detail,
+    transaction?.amount,
+    transaction?.category,
+    transaction?.date,
   ];
 
   const dataEdit = [
     formik.values?.title,
     formik.values?.detail,
-    `${formatAmount(formik.values?.amount, transaction?.data?.type)}`,
+    formik.values?.amount,
     formik.values?.category,
     formik.values?.date.toLocaleDateString("fr-CA"),
   ];
@@ -144,14 +143,13 @@ export function FormEditTransac({ transaction, refetch }) {
             <SelectValue placeholder="Entrez la catégorie" />
           </SelectTrigger>
           <SelectContent>
-            {(transaction?.data?.type === "Expense"
-              ? categoryD
-              : categoryR
-            ).map(({ name }) => (
-              <SelectItem key={name} value={name}>
-                {name}
-              </SelectItem>
-            ))}
+            {(transaction?.type === "Expense" ? categoryD : categoryR).map(
+              ({ name }) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              )
+            )}
           </SelectContent>
         </Select>
         {formik.touched.category && formik.errors.category && (
@@ -216,23 +214,13 @@ export function FormEditTransac({ transaction, refetch }) {
       </div>
 
       <DialogFooter className="sm:justify-start">
-        <Button
-          disabled={mutationEdit.isPending || isSaveDisabled}
+        <ButtonLoading
           type="submit"
-        >
-          {mutationEdit.isPending ? (
-            <>
-              Chargement{" "}
-              <LoaderCircle
-                size={15}
-                strokeWidth={1}
-                className="ml-2 animate-spin"
-              />
-            </>
-          ) : (
-            "Modifier"
-          )}
-        </Button>
+          text="Modifier"
+          textBis="Chargement"
+          isPending={mutationEdit.isPending}
+          disabled={mutationEdit.isPending || isSaveDisabled}
+        />
         <DialogClose>
           <Button type="button" variant="outline">
             Annuler

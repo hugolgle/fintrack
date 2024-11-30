@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { addAccount } from "../../Service/Epargn.service";
 import Header from "../../composant/Header";
+import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Le nom est requis"),
@@ -19,13 +20,17 @@ const validationSchema = Yup.object({
     .typeError("Le taux d'intérêt doit être un nombre")
     .min(0, "Le taux d'intérêt ne peut pas être négatif")
     .required("Le taux d'intérêt est requis"),
+  maxBalance: Yup.number()
+    .typeError("Le plafond doit être un nombre")
+    .min(0, "Le plafond ne peut pas être négatif")
+    .required("Le plafond est requis"),
 });
 
 export default function FormAddAccount() {
   const mutation = useMutation({
     mutationFn: addAccount,
-    onSuccess: () => {
-      toast.success("Succès");
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
       formik.resetForm();
     },
     onError: (error) => {
@@ -38,12 +43,12 @@ export default function FormAddAccount() {
     },
   });
 
-  // Gestion du formulaire avec Formik
   const formik = useFormik({
     initialValues: {
       name: "",
       balance: "",
       interestRate: "",
+      maxBalance: "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -99,9 +104,25 @@ export default function FormAddAccount() {
           <p className="text-red-500 text-sm">{formik.errors.interestRate}</p>
         )}
 
-        <Button type="submit" disabled={mutation.isLoading}>
-          {mutation.isLoading ? "Ajout en cours..." : "Ajouter le compte"}
-        </Button>
+        <Input
+          type="number"
+          id="maxBalance"
+          name="maxBalance"
+          value={formik.values.maxBalance}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          placeholder="Plafond"
+          step="0.01"
+        />
+        {formik.touched.maxBalance && formik.errors.maxBalance && (
+          <p className="text-red-500 text-sm">{formik.errors.maxBalance}</p>
+        )}
+        <ButtonLoading
+          type="submit"
+          text="Ajouter le compte"
+          textBis="Ajout en cours"
+          isPending={mutation.isPending}
+        />
       </form>
     </section>
   );

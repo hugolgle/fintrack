@@ -21,7 +21,12 @@ import { MainLayout } from "./Layout/MainLayout.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
 import Epargn from "./Pages/Epargn/Epargn.jsx";
 import FormAddAccount from "./Pages/Epargn/FormAddAccount.jsx";
-import FormAddTransfert from "./Pages/Epargn/FormAddTransfert.jsx";
+import FormAddTransfert from "./Pages/Epargn/Actions/FormTransfer.jsx";
+import PageAccount from "./Pages/Epargn/PageAccount.jsx";
+import FormAddCredit from "./Pages/Epargn/Actions/FormDeposit.jsx";
+import EpargnAction from "./Pages/Epargn/Action.jsx";
+import FormAddWithdraw from "./Pages/Epargn/Actions/FormWithdraw.jsx";
+import Heritage from "./Pages/Heritage/Heritage.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -69,7 +74,7 @@ function App() {
           path: ROUTES.ADD_REVENUE,
           element: (
             <PrivateRoute
-              element={<PageAddTransac type="Revenue" title="recette" />}
+              element={<PageAddTransac type="Revenue" title="revenu" />}
             />
           ),
         },
@@ -104,18 +109,37 @@ function App() {
           element: <PrivateRoute element={<Epargn />} />,
         },
         {
+          path: ROUTES.ACCOUNT_BY_ID,
+          element: <PrivateRoute element={<PageAccount />} />,
+        },
+        {
           path: ROUTES.ADD_ACCOUNT,
           element: <PrivateRoute element={<FormAddAccount />} />,
+        },
+        {
+          path: ROUTES.ACTION_EPARGN,
+          element: <PrivateRoute element={<EpargnAction />} />,
         },
         {
           path: ROUTES.ADD_TRANSFERT,
           element: <PrivateRoute element={<FormAddTransfert />} />,
         },
         {
+          path: ROUTES.ADD_DEPOSIT,
+          element: <PrivateRoute element={<FormAddCredit />} />,
+        },
+        {
+          path: ROUTES.ADD_WITHDRAW,
+          element: <PrivateRoute element={<FormAddWithdraw />} />,
+        },
+        {
+          path: ROUTES.HERITAGE,
+          element: <PrivateRoute element={<Heritage />} />,
+        },
+        {
           path: ROUTES.STATISTICS,
           element: <PrivateRoute element={<Statistic />} />,
         },
-
         {
           path: ROUTES.PROFILE,
           element: <PrivateRoute element={<Profile />} />,

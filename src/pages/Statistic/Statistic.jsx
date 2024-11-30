@@ -319,7 +319,7 @@ export default function Statistic() {
           <div className="flex flex-col items-center gap-4 w-2/3">
             <div className="flex flex-row gap-4 w-full h-full text-right">
               <BoxStat
-                title="Recette totale"
+                title="Revenu totale"
                 type="Revenue"
                 selectedYear={selectedYear}
                 amount={recetteYear}
@@ -334,12 +334,12 @@ export default function Statistic() {
                 title="Économie totale"
                 type="State"
                 selectedYear={selectedYear}
-                amount={`${economieTotale} €`}
+                amount={economieTotale}
               />
             </div>
             <div className="flex flex-row gap-4 w-full h-full text-right">
               <BoxStat
-                title="Recette/Mois"
+                title="Revenu/Mois"
                 type="Revenue"
                 selectedYear={selectedYear}
                 amount={moyenneRecetteMois}
@@ -354,13 +354,13 @@ export default function Statistic() {
                 title="Économie/Mois"
                 type="State"
                 selectedYear={selectedYear}
-                amount={`${moyenneEconomie} €`}
+                amount={moyenneEconomie}
               />
             </div>
             <Separator className="w-5/6" />
             <div className="flex flex-row gap-4 text-right w-full h-full">
               <BoxStat
-                title="Recette"
+                title="Revenu"
                 type="Revenue"
                 months={months}
                 selectedMonth={selectedMonth}
@@ -379,7 +379,7 @@ export default function Statistic() {
                 type="State"
                 title={parseFloat(economieMonth) < 0 ? "Déficit" : "Économie"}
                 selectedYear={selectedYear}
-                amount={`${economieMonth} €`}
+                amount={economieMonth}
                 months={months}
                 selectedMonth={selectedMonth}
               />
@@ -387,14 +387,11 @@ export default function Statistic() {
           </div>
           <Separator orientation="vertical" className="h-80 my-auto" />
           <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
-            <p className="w-full font-thin text-sm text-center p-2 rounded-2xl bg-secondary">
-              Répartitions
-            </p>
             <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 ring-[2px] ring-green-500">
               <p className="italic font-thin text-center">
                 {selectedByYear
-                  ? `Recettes de ${selectedYear}`
-                  : `Recettes de ${convertDate(selectedDate)}`}
+                  ? `Revenus de ${selectedYear}`
+                  : `Revenus de ${convertDate(selectedDate)}`}
               </p>
 
               {!isFetching ? (

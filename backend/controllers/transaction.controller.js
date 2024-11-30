@@ -7,6 +7,10 @@ module.exports.addTransaction = async (req, res) => {
         .status(400)
         .json({ message: "Veuillez fournir les informations nécessaires" });
     }
+    let amount = req.body.amount;
+    if (req.body.type === "Expense") {
+      amount = -Math.abs(amount);
+    }
 
     const transaction = await OperationModel.create({
       user: req.body.user,
@@ -15,7 +19,7 @@ module.exports.addTransaction = async (req, res) => {
       title: req.body.title,
       date: req.body.date,
       detail: req.body.detail || "",
-      amount: req.body.amount,
+      amount,
     });
 
     return res.status(201).json(transaction);
@@ -58,14 +62,19 @@ module.exports.editTransaction = async (req, res) => {
       return res.status(400).json({ message: "Cette opération n'existe pas" });
     }
 
+    let amount = req.body.amount;
+    if (req.body.type === "Expense") {
+      amount = -Math.abs(amount);
+    }
+
     const updatedOperation = await OperationModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, amount },
       { new: true }
     );
 
     return res.status(200).json({
-      message: "Transition mis à jour avec succès !",
+      message: "Transaction mise à jour avec succès !",
       updatedOperation,
     });
   } catch (error) {

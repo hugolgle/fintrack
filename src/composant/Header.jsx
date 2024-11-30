@@ -1,8 +1,4 @@
 import React from "react";
-import BtnReturn from "./Button/ButtonReturn.jsx";
-import BtnAdd from "./Button/ButtonAdd.jsx";
-import BtnFilter from "./Button/ButtonFilter.jsx";
-import BtnSearch from "./Button/ButtonResearch.jsx";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -11,18 +7,25 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import PopoverFilter from "./PopoverFilter.jsx";
-import { BreadcrumbDemo } from "./BreadCrumb.jsx";
 import { useLocation } from "react-router";
-import { ChevronLeft, ListCollapse, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { CirclePlus } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
+import { CircleArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Filter } from "lucide-react";
 import { DialogDelete } from "./DialogDelete.jsx";
-import BtnAddTransfer from "./Button/ButtonAddTransfer.jsx";
 
 function Header({
   title,
   typeProps,
   check,
   clickLastMonth,
+  switchComponent,
   clickNextMonth,
   date,
   handleSearchChange,
@@ -35,38 +38,70 @@ function Header({
   selectedCategorys,
   btnReturn,
   btnAdd,
-  btnAddTo,
   btnFilter,
   btnSearch,
   btnTrash,
   isFetching,
-  btnAddTransfert,
+  btnAction,
 }) {
   const location = useLocation();
 
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const canReturn = pathSegments.length >= 2;
 
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="w-full justify-between flex animate-fade relative">
       <div className="flex flex-col gap-2 items-start w-1/4 justify-start">
-        <BreadcrumbDemo />
+        {/* <BreadcrumbDemo /> */}
         <div className="flex gap-2">
-          {btnReturn && canReturn && <BtnReturn />}
-          {btnAdd && <BtnAdd to={btnAddTo} />}
-          {btnAddTransfert && <BtnAddTransfer />}
-          {btnTrash && (
-            <>
-              <DialogDelete />
-            </>
+          {btnReturn && canReturn && (
+            <CircleArrowLeft
+              size={20}
+              className="cursor-pointer hover:scale-110 transition-all"
+              onClick={handleGoBack}
+            />
           )}
-
+          {btnAdd && (
+            <Link
+              className="cursor-pointer hover:scale-110 transition-all"
+              to={btnAdd}
+            >
+              <CirclePlus size={20} />
+            </Link>
+          )}
+          {btnAction && (
+            <Link
+              className="cursor-pointer hover:scale-110 transition-all"
+              to="/epargn/action"
+            >
+              <ArrowLeftRight size={20} />
+            </Link>
+          )}
+          {btnTrash && <DialogDelete />}
+          {switchComponent && switchComponent}
           {btnFilter && (
             <>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="none" className="p-0 h-fit">
-                    <BtnFilter check={check} />
+                    <div className="relative hover:scale-110 transition-all">
+                      <Filter size={20} className="cursor-pointer" />
+                      {check > 0 ? (
+                        <>
+                          <span className="absolute text-xs -top-2 bg-primary rounded-full px-1 animate-pop-up">
+                            {check}
+                          </span>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="select-none w-80 max-h-80 overflow-auto">
@@ -84,17 +119,22 @@ function Header({
           )}
         </div>
       </div>
-      <h1 className="text-4xl font-thin mb-5 italic animate-fade w-2/4 truncate">
+      <h1 className="text-4xl font-thin mb-5 font-logo animate-fade w-2/4 truncate">
         {title}
       </h1>
       <div className="w-1/4 flex justify-end">
         {btnSearch && (
           <>
             <div className="flex gap-8">
-              <BtnSearch
-                searchTerm={searchTerm}
-                handleSearchChange={handleSearchChange}
-              />
+              <div className="relative">
+                <Input
+                  className="pl-8"
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              </div>
               {typeProps === "investment" ||
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">

@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { editUser } from "../../Service/User.service";
 import { getUserIdFromToken } from "../../utils/users";
 import { LoaderCircle } from "lucide-react";
+import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),
@@ -200,35 +201,23 @@ export function SheetEditProfile({ refetch, dataProfil }) {
           </div>
           <SheetFooter>
             {!isSaveDisabled && (
-              <Button
+              <ButtonLoading
+                variant="outline"
                 type="button"
+                text="Annuler"
                 onClick={() => {
                   formik.resetForm(), setHiddenImg(false), setPreview(false);
                 }}
-                variant="outline"
-                className="animate-fade"
-                disabled={isPending}
-              >
-                Annuler
-              </Button>
+              />
             )}
-            <Button
+
+            <ButtonLoading
               type="submit"
+              text="Enregistrer"
+              textBis="Enregistrement"
+              isPending={isPending}
               disabled={isPending || !formik.isValid || isSaveDisabled}
-            >
-              {isPending ? (
-                <>
-                  Enregistrement{" "}
-                  <LoaderCircle
-                    size={15}
-                    strokeWidth={1}
-                    className="ml-2 animate-spin"
-                  />
-                </>
-              ) : (
-                "Enregistrer"
-              )}
-            </Button>
+            />
           </SheetFooter>
         </form>
         <div className="relative rounded-full group mx-auto mt-16 w-fit">

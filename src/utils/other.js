@@ -99,7 +99,7 @@ export function nameType(typeBdd) {
       name = "Dépense";
       break;
     case "Revenue":
-      name = "Recette";
+      name = "Revenu";
       break;
     default:
       name = "";

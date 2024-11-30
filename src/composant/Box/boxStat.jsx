@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatEuro } from "../../utils/fonctionnel";
 function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
@@ -48,15 +49,6 @@ function BoxStat(props) {
     setPreviousMontant(currentMontant);
   }, [currentMontant]);
 
-  const formatAmountSign = (amount) => {
-    const sign = amount < 0 ? "-" : "";
-    const absoluteMontant = Math.abs(amount);
-
-    return (
-      sign + absoluteMontant.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")
-    );
-  };
-
   return (
     <div
       className={`w-full flex flex-col-reverse italic gap-10 justify-between font-thin rounded-2xl ring-[2px] transition-all px-4 py-2 ${ringColor} hover:bg-opacity-95`}
@@ -64,12 +56,11 @@ function BoxStat(props) {
       <div className="flex justify-between">
         <p className="text-xs text-left">{props.title}</p>
         <p className="text-xs text-left">
-          En{" "}
           {props.months ? props.months[parseInt(props.selectedMonth) - 1] : ""}{" "}
           {props.selectedYear}
         </p>
       </div>
-      <p className="text-2xl">{formatAmountSign(currentMontant)} €</p>
+      <p className="text-2xl">{formatEuro.format(currentMontant)}</p>
     </div>
   );
 }

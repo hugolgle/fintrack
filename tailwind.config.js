@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      logo: ["Montserrat", "sans-serif", "system-ui"],
+      logo: ["Nixie One", "sans-serif", "system-ui"],
     },
     extend: {
       colors: {

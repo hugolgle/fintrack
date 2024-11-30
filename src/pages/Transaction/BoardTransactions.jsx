@@ -34,14 +34,13 @@ import { renderCustomLegend } from "../../composant/Legend.jsx";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
 import LoaderDots from "../../composant/Loader/LoaderDots.jsx";
 import { format } from "date-fns";
-import { addSpace } from "../../utils/fonctionnel.js";
-import { Dot } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { formatEuro } from "../../utils/fonctionnel.js";
 
 export default function BoardTransactions({ type }) {
-  const { day, month, year } = currentDate();
+  const { month, year } = currentDate();
   const currentYearMonth = `${year}${month}`;
   const [selectNbMonth, setSelectNbMonth] = useState(6);
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
@@ -118,7 +117,7 @@ export default function BoardTransactions({ type }) {
 
   const defaultConfig = {
     amount: {
-      label: type === "Expense" ? "Dépense" : "Recette",
+      label: type === "Expense" ? "Dépense" : "Revenu",
       color:
         type === "Expense"
           ? "hsl(var(--graph-depense))"
@@ -162,7 +161,7 @@ export default function BoardTransactions({ type }) {
 
   const dataOperations = [...(Array.isArray(data) ? data : [])];
 
-  const lastOperations = getLastOperations(dataOperations, type, 8, false);
+  const lastOperations = getLastOperations(dataOperations, type, 6, false);
 
   const convertDate = (date) => {
     const annee = Math.floor(date / 100);
@@ -240,60 +239,153 @@ export default function BoardTransactions({ type }) {
       <section className="w-full">
         <div className="flex flex-col">
           <Header
-            title={type === "Expense" ? "Board dépenses" : "Board revenus"}
+            title={type === "Expense" ? "Dépenses" : "Revenus"}
             typeProps={type.toLowerCase()}
-            btnAdd
+            btnAdd="add"
             isFetching={isFetching}
           />
 
-          <div className="flex flex-col gap-4 animate-fade">
-            <div className="flex gap-4">
-              <BoxInfos
-                onClick={() =>
-                  navigate(`/${type.toLowerCase()}/${currentYearMonth}`)
-                }
-                title={
-                  type === "Expense"
-                    ? "Dépenses ce mois"
-                    : type === "Revenue" && "Revenus ce mois"
-                }
-                value={calculTotalByMonth(data, type, currentYearMonth)}
-                valueLast={calculTotalByMonth(data, type, lastMonthYear)}
-                icon={<Calendar size={15} color="grey" />}
-                isAmount
-              />
-              <BoxInfos
-                onClick={() => navigate(`/${type.toLowerCase()}/${year}`)}
-                title={
-                  type === "Expense"
-                    ? "Dépenses cette année"
-                    : type === "Revenue" && "Revenus cette année"
-                }
-                value={calculTotalByYear(data, type, year)}
-                valueLast={calculTotalByYear(data, type, year - 1)}
-                icon={<PieChart size={15} color="grey" />}
-                year
-                isAmount
-              />
-              <BoxInfos
-                onClick={() => navigate(`/${type.toLowerCase()}/all`)}
-                title={
-                  type === "Expense"
-                    ? "Dépenses totales"
-                    : type === "Revenue" && "Revenus totals"
-                }
-                value={calculTotal(data, type)}
-                icon={<DollarSign size={15} color="grey" />}
-                isAmount
-              />
+          <div className="flex gap-4 w-full animate-fade">
+            <div className="flex flex-col gap-4 w-4/5">
+              <div className="flex gap-4">
+                <BoxInfos
+                  onClick={() =>
+                    navigate(`/${type.toLowerCase()}/${currentYearMonth}`)
+                  }
+                  title={
+                    type === "Expense"
+                      ? "Dépenses ce mois"
+                      : type === "Revenue" && "Revenus ce mois"
+                  }
+                  value={calculTotalByMonth(data, type, currentYearMonth)}
+                  valueLast={calculTotalByMonth(data, type, lastMonthYear)}
+                  icon={<Calendar size={15} color="grey" />}
+                  isAmount
+                />
+                <BoxInfos
+                  onClick={() => navigate(`/${type.toLowerCase()}/${year}`)}
+                  title={
+                    type === "Expense"
+                      ? "Dépenses cette année"
+                      : type === "Revenue" && "Revenus cette année"
+                  }
+                  value={calculTotalByYear(data, type, year)}
+                  valueLast={calculTotalByYear(data, type, year - 1)}
+                  icon={<PieChart size={15} color="grey" />}
+                  year
+                  isAmount
+                />
+                <BoxInfos
+                  onClick={() => navigate(`/${type.toLowerCase()}/all`)}
+                  title={
+                    type === "Expense"
+                      ? "Dépenses totales"
+                      : type === "Revenue" && "Revenus totals"
+                  }
+                  value={calculTotal(data, type)}
+                  icon={<DollarSign size={15} color="grey" />}
+                  isAmount
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="w-2/4 ring-1 ring-border bg-primary-foreground rounded-xl p-4">
+                  <h2 className=" text-left">Répartitions</h2>
+                  {!isFetching ? (
+                    total !== "0.00" ? (
+                      <RadialChart
+                        chartData={transformedData}
+                        chartConfig={chartConfig}
+                        total={total}
+                        legend={renderCustomLegend}
+                        inner={40}
+                        outer={55}
+                      />
+                    ) : (
+                      <p className="h-[225px] ">Aucune donnée</p>
+                    )
+                  ) : (
+                    <LoaderDots />
+                  )}
+                  <div className="flex flex-row justify-between w-3/4 mx-auto">
+                    <div className="w-1/12">
+                      <ChevronLeft
+                        size={25}
+                        onClick={clickLastMonth}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      />
+                    </div>
+
+                    <p className="font-thin text-sm w-10/12 italic">
+                      {convertDate(monthChartRadial)}
+                    </p>
+
+                    <div className="w-1/12">
+                      {chevronIsVisible && (
+                        <ChevronRight
+                          size={25}
+                          onClick={clickNextMonth}
+                          className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full relative flex flex-col ring-1 ring-border justify-between bg-primary-foreground rounded-xl p-4">
+                  <h2 className=" text-left">Graphique</h2>
+                  {!isFetching ? (
+                    <ChartLine
+                      data={dataGraph}
+                      defaultConfig={defaultConfig}
+                      maxValue={maxValue}
+                    />
+                  ) : (
+                    <LoaderDots />
+                  )}
+                  <div className="flex flex-row min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2">
+                    <div className="w-1/12">
+                      <ChevronLeft
+                        size={25}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        onClick={clickLastMonthGraph}
+                      />
+                    </div>
+                    <p className="font-thin text-sm w-10/12 italic">
+                      {theMonthGraph}
+                    </p>
+                    <div className="w-1/12">
+                      {chevronGraphIsVisible && (
+                        <ChevronRight
+                          size={25}
+                          className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                          onClick={clickNextMonthGraph}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute top-0 right-0 m-2">
+                    <Select
+                      name="selectNbMonth"
+                      value={selectNbMonth}
+                      onValueChange={(value) => setSelectNbMonth(Number(value))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Nombre de mois" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={3}>3 mois</SelectItem>
+                        <SelectItem value={6}>6 mois</SelectItem>
+                        <SelectItem value={12}>12 mois</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-2/5 bg-primary-foreground rounded-xl p-4 flex flex-col gap-4">
-                <h2 className="text-xl font-extralight italic">
-                  Dernières opérations
-                </h2>
+            <div className="w-1/5 flex flex-col gap-4">
+              <div className="bg-primary-foreground ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
+                <h2 className=" text-left">Dernières opérations</h2>
                 <table className="h-full">
-                  <tbody className="w-full h-full flex flex-col">
+                  <tbody className="w-full h-full gap-2 flex flex-col">
                     {lastOperations.map((operation) => (
                       <tr
                         key={operation._id}
@@ -303,114 +395,24 @@ export default function BoardTransactions({ type }) {
                           <span>{format(operation.date, "dd/MM")}</span>
                           <span className="truncate">{operation.title}</span>
                         </td>
-                        <td className="flex items-center flex-row w-full">
-                          <td className="w-full text-right italic">
-                            <b>{addSpace(operation.amount)} €</b>
-                          </td>
-                          <Dot
-                            strokeWidth={6}
-                            color={
-                              operation.type === "Revenue"
-                                ? "hsl(var(--graph-recette))"
-                                : operation.type === "Expense"
-                                  ? "hsl(var(--graph-depense))"
-                                  : "hsl(var(--graph-invest))"
-                            }
-                          />
-                        </td>
+
+                        <p
+                          className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
+                            operation.type === "Expense"
+                              ? "bg-red-300 text-red-900 dark:bg-red-300 dark:text-red-900"
+                              : operation.type === "Revenue" &&
+                                "bg-green-300 text-green-900 dark:bg-green-300 dark:text-green-900"
+                          }`}
+                        >
+                          {formatEuro.format(operation.amount)}
+                        </p>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <div className="w-full relative flex flex-col justify-between bg-primary-foreground rounded-xl p-4">
-                <h2 className="text-xl font-extralight italic">Graphique</h2>
-                {!isFetching ? (
-                  <ChartLine
-                    data={dataGraph}
-                    defaultConfig={defaultConfig}
-                    maxValue={maxValue}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}{" "}
-                <div
-                  className={`flex flex-row gap-4 min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2`}
-                >
-                  <div className="w-1/12">
-                    <ChevronLeft
-                      size={25}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickLastMonthGraph}
-                    />
-                  </div>
-                  <p className="font-thin text-sm w-10/12 italic">
-                    {theMonthGraph}
-                  </p>
-                  <div className="w-1/12">
-                    {chevronGraphIsVisible && (
-                      <ChevronRight
-                        size={25}
-                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                        onClick={clickNextMonthGraph}
-                      />
-                    )}
-                  </div>
-                </div>
-                <div className="absolute bottom-0 right-0 m-2">
-                  <Select
-                    name="selectNbMonth"
-                    value={selectNbMonth}
-                    onValueChange={(value) => setSelectNbMonth(Number(value))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Nombre de mois" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={3}>3 mois</SelectItem>
-                      <SelectItem value={6}>6 mois</SelectItem>
-                      <SelectItem value={12}>12 mois</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="w-2/4 bg-primary-foreground rounded-xl p-4">
-                <h2 className="text-xl font-extralight italic">Répartitions</h2>
-                {!isFetching ? (
-                  <RadialChart
-                    chartData={transformedData}
-                    chartConfig={chartConfig}
-                    total={total}
-                    legend={renderCustomLegend}
-                    inner={40}
-                    outer={55}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}
-                <div className="flex flex-row justify-between w-3/4 mx-auto">
-                  <div className="w-1/12">
-                    <ChevronLeft
-                      size={25}
-                      onClick={clickLastMonth}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    />
-                  </div>
-
-                  <p className="font-thin text-sm w-10/12 italic">
-                    {convertDate(monthChartRadial)}
-                  </p>
-
-                  <div className="w-1/12">
-                    {chevronIsVisible && (
-                      <ChevronRight
-                        size={25}
-                        onClick={clickNextMonth}
-                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      />
-                    )}
-                  </div>
-                </div>
+              <div className="bg-primary-foreground ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
+                <h2 className=" text-left">Budget</h2>
               </div>
             </div>
           </div>

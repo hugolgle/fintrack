@@ -29,7 +29,7 @@ const transactionSchema = new Schema(
       required: false,
     },
     amount: {
-      type: String,
+      type: Number,
       required: true,
     },
   },
