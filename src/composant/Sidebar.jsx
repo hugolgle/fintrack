@@ -22,6 +22,7 @@ import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { DollarSign } from "lucide-react";
 import { ROUTES } from "./Routes.jsx";
+import { Landmark } from "lucide-react";
 
 function Sidebar() {
   const userId = getUserIdFromToken();
@@ -88,6 +89,12 @@ function Sidebar() {
       icon: <HandCoins />,
     },
     {
+      id: 4,
+      name: "Épargn",
+      link: ROUTES.EPARGN,
+      icon: <Landmark />,
+    },
+    {
       id: 5,
       name: "Statistiques",
       link: ROUTES.STATISTICS,
@@ -99,9 +106,13 @@ function Sidebar() {
     <div className="flex flex-col justify-between overflow-hidden rounded-2xl relative items-center h-full p-4 bg-primary-foreground">
       <Link
         to={ROUTES.HOME}
-        className="cursor-pointer rounded-xl text-2xl group text-center h-11 w-auto overflow-hidden"
+        className="cursor-pointer rounded-xl text-2xl group text-center w-auto overflow-hidden"
       >
-        <img src="/public/logoFinTrack.png" alt="logo" />
+        <img
+          src="/public/logoFinTrack.png"
+          className="h-11 hover:scale-95 transition-all"
+          alt="logo"
+        />
       </Link>
 
       <div className="flex flex-col justify-between gap-2">

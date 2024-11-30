@@ -12,6 +12,8 @@ export const ROUTES = {
   ADD_INVESTMENT: "/investment/:id/add",
   INVESTMENT_BY_ID: "/investment/:id",
   INVESTMENT_ORDER: "/investment/order",
+  EPARGN: "/epargn",
+  ADD_ACCOUNT: "/epargn/add",
   STATISTICS: "/statistics",
   PROFILE: "/profile",
   LOGIN: "/login",

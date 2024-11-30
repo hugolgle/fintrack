@@ -1,23 +1,10 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const getUserIdFromToken = () => {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
-
-  try {
-    const decodedToken = jwtDecode(token);
-    return decodedToken.id;
-  } catch (error) {
-    throw new Error("Erreur lors du décodage du token.");
-  }
-};
-
 export const fetchInvestments = async () => {
   const token = sessionStorage.getItem("token");
-  const userId = getUserIdFromToken();
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
 
   return await axios.get(`http://localhost:5001/investments/user/${userId}`, {
     headers: {
@@ -38,7 +25,8 @@ export const fetchInvestmentById = async (id) => {
 
 export const addInvestment = async (investmentData) => {
   const token = sessionStorage.getItem("token");
-  const userId = getUserIdFromToken();
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
 
   const { name, symbol, type } = investmentData;
 
