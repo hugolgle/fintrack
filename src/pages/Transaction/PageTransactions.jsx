@@ -242,18 +242,22 @@ export default function PageTransactions(props) {
     {
       id: 1,
       name: "Titre",
+      key: "title",
     },
     {
       id: 2,
       name: "Catégorie",
+      key: "category",
     },
     {
       id: 3,
       name: "Date",
+      key: "date",
     },
     {
       id: 4,
       name: "Montant",
+      key: "amount",
     },
   ];
 

@@ -123,11 +123,11 @@ export default function Epargn() {
   }, {});
 
   const columns = [
-    { id: 1, name: "Type" },
-    { id: 2, name: "Compte" },
-    { id: 3, name: "Vers" },
-    { id: 4, name: "Date" },
-    { id: 5, name: "Montant" },
+    { id: 1, name: "Type", key: "type" },
+    { id: 2, name: "Compte", key: "account" },
+    { id: 3, name: "Vers", key: "toAccount" },
+    { id: 4, name: "Date", key: "date" },
+    { id: 5, name: "Montant", key: "amount" },
   ];
 
   const formatData = (transaction) => {

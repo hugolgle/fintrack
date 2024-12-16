@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,9 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { formatEuro } from "../../utils/fonctionnel";
 
 export default function Tableau({
@@ -21,6 +21,23 @@ export default function Tableau({
 }) {
   const [selectAllRow, setSelectAllRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => ({
+      key,
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const sortedData = [...data].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+    const valueA = a[sortConfig.key];
+    const valueB = b[sortConfig.key];
+    if (valueA < valueB) return sortConfig.direction === "asc" ? -1 : 1;
+    if (valueA > valueB) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
 
   const handleSelectAllRow = (checked) => {
     setSelectAllRow(checked);
@@ -68,7 +85,7 @@ export default function Tableau({
 
   const amountSelect = calculMontantSelect();
   const amountTotal = calculTotalAmount();
-
+  console.log(sortConfig.key);
   return (
     <>
       {data && data.length > 0 ? (
@@ -84,67 +101,75 @@ export default function Tableau({
                   />
                 </TableHead>
               )}
-              {columns.map(({ name }) => (
-                <TableHead key={name} className="w-full text-center">
-                  {name}
+              {columns.map(({ name, key }) => (
+                <TableHead key={key} className="w-full text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    {name}
+                    <button
+                      onClick={() => handleSort(key)}
+                      aria-label={`Sort by ${name}`}
+                      className="transition-transform"
+                    >
+                      <ChevronUp
+                        size={16}
+                        className={`opacity-50 transition-all ${
+                          sortConfig.key === key &&
+                          sortConfig.direction === "desc"
+                            ? "rotate-180"
+                            : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody className="flex flex-col overflow-hidden justify-center items-center w-full">
-            {data
-              .sort((a, b) => {
-                const dateSort =
-                  new Date(b.date).getTime() - new Date(a.date).getTime();
-                if (dateSort !== 0) return dateSort;
+            {sortedData.map((item) => {
+              const formattedRow = formatData(item);
+              return (
+                <TableRow
+                  key={item._id}
+                  className={`w-full flex flex-row h-12 hover:bg-muted items-center animate-fade ${
+                    selectedRows[item._id] && "bg-muted"
+                  }`}
+                >
+                  {multiselect && (
+                    <TableCell>
+                      <Checkbox
+                        checked={!!selectedRows[item._id]}
+                        onCheckedChange={(checked) =>
+                          handleSelectRow(item._id, checked)
+                        }
+                        aria-label={`Select row ${item._id}`}
+                      />
+                    </TableCell>
+                  )}
 
-                return (
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-                );
-              })
-              .map((item) => {
-                const formattedRow = formatData(item);
-                return (
-                  <TableRow
-                    key={item._id}
-                    className={`w-full flex flex-row h-12 hover:bg-muted items-center animate-fade ${selectedRows[item._id] && "bg-muted"}`}
-                  >
-                    {multiselect && (
-                      <TableCell>
-                        <Checkbox
-                          checked={!!selectedRows[item._id]}
-                          onCheckedChange={(checked) =>
-                            handleSelectRow(item._id, checked)
-                          }
-                          aria-label={`Select row ${item._id}`}
-                        />
-                      </TableCell>
-                    )}
+                  {formattedRow.map((value, index) => (
+                    <TableCell
+                      key={index}
+                      className="w-full text-center truncate"
+                    >
+                      {value}
+                    </TableCell>
+                  ))}
 
-                    {formattedRow.map((value, index) => (
-                      <TableCell
-                        key={index}
-                        className="w-full text-center truncate"
-                      >
-                        {value}
-                      </TableCell>
-                    ))}
+                  {action && (
+                    <TableCell className="absolute right-0">
+                      {action(item)}
+                    </TableCell>
+                  )}
 
-                    {action && (
-                      <TableCell className="absolute right-0">
-                        {action(item)}
-                      </TableCell>
-                    )}
-
-                    {firstItem && (
-                      <TableCell className="absolute left-0">
-                        {firstItem(item)}
-                      </TableCell>
-                    )}
-                  </TableRow>
-                );
-              })}
+                  {firstItem && (
+                    <TableCell className="absolute left-0">
+                      {firstItem(item)}
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       ) : (

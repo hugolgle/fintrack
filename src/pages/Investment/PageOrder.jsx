@@ -97,11 +97,11 @@ export function PageOrder() {
   };
 
   const columns = [
-    { id: 2, name: "Type" },
-    { id: 4, name: "Nom" },
-    { id: 5, name: "Date" },
-    { id: 6, name: "Montant" },
-    { id: 7, name: "Action" },
+    { id: 2, name: "Type", key: "type" },
+    { id: 4, name: "Nom", key: "name" },
+    { id: 5, name: "Date", key: "date" },
+    { id: 6, name: "Montant", key: "amount" },
+    { id: 7, name: "Action", key: "isSale" },
   ];
 
   const action = (item) => {
