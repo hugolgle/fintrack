@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ import {
 } from "../../../public/categories.json";
 import { editTransactions } from "../../Service/Transaction.service";
 import ButtonLoading from "../../composant/Button/ButtonLoading";
+import { Badge } from "@/components/ui/badge";
+import { Plus, X } from "lucide-react";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -50,9 +52,13 @@ const validationSchema = yup.object().shape({
     .number()
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
+  tag: yup.array().of(yup.string()).nullable(),
 });
 
 export function FormEditTransac({ transaction, refetch }) {
+  const [tags, setTags] = useState(transaction.tag || []);
+  const [tagInput, setTagInput] = useState("");
+
   const initialValues = {
     title: transaction.title || "",
     category: transaction.category || "",
@@ -61,6 +67,7 @@ export function FormEditTransac({ transaction, refetch }) {
     amount: transaction?.initialAmount
       ? Math.abs(transaction.initialAmount)
       : Math.abs(transaction.amount) || "",
+    tag: transaction.tag,
   };
 
   const formik = useFormik({
@@ -71,6 +78,7 @@ export function FormEditTransac({ transaction, refetch }) {
       mutationEdit.mutate(values);
     },
   });
+
   const mutationEdit = useMutation({
     mutationFn: async (values) => {
       const editData = {
@@ -81,6 +89,7 @@ export function FormEditTransac({ transaction, refetch }) {
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
         amount: values.amount,
+        tag: tags,
       };
       return await editTransactions(editData);
     },
@@ -103,6 +112,7 @@ export function FormEditTransac({ transaction, refetch }) {
     transaction?.initialAmount ?? transaction?.amount,
     transaction?.category,
     transaction?.date,
+    transaction?.tag,
   ];
 
   const dataEdit = [
@@ -111,11 +121,35 @@ export function FormEditTransac({ transaction, refetch }) {
     formik.values?.amount,
     formik.values?.category,
     formik.values?.date.toLocaleDateString("fr-CA"),
+    formik.values?.tag,
   ];
 
   const isSaveDisabled = dataBase.every(
     (value, index) => value === dataEdit[index]
   );
+
+  const handleAddTag = () => {
+    if (tagInput.trim() === "") {
+      toast.warning("Le tag ne peut pas être vide.");
+      return;
+    }
+
+    if (tags.length >= 3) {
+      toast.warning("Vous ne pouvez pas ajouter plus de 3 tags.");
+      return;
+    }
+
+    if (!tags.includes(tagInput)) {
+      setTags((prevTags) => [...prevTags, tagInput]);
+      setTagInput(""); // Réinitialiser l'input après ajout
+    } else {
+      toast.warning("Ce tag a déjà été ajouté.");
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    setTags((prevTags) => prevTags.filter((_, i) => i !== index));
+  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -213,6 +247,34 @@ export function FormEditTransac({ transaction, refetch }) {
             {formik.errors.amount}
           </p>
         )}
+      </div>
+      <div className="w-full flex justify-center gap-2 items-center">
+        <Input
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+          placeholder="Ajouter un tag"
+        />
+        <Button type="button" variant="secondary" onClick={handleAddTag}>
+          <Plus />
+        </Button>
+      </div>
+
+      <div className="w-full flex gap-2 py-4 items-center">
+        {tags.map((tag, index) => (
+          <Badge
+            key={index}
+            className="group relative flex items-center animate-pop-up gap-2"
+            variant="outline"
+          >
+            {tag}
+            <X
+              className="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition-all cursor-pointer"
+              onClick={() => handleRemoveTag(index)}
+              size={12}
+            />
+          </Badge>
+        ))}
       </div>
 
       <DialogFooter className="sm:justify-start">

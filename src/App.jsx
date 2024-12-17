@@ -44,7 +44,9 @@ function App() {
           path: ROUTES.EXPENSE,
           element: (
             <PrivateRoute
-              element={<BoardTransactions key="Expense" type="Expense" />}
+              element={
+                <BoardTransactions key={ROUTES.EXPENSE} type="Expense" />
+              }
             />
           ),
         },
@@ -66,7 +68,9 @@ function App() {
           path: ROUTES.REVENUE,
           element: (
             <PrivateRoute
-              element={<BoardTransactions key="Revenue" type="Revenue" />}
+              element={
+                <BoardTransactions key={ROUTES.REVENUE} type="Revenue" />
+              }
             />
           ),
         },
@@ -98,7 +102,39 @@ function App() {
         },
         {
           path: ROUTES.INVESTMENT_BY_ID,
-          element: <PrivateRoute element={<PageInvestment />} />,
+          element: (
+            <PrivateRoute
+              key={ROUTES.INVESTMENT_BY_ID}
+              element={<PageInvestment />}
+            />
+          ),
+        },
+        {
+          path: ROUTES.INVESTMENT_ALL,
+          element: (
+            <PrivateRoute
+              key={ROUTES.INVESTMENT_ALL}
+              element={<PageInvestment />}
+            />
+          ),
+        },
+        {
+          path: ROUTES.INVESTMENT_IN_PROGRESS,
+          element: (
+            <PrivateRoute
+              key={ROUTES.INVESTMENT_IN_PROGRESS}
+              element={<PageInvestment />}
+            />
+          ),
+        },
+        {
+          path: ROUTES.INVESTMENT_SOLD,
+          element: (
+            <PrivateRoute
+              key={ROUTES.INVESTMENT_SOLD}
+              element={<PageInvestment />}
+            />
+          ),
         },
         {
           path: ROUTES.INVESTMENT_ORDER,

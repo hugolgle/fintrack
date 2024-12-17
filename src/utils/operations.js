@@ -2,7 +2,13 @@ import { subMonths, startOfMonth } from "date-fns";
 
 // -------------------------------- Transactions
 
-export function getTransactionsByType(data, type, filterCategory, filterTitle) {
+export function getTransactionsByType(
+  data,
+  type,
+  filterCategory,
+  filterTitle,
+  filterTag
+) {
   if (!Array.isArray(data)) {
     return [];
   }
@@ -20,6 +26,12 @@ export function getTransactionsByType(data, type, filterCategory, filterTitle) {
   if (filterTitle && filterTitle.length > 0) {
     filteredTransactions = filteredTransactions.filter((transaction) =>
       filterTitle.includes(transaction.title)
+    );
+  }
+
+  if (filterTag && filterTag.length > 0) {
+    filteredTransactions = filteredTransactions.filter((transaction) =>
+      transaction.tag.some((tag) => filterTag.includes(tag))
     );
   }
 
@@ -46,7 +58,8 @@ export function getTransactionsByMonth(
   month,
   type,
   filterCategory,
-  filterTitle
+  filterTitle,
+  filterTag
 ) {
   if (!month || typeof month !== "string") {
     return [];
@@ -82,6 +95,12 @@ export function getTransactionsByMonth(
     );
   }
 
+  if (filterTag && filterTag.length > 0) {
+    transactionsInMonth = transactionsInMonth.filter((transaction) =>
+      transaction.tag.some((tag) => filterTag.includes(tag))
+    );
+  }
+
   transactionsInMonth.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
@@ -95,7 +114,8 @@ export function getTransactionsByYear(
   year,
   type,
   filterCategory,
-  filterTitle
+  filterTitle,
+  filterTag
 ) {
   if (!Array.isArray(data)) {
     return [];
@@ -121,6 +141,12 @@ export function getTransactionsByYear(
   if (filterTitle && filterTitle.length > 0) {
     transactionsInYear = transactionsInYear.filter((transaction) =>
       filterTitle.includes(transaction.title)
+    );
+  }
+
+  if (filterTag && filterTag.length > 0) {
+    transactionsInYear = transactionsInYear.filter((transaction) =>
+      transaction.tag.some((tag) => filterTag.includes(tag))
     );
   }
 
@@ -260,6 +286,18 @@ export function getTitleOfTransactionsByType(data, type) {
   const uniqueTitles = Array.from(new Set(titles));
 
   return uniqueTitles;
+}
+
+export function getTagsOfTransactions(data) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  const tags = data.flatMap((transaction) => transaction.tag);
+
+  const uniqueTags = Array.from(new Set(tags));
+
+  return uniqueTags;
 }
 
 // -------------------------------- Chart

@@ -36,8 +36,10 @@ function Header({
   handleCheckboxChange,
   selectedTitles,
   selectedCategorys,
+  selectedTags,
   btnReturn,
   btnAdd,
+  tags,
   btnFilter,
   btnSearch,
   btnTrash,
@@ -106,12 +108,14 @@ function Header({
                 </PopoverTrigger>
                 <PopoverContent className="select-none w-80 max-h-80 overflow-auto">
                   <PopoverFilter
+                    tags={tags}
                     categories={categories}
                     titles={titles}
                     clearFilters={clearFilters}
                     handleCheckboxChange={handleCheckboxChange}
                     selectedTitles={selectedTitles}
                     selectedCategorys={selectedCategorys}
+                    selectedTags={selectedTags}
                   />
                 </PopoverContent>
               </Popover>

@@ -34,7 +34,7 @@ const transactionSchema = new Schema(
     },
     initialAmount: {
       type: Number,
-      required: false, // Ce champ est ajouté lorsque le premier remboursement est effectué
+      required: false,
     },
     refunds: [
       {
@@ -52,6 +52,10 @@ const transactionSchema = new Schema(
         },
       },
     ],
+    tag: {
+      type: [String],
+      required: false,
+    },
   },
   { timestamps: true }
 );

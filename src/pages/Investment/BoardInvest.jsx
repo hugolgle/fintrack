@@ -253,29 +253,21 @@ export default function BoardInvest() {
               title="Investissements en cours"
               value={amountBuy}
               icon={<Pickaxe size={15} color="grey" />}
-              onClick={() =>
-                navigate(
-                  ROUTES.INVESTMENT_BY_DATE.replace(":date", "inprogress")
-                )
-              }
+              onClick={() => navigate(ROUTES.INVESTMENT_IN_PROGRESS)}
               isAmount
             />
             <BoxInfos
               title="Tous les investissements"
               value={amountResult}
               icon={<HandCoins size={15} color="grey" />}
-              onClick={() =>
-                navigate(ROUTES.INVESTMENT_BY_DATE.replace(":date", "all"))
-              }
+              onClick={() => navigate(ROUTES.INVESTMENT_ALL)}
               isAmount
             />
             <BoxInfos
               title="Investissements vendus"
               value={amountSale}
               icon={<Shield size={15} color="grey" />}
-              onClick={() =>
-                navigate(ROUTES.INVESTMENT_BY_DATE.replace(":date", "sold"))
-              }
+              onClick={() => navigate(ROUTES.INVESTMENT_SOLD)}
               isAmount
             />
             <BoxInfos

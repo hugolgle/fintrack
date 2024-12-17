@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import { formatEuro } from "../../utils/fonctionnel";
 
 export default function Tableau({
@@ -30,7 +30,9 @@ export default function Tableau({
     }));
   };
 
-  const sortedData = [...data].sort((a, b) => {
+  const theData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const sortedData = [...theData].sort((a, b) => {
     if (!sortConfig.key) return 0;
     const valueA = a[sortConfig.key];
     const valueB = b[sortConfig.key];
@@ -42,7 +44,7 @@ export default function Tableau({
   const handleSelectAllRow = (checked) => {
     setSelectAllRow(checked);
     const newSelectedRows = {};
-    data.forEach((transaction) => {
+    theData.forEach((transaction) => {
       newSelectedRows[transaction._id] = checked;
     });
     setSelectedRows(newSelectedRows);
@@ -53,8 +55,8 @@ export default function Tableau({
       const updatedRows = { ...prevSelectedRows, [id]: checked };
 
       const allSelected =
-        data.length > 0 &&
-        data.every((transaction) => updatedRows[transaction._id]);
+        theData.length > 0 &&
+        theData.every((transaction) => updatedRows[transaction._id]);
 
       setSelectAllRow(allSelected);
       return updatedRows;
@@ -63,7 +65,7 @@ export default function Tableau({
 
   const calculMontantSelect = () => {
     let total = 0;
-    data?.forEach((transaction) => {
+    theData?.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
         total += transaction.isSale
           ? parseFloat(transaction.amount)
@@ -75,7 +77,7 @@ export default function Tableau({
 
   const calculTotalAmount = () => {
     let total = 0;
-    data?.forEach((transaction) => {
+    theData?.forEach((transaction) => {
       total += transaction.isSale
         ? parseFloat(transaction.amount)
         : -parseFloat(transaction.amount);
@@ -88,7 +90,7 @@ export default function Tableau({
 
   return (
     <>
-      {data && data.length > 0 ? (
+      {theData && theData.length > 0 ? (
         <Table className="w-full flex flex-col px-1 animate-fade relative">
           <TableHeader className="flex w-full items-center">
             <TableRow className="w-full flex h-7 italic">
@@ -188,7 +190,7 @@ export default function Tableau({
           <>
             Total : <b>{formatEuro.format(amountTotal)}</b>
             <br />
-            <b>{data.length}</b> opération(s)
+            <b>{theData.length}</b> opération(s)
           </>
         )}
       </div>

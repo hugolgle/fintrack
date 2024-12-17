@@ -9,6 +9,8 @@ function PopoverFilter({
   handleCheckboxChange,
   selectedTitles,
   selectedCategorys,
+  selectedTags,
+  tags,
 }) {
   return (
     <>
@@ -39,6 +41,7 @@ function PopoverFilter({
               </div>
             ))}
         </div>
+
         <p className="text-center font-thin italic text-sm">
           Filtrer par titre :
         </p>
@@ -54,13 +57,40 @@ function PopoverFilter({
                   onCheckedChange={(checked) =>
                     handleCheckboxChange(
                       { target: { value: title, checked } },
-                      "titles"
+                      "title"
                     )
                   }
                   className="cursor-pointer"
                 />
                 <label htmlFor={title} className="cursor-pointer">
                   {title}
+                </label>
+              </div>
+            ))}
+        </div>
+
+        <p className="text-center font-thin italic text-sm">
+          Filtrer par tags :
+        </p>
+        <div className="grid grid-cols-2 text-xs gap-y-[2px]">
+          {Array.isArray(tags) &&
+            tags.map((tag, index) => (
+              <div key={index} className="flex gap-2">
+                <Checkbox
+                  id={tag}
+                  name="tag"
+                  value={tag}
+                  checked={selectedTags.includes(tag)}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange(
+                      { target: { value: tag, checked } },
+                      "tag"
+                    )
+                  }
+                  className="cursor-pointer"
+                />
+                <label htmlFor={tag} className="cursor-pointer">
+                  {tag}
                 </label>
               </div>
             ))}

@@ -35,9 +35,9 @@ import { formatEuro } from "../../utils/fonctionnel.js";
 
 export default function PageInvestment() {
   const { id } = useParams();
-  const location = useLocation().pathname;
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -119,11 +119,11 @@ export default function PageInvestment() {
 
   let investissements = [];
 
-  if (location.includes("all")) {
+  if (location.pathname === ROUTES.INVESTMENT_ALL) {
     investissements = dataAll;
-  } else if (location.includes("sold")) {
+  } else if (location.pathname === ROUTES.INVESTMENT_SOLD) {
     investissements = dataSold;
-  } else if (location.includes("inprogress")) {
+  } else if (location.pathname === ROUTES.INVESTMENT_IN_PROGRESS) {
     investissements = dataInProgress;
   } else {
     investissements = dataById;
@@ -167,17 +167,18 @@ export default function PageInvestment() {
     setSearchResults(filteredData);
   };
 
-  const isId = ["inprogress", "all", "sold"].some((key) =>
-    location.includes(key)
-  );
+  const isId =
+    location.pathname === ROUTES.INVESTMENT_IN_PROGRESS ||
+    location.pathname === ROUTES.INVESTMENT_ALL ||
+    location.pathname === ROUTES.INVESTMENT_SOLD;
 
   const title =
     dataTransactions?.name ??
-    (location.includes("inprogress")
+    (location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
       ? "Investissement en cours"
-      : location.includes("all")
+      : location.pathname === ROUTES.INVESTMENT_ALL
         ? "Tous les investissements"
-        : location.includes("sold")
+        : location.pathname === ROUTES.INVESTMENT_SOLD
           ? "Investissements vendu"
           : "Investissement");
 

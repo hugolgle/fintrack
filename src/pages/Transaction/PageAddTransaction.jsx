@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -25,6 +26,7 @@ import {
 import { useEffect } from "react";
 import { categorySort, nameType } from "../../utils/other";
 import {
+  getTagsOfTransactions,
   getTitleOfTransactionsByType,
   getTransactionsByType,
 } from "../../utils/operations";
@@ -38,7 +40,6 @@ import {
 } from "@/components/ui/command";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/Header.jsx";
 import {
@@ -55,8 +56,9 @@ import { getCurrentUser } from "../../Service/User.service";
 import { useState } from "react";
 import { ChevronsUpDown } from "lucide-react";
 import { Check } from "lucide-react";
-import { LoaderCircle } from "lucide-react";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import { X } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -78,6 +80,7 @@ const validationSchema = yup.object().shape({
     .typeError("Le montant est requis")
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
+  tag: yup.array().of(yup.string()).nullable(),
 });
 
 export default function PageAddTransac(props) {
@@ -88,7 +91,9 @@ export default function PageAddTransac(props) {
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
-  const navigate = useNavigate();
+
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
 
   const { data } = useQuery({
     queryKey: ["fetchTransactions"],
@@ -114,6 +119,8 @@ export default function PageAddTransac(props) {
     ...getTitleOfTransactionsByType(data, props.type),
   ];
 
+  const tagsSuggestions = getTagsOfTransactions(data);
+
   const addTransactionMutation = useMutation({
     mutationFn: async (postData) => {
       return await addTransaction(postData, userInfo?._id);
@@ -136,6 +143,7 @@ export default function PageAddTransac(props) {
       date: new Date(),
       detail: "",
       amount: "",
+      tag: tags,
     },
     validationSchema,
     validateOnMount: true,
@@ -148,14 +156,46 @@ export default function PageAddTransac(props) {
         date: values.date.toLocaleDateString("fr-CA"),
         detail: values.detail,
         amount: values.amount,
+        tag: tags,
       };
       addTransactionMutation.mutate(postData, {
         onSuccess: () => {
           resetForm();
+          setTags([]);
         },
       });
     },
   });
+
+  const handleAddTag = () => {
+    // Ne pas ajouter un tag vide ou déjà existant
+    if (tagInput.trim() === "") {
+      toast.warning("Le tag ne peut pas être vide.");
+      return;
+    }
+
+    if (tags.length >= 3) {
+      toast.warning("Vous ne pouvez pas ajouter plus de 3 tags.");
+      return;
+    }
+
+    if (!tags.includes(tagInput)) {
+      setTags((prevTags) => [...prevTags, tagInput]);
+      setTagInput(""); // Réinitialiser l'input après ajout
+    } else {
+      toast.warning("Ce tag a déjà été ajouté.");
+    }
+  };
+
+  const handleSelectTag = (suggestion) => {
+    if (!tags.includes(suggestion)) {
+      setTags((prevTags) => [...prevTags, suggestion]);
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    setTags((prevTags) => prevTags.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     const dataByType = getTransactionsByType(data, props.type);
@@ -316,6 +356,54 @@ export default function PageAddTransac(props) {
             {formik.errors.amount}
           </p>
         )}
+
+        <div className="w-full flex justify-center gap-2 items-center">
+          <Input
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+            placeholder="Ajouter un tag"
+          />
+          <Button type="button" variant="secondary" onClick={handleAddTag}>
+            <Plus strokeWidth={1} />
+          </Button>
+        </div>
+
+        <div className="flex gap-2">
+          <ul className="space-y-2">
+            {tagsSuggestions.map((suggestion, index) => (
+              <Badge
+                key={index}
+                className="group relative flex items-center animate-pop-up gap-2"
+                variant="secondary"
+              >
+                {suggestion}
+                <Plus
+                  className="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition-all cursor-pointer"
+                  onClick={() => handleSelectTag(suggestion)}
+                  size={12}
+                />
+              </Badge>
+            ))}
+          </ul>
+
+          <ul className="flex flex-wrap gap-2">
+            {tags.map((tag, index) => (
+              <Badge
+                key={index}
+                className="group relative flex items-center animate-pop-up gap-2"
+                variant="outline"
+              >
+                {tag}
+                <X
+                  className="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition-all cursor-pointer"
+                  onClick={() => handleRemoveTag(index)}
+                  size={12}
+                />
+              </Badge>
+            ))}
+          </ul>
+        </div>
 
         <ButtonLoading
           type="submit"

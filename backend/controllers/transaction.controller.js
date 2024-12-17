@@ -12,6 +12,13 @@ module.exports.addTransaction = async (req, res) => {
       amount = -Math.abs(amount);
     }
 
+    const tags = req.body.tag || [];
+    if (tags.length > 3) {
+      return res
+        .status(400)
+        .json({ message: "Vous ne pouvez pas avoir plus de 3 tags" });
+    }
+
     const transaction = await OperationModel.create({
       user: req.body.user,
       type: req.body.type,
@@ -20,6 +27,7 @@ module.exports.addTransaction = async (req, res) => {
       date: req.body.date,
       detail: req.body.detail || "",
       amount,
+      tag: tags,
     });
 
     return res.status(201).json(transaction);
@@ -67,9 +75,11 @@ module.exports.editTransaction = async (req, res) => {
       amount = -Math.abs(amount);
     }
 
+    const updatedTags = req.body.tag || transaction.tag;
+
     const updatedOperation = await OperationModel.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, amount },
+      { ...req.body, amount, tag: updatedTags },
       { new: true }
     );
 

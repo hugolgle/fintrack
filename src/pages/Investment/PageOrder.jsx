@@ -190,7 +190,7 @@ export function PageOrder() {
                       return (
                         <Link
                           key={index}
-                          to={`/investment/${_id}`}
+                          to={ROUTES.INVESTMENT_BY_ID.replace(":id", _id)}
                           className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
                             type
                           )}`}

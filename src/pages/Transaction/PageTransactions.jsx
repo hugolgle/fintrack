@@ -5,6 +5,7 @@ import {
   getTransactionsByMonth,
   getTransactionsByType,
   getTitleOfTransactionsByType,
+  getTagsOfTransactions,
 } from "../../utils/operations";
 import {
   DropdownMenu,
@@ -49,7 +50,7 @@ export default function PageTransactions(props) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams({});
 
   const {
     isLoading,
@@ -75,6 +76,7 @@ export default function PageTransactions(props) {
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
+      queryClient.invalidateQueries(["fetchTransactions"]);
       refectTransac();
     },
     onError: (error) => {
@@ -104,6 +106,7 @@ export default function PageTransactions(props) {
   const [selectedCategorys, setSelectedCategorys] = useState(
     searchParams.getAll("categories")
   );
+  const [selectedTags, setSelectedTags] = useState(searchParams.getAll("tags"));
   const [selectedTitles, setSelectedTitles] = useState(
     searchParams.getAll("titles")
   );
@@ -113,24 +116,52 @@ export default function PageTransactions(props) {
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
     const isChecked = event.target.checked;
-    const updatedArray = isChecked
-      ? type === "category"
-        ? [...selectedCategorys, value]
-        : [...selectedTitles, value]
-      : type === "category"
-        ? selectedCategorys.filter((cat) => cat !== value)
-        : selectedTitles.filter((title) => title !== value);
 
+    let updatedArray;
     if (type === "category") {
+      updatedArray = isChecked
+        ? [...selectedCategorys, value]
+        : selectedCategorys.filter((cat) => cat !== value);
       setSelectedCategorys(updatedArray);
-      setSearchParams({ categories: updatedArray, titles: selectedTitles });
-    } else {
+    } else if (type === "title") {
+      updatedArray = isChecked
+        ? [...selectedTitles, value]
+        : selectedTitles.filter((title) => title !== value);
       setSelectedTitles(updatedArray);
-      setSearchParams({ categories: selectedCategorys, titles: updatedArray });
+    } else if (type === "tag") {
+      updatedArray = isChecked
+        ? [...selectedTags, value]
+        : selectedTags.filter((tag) => tag !== value);
+      setSelectedTags(updatedArray);
     }
+
+    setSearchParams((prevParams) => {
+      const updatedParams = new URLSearchParams(prevParams);
+
+      if (updatedArray.length === 0 && type === "category") {
+        updatedParams.delete("categories");
+      } else if (updatedArray.length > 0 && type === "category") {
+        updatedParams.set("categories", updatedArray.join(","));
+      }
+
+      if (updatedArray.length === 0 && type === "title") {
+        updatedParams.delete("titles");
+      } else if (updatedArray.length > 0 && type === "title") {
+        updatedParams.set("titles", updatedArray.join(","));
+      }
+
+      if (updatedArray.length === 0 && type === "tag") {
+        updatedParams.delete("tags");
+      } else if (updatedArray.length > 0 && type === "tag") {
+        updatedParams.set("tags", updatedArray.join(","));
+      }
+
+      return updatedParams;
+    });
   };
 
-  const check = selectedCategorys.length + selectedTitles.length;
+  const check =
+    selectedCategorys.length + selectedTitles.length + selectedTags.length;
 
   const transactions =
     date === "all"
@@ -138,7 +169,8 @@ export default function PageTransactions(props) {
           data,
           props.type,
           selectedCategorys,
-          selectedTitles
+          selectedTitles,
+          selectedTags
         )
       : date?.length === 4
         ? getTransactionsByYear(
@@ -146,14 +178,16 @@ export default function PageTransactions(props) {
             date,
             props.type,
             selectedCategorys,
-            selectedTitles
+            selectedTitles,
+            selectedTags
           )
         : getTransactionsByMonth(
             data,
             date,
             props.type,
             selectedCategorys,
-            selectedTitles
+            selectedTitles,
+            selectedTags
           );
 
   const theData = transactions.map(
@@ -165,6 +199,7 @@ export default function PageTransactions(props) {
       detail,
       amount,
       refunds,
+      tag,
       date,
       createdAt,
     }) => {
@@ -176,31 +211,52 @@ export default function PageTransactions(props) {
         date,
         detail,
         refunds,
+        tag,
         amount,
         createdAt,
       };
     }
   );
 
+  const tags = getTagsOfTransactions(data);
+
   const performSearch = (term) => {
     const filteredData = theData.filter((item) => {
       const titleMatches = item.title
         .toLowerCase()
         .includes(term.toLowerCase());
+
       const typeMatches = item.type.toLowerCase().includes(term.toLowerCase());
+
       const amountMatches = item.amount
         .toString()
         .toLowerCase()
         .includes(term.toLowerCase());
-      const dateMatches = item.date?.includes(term);
-      return titleMatches || typeMatches || amountMatches || dateMatches;
+      const tagsMatches =
+        item.tag && Array.isArray(item.tag) && item.tag.length > 0
+          ? item.tag.some((tag) =>
+              tag.toLowerCase().includes(term.toLowerCase())
+            )
+          : false;
+
+      const dateMatches = item.date?.toString().includes(term.toLowerCase());
+
+      return (
+        titleMatches ||
+        typeMatches ||
+        amountMatches ||
+        dateMatches ||
+        tagsMatches
+      );
     });
+
     setSearchResults(filteredData);
   };
 
   const clearFilters = () => {
     setSelectedCategorys([]);
     setSelectedTitles([]);
+    setSelectedTags([]);
     setSearchParams({});
   };
 
@@ -315,7 +371,7 @@ export default function PageTransactions(props) {
               <DialogTrigger asChild>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Remboursement
+                  Ajouter un remb.
                 </DropdownMenuItem>
               </DialogTrigger>
               <DialogContent>
@@ -329,7 +385,7 @@ export default function PageTransactions(props) {
               btnOpen={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <TicketSlash className="mr-2 h-4 w-4" />
-                  Remboursement
+                  Remboursement(s)
                 </DropdownMenuItem>
               }
               data={item?.refunds}
@@ -381,6 +437,7 @@ export default function PageTransactions(props) {
           }`}
           typeProps={normalizeText(props.type)}
           categories={categories}
+          tags={tags}
           check={check}
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
@@ -391,6 +448,7 @@ export default function PageTransactions(props) {
           handleCheckboxChange={handleCheckboxChange}
           selectedTitles={selectedTitles}
           selectedCategorys={selectedCategorys}
+          selectedTags={selectedTags}
           btnSearch
           handleSearchChange={handleSearchChange}
           btnAdd={`/${props.type.toLowerCase()}/add`}

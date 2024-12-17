@@ -31,7 +31,7 @@ export const addTransaction = async (transactionData) => {
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
 
-  const { title, category, date, detail, amount, type } = transactionData;
+  const { title, category, date, detail, amount, type, tag } = transactionData;
 
   const newTransaction = {
     user: userId,
@@ -41,6 +41,7 @@ export const addTransaction = async (transactionData) => {
     detail,
     amount,
     type,
+    tag: tag || [],
   };
 
   return await axios.post(
@@ -60,7 +61,7 @@ export const editTransactions = async (editData) => {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
-  const { id, title, category, date, detail, amount, type } = editData;
+  const { id, title, category, date, detail, amount, type, tag } = editData;
 
   const updatedTransaction = {
     title,
@@ -69,6 +70,7 @@ export const editTransactions = async (editData) => {
     detail,
     amount,
     type,
+    tag: tag || [],
   };
 
   return await axios.put(
