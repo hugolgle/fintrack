@@ -85,7 +85,7 @@ export default function Tableau({
 
   const amountSelect = calculMontantSelect();
   const amountTotal = calculTotalAmount();
-  console.log(sortConfig.key);
+
   return (
     <>
       {data && data.length > 0 ? (

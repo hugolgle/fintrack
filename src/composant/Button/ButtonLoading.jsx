@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export default function ButtonLoading({
   variant,
   isPending,
-  onClick,
+  onClick = () => {},
   text,
   textBis,
   type,

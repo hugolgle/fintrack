@@ -94,3 +94,28 @@ export const deleteTransactions = async (id) => {
     },
   });
 };
+
+export const addRefund = async (transactionId, refundData) => {
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
+  }
+
+  const { title, amount, date } = refundData;
+
+  const newRefund = {
+    title,
+    amount,
+    date,
+  };
+
+  return await axios.post(
+    `http://localhost:5001/transactions/${transactionId}/refund`,
+    newRefund,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

@@ -103,3 +103,57 @@ module.exports.deleteTransaction = async (req, res) => {
       .json({ message: "Erreur lors de la suppression de l'opération", error });
   }
 };
+
+module.exports.addRefund = async (req, res) => {
+  try {
+    const transaction = await OperationModel.findById(req.params.id);
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction non trouvée" });
+    }
+
+    if (transaction.type !== "Expense") {
+      return res.status(400).json({
+        message:
+          "Un remboursement ne peut être ajouté qu'à une transaction de type 'Expense'",
+      });
+    }
+
+    const { title, amount, date } = req.body;
+
+    if (!title || !amount || !date) {
+      return res.status(400).json({
+        message:
+          "Veuillez fournir le titre, le montant et la date du remboursement",
+      });
+    }
+
+    const refund = {
+      title,
+      amount: Math.abs(amount),
+      date,
+    };
+
+    if (!transaction.initialAmount) {
+      transaction.initialAmount = transaction.amount;
+    }
+
+    const amountTransac = Math.abs(transaction.amount) - refund.amount;
+    transaction.amount = -amountTransac;
+
+    transaction.refunds = transaction.refunds || [];
+    transaction.refunds.push(refund);
+
+    const updatedTransaction = await transaction.save();
+
+    return res.status(201).json({
+      message: "Remboursement ajouté avec succès",
+      transaction: updatedTransaction,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de l'ajout du remboursement",
+      error,
+    });
+  }
+};

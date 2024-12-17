@@ -39,6 +39,10 @@ import { Trash } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { formatEuro } from "../../utils/fonctionnel.js";
+import { FormAddRefund } from "./FormAddRefund.jsx";
+import { TicketSlash } from "lucide-react";
+import { Plus } from "lucide-react";
+import ModalTable from "../Epargn/Modal/ModalTable.jsx";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -153,7 +157,17 @@ export default function PageTransactions(props) {
           );
 
   const theData = transactions.map(
-    ({ _id, type, title, category, detail, amount, date, createdAt }) => {
+    ({
+      _id,
+      type,
+      title,
+      category,
+      detail,
+      amount,
+      refunds,
+      date,
+      createdAt,
+    }) => {
       return {
         _id,
         type,
@@ -161,6 +175,7 @@ export default function PageTransactions(props) {
         category,
         date,
         detail,
+        refunds,
         amount,
         createdAt,
       };
@@ -277,12 +292,54 @@ export default function PageTransactions(props) {
   };
 
   const action = (item) => {
+    const columns = [
+      { id: 1, name: "Titre", key: "title" },
+      { id: 2, name: "Date", key: "date" },
+      { id: 3, name: "Montant", key: "amount" },
+    ];
+    const formatData = (row) => {
+      return [
+        row.title,
+        format(row.date, "PP", { locale: fr }),
+        formatEuro.format(row.amount),
+      ];
+    };
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <MoreHorizontal className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left">
+          {item.type === "Expense" && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Remboursement
+                </DropdownMenuItem>
+              </DialogTrigger>
+              <DialogContent>
+                <FormAddRefund transaction={item} refetch={refectTransac} />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {item?.refunds && item?.refunds?.length > 0 && (
+            <ModalTable
+              btnOpen={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <TicketSlash className="mr-2 h-4 w-4" />
+                  Remboursement
+                </DropdownMenuItem>
+              }
+              data={item?.refunds}
+              formatData={formatData}
+              columns={columns}
+              title="Remboursements"
+              description="Liste des remboursements."
+            />
+          )}
+
           <Dialog>
             <DialogTrigger asChild>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>

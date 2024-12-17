@@ -197,6 +197,8 @@ export default function Epargn() {
                     />
                   </p>
                 }
+                title="Transactions"
+                description="Liste des transactions."
                 data={mergedTransactions}
                 getAccountName={getAccountName}
                 formatData={formatData}

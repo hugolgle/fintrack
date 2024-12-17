@@ -9,15 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
   PopoverContent,
@@ -29,13 +21,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-import { categorySort } from "../../utils/other";
-import {
-  categoryRecette,
-  categoryDepense,
-} from "../../../public/categories.json";
-import { editTransactions } from "../../Service/Transaction.service";
+import { addRefund } from "../../Service/Transaction.service";
 import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = yup.object().shape({
@@ -43,46 +29,34 @@ const validationSchema = yup.object().shape({
     .string()
     .max(50, "Le titre est trop long")
     .required("Le titre est requis"),
-  category: yup.string().required("La catégorie est requise"),
   date: yup.date().required("La date est requise"),
-  detail: yup.string().max(250, "Les détails sont trop longs"),
   amount: yup
     .number()
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
 });
 
-export function FormEditTransac({ transaction, refetch }) {
-  const initialValues = {
-    title: transaction.title || "",
-    category: transaction.category || "",
-    date: transaction.date ? new Date(transaction.date) : new Date(),
-    detail: transaction.detail || "",
-    amount: transaction?.initialAmount
-      ? Math.abs(transaction.initialAmount)
-      : Math.abs(transaction.amount) || "",
-  };
-
+export function FormAddRefund({ transaction, refetch }) {
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      title: "",
+      date: new Date(),
+      amount: "",
+    },
     validationSchema,
-    enableReinitialize: true,
     onSubmit: (values) => {
-      mutationEdit.mutate(values);
+      mutationPost.mutate(values);
     },
   });
-  const mutationEdit = useMutation({
+  const mutationPost = useMutation({
     mutationFn: async (values) => {
-      const editData = {
-        id: transaction._id,
-        type: transaction.type,
+      const postData = {
         title: values.title,
-        category: values.category,
         date: values.date.toLocaleDateString("fr-CA"),
-        detail: values.detail,
         amount: values.amount,
       };
-      return await editTransactions(editData);
+
+      return await addRefund(transaction._id, postData);
     },
     onSuccess: (response) => {
       formik.resetForm();
@@ -94,39 +68,17 @@ export function FormEditTransac({ transaction, refetch }) {
     },
   });
 
-  const categoryD = categorySort(categoryDepense);
-  const categoryR = categorySort(categoryRecette);
-
-  const dataBase = [
-    transaction?.title,
-    transaction?.detail,
-    transaction?.initialAmount ?? transaction?.amount,
-    transaction?.category,
-    transaction?.date,
-  ];
-
-  const dataEdit = [
-    formik.values?.title,
-    formik.values?.detail,
-    formik.values?.amount,
-    formik.values?.category,
-    formik.values?.date.toLocaleDateString("fr-CA"),
-  ];
-
-  const isSaveDisabled = dataBase.every(
-    (value, index) => value === dataEdit[index]
-  );
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <DialogHeader>
-        <DialogTitle>Modifier la transaction</DialogTitle>
+        <DialogTitle>Ajouter un remboursement</DialogTitle>
         <DialogDescription>
-          Modifiez les informations de la transaction.
+          Ajouter les informations du remboursement.
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <Input
+          id="title"
           name="title"
           placeholder="Titre"
           {...formik.getFieldProps("title")}
@@ -134,29 +86,6 @@ export function FormEditTransac({ transaction, refetch }) {
         {formik.touched.title && formik.errors.title && (
           <p className="text-xs text-left text-red-500 -mt-3 ml-2">
             {formik.errors.title}
-          </p>
-        )}
-        <Select
-          name="category"
-          value={formik.values.category}
-          onValueChange={(value) => formik.setFieldValue("category", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Entrez la catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            {(transaction?.type === "Expense" ? categoryD : categoryR).map(
-              ({ name }) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
-        {formik.touched.category && formik.errors.category && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
-            {formik.errors.category}
           </p>
         )}
 
@@ -190,18 +119,8 @@ export function FormEditTransac({ transaction, refetch }) {
           </p>
         )}
 
-        <Textarea
-          name="detail"
-          placeholder="Détails"
-          {...formik.getFieldProps("detail")}
-        />
-        {formik.touched.detail && formik.errors.detail && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
-            {formik.errors.detail}
-          </p>
-        )}
-
         <Input
+          id="amount"
           name="amount"
           type="number"
           step="0.01"
@@ -218,10 +137,10 @@ export function FormEditTransac({ transaction, refetch }) {
       <DialogFooter className="sm:justify-start">
         <ButtonLoading
           type="submit"
-          text="Modifier"
+          text="Ajouter"
           textBis="Chargement"
-          isPending={mutationEdit.isPending}
-          disabled={mutationEdit.isPending || isSaveDisabled}
+          isPending={mutationPost.isPending}
+          disabled={mutationPost.isPending}
         />
         <DialogClose>
           <Button type="button" variant="outline">
