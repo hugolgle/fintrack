@@ -92,7 +92,7 @@ export function ChartLine({
           <XAxis
             dataKey="month"
             tick={{ fontSize: 10, fill: chartConfig.text.color }}
-            tickFormatter={(value) => value.slice(0, 3)} // Affiche les 3 premières lettres
+            tickFormatter={(value) => value.slice(0, 3)}
             axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
           />
 

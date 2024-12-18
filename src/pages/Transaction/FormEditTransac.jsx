@@ -141,7 +141,7 @@ export function FormEditTransac({ transaction, refetch }) {
 
     if (!tags.includes(tagInput)) {
       setTags((prevTags) => [...prevTags, tagInput]);
-      setTagInput(""); // Réinitialiser l'input après ajout
+      setTagInput("");
     } else {
       toast.warning("Ce tag a déjà été ajouté.");
     }

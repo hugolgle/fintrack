@@ -28,13 +28,18 @@ export const addInvestment = async (investmentData) => {
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
 
-  const { name, symbol, type } = investmentData;
+  const { name, symbol, type, transaction } = investmentData;
 
   const newInvestment = {
     user: userId,
     name,
     type,
     symbol,
+    transaction: {
+      amount: parseFloat(transaction.amount),
+      date: transaction.date,
+      isSale: transaction.action === "true",
+    },
   };
 
   return await axios.post(`http://localhost:5001/investments`, newInvestment, {
@@ -106,21 +111,11 @@ export const editInvestmentsTransaction = async (editData, idInvestment) => {
   );
 };
 
-export const deleteInvestment = async (id) => {
-  const token = sessionStorage.getItem("token");
-
-  return await axios.delete(`http://localhost:5001/investments/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-
-export const deleteTransaction = async (investmentId, transactionId) => {
+export const deleteTransaction = async (id) => {
   const token = sessionStorage.getItem("token");
 
   return await axios.delete(
-    `http://localhost:5001/investments/${investmentId}/transaction/${transactionId}`,
+    `http://localhost:5001/investments/${id.idInvest}/transaction/${id.itemId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

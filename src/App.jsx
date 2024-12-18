@@ -7,7 +7,6 @@ import BoardTransactions from "./Pages/Transaction/BoardTransactions.jsx";
 import PageTransactions from "./Pages/Transaction/PageTransactions.jsx";
 import PageAddTransac from "./Pages/Transaction/PageAddTransaction.jsx";
 import BoardInvest from "./Pages/Investment/BoardInvest.jsx";
-import PageAddOrder from "./Pages/Investment/PageAddOrder.jsx";
 import PageAddInvestment from "./Pages/Investment/PageAddInvestment.jsx";
 import PageInvestment from "./Pages/Investment/PageInvestment.jsx";
 import Login from "./Pages/Login/Login.jsx";
@@ -27,6 +26,7 @@ import FormAddCredit from "./Pages/Epargn/Actions/FormDeposit.jsx";
 import EpargnAction from "./Pages/Epargn/Action.jsx";
 import FormAddWithdraw from "./Pages/Epargn/Actions/FormWithdraw.jsx";
 import Heritage from "./Pages/Heritage/Heritage.jsx";
+import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -94,7 +94,7 @@ function App() {
         },
         {
           path: ROUTES.ADD_ORDER,
-          element: <PrivateRoute element={<PageAddOrder />} />,
+          element: <PrivateRoute element={<PageAddInvestmentMain />} />,
         },
         {
           path: ROUTES.ADD_INVESTMENT,

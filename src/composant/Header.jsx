@@ -18,7 +18,6 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
-import { DialogDelete } from "./DialogDelete.jsx";
 
 function Header({
   title,
@@ -42,7 +41,6 @@ function Header({
   tags,
   btnFilter,
   btnSearch,
-  btnTrash,
   isFetching,
   btnAction,
 }) {
@@ -85,7 +83,6 @@ function Header({
               <ArrowLeftRight size={20} />
             </Link>
           )}
-          {btnTrash && <DialogDelete />}
           {switchComponent && switchComponent}
           {btnFilter && (
             <>
@@ -136,6 +133,7 @@ function Header({
                   type="search"
                   value={searchTerm}
                   onChange={handleSearchChange}
+                  placeholder="Rechercher"
                 />
                 <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               </div>

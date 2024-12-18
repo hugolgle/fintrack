@@ -9,7 +9,7 @@ export const ROUTES = {
   REVENUE_BY_DATE: "/revenue/:date",
   INVESTMENT: "/investment",
   ADD_ORDER: "/investment/add",
-  ADD_INVESTMENT: "/investment/:id/add",
+  ADD_INVESTMENT: "/investment/order/:id/add",
   INVESTMENT_BY_ID: "/investment/order/:id",
   INVESTMENT_IN_PROGRESS: "/investment/inprogress",
   INVESTMENT_ALL: "/investment/all",

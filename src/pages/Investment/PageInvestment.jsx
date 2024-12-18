@@ -35,10 +35,8 @@ import { formatEuro } from "../../utils/fonctionnel.js";
 
 export default function PageInvestment() {
   const { id } = useParams();
-
   const navigate = useNavigate();
   const location = useLocation();
-
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -74,8 +72,8 @@ export default function PageInvestment() {
   });
 
   const mutationDeleteInvestmentTransaction = useMutation({
-    mutationFn: async (itemId) => {
-      return await deleteTransaction(dataTransactions?._id, itemId);
+    mutationFn: async (ids) => {
+      return await deleteTransaction(ids);
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
@@ -144,7 +142,7 @@ export default function PageInvestment() {
         idInvest: _id,
         type,
         symbol,
-        name,
+        name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
         isSale: transaction.isSale,
@@ -166,11 +164,6 @@ export default function PageInvestment() {
     });
     setSearchResults(filteredData);
   };
-
-  const isId =
-    location.pathname === ROUTES.INVESTMENT_IN_PROGRESS ||
-    location.pathname === ROUTES.INVESTMENT_ALL ||
-    location.pathname === ROUTES.INVESTMENT_SOLD;
 
   const title =
     dataTransactions?.name ??
@@ -204,21 +197,27 @@ export default function PageInvestment() {
   };
 
   const action = (item) => {
+    const ids = {
+      idInvest: item.idInvest,
+      itemId: item._id,
+    };
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <MoreHorizontal className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left">
-          <DropdownMenuItem
-            onClick={() => {
-              navigate(ROUTES.INVESTMENT_BY_ID.replace(":id", item.idInvest));
-            }}
-            onSelect={(e) => e.preventDefault()}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            Voir
-          </DropdownMenuItem>
+          {item.idInvest !== id && (
+            <DropdownMenuItem
+              onClick={() => {
+                navigate(ROUTES.INVESTMENT_BY_ID.replace(":id", item.idInvest));
+              }}
+              onSelect={(e) => e.preventDefault()}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Voir
+            </DropdownMenuItem>
+          )}
           <Dialog>
             <DialogTrigger asChild>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -233,7 +232,7 @@ export default function PageInvestment() {
 
           <DropdownMenuItem
             onClick={() => {
-              mutationDeleteInvestmentTransaction.mutate(item._id);
+              mutationDeleteInvestmentTransaction.mutate(ids);
             }}
             onSelect={(e) => e.preventDefault()}
             className="text-red-500"
@@ -258,9 +257,8 @@ export default function PageInvestment() {
           searchTerm={searchTerm}
           handleSearchChange={handleSearchChange}
           btnReturn
-          btnAdd={!isId && "add"}
+          btnAdd={"add"}
           btnSelect
-          btnTrash={!isId}
         />
 
         <Tableau

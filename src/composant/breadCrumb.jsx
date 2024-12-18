@@ -56,9 +56,8 @@ export function BreadcrumbDemo() {
         {pathParts.map((part, index) => {
           const href = `/${pathParts.slice(0, index + 1).join("/")}`;
 
-          // Vérifier si la partie du chemin correspond à un ID
           if (/^\d+$/.test(part)) {
-            return null; // Ignorer les IDs
+            return null;
           }
 
           let displayName =

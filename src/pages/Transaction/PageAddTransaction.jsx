@@ -147,7 +147,7 @@ export default function PageAddTransac(props) {
     },
     validationSchema,
     validateOnMount: true,
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       const postData = {
         user: userInfo?._id,
         type: props.type,
@@ -160,7 +160,7 @@ export default function PageAddTransac(props) {
       };
       addTransactionMutation.mutate(postData, {
         onSuccess: () => {
-          resetForm();
+          formik.resetForm();
           setTags([]);
         },
       });
@@ -168,7 +168,6 @@ export default function PageAddTransac(props) {
   });
 
   const handleAddTag = () => {
-    // Ne pas ajouter un tag vide ou déjà existant
     if (tagInput.trim() === "") {
       toast.warning("Le tag ne peut pas être vide.");
       return;
@@ -181,7 +180,7 @@ export default function PageAddTransac(props) {
 
     if (!tags.includes(tagInput)) {
       setTags((prevTags) => [...prevTags, tagInput]);
-      setTagInput(""); // Réinitialiser l'input après ajout
+      setTagInput("");
     } else {
       toast.warning("Ce tag a déjà été ajouté.");
     }

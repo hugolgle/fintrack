@@ -2,29 +2,67 @@ const InvestmentModel = require("../models/investment.model");
 
 module.exports.addInvestment = async (req, res) => {
   try {
-    if (!req.body.name || !req.body.type) {
+    const { name, type, symbol, transaction, user } = req.body;
+
+    if (
+      !name ||
+      !type ||
+      !transaction?.amount ||
+      !transaction?.date ||
+      transaction?.isSale === undefined
+    ) {
       return res
         .status(400)
         .json({ message: "Veuillez fournir les informations nécessaires" });
     }
 
-    // Ajout de la transaction dans l'investissement
+    const existingAsset = await InvestmentModel.findOne({ name });
+
+    if (existingAsset) {
+      return res.status(400).json({ message: "Cet actif existe déjà !" });
+    }
+
+    // Création de l'investissement avec la transaction
     const investment = await InvestmentModel.create({
-      user: req.body.user,
-      name: req.body.name,
-      type: req.body.type,
-      symbol: req.body.symbol,
-      transaction: [],
+      user,
+      name,
+      type,
+      symbol: symbol.toUpperCase(),
+      transaction: [
+        {
+          amount: transaction.amount,
+          date: transaction.date,
+          isSale: transaction.isSale,
+        },
+      ],
       amountBuy: "0.00",
       amountSale: "0.00",
       amountResult: "0.00",
     });
 
-    return res.status(201).json(investment);
+    let amountBuy = 0;
+    let amountSale = 0;
+    investment.transaction.forEach((t) => {
+      if (t.isSale) {
+        amountSale += parseFloat(t.amount);
+      } else {
+        amountBuy += parseFloat(t.amount);
+      }
+    });
+
+    const amountResult = amountSale - amountBuy;
+
+    investment.amountBuy = amountBuy.toFixed(2);
+    investment.amountSale = amountSale.toFixed(2);
+    investment.amountResult = amountResult.toFixed(2);
+
+    const updatedInvestment = await investment.save();
+
+    return res.status(201).json(updatedInvestment);
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la création de l'investissement",
-      error,
+      error: error.message,
     });
   }
 };
@@ -235,6 +273,11 @@ module.exports.deleteTransaction = async (req, res) => {
     // Supprimer la transaction
     investment.transaction.splice(transactionIndex, 1);
 
+    if (investment.transaction.length === 0) {
+      await investment.deleteOne();
+      return res.status(200).json({ message: "Transaction supprimée" });
+    }
+
     // Recalculer les montants d'achat, de vente et de résultat
     let amountBuy = 0;
     let amountSale = 0;
@@ -263,34 +306,6 @@ module.exports.deleteTransaction = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la suppression de la transaction",
-      error,
-    });
-  }
-};
-
-module.exports.deleteInvestement = async (req, res) => {
-  try {
-    const investement = await InvestmentModel.findById(req.params.id);
-
-    if (!investement) {
-      return res
-        .status(400)
-        .json({ message: "Cet investissement n'existe pas" });
-    }
-
-    if (investement.transaction.length > 0) {
-      return res.status(400).json({
-        message:
-          "Impossible de supprimer l'investissement : il contient des transactions",
-      });
-    }
-
-    await investement.deleteOne({ _id: req.params.id });
-
-    return res.status(200).json({ message: "Ordre supprimé avec succès !" });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Erreur lors de la suppression de l'investissement",
       error,
     });
   }

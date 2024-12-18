@@ -27,6 +27,12 @@ body {
   display: none;
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset; /* Arrière-plan personnalisé */
+  box-shadow: 0 0 0px 1000px #fff inset;
+  -webkit-text-fill-color: #000; /* Couleur du texte */
+}
+
 /* Section spécifique à Tailwind et à votre thème personnalisé */
 @tailwind base;
 @tailwind components;

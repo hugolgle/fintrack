@@ -23,7 +23,6 @@ import { addTransaction } from "../../Service/Investment.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-import { LoaderCircle } from "lucide-react";
 import { useParams } from "react-router";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
@@ -40,12 +39,11 @@ export default function PageAddInvestment() {
     initialValues: {
       action: "",
       amount: "",
-      data: "",
       date: new Date(),
     },
     validationSchema,
     validateOnMount: true,
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       const postData = {
         action: values.action === "true",
         amount: values.amount,
@@ -53,7 +51,7 @@ export default function PageAddInvestment() {
       };
 
       addTransactionInvestmentMutation.mutate(postData);
-      resetForm();
+      formik.resetForm();
     },
   });
 
