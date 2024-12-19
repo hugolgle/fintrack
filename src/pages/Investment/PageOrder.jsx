@@ -179,7 +179,7 @@ export function PageOrder() {
                 ) : (
                   data?.map(
                     (
-                      { _id, name, type, transaction, symbol, amountResult },
+                      { _id, name, type, transaction, symbol, amountBuy },
                       index
                     ) => {
                       const category = type === "Crypto" ? "crypto" : "symbol";
@@ -215,7 +215,7 @@ export function PageOrder() {
                           <p className="truncate text-sm">{name}</p>
                           <div className="flex justify-between">
                             <p className="text-sm italic">
-                              {formatEuro.format(amountResult)}
+                              {formatEuro.format(amountBuy)}
                             </p>
                             <p className="text-sm italic">{type}</p>
                           </div>
