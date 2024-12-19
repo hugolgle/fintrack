@@ -161,74 +161,73 @@ export function PageOrder() {
               </Label>
             </div>
           }
+          btnAdd={ROUTES.ADD_ORDER}
         />
-        <div className="w-full">
-          <div className="flex flex-wrap gap-4 justify-center p-4 animate-fade">
-            {orderData?.length > 0 ? (
-              <>
-                {mode ? (
-                  <Tableau
-                    formatData={formatData}
-                    data={displayData}
-                    columns={columns}
-                    type="investments"
-                    isFetching={isFetching}
-                    action={action}
-                    firstItem={avatar}
-                  />
-                ) : (
-                  data?.map(
-                    (
-                      { _id, name, type, transaction, symbol, amountBuy },
-                      index
-                    ) => {
-                      const category = type === "Crypto" ? "crypto" : "symbol";
-                      const date = transaction[0]?.date
-                        ? new Date(transaction[0].date)
-                        : null;
+        <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
+          {orderData?.length > 0 ? (
+            <>
+              {mode ? (
+                <Tableau
+                  formatData={formatData}
+                  data={displayData}
+                  columns={columns}
+                  type="investments"
+                  isFetching={isFetching}
+                  action={action}
+                  firstItem={avatar}
+                />
+              ) : (
+                data?.map(
+                  (
+                    { _id, name, type, transaction, symbol, amountBuy },
+                    index
+                  ) => {
+                    const category = type === "Crypto" ? "crypto" : "symbol";
+                    const date = transaction[0]?.date
+                      ? new Date(transaction[0].date)
+                      : null;
 
-                      return (
-                        <Link
-                          key={index}
-                          to={ROUTES.INVESTMENT_BY_ID.replace(":id", _id)}
-                          className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
-                            type
-                          )}`}
-                        >
-                          <div className="flex justify-between">
-                            <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
-                              {date
-                                ? format(date, "dd/MM/yyyy")
-                                : "Date non disponible"}
-                            </p>
+                    return (
+                      <Link
+                        key={index}
+                        to={ROUTES.INVESTMENT_BY_ID.replace(":id", _id)}
+                        className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
+                          type
+                        )}`}
+                      >
+                        <div className="flex justify-between">
+                          <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
+                            {date
+                              ? format(date, "dd/MM/yyyy")
+                              : "Date non disponible"}
+                          </p>
 
-                            <Avatar className="size-8 cursor-pointer transition-all">
-                              <AvatarImage
-                                src={`https://assets.parqet.com/logos/${category}/${symbol}`}
-                              />
-                              <AvatarFallback className="font-thin text-xs">
-                                {name.toUpperCase().substring(0, 2)}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
+                          <Avatar className="size-8 cursor-pointer transition-all">
+                            <AvatarImage
+                              src={`https://assets.parqet.com/logos/${category}/${symbol}`}
+                            />
+                            <AvatarFallback className="font-thin text-xs">
+                              {name.toUpperCase().substring(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
 
-                          <p className="truncate text-sm">{name}</p>
-                          <div className="flex justify-between">
-                            <p className="text-sm italic">
-                              {formatEuro.format(amountBuy)}
-                            </p>
-                            <p className="text-sm italic">{type}</p>
-                          </div>
-                        </Link>
-                      );
-                    }
-                  )
-                )}
-              </>
-            ) : (
-              <p>Aucun investissement trouvé.</p>
-            )}
-          </div>
+                        <p className="truncate text-sm">{name}</p>
+                        <div className="flex justify-between">
+                          <p className="text-sm italic">
+                            {formatEuro.format(amountBuy)}
+                          </p>
+                          <p className="text-sm italic">{type}</p>
+                        </div>
+                      </Link>
+                    );
+                  }
+                )
+              )}
+            </>
+          ) : (
+            <p>Aucun investissement trouvé.</p>
+          )}
         </div>
       </div>
     </section>

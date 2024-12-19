@@ -61,66 +61,69 @@ export default function FormAddAccount() {
       <Header title="Ajouter un compte" btnReturn />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
+        className="flex flex-col justify-center items-center gap-5 mt-20 animate-fade"
       >
-        <Input
-          type="text"
-          id="name"
-          name="name"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          placeholder="Nom du compte"
-        />
-        {formik.touched.name && formik.errors.name && (
-          <p className="text-red-500 text-sm">{formik.errors.name}</p>
-        )}
+        <div className="grid gap-4 py-4">
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            {...formik.getFieldProps("name")}
+            placeholder="Nom du compte"
+          />
+          {formik.touched.name && formik.errors.name && (
+            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+              {formik.errors.name}
+            </p>
+          )}
 
-        <Input
-          type="number"
-          id="balance"
-          name="balance"
-          value={formik.values.balance}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          placeholder="Montant initial"
-          step="0.01"
-        />
-        {formik.touched.balance && formik.errors.balance && (
-          <p className="text-red-500 text-sm">{formik.errors.balance}</p>
-        )}
+          <Input
+            type="number"
+            id="balance"
+            name="balance"
+            {...formik.getFieldProps("balance")}
+            placeholder="Montant initial"
+            step="0.01"
+          />
+          {formik.touched.balance && formik.errors.balance && (
+            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+              {formik.errors.balance}
+            </p>
+          )}
 
-        <Input
-          type="number"
-          id="interestRate"
-          name="interestRate"
-          value={formik.values.interestRate}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          placeholder="Taux en %"
-          step="0.01"
-        />
-        {formik.touched.interestRate && formik.errors.interestRate && (
-          <p className="text-red-500 text-sm">{formik.errors.interestRate}</p>
-        )}
+          <Input
+            type="number"
+            id="interestRate"
+            name="interestRate"
+            {...formik.getFieldProps("interestRate")}
+            placeholder="Taux en %"
+            step="0.01"
+          />
+          {formik.touched.interestRate && formik.errors.interestRate && (
+            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+              {formik.errors.interestRate}
+            </p>
+          )}
 
-        <Input
-          type="number"
-          id="maxBalance"
-          name="maxBalance"
-          value={formik.values.maxBalance}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          placeholder="Plafond"
-          step="0.01"
-        />
-        {formik.touched.maxBalance && formik.errors.maxBalance && (
-          <p className="text-red-500 text-sm">{formik.errors.maxBalance}</p>
-        )}
+          <Input
+            type="number"
+            id="maxBalance"
+            name="maxBalance"
+            {...formik.getFieldProps("maxBalance")}
+            placeholder="Plafond"
+            step="0.01"
+          />
+          {formik.touched.maxBalance && formik.errors.maxBalance && (
+            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+              {formik.errors.maxBalance}
+            </p>
+          )}
+        </div>
         <ButtonLoading
           type="submit"
           text="Ajouter le compte"
           textBis="Ajout en cours"
+          disabled={mutation.isPending || !formik.isValid}
           isPending={mutation.isPending}
         />
       </form>

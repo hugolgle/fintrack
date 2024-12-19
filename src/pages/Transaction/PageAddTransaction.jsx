@@ -69,7 +69,7 @@ const validationSchema = yup.object().shape({
     .string()
     .max(50, "Le titre est trop long")
     .when("title", {
-      is: true,
+      is: "Autre",
       then: yup.string().required("Le titre est requis"),
     }),
   category: yup.string().required("La catégorie est requise"),
@@ -345,10 +345,7 @@ export default function PageAddTransac(props) {
           type="number"
           step="0.01"
           placeholder="Montant"
-          value={formik.values.amount}
-          onChange={(e) => {
-            formik.setFieldValue("amount", e.target.value);
-          }}
+          {...formik.getFieldProps("amount")}
         />
         {formik.touched.amount && formik.errors.amount && (
           <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">

@@ -166,7 +166,7 @@ export function FormEditTransac({ transaction, refetch }) {
           {...formik.getFieldProps("title")}
         />
         {formik.touched.title && formik.errors.title && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.title}
           </p>
         )}
@@ -189,7 +189,7 @@ export function FormEditTransac({ transaction, refetch }) {
           </SelectContent>
         </Select>
         {formik.touched.category && formik.errors.category && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.category}
           </p>
         )}
@@ -219,7 +219,7 @@ export function FormEditTransac({ transaction, refetch }) {
         </Popover>
 
         {formik.touched.date && formik.errors.date && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.date}
           </p>
         )}
@@ -230,7 +230,7 @@ export function FormEditTransac({ transaction, refetch }) {
           {...formik.getFieldProps("detail")}
         />
         {formik.touched.detail && formik.errors.detail && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.detail}
           </p>
         )}
@@ -243,7 +243,7 @@ export function FormEditTransac({ transaction, refetch }) {
           {...formik.getFieldProps("amount")}
         />
         {formik.touched.amount && formik.errors.amount && (
-          <p className="text-xs text-left text-red-500 -mt-3 ml-2">
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
             {formik.errors.amount}
           </p>
         )}

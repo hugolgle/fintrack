@@ -62,70 +62,39 @@ export default function Login() {
     }
   }, [isAuthenticated, navigate]);
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (passwordRef.current && !passwordRef.current.contains(event.target)) {
-        setShowPassword(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [passwordRef]);
-
   return (
-    <>
+    <section className="w-full">
       <Header title="S'identifier" />
       <form
         onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 mt-20 animate-fade"
+        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
         <Input
-          className="w-96 h-10 px-2"
           id="username"
           type="email"
-          value={formik.values.username}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          {...formik.getFieldProps("username")}
           placeholder="Votre e-mail"
           required
         />
         {formik.touched.username && formik.errors.username && (
-          <p className="text-xs text-red-500">{formik.errors.username}</p>
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.username}
+          </p>
         )}
 
-        <div className="relative w-96" ref={passwordRef}>
-          <Input
-            className="h-10 px-2"
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Mot de passe"
-            required
-          />
-          <div
-            onClick={togglePasswordVisibility}
-            className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-zinc-500"
-          >
-            {showPassword ? (
-              <EyeOff className="w-5" />
-            ) : (
-              <Eye className="w-5" />
-            )}
-          </div>
-        </div>
+        <Input
+          id="password"
+          type="password"
+          {...formik.getFieldProps("password")}
+          placeholder="Mot de passe"
+          ref={passwordRef}
+          required
+        />
+
         {formik.touched.password && formik.errors.password && (
-          <p className="text-xs text-red-500">{formik.errors.password}</p>
+          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            {formik.errors.password}
+          </p>
         )}
         <ButtonLoading
           variant="outline"
@@ -142,6 +111,6 @@ export default function Login() {
           Créer un compte FinTrack !
         </Button>
       </div>
-    </>
+    </section>
   );
 }

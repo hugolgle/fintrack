@@ -135,9 +135,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             <Input
               id="prenom"
               name="prenom"
-              value={formik.values.prenom}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("prenom")}
               className="col-span-3"
               required
             />
@@ -154,9 +152,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             <Input
               id="nom"
               name="nom"
-              value={formik.values.nom}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("nom")}
               className="col-span-3"
               required
             />
@@ -174,9 +170,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               id="username"
               name="username"
               type="email"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("username")}
               className="col-span-3"
               required
             />

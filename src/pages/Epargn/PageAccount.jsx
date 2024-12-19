@@ -174,6 +174,8 @@ export default function PageAccount() {
                     new Date(a.createdAt).getTime()
                 )}
                 getAccountName={getAccountName}
+                title="Transactions"
+                description="Liste des transactions."
               />
             </div>
             {account?.transactions?.length > 0 ? (

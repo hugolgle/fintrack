@@ -1,6 +1,6 @@
 import Tableau from "../../composant/Table/Table";
 import Header from "../../composant/Header.jsx";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchInvestmentById,
   fetchInvestments,
@@ -32,6 +32,7 @@ import { Eye } from "lucide-react";
 import { useState } from "react";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { formatEuro } from "../../utils/fonctionnel.js";
+import { toast } from "sonner";
 
 export default function PageInvestment() {
   const { id } = useParams();
@@ -39,6 +40,7 @@ export default function PageInvestment() {
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const queryClient = useQueryClient();
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -71,12 +73,14 @@ export default function PageInvestment() {
     refetchOnMount: true,
   });
 
-  const mutationDeleteInvestmentTransaction = useMutation({
+  const mutationDeleteInvestment = useMutation({
     mutationFn: async (ids) => {
       return await deleteTransaction(ids);
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
+      queryClient.invalidateQueries(["fetchInvestments"]);
+      refetch();
     },
     onError: (error) => {
       toast.error(error?.data?.message);
@@ -232,7 +236,7 @@ export default function PageInvestment() {
 
           <DropdownMenuItem
             onClick={() => {
-              mutationDeleteInvestmentTransaction.mutate(ids);
+              mutationDeleteInvestment.mutate(ids);
             }}
             onSelect={(e) => e.preventDefault()}
             className="text-red-500"

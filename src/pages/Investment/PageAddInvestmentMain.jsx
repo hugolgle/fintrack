@@ -115,7 +115,6 @@ export default function PageAddInvestmentMain() {
     validationSchema,
     validateOnMount: true,
     onSubmit: async (values) => {
-      console.log(values.transaction);
       const postData =
         activeTab === "autre"
           ? {
@@ -164,8 +163,6 @@ export default function PageAddInvestmentMain() {
 
   if (loadingUser || loadingInvestments) return <Loader />;
 
-  console.log(idInvest);
-
   return (
     <section className="h-full">
       <Header title="Ajouter un investissement" btnReturn />
@@ -175,10 +172,8 @@ export default function PageAddInvestmentMain() {
       >
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="transaction">
-              Ajouter une transaction
-            </TabsTrigger>
-            <TabsTrigger value="autre">Nouvelle actif</TabsTrigger>
+            <TabsTrigger value="transaction">Transaction</TabsTrigger>
+            <TabsTrigger value="autre">Nouvel actif</TabsTrigger>
           </TabsList>
 
           <TabsContent value="transaction">

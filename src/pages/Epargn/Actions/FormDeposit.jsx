@@ -95,9 +95,7 @@ export default function FormAddCredit() {
           type="number"
           id="amount"
           name="amount"
-          value={formik.values.amount}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          {...formik.getFieldProps("amount")}
           placeholder="0.00"
           step="0.01"
         />

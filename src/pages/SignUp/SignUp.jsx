@@ -131,9 +131,7 @@ export default function SignUp() {
             <Input
               className=" h-10"
               id="prenom"
-              value={formik.values.prenom}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("prenom")}
             />
             {formik.touched.prenom && formik.errors.prenom && (
               <p className="text-xs text-red-500 mt-1 ml-2">
@@ -149,9 +147,7 @@ export default function SignUp() {
             <Input
               className=" h-10"
               id="nom"
-              value={formik.values.nom}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("nom")}
             />
             {formik.touched.nom && formik.errors.nom && (
               <p className="text-xs text-red-500 mt-1 ml-2">
@@ -168,9 +164,7 @@ export default function SignUp() {
           <Input
             className="w-96 h-10"
             id="username"
-            value={formik.values.username}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            {...formik.getFieldProps("username")}
           />
           {formik.touched.username && formik.errors.username && (
             <p className="text-xs text-red-500 mt-1 ml-2">
@@ -188,9 +182,7 @@ export default function SignUp() {
               className="h-10"
               id="password"
               type={!showPassword ? "password" : ""}
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("password")}
             />
             <div
               onClick={togglePasswordVisibility}
@@ -219,9 +211,7 @@ export default function SignUp() {
               className="h-10"
               id="confirmPassword"
               type={!showConfirmPassword ? "password" : ""}
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              {...formik.getFieldProps("confirmPassword")}
             />
             <div
               onClick={toggleConfirmPasswordVisibility}
