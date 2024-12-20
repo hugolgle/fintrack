@@ -29,168 +29,89 @@ import Heritage from "./Pages/Heritage/Heritage.jsx";
 import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx";
 
 function App() {
+  const createPrivateRoute = (element) => <PrivateRoute element={element} />;
+
+  const transactionRoutes = [
+    { path: ROUTES.EXPENSE, component: <BoardTransactions type="Expense" /> },
+    {
+      path: ROUTES.ADD_EXPENSE,
+      component: <PageAddTransac type="Expense" title="dépense" />,
+    },
+    {
+      path: ROUTES.EXPENSE_BY_DATE,
+      component: <PageTransactions type="Expense" />,
+    },
+    { path: ROUTES.REVENUE, component: <BoardTransactions type="Revenue" /> },
+    {
+      path: ROUTES.ADD_REVENUE,
+      component: <PageAddTransac type="Revenue" title="revenu" />,
+    },
+    {
+      path: ROUTES.REVENUE_BY_DATE,
+      component: <PageTransactions type="Revenue" />,
+    },
+  ];
+
+  const investmentRoutes = [
+    { path: ROUTES.INVESTMENT, component: <BoardInvest /> },
+    { path: ROUTES.ADD_ORDER, component: <PageAddInvestmentMain /> },
+    { path: ROUTES.ADD_INVESTMENT, component: <PageAddInvestment /> },
+    { path: ROUTES.INVESTMENT_BY_ID, component: <PageInvestment /> },
+    { path: ROUTES.INVESTMENT_ALL, component: <PageInvestment /> },
+    { path: ROUTES.INVESTMENT_IN_PROGRESS, component: <PageInvestment /> },
+    { path: ROUTES.INVESTMENT_SOLD, component: <PageInvestment /> },
+    { path: ROUTES.INVESTMENT_ORDER, component: <PageOrder /> },
+  ];
+
+  const epargnRoutes = [
+    { path: ROUTES.EPARGN, component: <Epargn /> },
+    { path: ROUTES.ACCOUNT_BY_ID, component: <PageAccount /> },
+    { path: ROUTES.ADD_ACCOUNT, component: <FormAddAccount /> },
+    { path: ROUTES.ACTION_EPARGN, component: <EpargnAction /> },
+    { path: ROUTES.ADD_TRANSFERT, component: <FormAddTransfert /> },
+    { path: ROUTES.ADD_DEPOSIT, component: <FormAddCredit /> },
+    { path: ROUTES.ADD_WITHDRAW, component: <FormAddWithdraw /> },
+  ];
+
+  const heritageRoutes = [{ path: ROUTES.HERITAGE, component: <Heritage /> }];
+
+  const routes = [
+    { path: ROUTES.HOME, element: <Home /> },
+    { path: ROUTES.DASHBOARD, element: <Dashboard /> },
+    ...transactionRoutes.map((route) => ({
+      path: route.path,
+      element: createPrivateRoute(route.component),
+    })),
+    ...investmentRoutes.map((route) => ({
+      path: route.path,
+      element: createPrivateRoute(route.component),
+    })),
+    ...epargnRoutes.map((route) => ({
+      path: route.path,
+      element: createPrivateRoute(route.component),
+    })),
+    ...heritageRoutes.map((route) => ({
+      path: route.path,
+      element: createPrivateRoute(route.component),
+    })),
+    { path: ROUTES.STATISTICS, element: <Statistic /> },
+    { path: ROUTES.PROFILE, element: <Profile /> },
+    { path: ROUTES.LOGIN, element: <Login /> },
+    { path: ROUTES.SIGNUP, element: <SignUp /> },
+    {
+      path: ROUTES.SESSION_TIMED_OUT,
+      element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
+    },
+    { path: "*", element: <PageError /> },
+  ];
+
   const router = createBrowserRouter([
     {
       element: <MainLayout />,
-      children: [
-        { path: ROUTES.HOME, element: <Home /> },
-
-        {
-          path: ROUTES.DASHBOARD,
-          element: <PrivateRoute element={<Dashboard />} />,
-        },
-
-        {
-          path: ROUTES.EXPENSE,
-          element: (
-            <PrivateRoute
-              element={
-                <BoardTransactions key={ROUTES.EXPENSE} type="Expense" />
-              }
-            />
-          ),
-        },
-        {
-          path: ROUTES.ADD_EXPENSE,
-          element: (
-            <PrivateRoute
-              element={<PageAddTransac type="Expense" title="dépense" />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.EXPENSE_BY_DATE,
-          element: (
-            <PrivateRoute element={<PageTransactions type="Expense" />} />
-          ),
-        },
-        {
-          path: ROUTES.REVENUE,
-          element: (
-            <PrivateRoute
-              element={
-                <BoardTransactions key={ROUTES.REVENUE} type="Revenue" />
-              }
-            />
-          ),
-        },
-        {
-          path: ROUTES.ADD_REVENUE,
-          element: (
-            <PrivateRoute
-              element={<PageAddTransac type="Revenue" title="revenu" />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.REVENUE_BY_DATE,
-          element: (
-            <PrivateRoute element={<PageTransactions type="Revenue" />} />
-          ),
-        },
-        {
-          path: ROUTES.INVESTMENT,
-          element: <PrivateRoute element={<BoardInvest />} />,
-        },
-        {
-          path: ROUTES.ADD_ORDER,
-          element: <PrivateRoute element={<PageAddInvestmentMain />} />,
-        },
-        {
-          path: ROUTES.ADD_INVESTMENT,
-          element: <PrivateRoute element={<PageAddInvestment />} />,
-        },
-        {
-          path: ROUTES.INVESTMENT_BY_ID,
-          element: (
-            <PrivateRoute
-              key={ROUTES.INVESTMENT_BY_ID}
-              element={<PageInvestment />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.INVESTMENT_ALL,
-          element: (
-            <PrivateRoute
-              key={ROUTES.INVESTMENT_ALL}
-              element={<PageInvestment />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.INVESTMENT_IN_PROGRESS,
-          element: (
-            <PrivateRoute
-              key={ROUTES.INVESTMENT_IN_PROGRESS}
-              element={<PageInvestment />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.INVESTMENT_SOLD,
-          element: (
-            <PrivateRoute
-              key={ROUTES.INVESTMENT_SOLD}
-              element={<PageInvestment />}
-            />
-          ),
-        },
-        {
-          path: ROUTES.INVESTMENT_ORDER,
-          element: <PrivateRoute element={<PageOrder />} />,
-        },
-        {
-          path: ROUTES.EPARGN,
-          element: <PrivateRoute element={<Epargn />} />,
-        },
-        {
-          path: ROUTES.ACCOUNT_BY_ID,
-          element: <PrivateRoute element={<PageAccount />} />,
-        },
-        {
-          path: ROUTES.ADD_ACCOUNT,
-          element: <PrivateRoute element={<FormAddAccount />} />,
-        },
-        {
-          path: ROUTES.ACTION_EPARGN,
-          element: <PrivateRoute element={<EpargnAction />} />,
-        },
-        {
-          path: ROUTES.ADD_TRANSFERT,
-          element: <PrivateRoute element={<FormAddTransfert />} />,
-        },
-        {
-          path: ROUTES.ADD_DEPOSIT,
-          element: <PrivateRoute element={<FormAddCredit />} />,
-        },
-        {
-          path: ROUTES.ADD_WITHDRAW,
-          element: <PrivateRoute element={<FormAddWithdraw />} />,
-        },
-        {
-          path: ROUTES.HERITAGE,
-          element: <PrivateRoute element={<Heritage />} />,
-        },
-        {
-          path: ROUTES.STATISTICS,
-          element: <PrivateRoute element={<Statistic />} />,
-        },
-        {
-          path: ROUTES.PROFILE,
-          element: <PrivateRoute element={<Profile />} />,
-        },
-        { path: ROUTES.LOGIN, element: <Login /> },
-        { path: ROUTES.SIGNUP, element: <SignUp /> },
-        {
-          path: ROUTES.SESSION_TIMED_OUT,
-          element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
-        },
-        {
-          path: "*",
-          element: <PageError />,
-        },
-      ],
+      children: routes.map((route) => ({
+        path: route.path,
+        element: route.element,
+      })),
     },
   ]);
 
