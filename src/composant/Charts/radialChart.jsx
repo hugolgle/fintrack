@@ -85,7 +85,7 @@ export function RadialChart({
             nameKey="category"
             innerRadius={inner}
             outerRadius={outer}
-            paddingAngle={2}
+            paddingAngle={4}
             animationDuration={1000}
             cornerRadius={4}
           >
@@ -122,7 +122,7 @@ export function RadialChart({
             <Legend
               layout="vertical"
               verticalAlign="middle"
-              align="right"
+              align="left"
               content={(props) => legend({ ...props, topN: 5 })}
             />
           )}

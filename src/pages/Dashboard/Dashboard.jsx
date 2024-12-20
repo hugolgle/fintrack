@@ -28,13 +28,7 @@ import { useNavigate } from "react-router";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import { fetchAccounts } from "../../Service/Epargn.service.jsx";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WalletMinimal } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
 
@@ -563,20 +557,17 @@ export default function Dashboard() {
                   )}
                 </div>
                 <div className="absolute top-0 right-0 m-2">
-                  <Select
+                  <Tabs
                     name="selectNbMonth"
                     value={selectNbMonth}
                     onValueChange={(value) => setSelectNbMonth(Number(value))}
+                    className="w-full"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Nombre de mois" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={3}>3 mois</SelectItem>
-                      <SelectItem value={6}>6 mois</SelectItem>
-                      <SelectItem value={12}>12 mois</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <TabsList>
+                      <TabsTrigger value={6}>6 mois</TabsTrigger>
+                      <TabsTrigger value={12}>1 an</TabsTrigger>
+                    </TabsList>
+                  </Tabs>{" "}
                 </div>
               </div>
             </div>

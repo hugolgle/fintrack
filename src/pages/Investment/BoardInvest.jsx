@@ -6,15 +6,8 @@ import Loader from "../../composant/Loader/Loader";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { HttpStatusCode } from "axios";
 import { Pickaxe } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { HandCoins } from "lucide-react";
 import { formatEuro } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
@@ -342,23 +335,20 @@ export default function BoardInvest() {
                 </div>
               </div>
               <div className="absolute top-0 right-0 m-2">
-                <Select
+                <Tabs
                   name="selectNbMonth"
                   value={selectNbMonth}
                   onValueChange={(value) => setSelectNbMonth(Number(value))}
+                  className="w-full"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nombre de mois" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={3}>3 mois</SelectItem>
-                    <SelectItem value={6}>6 mois</SelectItem>
-                    <SelectItem value={12}>12 mois</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <TabsList>
+                    <TabsTrigger value={6}>6 mois</TabsTrigger>
+                    <TabsTrigger value={12}>1 an</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </div>
-            <div className="w-2/4 bg-primary-foreground ring-1 ring-border rounded-xl p-4">
+            <div className="w-2/4 bg-primary-foreground backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Position</h2>
 
               {!isFetching ? (
@@ -374,7 +364,6 @@ export default function BoardInvest() {
               ) : (
                 <LoaderDots />
               )}
-              <Separator className="w-5/6 mx-auto" />
               {!isFetching ? (
                 <RadialChart
                   chartData={chartDataByName}

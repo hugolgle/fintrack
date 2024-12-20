@@ -9,13 +9,6 @@ import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { currentDate, getLastMonths, months } from "../../utils/other";
 import { fetchTransactions } from "../../Service/Transaction.service";
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +18,7 @@ import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import { DollarSign, Calendar, PieChart } from "lucide-react";
 import BoxInfos from "../../composant/Box/BoxInfos";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   aggregateTransactions,
   getLastOperations,
@@ -363,20 +357,17 @@ export default function BoardTransactions({ type }) {
                     </div>
                   </div>
                   <div className="absolute top-0 right-0 m-2">
-                    <Select
+                    <Tabs
                       name="selectNbMonth"
                       value={selectNbMonth}
                       onValueChange={(value) => setSelectNbMonth(Number(value))}
+                      className="w-full"
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Nombre de mois" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={3}>3 mois</SelectItem>
-                        <SelectItem value={6}>6 mois</SelectItem>
-                        <SelectItem value={12}>12 mois</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <TabsList>
+                        <TabsTrigger value={6}>6 mois</TabsTrigger>
+                        <TabsTrigger value={12}>1 an</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
                   </div>
                 </div>
               </div>

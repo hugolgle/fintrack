@@ -1,6 +1,6 @@
 .truncateCustom {
   display: inline-block;
-  max-width: 10ch;
+  max-width: 15ch;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -234,47 +234,46 @@ export default function PageAccount() {
               </p>
             )}
           </div>
-          <div className="flex flex-col">
-            <div className="ring-1 ring-border bg-primary-foreground h-fit rounded-xl p-4">
-              <div className="flex w-full justify-between cursor-pointer items-center mb-4">
-                <h2 className=" text-left">Caractéristiques</h2>
-                <p className="flex items-center text-gray-500">
-                  <Pencil size={14} />
-                </p>
+
+          <div className="ring-1 ring-border bg-primary-foreground h-fit rounded-xl p-4">
+            <div className="flex w-full justify-between cursor-pointer items-center mb-4">
+              <h2 className=" text-left">Caractéristiques</h2>
+              <p className="flex items-center text-gray-500">
+                <Pencil size={14} />
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-xs">Solde</span>
+                <span className="italic text-xs">
+                  {!isLoading ? formatEuro.format(account?.balance) : "-"}
+                </span>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-xs">Solde</span>
-                  <span className="italic text-xs">
-                    {!isLoading ? formatEuro.format(account?.balance) : "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs">Plafond</span>
-                  <span className="italic text-xs">
-                    {!isLoading ? formatEuro.format(account?.maxBalance) : "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs">Utilisation</span>
-                  <span className="italic text-xs">
-                    {!isLoading ? fillPercentage.toFixed(2) : "-"} %
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs">Taux d'intérêts </span>
-                  <span className="italic text-xs">
-                    {!isLoading ? account?.interestRate.toFixed(2) : "-"} %
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs">Intérets cumulé</span>
-                  <span className="italic text-xs">
-                    {!isLoading
-                      ? `≈ ${formatEuro.format(account?.amountInterest)}`
-                      : "-"}
-                  </span>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-xs">Plafond</span>
+                <span className="italic text-xs">
+                  {!isLoading ? formatEuro.format(account?.maxBalance) : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-xs">Utilisation</span>
+                <span className="italic text-xs">
+                  {!isLoading ? fillPercentage.toFixed(2) : "-"} %
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-xs">Taux d'intérêts </span>
+                <span className="italic text-xs">
+                  {!isLoading ? account?.interestRate.toFixed(2) : "-"} %
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-xs">Intérets cumulé</span>
+                <span className="italic text-xs">
+                  {!isLoading
+                    ? `≈ ${formatEuro.format(account?.amountInterest)}`
+                    : "-"}
+                </span>
               </div>
             </div>
           </div>

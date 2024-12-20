@@ -87,7 +87,7 @@ export function ChartLine({
       <ResponsiveContainer width={width} height={height}>
         <LineChart
           data={data}
-          margin={{ top: 20, left: 0, right: 40, bottom: 10 }}
+          margin={{ top: 20, left: 0, right: 0, bottom: 0 }}
         >
           <XAxis
             dataKey="month"
