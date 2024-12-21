@@ -24,7 +24,7 @@ export function calculTotal(data, type, filterCategory, filterTitle) {
       : filteredOperationsByCategory;
 
   const totalAmount = filteredOperationsByTitle.reduce(
-    (total, transaction) => total + parseFloat(transaction.amount),
+    (total, transaction) => total + transaction.amount,
     0.0
   );
 
@@ -70,7 +70,7 @@ export function calculTotalByMonth(
       : filteredOperationsByCategory;
 
   const totalAmount = filteredOperationsByTitle.reduce(
-    (total, transaction) => total + parseFloat(transaction.amount),
+    (total, transaction) => total + transaction.amount,
     0.0
   );
 
@@ -108,7 +108,7 @@ export function calculTotalByYear(
       : filteredOperationsByCategory;
 
   const totalAmount = filteredOperationsByTitle.reduce(
-    (total, transaction) => total + parseFloat(transaction.amount),
+    (total, transaction) => total + transaction.amount,
     0.0
   );
 
@@ -132,7 +132,7 @@ export function calculMoyenne(data, type, year, nbMonth) {
   }
 
   const totalAmount = filteredOperations.reduce((acc, transaction) => {
-    const amount = parseFloat(transaction.amount);
+    const amount = transaction.amount;
     return !isNaN(amount) ? acc + amount : acc;
   }, 0);
 
@@ -167,9 +167,9 @@ export function calculEconomie(data, year, month) {
 
   filteredOperations.forEach((transaction) => {
     if (transaction.type === "Revenue") {
-      totalRecettes += parseFloat(transaction.amount);
+      totalRecettes += transaction.amount;
     } else if (transaction.type === "Expense") {
-      totalDepenses += parseFloat(transaction.amount);
+      totalDepenses += transaction.amount;
     }
   });
 
@@ -182,13 +182,12 @@ export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
   const depensesMoyennesString = String(depensesMoyennes || 0);
   const recettesMoyennesString = String(recettesMoyennes || 0);
 
-  const depensesMoyennesNumber = parseFloat(
-    depensesMoyennesString.replace(/\s/g, "").replace("€", "")
-  );
-  const recettesMoyennesNumber = parseFloat(
-    recettesMoyennesString.replace(/\s/g, "").replace("€", "")
-  );
-
+  const depensesMoyennesNumber = depensesMoyennesString
+    .replace(/\s/g, "")
+    .replace("€", "");
+  const recettesMoyennesNumber = recettesMoyennesString
+    .replace(/\s/g, "")
+    .replace("€", "");
   const economieMoyenne = recettesMoyennesNumber + depensesMoyennesNumber;
 
   return economieMoyenne;
@@ -210,7 +209,7 @@ export function calculInvestByMonth(data, date) {
   });
 
   const totalAmount = filteredInvestments.reduce((total, investment) => {
-    return total + parseFloat(investment.amount || 0);
+    return total + investment.amount || 0;
   }, 0.0);
 
   return totalAmount;

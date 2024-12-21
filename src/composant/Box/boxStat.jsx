@@ -6,10 +6,7 @@ function BoxStat(props) {
 
   const amountAsString = String(props.amount || 0);
 
-  const targetMontant = parseFloat(
-    amountAsString.replace(/\s/g, "").replace(",", ".")
-  );
-
+  const targetMontant = amountAsString.replace(/\s/g, "").replace(",", ".");
   const validTargetMontant = isNaN(targetMontant) ? 0 : targetMontant;
 
   let ringColor = "";

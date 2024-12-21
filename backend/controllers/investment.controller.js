@@ -44,17 +44,17 @@ module.exports.addInvestment = async (req, res) => {
     let amountSale = 0;
     investment.transaction.forEach((t) => {
       if (t.isSale) {
-        amountSale += parseFloat(t.amount);
+        amountSale += t.amount;
       } else {
-        amountBuy += parseFloat(t.amount);
+        amountBuy += t.amount;
       }
     });
 
     const amountResult = amountSale - amountBuy;
 
-    investment.amountBuy = amountBuy.toFixed(2);
-    investment.amountSale = amountSale.toFixed(2);
-    investment.amountResult = amountResult.toFixed(2);
+    investment.amountBuy = amountBuy;
+    investment.amountSale = amountSale;
+    investment.amountResult = amountResult;
 
     const updatedInvestment = await investment.save();
 
@@ -93,9 +93,9 @@ module.exports.addTransaction = async (req, res) => {
     let amountSale = 0;
     investment.transaction.forEach((t) => {
       if (t.isSale) {
-        amountSale += parseFloat(t.amount);
+        amountSale += t.amount;
       } else {
-        amountBuy += parseFloat(t.amount);
+        amountBuy += t.amount;
       }
     });
 
@@ -103,9 +103,9 @@ module.exports.addTransaction = async (req, res) => {
     const amountResult = amountSale - amountBuy;
 
     // Formater les montants avec deux décimales
-    investment.amountBuy = amountBuy.toFixed(2); // "10.00"
-    investment.amountSale = amountSale.toFixed(2); // "10.00"
-    investment.amountResult = amountResult.toFixed(2); // "0.00"
+    investment.amountBuy = amountBuy; // "10.00"
+    investment.amountSale = amountSale; // "10.00"
+    investment.amountResult = amountResult; // "0.00"
 
     // Sauvegarder l'investissement avec la nouvelle transaction
     const updatedInvestment = await investment.save();
@@ -166,9 +166,9 @@ module.exports.editInvestment = async (req, res) => {
     let amountSale = 0;
     investment.transaction.forEach((t) => {
       if (t.isSale) {
-        amountSale += parseFloat(t.amount);
+        amountSale += t.amount;
       } else {
-        amountBuy += parseFloat(t.amount);
+        amountBuy += t.amount;
       }
     });
 
@@ -223,9 +223,9 @@ module.exports.editTransaction = async (req, res) => {
     let amountSale = 0;
     investment.transaction.forEach((t) => {
       if (t.isSale) {
-        amountSale += parseFloat(t.amount);
+        amountSale += t.amount;
       } else {
-        amountBuy += parseFloat(t.amount);
+        amountBuy += t.amount;
       }
     });
 
@@ -283,9 +283,9 @@ module.exports.deleteTransaction = async (req, res) => {
     let amountSale = 0;
     investment.transaction.forEach((t) => {
       if (t.isSale) {
-        amountSale += parseFloat(t.amount);
+        amountSale += t.amount;
       } else {
-        amountBuy += parseFloat(t.amount);
+        amountBuy += t.amount;
       }
     });
 

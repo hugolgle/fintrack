@@ -15,7 +15,7 @@ module.exports.addAccount = async (req, res) => {
     const account = await EpargnModel.create({
       user,
       name,
-      balance: parseFloat(balance).toFixed(2),
+      balance,
       interestRate,
       transactions: [],
       lastInterestCalculation: new Date(),
@@ -141,7 +141,7 @@ module.exports.depositAccount = async (req, res) => {
       return res.status(404).json({ message: "Compte non trouvé" });
     }
 
-    const newBalance = parseFloat(account.balance) + parseFloat(amount);
+    const newBalance = account.balance + amount;
     if (account.maxBalance && newBalance > account.maxBalance) {
       return res
         .status(400)
@@ -157,11 +157,11 @@ module.exports.depositAccount = async (req, res) => {
       depositDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // 1er du mois suivant
     }
 
-    account.balance = newBalance.toFixed(2);
+    account.balance = newBalance;
 
     account.transactions.push({
       type: "deposit",
-      amount: parseFloat(amount).toFixed(2),
+      amount,
       date: depositDate,
     });
 
@@ -196,7 +196,7 @@ module.exports.withdrawAccount = async (req, res) => {
       return res.status(404).json({ message: "Compte non trouvé" });
     }
 
-    const newBalance = parseFloat(account.balance) - parseFloat(amount);
+    const newBalance = account.balance - amount;
 
     if (newBalance < 0) {
       return res
@@ -213,11 +213,11 @@ module.exports.withdrawAccount = async (req, res) => {
       withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 16); // 16 du mois
     }
 
-    account.balance = newBalance.toFixed(2);
+    account.balance = newBalance;
 
     account.transactions.push({
       type: "withdraw",
-      amount: -parseFloat(amount).toFixed(2),
+      amount: -amount,
       date: withdrawalDate,
     });
 
@@ -264,24 +264,20 @@ module.exports.calculateInterest = async (req, res) => {
         }
 
         // Enregistrer les intérêts
-        const calculatedInterest = parseFloat(interest).toFixed(2);
+        const calculatedInterest = interest;
 
         // Mettre à jour le montant total des intérêts
-        account.amountInterest = (
-          parseFloat(account.amountInterest) + parseFloat(calculatedInterest)
-        ).toFixed(2);
+        account.amountInterest = account.amountInterest + calculatedInterest;
 
         // Ajouter une transaction pour les intérêts
         account.transactions.push({
           type: "interest",
-          amount: parseFloat(calculatedInterest),
+          amount: calculatedInterest,
           date: today,
         });
 
         // Mettre à jour le solde et la date de calcul des intérêts
-        account.balance = (
-          parseFloat(account.balance) + parseFloat(calculatedInterest)
-        ).toFixed(2);
+        account.balance = account.balance + calculatedInterest;
         account.lastInterestCalculation = today;
 
         await account.save();
@@ -303,7 +299,7 @@ const calculateYearlyInterest = async () => {
   const accounts = await EpargnModel.find();
 
   for (const account of accounts) {
-    const totalInterest = parseFloat(account.amountInterest || 0);
+    const totalInterest = account.amountInterest || 0;
 
     if (totalInterest > 0) {
       // Ajouter une transaction de type 'interest'

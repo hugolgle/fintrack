@@ -98,10 +98,7 @@ export default function Epargn() {
     return account?.name || "-";
   };
 
-  const totalAmount = accounts.reduce(
-    (sum, item) => sum + parseFloat(item.balance),
-    0
-  );
+  const totalAmount = accounts.reduce((sum, item) => sum + item.balance, 0);
 
   const chartData = accounts.map((account) => {
     return { name: account.name, balance: account.balance };
@@ -109,8 +106,8 @@ export default function Epargn() {
 
   const transformedData = chartData.map((item, key) => ({
     name: item.name,
-    amount: parseFloat(item.balance),
-    pourcentage: (parseFloat(item.balance) / totalAmount) * 100,
+    amount: item.balance,
+    pourcentage: (item.balance / totalAmount) * 100,
     fill: `hsl(var(--chart-${key + 1}))`,
   }));
 
@@ -157,7 +154,7 @@ export default function Epargn() {
                   navigate(ROUTES.ACCOUNT_BY_ID.replace(":id", account._id))
                 }
                 title={account.name}
-                value={account.balance.toFixed(2)}
+                value={account.balance}
                 plafond={account.maxBalance}
                 isAmount
                 icon={<Wallet size={15} color="grey" />}
@@ -172,7 +169,7 @@ export default function Epargn() {
                 <RadialChart
                   chartData={transformedData}
                   chartConfig={chartConfig}
-                  total={totalAmount.toFixed(2)}
+                  total={totalAmount}
                   fontSizeTotal={8}
                   inner={60}
                   outer={80}
@@ -258,7 +255,7 @@ export default function Epargn() {
                 <RadialChart
                   chartData={transformedData}
                   chartConfig={chartConfig}
-                  total={totalAmount.toFixed(2)}
+                  total={totalAmount}
                   fontSizeTotal={8}
                   inner={60}
                   outer={80}

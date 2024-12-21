@@ -76,10 +76,7 @@ export default function BoardTransactions({ type }) {
   );
 
   const chartData = aggregateTransactions(revenuePieChartMonth);
-  const totalAmount = chartData.reduce(
-    (sum, item) => sum + parseFloat(item.amount),
-    0
-  );
+  const totalAmount = chartData.reduce((sum, item) => sum + item.amount, 0);
 
   const categoryTransaction =
     type === "Expense" ? categoryDepense : categoryRecette;
@@ -94,8 +91,8 @@ export default function BoardTransactions({ type }) {
 
   const transformedData = chartData.map((item) => ({
     name: item.nomCate,
-    amount: parseFloat(item.amount),
-    pourcentage: (parseFloat(item.amount) / totalAmount) * 100,
+    amount: item.amount,
+    pourcentage: (item.amount / totalAmount) * 100,
     fill: categoryColorsTransaction[item.nomCate],
   }));
 
@@ -135,9 +132,7 @@ export default function BoardTransactions({ type }) {
     const cleanedData = String(data)
       .replace(/[^\d.-]/g, "")
       .replace(/ /g, "");
-    const absoluteValue = Math.abs(parseFloat(cleanedData));
-
-    return absoluteValue.toFixed(2);
+    return Math.abs(cleanedData);
   };
 
   monthsGraph.forEach(({ code }) => {

@@ -67,9 +67,7 @@ export default function Tableau({
     let total = 0;
     theData?.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
-        total += transaction.isSale
-          ? parseFloat(transaction.amount)
-          : -parseFloat(transaction.amount);
+        total += transaction.isSale ? transaction.amount : -transaction.amount;
       }
     });
     return total;
@@ -79,8 +77,10 @@ export default function Tableau({
     let total = 0;
     theData?.forEach((transaction) => {
       total += transaction.isSale
-        ? parseFloat(transaction.amount)
-        : -parseFloat(transaction.amount);
+        ? transaction.amount
+        : transaction.type === "expense"
+          ? -transaction.amount
+          : transaction.amount;
     });
     return total;
   };

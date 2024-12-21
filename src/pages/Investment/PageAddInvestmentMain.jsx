@@ -124,7 +124,7 @@ export default function PageAddInvestmentMain() {
               symbol: values.symbol,
               transaction: {
                 action: values.action === "true",
-                amount: parseFloat(values.amount),
+                amount: values.amount,
                 date: values.date.toISOString(),
               },
             }

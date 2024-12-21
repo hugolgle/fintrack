@@ -46,32 +46,32 @@ export default function BoardInvest() {
 
   const amountBuy = Array.isArray(data)
     ? data.reduce((total, item) => {
-        return total + (parseFloat(item.amountBuy) || 0);
+        return total + (item.amountBuy || 0);
       }, 0)
     : 0;
 
   const amountSale = Array.isArray(data)
     ? data.reduce((total, item) => {
-        return total + (parseFloat(item.amountSale) || 0);
+        return total + (item.amountSale || 0);
       }, 0)
     : 0;
 
   const amountResult = Array.isArray(data)
     ? data.reduce((total, item) => {
-        return total + (parseFloat(item.amountResult) || 0);
+        return total + (item.amountResult || 0);
       }, 0)
     : 0;
 
   if (isLoading) return <Loader />;
 
   const totalAmountBuy = data.reduce(
-    (total, item) => total + (parseFloat(item.amountBuy) || 0),
+    (total, item) => total + (item.amountBuy || 0),
     0
   );
 
   const categorySums = data.reduce((acc, investment) => {
     const type = investment.type;
-    const amountBuy = parseFloat(investment.amountBuy) || 0;
+    const amountBuy = investment.amountBuy || 0;
 
     if (acc[type]) {
       acc[type].amount += amountBuy;
@@ -86,7 +86,7 @@ export default function BoardInvest() {
 
   const titleSums = data.reduce((acc, investment) => {
     const name = investment.name;
-    const amountBuy = parseFloat(investment.amountBuy) || 0;
+    const amountBuy = investment.amountBuy || 0;
 
     if (acc[name]) {
       acc[name].amount += amountBuy;
@@ -149,9 +149,7 @@ export default function BoardInvest() {
     const cleanedData = String(data)
       .replace(/[^\d.-]/g, "")
       .replace(/ /g, "");
-    const absoluteValue = Math.abs(parseFloat(cleanedData));
-
-    return absoluteValue.toFixed(2);
+    return Math.abs(cleanedData);
   };
 
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
@@ -224,7 +222,7 @@ export default function BoardInvest() {
     item.transaction.map((trans) => ({
       name: item.name,
       type: item.type,
-      amount: parseFloat(trans.amount) || 0,
+      amount: trans.amount || 0,
       date: trans.date,
     }))
   );
@@ -355,7 +353,7 @@ export default function BoardInvest() {
                 <RadialChart
                   chartData={chartDataByType}
                   chartConfig={chartConfigByType}
-                  total={amountBuy.toFixed(2)}
+                  total={amountBuy}
                   inner={40}
                   outer={55}
                   sideLegend="right"
@@ -369,7 +367,7 @@ export default function BoardInvest() {
                 <RadialChart
                   chartData={chartDataByName}
                   chartConfig={chartConfigByName}
-                  total={amountBuy.toFixed(2)}
+                  total={amountBuy}
                   inner={40}
                   outer={55}
                   height={140}

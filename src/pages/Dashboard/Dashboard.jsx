@@ -151,9 +151,7 @@ export default function Dashboard() {
     const cleanedData = String(data)
       .replace(/[^\d.-]/g, "")
       .replace(/ /g, "");
-    const absoluteValue = Math.abs(parseFloat(cleanedData));
-
-    return absoluteValue.toFixed(2);
+    return Math.abs(cleanedData);
   };
 
   const [month, setMonth] = useState(currentYearMonth);
@@ -312,9 +310,9 @@ export default function Dashboard() {
   const chevronIsVisible = month < currentYearMonth;
   const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
 
-  const dFix = parseFloat(Math.abs(dataDf));
-  const dLoisir = parseFloat(Math.abs(dataLoisir));
-  const mInvest = parseFloat(montantInvest);
+  const dFix = Math.abs(dataDf);
+  const dLoisir = Math.abs(dataLoisir);
+  const mInvest = montantInvest;
 
   if (isLoading) return <Loader />;
 
@@ -328,25 +326,25 @@ export default function Dashboard() {
     {
       name: "Dépenses fixes",
       amount: dFix,
-      pourcentage: (dFix / parseFloat(total)) * 100 || 0,
+      pourcentage: (dFix / total) * 100 || 0,
       fill: "var(--color-depensesFixes)",
     },
     {
       name: "Loisir",
       amount: dLoisir,
-      pourcentage: (dLoisir / parseFloat(total)) * 100 || 0,
+      pourcentage: (dLoisir / total) * 100 || 0,
       fill: "var(--color-loisir)",
     },
     {
       name: "Investissements",
       amount: mInvest,
-      pourcentage: (mInvest / parseFloat(total)) * 100 || 0,
+      pourcentage: (mInvest / total) * 100 || 0,
       fill: "var(--color-invest)",
     },
     {
       name: "Épargne",
-      amount: parseFloat(epargne),
-      pourcentage: (parseFloat(epargne) / total) * 100 || 0,
+      amount: epargne,
+      pourcentage: (epargne / total) * 100 || 0,
       fill: "var(--color-epargne)",
     },
   ];
@@ -389,7 +387,7 @@ export default function Dashboard() {
 
   const amountInvestAll = Array.isArray(dataInvest)
     ? dataInvest.reduce((total, item) => {
-        return total + (parseFloat(item?.amountBuy) || 0);
+        return total + (item?.amountBuy || 0);
       }, 0)
     : 0;
 
@@ -432,14 +430,14 @@ export default function Dashboard() {
               type="epargn"
               title="Épargne"
               icon={<Landmark size={15} color="grey" />}
-              value={amountEpargn.toFixed(2)}
+              value={amountEpargn}
               isAmount
             />
             <BoxInfos
               onClick={() => navigate(ROUTES.HERITAGE)}
               title="Patrimoine"
               icon={<WalletMinimal size={15} color="grey" />}
-              value={amountHeritage.toFixed(2)}
+              value={amountHeritage}
               isAmount
             />
           </div>

@@ -68,7 +68,7 @@ export default function PageAccount() {
   const dataGraph = months.map((month, index) => ({
     month,
     year: selectedYear,
-    amount: montantAccountByMonth[index].toFixed(2),
+    amount: montantAccountByMonth[index],
   }));
 
   const clickNextYear = () => setSelectedYear(selectedYear + 1);

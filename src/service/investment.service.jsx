@@ -36,7 +36,7 @@ export const addInvestment = async (investmentData) => {
     type,
     symbol,
     transaction: {
-      amount: parseFloat(transaction.amount),
+      amount: transaction.amount,
       date: transaction.date,
       isSale: transaction.action === "true",
     },

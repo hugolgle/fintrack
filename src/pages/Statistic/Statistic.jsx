@@ -225,14 +225,14 @@ export default function Statistic() {
 
   const chartDataExpense = aggregateTransactions(transactionsExpense);
   const totalAmountExpense = chartDataExpense.reduce(
-    (sum, item) => sum + parseFloat(item.amount),
+    (sum, item) => sum + item.amount,
     0
   );
 
   const transformedDataExpense = chartDataExpense.map((item) => ({
     name: item.nomCate,
-    amount: parseFloat(item.amount),
-    pourcentage: (parseFloat(item.amount) / totalAmountExpense) * 100,
+    amount: item.amount,
+    pourcentage: (item.amount / totalAmountExpense) * 100,
     fill: categoryColorsExpense[item.nomCate],
   }));
 
@@ -257,14 +257,14 @@ export default function Statistic() {
 
   const chartDataRevenue = aggregateTransactions(transactionsRevenue);
   const totalAmountRevenue = chartDataRevenue.reduce(
-    (sum, item) => sum + parseFloat(item.amount),
+    (sum, item) => sum + item.amount,
     0
   );
 
   const transformedDataRevenue = chartDataRevenue.map((item) => ({
     name: item.nomCate,
-    amount: parseFloat(item.amount),
-    pourcentage: (parseFloat(item.amount) / totalAmountRevenue) * 100,
+    amount: item.amount,
+    pourcentage: (item.amount / totalAmountRevenue) * 100,
     fill: categoryColorsRevenue[item.nomCate],
   }));
 
@@ -377,7 +377,7 @@ export default function Statistic() {
               />
               <BoxStat
                 type="State"
-                title={parseFloat(economieMonth) < 0 ? "Déficit" : "Économie"}
+                title={economieMonth < 0 ? "Déficit" : "Économie"}
                 selectedYear={selectedYear}
                 amount={economieMonth}
                 months={months}
