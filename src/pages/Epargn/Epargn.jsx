@@ -1,4 +1,3 @@
-import { HandCoins } from "lucide-react";
 import Header from "../../composant/Header";
 import { useNavigate } from "react-router";
 import BoxInfos from "../../composant/Box/BoxInfos";

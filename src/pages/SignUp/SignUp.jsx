@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
@@ -11,7 +9,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { addUser } from "../../Service/User.service";
 import { useMutation } from "@tanstack/react-query";
-import Header from "../../composant/Header.jsx";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 export default function SignUp() {

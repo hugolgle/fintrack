@@ -29,8 +29,8 @@ import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import { fetchAccounts } from "../../Service/Epargn.service.jsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WalletMinimal } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
+import { Swords } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -436,7 +436,7 @@ export default function Dashboard() {
             <BoxInfos
               onClick={() => navigate(ROUTES.HERITAGE)}
               title="Patrimoine"
-              icon={<WalletMinimal size={15} color="grey" />}
+              icon={<Swords size={15} color="grey" />}
               value={amountHeritage}
               isAmount
             />

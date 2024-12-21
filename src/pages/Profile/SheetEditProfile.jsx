@@ -19,7 +19,6 @@ import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { editUser } from "../../Service/User.service";
 import { getUserIdFromToken } from "../../utils/users";
-import { LoaderCircle } from "lucide-react";
 import ButtonLoading from "../../composant/Button/ButtonLoading";
 
 const validationSchema = yup.object({

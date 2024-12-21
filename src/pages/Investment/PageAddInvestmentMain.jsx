@@ -37,7 +37,6 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { getUserIdFromToken } from "../../utils/users.js";
 import { getCurrentUser } from "../../Service/User.service.jsx";
-import { LoaderCircle } from "lucide-react";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 import { HttpStatusCode } from "axios";
 import { useState } from "react";

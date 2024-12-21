@@ -14,12 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import {
-  categorySort,
-  months,
-  nameType,
-  normalizeText,
-} from "../../utils/other";
+import { categorySort, months, nameType } from "../../utils/other";
 import {
   categoryDepense,
   categoryRecette,
