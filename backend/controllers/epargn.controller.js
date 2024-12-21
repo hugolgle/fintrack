@@ -32,6 +32,37 @@ module.exports.addAccount = async (req, res) => {
   }
 };
 
+module.exports.editAccount = async (req, res) => {
+  try {
+    const accountId = req.params.id;
+    const updates = req.body;
+
+    const account = await EpargnModel.findById(accountId);
+
+    if (!account) {
+      return res.status(404).json({
+        message: "Compte introuvable",
+      });
+    }
+
+    Object.keys(updates).forEach((key) => {
+      account[key] = updates[key];
+    });
+
+    await account.save();
+
+    return res.status(200).json({
+      message: "Compte mis à jour avec succès",
+      account,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la mise à jour du compte",
+      error,
+    });
+  }
+};
+
 module.exports.getAccounts = async (req, res) => {
   try {
     const accounts = await EpargnModel.find({

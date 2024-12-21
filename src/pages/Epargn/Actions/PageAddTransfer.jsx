@@ -1,14 +1,13 @@
 import React from "react";
 import Header from "../../../composant/Header";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  fetchAccounts,
-  withdrawAccount,
-} from "../../../Service/Epargn.service";
+import { addTransfer, fetchAccounts } from "../../../Service/Epargn.service";
+import { useState } from "react";
+import { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -20,17 +19,23 @@ import Loader from "../../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import ButtonLoading from "../../../composant/Button/ButtonLoading";
 
-const validationSchema = Yup.object({
-  accountId: Yup.string()
+const validationSchema = yup.object({
+  fromAccountId: yup
+    .string()
     .required("Sélectionnez un compte source")
     .min(24, "ID du compte invalide"),
-  amount: Yup.number()
+  toAccountId: yup
+    .string()
+    .required("Sélectionnez un compte de destination")
+    .min(24, "ID du compte invalide"),
+  amount: yup
+    .number()
     .required("Le montant est requis")
     .min(0, "Le montant ne peut pas être négatif")
     .max(999999, "Montant trop élevé"),
 });
 
-export default function FormAddWithdraw() {
+export default function PageAddTransfert() {
   const { isLoading, data: accounts } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
@@ -44,8 +49,19 @@ export default function FormAddWithdraw() {
     refetchOnMount: true,
   });
 
+  const [accountOptions, setAccountOptions] = useState([]);
+
+  useEffect(() => {
+    setAccountOptions(
+      accounts?.map((account) => ({
+        value: account._id,
+        label: account.name,
+      }))
+    );
+  }, [accounts]);
+
   const mutation = useMutation({
-    mutationFn: withdrawAccount,
+    mutationFn: addTransfer,
     onSuccess: (response) => {
       toast.success(response?.message);
       formik.resetForm();
@@ -57,7 +73,8 @@ export default function FormAddWithdraw() {
 
   const formik = useFormik({
     initialValues: {
-      accountId: "",
+      fromAccountId: "",
+      toAccountId: "",
       amount: "",
     },
     validationSchema,
@@ -65,33 +82,55 @@ export default function FormAddWithdraw() {
       mutation.mutate(values);
     },
   });
-
   if (isLoading) return <Loader />;
 
   return (
     <section className="w-full">
-      <Header title="Retrait" btnReturn />
+      <Header title="Virement" btnReturn />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
         <Select
-          value={formik.values.accountId}
-          onValueChange={(value) => formik.setFieldValue("accountId", value)}
+          value={formik.values.fromAccountId}
+          onValueChange={(value) =>
+            formik.setFieldValue("fromAccountId", value)
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionnez un compte source" />
           </SelectTrigger>
           <SelectContent>
-            {accounts?.map((account) => (
-              <SelectItem key={account._id} value={account._id}>
-                {account.name}
+            {accountOptions?.map((account) => (
+              <SelectItem key={account.value} value={account.value}>
+                {account.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {formik.touched.accountId && formik.errors.accountId && (
-          <p className="text-red-500 text-sm">{formik.errors.accountId}</p>
+        {formik.touched.fromAccountId && formik.errors.fromAccountId && (
+          <p className="text-red-500 text-sm">{formik.errors.fromAccountId}</p>
+        )}
+        <Select
+          value={formik.values.toAccountId}
+          onValueChange={(value) => formik.setFieldValue("toAccountId", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un compte de destination" />
+          </SelectTrigger>
+          <SelectContent>
+            {accountOptions?.map(
+              (account) =>
+                account.value !== formik.values.fromAccountId && (
+                  <SelectItem key={account.value} value={account.value}>
+                    {account.label}
+                  </SelectItem>
+                )
+            )}
+          </SelectContent>
+        </Select>
+        {formik.touched.toAccountId && formik.errors.toAccountId && (
+          <p className="text-red-500 text-sm">{formik.errors.toAccountId}</p>
         )}
         <Input
           type="number"
@@ -106,8 +145,7 @@ export default function FormAddWithdraw() {
         )}
         <ButtonLoading
           type="submit"
-          text="Effectuer le retrait"
-          textBis="Retrait en cours"
+          text="Soumettre"
           isPending={mutation.isPending}
         />
       </form>

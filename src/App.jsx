@@ -19,12 +19,12 @@ import Statistic from "./Pages/Statistic/Statistic.jsx";
 import { MainLayout } from "./Layout/MainLayout.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
 import Epargn from "./Pages/Epargn/Epargn.jsx";
-import FormAddAccount from "./Pages/Epargn/FormAddAccount.jsx";
-import FormAddTransfert from "./Pages/Epargn/Actions/FormTransfer.jsx";
+import PageAddAccount from "./Pages/Epargn/PageAddAccount.jsx";
+import PageAddTransfert from "./Pages/Epargn/Actions/PageAddTransfer.jsx";
 import PageAccount from "./Pages/Epargn/PageAccount.jsx";
-import FormAddCredit from "./Pages/Epargn/Actions/FormDeposit.jsx";
+import PageAddDeposit from "./Pages/Epargn/Actions/PageAddDeposit.jsx";
 import EpargnAction from "./Pages/Epargn/Action.jsx";
-import FormAddWithdraw from "./Pages/Epargn/Actions/FormWithdraw.jsx";
+import PageAddWithdraw from "./Pages/Epargn/Actions/PageAddWithdraw.jsx";
 import Heritage from "./Pages/Heritage/Heritage.jsx";
 import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx";
 
@@ -72,11 +72,11 @@ function App() {
   const epargnRoutes = [
     { path: ROUTES.EPARGN, component: <Epargn /> },
     { path: ROUTES.ACCOUNT_BY_ID, component: <PageAccount /> },
-    { path: ROUTES.ADD_ACCOUNT, component: <FormAddAccount /> },
+    { path: ROUTES.ADD_ACCOUNT, component: <PageAddAccount /> },
     { path: ROUTES.ACTION_EPARGN, component: <EpargnAction /> },
-    { path: ROUTES.ADD_TRANSFERT, component: <FormAddTransfert /> },
-    { path: ROUTES.ADD_DEPOSIT, component: <FormAddCredit /> },
-    { path: ROUTES.ADD_WITHDRAW, component: <FormAddWithdraw /> },
+    { path: ROUTES.ADD_TRANSFERT, component: <PageAddTransfert /> },
+    { path: ROUTES.ADD_DEPOSIT, component: <PageAddDeposit /> },
+    { path: ROUTES.ADD_WITHDRAW, component: <PageAddWithdraw /> },
   ];
 
   const heritageRoutes = [{ path: ROUTES.HERITAGE, component: <Heritage /> }];

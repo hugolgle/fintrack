@@ -10,8 +10,10 @@ import LoaderDots from "../../composant/Loader/LoaderDots";
 import { ChartLine } from "../../composant/Charts/ChartLine";
 import { Pencil } from "lucide-react";
 import ModalTable from "./Modal/ModalTable";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ROUTES } from "../../composant/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { FormEditAccount } from "./FormEditAccount";
 
 export default function PageAccount() {
   const { id } = useParams();
@@ -20,6 +22,7 @@ export default function PageAccount() {
     data: account,
     isFetching,
     isLoading,
+    refetch,
   } = useQuery({
     queryKey: ["fetchAccount", id],
     queryFn: async () => {
@@ -229,7 +232,7 @@ export default function PageAccount() {
                   })}
               </div>
             ) : (
-              <p className="italic text-gray-500">
+              <p className="italic text-xs text-gray-500">
                 Aucune transactions trouvé !
               </p>
             )}
@@ -238,9 +241,16 @@ export default function PageAccount() {
           <div className="ring-1 ring-border bg-secondary h-fit rounded-xl p-4">
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className=" text-left">Caractéristiques</h2>
-              <p className="flex items-center cursor-pointer text-gray-500">
-                <Pencil size={14} />
-              </p>
+              <Dialog>
+                <DialogTrigger>
+                  <div className="cursor-pointer">
+                    <Pencil size={14} strokeWidth={1} />
+                  </div>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormEditAccount account={account} refetch={refetch} />
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">

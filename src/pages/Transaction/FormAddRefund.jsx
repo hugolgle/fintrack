@@ -133,11 +133,11 @@ export function FormAddRefund({ transaction, refetch }) {
         )}
       </div>
 
-      <DialogFooter className="sm:justify-start">
+      <DialogFooter className="sm:justify-between">
         <ButtonLoading
+          variant="default"
           type="submit"
-          text="Ajouter"
-          textBis="Chargement"
+          text="Soumettre"
           disabled={mutationPost.isPending || !formik.isValid}
           isPending={mutationPost.isPending}
         />

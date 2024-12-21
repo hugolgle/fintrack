@@ -130,11 +130,10 @@ export function FormEditInvestment({ transaction, refetch }) {
         )}
       </div>
 
-      <DialogFooter className="sm:justify-start">
+      <DialogFooter className="sm:justify-between">
         <ButtonLoading
           type="submit"
           text="Modifier"
-          textBis="Chargement"
           isPending={mutationEdit.isPending || isSaveDisabled}
         />
         <DialogClose asChild>

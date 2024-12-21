@@ -129,11 +129,11 @@ export default function PageAddInvestment() {
         )}
 
         <ButtonLoading
-          text="Soumettre l'investissement"
-          textBis="En cours"
-          isPending={
+          text="Soumettre"
+          disabled={
             addTransactionInvestmentMutation.isPending || !formik.isValid
           }
+          isPending={addTransactionInvestmentMutation.isPending}
         />
       </form>
     </section>

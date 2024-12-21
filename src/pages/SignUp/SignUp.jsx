@@ -6,7 +6,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { addUser } from "../../Service/User.service";
 import { useMutation } from "@tanstack/react-query";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
@@ -19,20 +19,22 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const passwordRef = useRef(null);
 
-  const validationSchema = Yup.object().shape({
-    username: Yup.string().email("Email invalide").required("Email requis"),
-    password: Yup.string()
+  const validationSchema = yup.object().shape({
+    username: yup.string().email("Email invalide").required("Email requis"),
+    password: yup
+      .string()
       .min(6, "Le mot de passe doit contenir au moins 6 caractères")
       .required("Mot de passe requis"),
-    confirmPassword: Yup.string()
+    confirmPassword: yup
+      .string()
       .oneOf(
-        [Yup.ref("password"), null],
+        [yup.ref("password"), null],
         "Les mots de passe doivent correspondre"
       )
       .required("Confirmation du mot de passe requise"),
-    nom: Yup.string().required("Nom requis"),
-    prenom: Yup.string().required("Prénom requis"),
-    img: Yup.mixed().nullable().optional(),
+    nom: yup.string().required("Nom requis"),
+    prenom: yup.string().required("Prénom requis"),
+    img: yup.mixed().nullable().optional(),
   });
 
   const formik = useFormik({
@@ -240,11 +242,11 @@ export default function SignUp() {
           )}
 
           <ButtonLoading
+            variant="default"
             type="submit"
             text="Inscription"
             disabled={addUserMutation.isPending || !formik.isValid}
             isPending={addUserMutation.isPending}
-            classname="w-full"
           />
         </form>
         <div className="flex flex-col justify-center items-center gap-2">

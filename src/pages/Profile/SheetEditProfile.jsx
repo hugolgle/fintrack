@@ -194,20 +194,20 @@ export function SheetEditProfile({ refetch, dataProfil }) {
           </div>
           <SheetFooter>
             {!isSaveDisabled && (
-              <ButtonLoading
+              <Button
                 variant="outline"
-                type="button"
-                text="Annuler"
                 onClick={() => {
                   formik.resetForm(), setHiddenImg(false), setPreview(false);
                 }}
-              />
+              >
+                Annuler
+              </Button>
             )}
 
             <ButtonLoading
+              variant="default"
               type="submit"
               text="Enregistrer"
-              textBis="Enregistrement"
               isPending={isPending}
               disabled={isPending || !formik.isValid || isSaveDisabled}
             />

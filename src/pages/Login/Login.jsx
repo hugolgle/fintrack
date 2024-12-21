@@ -8,7 +8,7 @@ import { ROUTES } from "../../composant/Routes.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../Service/User.service";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { HttpStatusCode } from "axios";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
@@ -37,9 +37,9 @@ export default function Login() {
     },
   });
 
-  const validationSchema = Yup.object().shape({
-    username: Yup.string().email("Email invalide").required("Email requis"),
-    password: Yup.string().required("Mot de passe requis"),
+  const validationSchema = yup.object().shape({
+    username: yup.string().email("Email invalide").required("Email requis"),
+    password: yup.string().required("Mot de passe requis"),
   });
 
   const formik = useFormik({
@@ -132,11 +132,11 @@ export default function Login() {
             </p>
           )}
           <ButtonLoading
+            variant="default"
             type="submit"
             text="Connexion"
             disabled={mutation.isPending || !formik.isValid}
             isPending={mutation.isPending}
-            classname="w-full"
           />
         </form>
         <div className="flex flex-col justify-center items-center mt-5 gap-2">

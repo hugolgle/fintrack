@@ -415,12 +415,10 @@ export default function PageAddTransac(props) {
         </div>
 
         <ButtonLoading
-          variant="secondary"
           type="submit"
           text="Soumettre"
           isPending={addTransactionMutation.isPending}
           disabled={addTransactionMutation.isPending || !formik.isValid}
-          classname="w-full"
         />
       </form>
     </section>

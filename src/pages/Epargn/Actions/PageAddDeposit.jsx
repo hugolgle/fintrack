@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../../composant/Header";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -17,17 +17,19 @@ import Loader from "../../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import ButtonLoading from "../../../composant/Button/ButtonLoading";
 
-const validationSchema = Yup.object({
-  accountId: Yup.string()
+const validationSchema = yup.object({
+  accountId: yup
+    .string()
     .required("Sélectionnez un compte source")
     .min(24, "ID du compte invalide"),
-  amount: Yup.number()
+  amount: yup
+    .number()
     .required("Le montant est requis")
     .min(0, "Le montant ne peut pas être négatif")
     .max(999999, "Montant trop élevé"),
 });
 
-export default function FormAddCredit() {
+export default function PageAddDeposit() {
   const { isLoading, data: accounts } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
@@ -103,8 +105,7 @@ export default function FormAddCredit() {
         )}
         <ButtonLoading
           type="submit"
-          text="Effectuer le dépôt"
-          textBis="Créditation en cours"
+          text="Soumettre"
           isPending={mutation.isPending}
         />
       </form>

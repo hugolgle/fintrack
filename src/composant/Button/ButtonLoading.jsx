@@ -2,13 +2,12 @@ import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function ButtonLoading({
-  variant,
+  variant = "secondary",
   isPending,
   onClick = () => {},
   text,
   type,
   disabled,
-  classname,
 }) {
   return (
     <Button
@@ -16,7 +15,7 @@ export default function ButtonLoading({
       variant={variant}
       disabled={disabled}
       onClick={() => onClick()}
-      className={`animate-fade ${classname}`}
+      className="animate-fade w-full"
     >
       {isPending ? (
         <LoaderCircle size={15} strokeWidth={1} className="ml-2 animate-spin" />
