@@ -114,8 +114,8 @@ export default function BoardTransactions({ type }) {
       label: type === "Expense" ? "Dépense" : "Revenu",
       color:
         type === "Expense"
-          ? "hsl(var(--graph-depense))"
-          : "hsl(var(--graph-recette))",
+          ? "hsl(var(--graph-expense))"
+          : "hsl(var(--graph-revenue))",
       visible: true,
     },
     text: {
@@ -282,7 +282,7 @@ export default function BoardTransactions({ type }) {
                 />
               </div>
               <div className="flex gap-4">
-                <div className="w-2/4 ring-1 ring-border bg-primary-foreground rounded-xl p-4">
+                <div className="w-2/4 ring-1 ring-border bg-secondary rounded-xl p-4">
                   <h2 className=" text-left">Répartitions</h2>
                   {!isFetching ? (
                     total !== "0.00" ? (
@@ -324,7 +324,7 @@ export default function BoardTransactions({ type }) {
                     </div>
                   </div>
                 </div>
-                <div className="w-full relative flex flex-col ring-1 ring-border justify-between bg-primary-foreground rounded-xl p-4">
+                <div className="w-full relative flex flex-col ring-1 ring-border justify-between bg-secondary rounded-xl p-4">
                   <h2 className=" text-left">Graphique</h2>
                   {!isFetching ? (
                     <ChartLine
@@ -373,7 +373,7 @@ export default function BoardTransactions({ type }) {
               </div>
             </div>
             <div className="w-1/5 flex flex-col gap-4">
-              <div className="bg-primary-foreground ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
+              <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
                 <h2 className=" text-left">Dernières opérations</h2>
                 <table className="h-full">
                   <tbody className="w-full h-full gap-2 flex flex-col">
@@ -390,9 +390,9 @@ export default function BoardTransactions({ type }) {
                         <p
                           className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
                             operation.type === "Expense"
-                              ? "bg-red-300 text-red-900 dark:bg-red-300 dark:text-red-900"
+                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
                               : operation.type === "Revenue" &&
-                                "bg-green-300 text-green-900 dark:bg-green-300 dark:text-green-900"
+                                "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           }`}
                         >
                           {formatEuro.format(operation.amount)}
@@ -402,7 +402,7 @@ export default function BoardTransactions({ type }) {
                   </tbody>
                 </table>
               </div>
-              <div className="bg-primary-foreground ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
+              <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
                 <h2 className=" text-left">Budget</h2>
               </div>
             </div>

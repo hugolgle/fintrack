@@ -1,4 +1,5 @@
 import { subMonths, startOfMonth } from "date-fns";
+import { currentDate } from "./other";
 
 // -------------------------------- Transactions
 
@@ -39,18 +40,6 @@ export function getTransactionsByType(
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (dateSort !== 0) return dateSort;
   });
-}
-
-export function getTransactionById(data, id) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-
-  if (id) {
-    return data?.find((transaction) => transaction._id === id);
-  } else {
-    return null;
-  }
 }
 
 export function getTransactionsByMonth(
@@ -171,14 +160,7 @@ export function getLastOperations(data, type, number, month) {
   }
 
   if (month) {
-    const getCurrentMonthAndYear = () => {
-      const currentDate = new Date();
-      const currentMonth = currentDate.getMonth();
-      const currentYear = currentDate.getFullYear();
-      return { month: currentMonth, year: currentYear };
-    };
-
-    const { month: currentMonth, year: currentYear } = getCurrentMonthAndYear();
+    const { month: currentMonth, year: currentYear } = currentDate();
     filteredTransactions = filteredTransactions.filter((transaction) => {
       const transactionDate = new Date(transaction.date);
       return (
@@ -198,73 +180,6 @@ export function getLastOperations(data, type, number, month) {
   const lastTransactions = filteredTransactions.slice(0, number);
 
   return lastTransactions;
-}
-
-export function getLastSubscribe(data) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-
-  const getDateRange = () => {
-    const currentDate = new Date();
-
-    const startDate = new Date();
-    startDate.setDate(currentDate.getDate() - 31);
-
-    const endDate = currentDate;
-
-    return {
-      startDate: startDate.toISOString().split("T")[0],
-      endDate: endDate.toISOString().split("T")[0],
-    };
-  };
-
-  const { startDate, endDate } = getDateRange();
-
-  let filteredTransactions = data?.filter(
-    (transaction) => transaction.category === "Abonnement"
-  );
-
-  filteredTransactions = filteredTransactions.filter((transaction) => {
-    const transactionDate = transaction.date;
-    return transactionDate >= startDate && transactionDate <= endDate;
-  });
-
-  const lastSubscriptions = filteredTransactions.map((transaction) => ({
-    title: transaction.title,
-    date: transaction.date,
-    amount: transaction.amount,
-  }));
-
-  return lastSubscriptions;
-}
-
-// -------------------------------- Investissements
-
-export function getAllInvestments(data, isSold) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  const filteredInvestments =
-    isSold !== null
-      ? data?.filter((investment) => investment.isSold === isSold)
-      : data;
-
-  return filteredInvestments.sort((a, b) => {
-    const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();
-    if (dateSort !== 0) return dateSort;
-  });
-}
-
-export function getInvestmentById(data, id) {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  if (id) {
-    return data?.find((investment) => investment._id === id);
-  } else {
-    return null;
-  }
 }
 
 // -------------------------------- Titles
@@ -287,6 +202,8 @@ export function getTitleOfTransactionsByType(data, type) {
 
   return uniqueTitles;
 }
+
+// -------------------------------- Tags
 
 export function getTagsOfTransactions(data) {
   if (!Array.isArray(data)) {
@@ -320,19 +237,7 @@ export function aggregateTransactions(transactions) {
 
   return Object.entries(montantParCategory).map(([category, amount]) => ({
     nomCate: category,
-    amount: amount.toFixed(2),
-    pourcentage: ((amount / totalMontant) * 100).toFixed(2),
+    amount,
+    pourcentage: (amount / totalMontant) * 100,
   }));
-}
-
-export function generateChartConfig(data) {
-  const config = {};
-  data?.forEach((item, index) => {
-    const key = item.nomCate.replace(/\s+/g, "").toLowerCase();
-    config[key] = {
-      label: item.nomCate,
-      color: `hsl(var(--chart-${(index % 20) + 1}))`,
-    };
-  });
-  return config;
 }

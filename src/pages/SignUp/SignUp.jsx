@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { addUser } from "../../Service/User.service";
 import { useMutation } from "@tanstack/react-query";
 import Header from "../../composant/Header.jsx";
+import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -116,71 +117,67 @@ export default function SignUp() {
   }, [passwordRef]);
 
   return (
-    <>
-      <Header title="S'inscrire" />
-      <form
-        onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center gap-5 mt-20 animate-fade"
-        encType="multipart/form-data"
-      >
-        <div className="flex gap-4 w-96">
-          <div className="flex flex-col items-start w-full">
-            <Label htmlFor="prenom" className="mb-2 italic">
-              Prénom <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              className=" h-10"
-              id="prenom"
-              {...formik.getFieldProps("prenom")}
-            />
-            {formik.touched.prenom && formik.errors.prenom && (
-              <p className="text-xs text-red-500 mt-1 ml-2">
-                {formik.errors.prenom}
-              </p>
-            )}
+    <section className="w-full flex justify-center items-center h-screen p-4">
+      <div className="w-1/4 p-4 rounded-3xl bg-secondary  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
+        <img
+          src="/public/logoFinTrack.png"
+          className="size-16 mx-auto mb-4"
+          alt="logo"
+        />
+        <h1 className="text-2xl font-thin font-logo">Inscrivez-vous</h1>
+        <form
+          onSubmit={formik.handleSubmit}
+          className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-6 animate-fade"
+          encType="multipart/form-data"
+        >
+          <div className="flex gap-4 w-full">
+            <div className="flex flex-col gap-5">
+              <Input
+                className="border-none bg-background"
+                placeholder="Prénom"
+                id="prenom"
+                {...formik.getFieldProps("prenom")}
+              />
+              {formik.touched.prenom && formik.errors.prenom && (
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  {formik.errors.prenom}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-5">
+              <Input
+                className="border-none bg-background"
+                id="nom"
+                placeholder="Nom"
+                {...formik.getFieldProps("nom")}
+              />
+              {formik.touched.nom && formik.errors.nom && (
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  {formik.errors.nom}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex flex-col items-start w-full">
-            <Label htmlFor="nom" className="mb-2 italic">
-              Nom <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              className=" h-10"
-              id="nom"
-              {...formik.getFieldProps("nom")}
-            />
-            {formik.touched.nom && formik.errors.nom && (
-              <p className="text-xs text-red-500 mt-1 ml-2">
-                {formik.errors.nom}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start">
-          <Label htmlFor="username" className="mb-2 italic">
-            E-mail <span className="text-red-500">*</span>
-          </Label>
           <Input
-            className="w-96 h-10"
+            className="border-none bg-background"
             id="username"
+            placeholder="E-mail"
+            autoComplete="new-email"
             {...formik.getFieldProps("username")}
           />
           {formik.touched.username && formik.errors.username && (
-            <p className="text-xs text-red-500 mt-1 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.username}
             </p>
           )}
-        </div>
 
-        <div className="flex flex-col items-start">
-          <Label htmlFor="password" className="mb-2 italic">
-            Mot de passe <span className="text-red-500">*</span>
-          </Label>
-          <div className="relative w-96" ref={passwordRef}>
+          <div className="relative w-full" ref={passwordRef}>
             <Input
-              className="h-10"
+              className="border-none bg-background"
               id="password"
+              autoComplete="new-password"
+              placeholder="Mot de passe"
               type={!showPassword ? "password" : ""}
               {...formik.getFieldProps("password")}
             />
@@ -196,19 +193,15 @@ export default function SignUp() {
             </div>
           </div>
           {formik.touched.password && formik.errors.password && (
-            <p className="text-xs text-red-500 mt-1 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.password}
             </p>
           )}
-        </div>
 
-        <div className="flex flex-col items-start">
-          <Label htmlFor="confirmPassword" className="mb-2 italic">
-            Confirmation du mot de passe <span className="text-red-500">*</span>
-          </Label>
-          <div className="relative w-96" ref={passwordRef}>
+          <div className="relative w-full" ref={passwordRef}>
             <Input
-              className="h-10"
+              placeholder="Confirmer votre mot de passe"
+              className="border-none bg-background"
               id="confirmPassword"
               type={!showConfirmPassword ? "password" : ""}
               {...formik.getFieldProps("confirmPassword")}
@@ -225,49 +218,50 @@ export default function SignUp() {
             </div>
           </div>
           {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-            <p className="text-xs text-red-500 mt-1 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.confirmPassword}
             </p>
           )}
-        </div>
 
-        <div className="flex flex-col items-start">
-          <Label htmlFor="image" className="mb-2 w-full italic">
-            Image de profil
-          </Label>
           <Input
+            className="border-none bg-background"
             type="file"
             id="image"
             accept="image/*"
             onChange={handleImageChange}
           />
           {formik.touched.img && formik.errors.img && (
-            <p className="text-xs text-red-500 mt-1 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.img}
             </p>
           )}
+
+          {imagePreview && (
+            <Avatar className="size-16">
+              <AvatarImage className="object-cover" src={imagePreview} />
+            </Avatar>
+          )}
+
+          <ButtonLoading
+            type="submit"
+            text="Inscription"
+            disabled={addUserMutation.isPending || !formik.isValid}
+            isPending={addUserMutation.isPending}
+            classname="w-full"
+          />
+        </form>
+        <div className="flex flex-col justify-center items-center gap-2">
+          <p className="text-xs">
+            Vous possédez déjà un compte ?{" "}
+            <span
+              onClick={() => navigate(ROUTES.LOGIN)}
+              className="text-gray-400 hover:underline cursor-pointer"
+            >
+              Identifier-vous
+            </span>
+          </p>
         </div>
-
-        {imagePreview && (
-          <Avatar className="w-32 h-32">
-            <AvatarImage className="object-cover" src={imagePreview} />
-          </Avatar>
-        )}
-
-        <Button
-          variant="outline"
-          type="submit"
-          disabled={addUserMutation.isLoading || !formik.isValid}
-        >
-          {addUserMutation.isLoading ? "En cours ..." : "S'inscrire"}
-        </Button>
-      </form>
-      <div className="flex flex-col justify-center items-center mt-5 gap-2">
-        <p className="text-xs">Vous possédez déjà un compte ?</p>
-        <Button variant="secondary" onClick={() => navigate(ROUTES.LOGIN)}>
-          Identifiez-vous !
-        </Button>
       </div>
-    </>
+    </section>
   );
 }

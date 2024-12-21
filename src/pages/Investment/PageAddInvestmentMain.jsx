@@ -253,7 +253,7 @@ export default function PageAddInvestmentMain() {
                 </PopoverContent>
               </Popover>
               {formik.touched.date && formik.errors.date && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.date}
                 </p>
               )}
@@ -265,7 +265,7 @@ export default function PageAddInvestmentMain() {
                 {...formik.getFieldProps("amount")}
               />
               {formik.touched.amount && formik.errors.amount && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.amount}
                 </p>
               )}
@@ -291,7 +291,7 @@ export default function PageAddInvestmentMain() {
                 </SelectContent>
               </Select>
               {formik.touched.type && formik.errors.type && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.type}
                 </p>
               )}
@@ -302,7 +302,7 @@ export default function PageAddInvestmentMain() {
                 {...formik.getFieldProps("name")}
               />
               {formik.touched.name && formik.errors.name && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.name}
                 </p>
               )}
@@ -316,7 +316,7 @@ export default function PageAddInvestmentMain() {
                     {...formik.getFieldProps("symbol")}
                   />
                   {formik.touched.symbol && formik.errors.symbol && (
-                    <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                    <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                       {formik.errors.symbol}
                     </p>
                   )}
@@ -360,7 +360,7 @@ export default function PageAddInvestmentMain() {
                 </PopoverContent>
               </Popover>
               {formik.touched.date && formik.errors.date && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.date}
                 </p>
               )}
@@ -372,7 +372,7 @@ export default function PageAddInvestmentMain() {
                 {...formik.getFieldProps("amount")}
               />
               {formik.touched.amount && formik.errors.amount && (
-                <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                   {formik.errors.amount}
                 </p>
               )}

@@ -116,7 +116,7 @@ export default function PageAccount() {
         isFetching={isFetching}
       />
       <div className="flex w-full gap-4 animate-fade">
-        <div className="w-4/5 flex flex-col h-fit ring-1 ring-border justify-between bg-primary-foreground rounded-xl p-4">
+        <div className="w-4/5 flex flex-col h-fit ring-1 ring-border justify-between bg-secondary rounded-xl p-4">
           <h2 className=" text-left">Graphique</h2>
           {!isFetching ? (
             <ChartLine
@@ -152,7 +152,7 @@ export default function PageAccount() {
         </div>
 
         <div className="flex flex-col gap-4  w-1/5">
-          <div className="bg-primary-foreground ring-1 ring-border rounded-xl h-fit p-4">
+          <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4">
             <div className="flex w-full justify-between cursor-pointer items-center mb-4">
               <h2 className="text-left">Transactions</h2>
 
@@ -216,8 +216,8 @@ export default function PageAccount() {
                         <p
                           className={`italic px-2 py-[2px] rounded-sm bg-opacity-40 text-[11px] ${
                             transaction?.amount < 0
-                              ? "bg-red-300 text-red-900 dark:bg-red-300 dark:text-red-900"
-                              : "bg-green-300 text-green-900 dark:bg-green-300 dark:text-green-900"
+                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
+                              : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           }`}
                         >
                           {transaction?.amount > 0
@@ -235,7 +235,7 @@ export default function PageAccount() {
             )}
           </div>
 
-          <div className="ring-1 ring-border bg-primary-foreground h-fit rounded-xl p-4">
+          <div className="ring-1 ring-border bg-secondary h-fit rounded-xl p-4">
             <div className="flex w-full justify-between cursor-pointer items-center mb-4">
               <h2 className=" text-left">Caractéristiques</h2>
               <p className="flex items-center text-gray-500">

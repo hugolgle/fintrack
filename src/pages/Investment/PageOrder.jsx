@@ -144,7 +144,7 @@ export function PageOrder() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header
-          title="Mes ordres"
+          title="Mon portefeuille"
           typeProps="investment"
           btnReturn
           isFetching={isFetching}

@@ -30,7 +30,7 @@ import {
   deleteTransactions,
   fetchTransactions,
 } from "../../Service/Transaction.service";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loader from "../../composant/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import { MoreHorizontal } from "lucide-react";
@@ -44,6 +44,7 @@ import { FormAddRefund } from "./FormAddRefund.jsx";
 import { TicketSlash } from "lucide-react";
 import { Plus } from "lucide-react";
 import ModalTable from "../Epargn/Modal/ModalTable.jsx";
+import { toast } from "sonner";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -51,6 +52,7 @@ export default function PageTransactions(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({});
+  const queryClient = useQueryClient();
 
   const {
     isLoading,
@@ -435,7 +437,7 @@ export default function PageTransactions(props) {
                 ? `${nameType(props.type)}s de ${date}`
                 : `${nameType(props.type)}s de ${convertDate(date)}`
           }`}
-          typeProps={normalizeText(props.type)}
+          typeProps={props.type}
           categories={categories}
           tags={tags}
           check={check}

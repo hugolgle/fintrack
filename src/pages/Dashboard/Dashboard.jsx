@@ -94,16 +94,12 @@ export default function Dashboard() {
   const amountRevenuesMonth = calculTotalByMonth(
     dataTransac,
     "Revenue",
-    currentYearMonth,
-    null,
-    null
+    currentYearMonth
   );
   const amountExpensesMonth = calculTotalByMonth(
     dataTransac,
     "Expense",
-    currentYearMonth,
-    null,
-    null
+    currentYearMonth
   );
 
   const investCurrentMonth = calculTotal(dataTransacInvest);
@@ -290,12 +286,12 @@ export default function Dashboard() {
   const defaultConfig = {
     amountRevenue: {
       label: "Revenu",
-      color: "hsl(var(--graph-recette))",
+      color: "hsl(var(--graph-revenue))",
       visible: true,
     },
     amountExpense: {
       label: "Dépense",
-      color: "hsl(var(--graph-depense))",
+      color: "hsl(var(--graph-expense))",
       visible: true,
     },
     montantInvest: {
@@ -358,7 +354,7 @@ export default function Dashboard() {
   const chartConfigRadial = {
     depensesFixes: {
       label: "Dépenses fixes",
-      color: "hsl(var(--graph-depensesFixes))",
+      color: "hsl(var(--graph-expensesFix))",
     },
     loisir: {
       label: "Loisir",
@@ -449,7 +445,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-row gap-4 h-full">
             <div className="w-2/5 flex flex-col h-fit gap-4">
-              <div className="bg-primary-foreground h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <div className="bg-secondary h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <h2 className="text-left">Dernières opérations</h2>
                 <table className="h-full">
                   <tbody className="w-full gap-2 h-full flex flex-col">
@@ -466,10 +462,10 @@ export default function Dashboard() {
                         <p
                           className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
                             operation.type === "Expense"
-                              ? "bg-red-300 text-red-900 dark:bg-red-300 dark:text-red-900"
+                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
                               : operation.type === "Revenue"
-                                ? "bg-green-300 text-green-900 dark:bg-green-300 dark:text-green-900"
-                                : "bg-blue-300 text-blue-900 dark:bg-blue-300 dark:text-blue-900"
+                                ? "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                                : "bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900"
                           }`}
                         >
                           {formatEuro.format(operation.amount)}
@@ -479,7 +475,7 @@ export default function Dashboard() {
                   </tbody>
                 </table>
               </div>
-              <div className="bg-primary-foreground ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <div className="bg-secondary ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between w-full gap-4">
                   <h2 className="text-nowrap">Mes investissements</h2>
                   <p
@@ -525,7 +521,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="w-full relative h-fit flex flex-col justify-between bg-primary-foreground ring-1 ring-border rounded-xl p-4">
+            <div className="w-full relative h-fit flex flex-col justify-between bg-secondary ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
@@ -571,7 +567,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="w-2/4 bg-primary-foreground ring-1 ring-border rounded-xl h-full p-4">
+            <div className="w-2/4 bg-secondary ring-1 ring-border rounded-xl h-full p-4">
               <h2 className=" text-left">Répartitions</h2>
               {!isFetching ? (
                 total !== "0.00" ? (

@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { formatEuro } from "../../utils/fonctionnel";
+import { Dot } from "lucide-react";
 
 export function RadialChart({
   chartData,
@@ -19,6 +20,7 @@ export function RadialChart({
   height = 225,
   fontSizeTotal = 10,
   inner,
+  sideLegend = "left",
   outer,
 }) {
   const CustomTooltipContent = (props) => {
@@ -27,13 +29,10 @@ export function RadialChart({
     if (active && payload && payload.length) {
       const { payload: data } = payload[0];
       return (
-        <div className="bg-white dark:bg-black text-[10px] p-2 rounded-xl shadow-2xl">
-          <div className="text-left mb-1 flex items-center gap-2">
-            <div
-              className="w-2 h-2 rounded"
-              style={{ backgroundColor: data.fill }}
-            ></div>
-            <p>{data.name}</p>
+        <div className="bg-white dark:bg-black text-[10px] max-w-40 p-2 rounded-xl shadow-2xl">
+          <div className="text-left mb-1 flex items-center">
+            <Dot strokeWidth={5} color={data.fill} />
+            <p className="truncate">{data.name}</p>
           </div>
           <div className="flex flex-col">
             {["amount", "pourcentage"].map((key) => {
@@ -55,7 +54,7 @@ export function RadialChart({
                     <p className="italic font-black">
                       {key === "amount"
                         ? formatEuro.format(value)
-                        : value.toFixed(2)}
+                        : value.toFixed(0)}
                       {key !== "amount" && "%"}
                     </p>
                   </div>
@@ -122,8 +121,8 @@ export function RadialChart({
             <Legend
               layout="vertical"
               verticalAlign="middle"
-              align="left"
-              content={(props) => legend({ ...props, topN: 5 })}
+              align={sideLegend}
+              content={(props) => legend({ ...props, topN: 4 })}
             />
           )}
         </PieChart>

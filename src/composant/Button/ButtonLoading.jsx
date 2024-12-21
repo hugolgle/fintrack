@@ -6,9 +6,9 @@ export default function ButtonLoading({
   isPending,
   onClick = () => {},
   text,
-  textBis,
   type,
   disabled,
+  classname,
 }) {
   return (
     <Button
@@ -16,17 +16,10 @@ export default function ButtonLoading({
       variant={variant}
       disabled={disabled}
       onClick={() => onClick()}
-      className="animate-fade"
+      className={`animate-fade ${classname}`}
     >
       {isPending ? (
-        <>
-          {textBis}
-          <LoaderCircle
-            size={15}
-            strokeWidth={1}
-            className="ml-2 animate-spin"
-          />
-        </>
+        <LoaderCircle size={15} strokeWidth={1} className="ml-2 animate-spin" />
       ) : (
         text
       )}

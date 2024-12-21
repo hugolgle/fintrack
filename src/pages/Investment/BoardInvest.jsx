@@ -264,14 +264,14 @@ export default function BoardInvest() {
               isAmount
             />
             <BoxInfos
-              title="Mes ordres"
+              title="Mon portefeuille"
               value={data.length}
               icon={<BookA size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-2/5 bg-primary-foreground h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-2/5 bg-secondary h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
               <h2 className=" text-left">Dernières opérations</h2>
               <table className="h-full">
                 <tbody className="w-full h-full gap-2 flex flex-col">
@@ -292,7 +292,7 @@ export default function BoardInvest() {
                           </span>
                         </td>
 
-                        <p className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-blue-300 text-blue-900 dark:bg-blue-300 dark:text-blue-900">
+                        <p className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
                           {formatEuro.format(operation?.amount)}
                         </p>
                       </tr>
@@ -300,7 +300,7 @@ export default function BoardInvest() {
                 </tbody>
               </table>
             </div>
-            <div className="w-full relative flex flex-col h-fit justify-between bg-primary-foreground ring-1 ring-border rounded-xl p-4">
+            <div className="w-full relative flex flex-col h-fit justify-between bg-secondary ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
@@ -348,7 +348,7 @@ export default function BoardInvest() {
                 </Tabs>
               </div>
             </div>
-            <div className="w-2/4 bg-primary-foreground backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
+            <div className="w-2/4 bg-secondary backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Position</h2>
 
               {!isFetching ? (
@@ -358,6 +358,7 @@ export default function BoardInvest() {
                   total={amountBuy.toFixed(2)}
                   inner={40}
                   outer={55}
+                  sideLegend="right"
                   height={140}
                   legend={renderCustomLegend}
                 />

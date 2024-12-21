@@ -27,8 +27,6 @@ export const currentDate = () => {
   };
 };
 
-const date = currentDate();
-
 // -----------------------------
 export function getLastMonths(date, numberOfMonths) {
   const currentYear = parseInt(date.slice(0, 4), 10);
@@ -56,18 +54,6 @@ export function getLastMonths(date, numberOfMonths) {
   }
 
   return lastMonths;
-}
-
-export function getLastYears(number) {
-  const lastYears = [];
-  const currentYear = date.year;
-
-  for (let i = number - 1; i >= 0; i--) {
-    const year = currentYear - i;
-    lastYears.push(year);
-  }
-
-  return lastYears;
 }
 
 export function categorySort(categories) {

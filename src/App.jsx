@@ -32,7 +32,10 @@ function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
 
   const transactionRoutes = [
-    { path: ROUTES.EXPENSE, component: <BoardTransactions type="Expense" /> },
+    {
+      path: ROUTES.EXPENSE,
+      component: <BoardTransactions key={ROUTES.EXPENSE} type="Expense" />,
+    },
     {
       path: ROUTES.ADD_EXPENSE,
       component: <PageAddTransac type="Expense" title="dépense" />,
@@ -41,7 +44,10 @@ function App() {
       path: ROUTES.EXPENSE_BY_DATE,
       component: <PageTransactions type="Expense" />,
     },
-    { path: ROUTES.REVENUE, component: <BoardTransactions type="Revenue" /> },
+    {
+      path: ROUTES.REVENUE,
+      component: <BoardTransactions key={ROUTES.REVENUE} type="Revenue" />,
+    },
     {
       path: ROUTES.ADD_REVENUE,
       component: <PageAddTransac type="Revenue" title="revenu" />,
@@ -75,7 +81,17 @@ function App() {
 
   const heritageRoutes = [{ path: ROUTES.HERITAGE, component: <Heritage /> }];
 
-  const routes = [
+  const publicRoutes = [
+    { path: ROUTES.LOGIN, element: <Login /> },
+    { path: ROUTES.SIGNUP, element: <SignUp /> },
+    {
+      path: ROUTES.SESSION_TIMED_OUT,
+      element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
+    },
+    { path: "*", element: <PageError /> },
+  ];
+
+  const routesWithLayout = [
     { path: ROUTES.HOME, element: <Home /> },
     { path: ROUTES.DASHBOARD, element: <Dashboard /> },
     ...transactionRoutes.map((route) => ({
@@ -96,23 +112,20 @@ function App() {
     })),
     { path: ROUTES.STATISTICS, element: <Statistic /> },
     { path: ROUTES.PROFILE, element: <Profile /> },
-    { path: ROUTES.LOGIN, element: <Login /> },
-    { path: ROUTES.SIGNUP, element: <SignUp /> },
-    {
-      path: ROUTES.SESSION_TIMED_OUT,
-      element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
-    },
-    { path: "*", element: <PageError /> },
   ];
 
   const router = createBrowserRouter([
     {
       element: <MainLayout />,
-      children: routes.map((route) => ({
+      children: routesWithLayout.map((route) => ({
         path: route.path,
         element: route.element,
       })),
     },
+    ...publicRoutes.map((route) => ({
+      path: route.path,
+      element: route.element,
+    })),
   ]);
 
   return <RouterProvider router={router} />;

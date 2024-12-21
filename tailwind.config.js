@@ -16,11 +16,9 @@ module.exports = {
     },
     extend: {
       colors: {
-        colorExpense: "hsl(var(--graph-depense))",
-        colorRevenue: "hsl(var(--graph-recette))",
+        colorExpense: "hsl(var(--graph-expense))",
+        colorRevenue: "hsl(var(--graph-revenue))",
         colorInvest: "hsl(var(--graph-invest))",
-        colorEpargn: "hsl(var(--graph-epargn))",
-        colorEconomy: "hsl(var(--graph-economy))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

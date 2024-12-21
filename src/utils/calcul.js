@@ -28,8 +28,7 @@ export function calculTotal(data, type, filterCategory, filterTitle) {
     0.0
   );
 
-  const formattedTotal = totalAmount.toFixed(2);
-  return formattedTotal;
+  return totalAmount;
 }
 
 export function calculTotalByMonth(
@@ -75,8 +74,7 @@ export function calculTotalByMonth(
     0.0
   );
 
-  const formattedTotal = totalAmount.toFixed(2);
-  return formattedTotal;
+  return totalAmount;
 }
 
 export function calculTotalByYear(
@@ -114,8 +112,7 @@ export function calculTotalByYear(
     0.0
   );
 
-  const formattedTotal = totalAmount.toFixed(2);
-  return formattedTotal;
+  return totalAmount;
 }
 
 export function calculMoyenne(data, type, year, nbMonth) {
@@ -145,7 +142,7 @@ export function calculMoyenne(data, type, year, nbMonth) {
     return "0.00";
   }
 
-  return resultat.toFixed(2);
+  return resultat;
 }
 
 export function calculEconomie(data, year, month) {
@@ -178,7 +175,7 @@ export function calculEconomie(data, year, month) {
 
   const resultat = totalRecettes + totalDepenses;
 
-  return resultat.toFixed(2);
+  return resultat;
 }
 
 export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
@@ -194,8 +191,7 @@ export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
 
   const economieMoyenne = recettesMoyennesNumber + depensesMoyennesNumber;
 
-  const economieMoyenneFormatted = economieMoyenne.toFixed(2);
-  return economieMoyenneFormatted;
+  return economieMoyenne;
 }
 
 export function calculInvestByMonth(data, date) {
@@ -217,6 +213,5 @@ export function calculInvestByMonth(data, date) {
     return total + parseFloat(investment.amount || 0);
   }, 0.0);
 
-  const formattedTotal = totalAmount.toFixed(2);
-  return formattedTotal;
+  return totalAmount;
 }

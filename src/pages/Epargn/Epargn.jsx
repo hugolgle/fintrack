@@ -165,7 +165,7 @@ export default function Epargn() {
             ))}
         </div>
         <div className="w-full flex gap-4">
-          <div className="w-1/3 bg-primary-foreground ring-1 ring-border h-fit rounded-xl p-4">
+          <div className="w-1/3 bg-secondary ring-1 ring-border h-fit rounded-xl p-4">
             <h2 className=" text-left">Répartitions</h2>
             {!isFetching ? (
               totalAmount !== "0.00" ? (
@@ -184,7 +184,7 @@ export default function Epargn() {
               <LoaderDots />
             )}
           </div>
-          <div className="w-2/3 h-fit ring-1 ring-border bg-primary-foreground rounded-xl p-4">
+          <div className="w-2/3 h-fit ring-1 ring-border bg-secondary rounded-xl p-4">
             <div className="flex justify-between w-full cursor-pointer items-center">
               <h2 className="text-left">Transactions</h2>
               <ModalTable
@@ -236,8 +236,8 @@ export default function Epargn() {
                       className={`px-2 py-1 w-fit text-center rounded-sm bg-opacity-40 ${
                         transaction?.type !== "transfer"
                           ? transaction?.amount < 0
-                            ? "bg-red-300 text-red-900 dark:bg-red-300 dark:text-red-900"
-                            : "bg-green-300 text-green-900 dark:bg-green-300 dark:text-green-900"
+                            ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
+                            : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           : ""
                       }`}
                     >
@@ -251,7 +251,7 @@ export default function Epargn() {
             </div>
           </div>
 
-          <div className="w-1/3 bg-primary-foreground ring-1 ring-border h-fit rounded-xl p-4">
+          <div className="w-1/3 bg-secondary ring-1 ring-border h-fit rounded-xl p-4">
             <h2 className=" text-left">Répartitions</h2>
             {!isFetching ? (
               totalAmount !== "0.00" ? (

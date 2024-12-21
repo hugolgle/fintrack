@@ -72,7 +72,7 @@ export default function FormAddAccount() {
             placeholder="Nom du compte"
           />
           {formik.touched.name && formik.errors.name && (
-            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.name}
             </p>
           )}
@@ -86,7 +86,7 @@ export default function FormAddAccount() {
             step="0.01"
           />
           {formik.touched.balance && formik.errors.balance && (
-            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.balance}
             </p>
           )}
@@ -100,7 +100,7 @@ export default function FormAddAccount() {
             step="0.01"
           />
           {formik.touched.interestRate && formik.errors.interestRate && (
-            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.interestRate}
             </p>
           )}
@@ -114,7 +114,7 @@ export default function FormAddAccount() {
             step="0.01"
           />
           {formik.touched.maxBalance && formik.errors.maxBalance && (
-            <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
               {formik.errors.maxBalance}
             </p>
           )}

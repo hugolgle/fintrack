@@ -83,7 +83,7 @@ export function FormAddRefund({ transaction, refetch }) {
           {...formik.getFieldProps("title")}
         />
         {formik.touched.title && formik.errors.title && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.title}
           </p>
         )}
@@ -113,7 +113,7 @@ export function FormAddRefund({ transaction, refetch }) {
         </Popover>
 
         {formik.touched.date && formik.errors.date && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.date}
           </p>
         )}
@@ -127,7 +127,7 @@ export function FormAddRefund({ transaction, refetch }) {
           {...formik.getFieldProps("amount")}
         />
         {formik.touched.amount && formik.errors.amount && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.amount}
           </p>
         )}

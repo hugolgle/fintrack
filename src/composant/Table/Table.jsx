@@ -180,7 +180,7 @@ export default function Tableau({
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-border animate-fade rounded-xl z-50 bg-primary-foreground p-3 transition-all">
+      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-border animate-fade rounded-xl z-50 bg-secondary p-3 transition-all">
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />

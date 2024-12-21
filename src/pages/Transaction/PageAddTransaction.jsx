@@ -39,7 +39,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { fr } from "date-fns/locale";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Header from "../../composant/Header.jsx";
 import {
@@ -68,16 +68,14 @@ const validationSchema = yup.object().shape({
   titleBis: yup
     .string()
     .max(50, "Le titre est trop long")
-    .when("title", {
-      is: "Autre",
-      then: yup.string().required("Le titre est requis"),
-    }),
+    .when("title", (title, schema) =>
+      title === "Autre" ? schema.required("Le titre bis est requis") : schema
+    ),
   category: yup.string().required("La catégorie est requise"),
   date: yup.date().required("La date est requise"),
   detail: yup.string().max(250, "Les détails sont trop longs"),
   amount: yup
     .number()
-    .typeError("Le montant est requis")
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
   tag: yup.array().of(yup.string()).nullable(),
@@ -92,10 +90,12 @@ export default function PageAddTransac(props) {
     enabled: !!userId,
   });
 
+  const queryClient = useQueryClient();
+
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
@@ -129,6 +129,10 @@ export default function PageAddTransac(props) {
       toast.success(
         `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `
       );
+      queryClient.invalidateQueries(["fetchTransactions"]);
+      refetch();
+      formik.resetForm();
+      setTags([]);
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
@@ -158,12 +162,7 @@ export default function PageAddTransac(props) {
         amount: values.amount,
         tag: tags,
       };
-      addTransactionMutation.mutate(postData, {
-        onSuccess: () => {
-          formik.resetForm();
-          setTags([]);
-        },
-      });
+      addTransactionMutation.mutate(postData);
     },
   });
 
@@ -210,6 +209,8 @@ export default function PageAddTransac(props) {
       }
     }
   }, [formik.values.title, data]);
+
+  console.log(formik.errors);
 
   if (loadingUser) return <Loader />;
 
@@ -266,7 +267,7 @@ export default function PageAddTransac(props) {
               {...formik.getFieldProps("titleBis")}
             />
             {formik.touched.titleBis && formik.errors.titleBis && (
-              <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+              <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                 {formik.errors.titleBis}
               </p>
             )}
@@ -297,7 +298,7 @@ export default function PageAddTransac(props) {
           </SelectContent>
         </Select>
         {formik.touched.category && formik.errors.category && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.category}
           </p>
         )}
@@ -324,7 +325,7 @@ export default function PageAddTransac(props) {
           </PopoverContent>
         </Popover>
         {formik.touched.date && formik.errors.date && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.date}
           </p>
         )}
@@ -335,7 +336,7 @@ export default function PageAddTransac(props) {
           {...formik.getFieldProps("detail")}
         />
         {formik.touched.detail && formik.errors.detail && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.detail}
           </p>
         )}
@@ -348,7 +349,7 @@ export default function PageAddTransac(props) {
           {...formik.getFieldProps("amount")}
         />
         {formik.touched.amount && formik.errors.amount && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.amount}
           </p>
         )}
@@ -367,20 +368,32 @@ export default function PageAddTransac(props) {
 
         <div className="flex gap-2">
           <ul className="space-y-2">
-            {tagsSuggestions.map((suggestion, index) => (
-              <Badge
-                key={index}
-                className="group relative flex items-center animate-pop-up gap-2"
-                variant="secondary"
-              >
-                {suggestion}
-                <Plus
-                  className="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition-all cursor-pointer"
-                  onClick={() => handleSelectTag(suggestion)}
-                  size={12}
-                />
-              </Badge>
-            ))}
+            {tagInput && (
+              <ul className="space-y-2">
+                {tagsSuggestions
+                  .filter(
+                    (suggestion) =>
+                      suggestion
+                        .toLowerCase()
+                        .includes(tagInput.toLowerCase()) &&
+                      !tags.includes(suggestion)
+                  )
+                  .map((suggestion, index) => (
+                    <Badge
+                      key={index}
+                      className="relative flex items-center animate-pop-up gap-2"
+                      variant="secondary"
+                    >
+                      {suggestion}
+                      <Plus
+                        className="absolute bg-green-500 rounded-full p-[3px] right-0 top-0 transform translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                        onClick={() => handleSelectTag(suggestion)}
+                        size={16}
+                      />
+                    </Badge>
+                  ))}
+              </ul>
+            )}
           </ul>
 
           <ul className="flex flex-wrap gap-2">
@@ -402,11 +415,12 @@ export default function PageAddTransac(props) {
         </div>
 
         <ButtonLoading
+          variant="secondary"
           type="submit"
-          text={`Soumettre la ${props.title}`}
-          textBis="En cours"
+          text="Soumettre"
           isPending={addTransactionMutation.isPending}
           disabled={addTransactionMutation.isPending || !formik.isValid}
+          classname="w-full"
         />
       </form>
     </section>

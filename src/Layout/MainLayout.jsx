@@ -6,7 +6,7 @@ import Sidebar from "../composant/Sidebar";
 export function MainLayout() {
   return (
     <section className="flex h-screen w-full bg-primary-background">
-      <div className="sidebar h-full w-[6%] py-4 pl-4 fixed z-10">
+      <div className="sidebar animate__animated animate__fadeInLeft h-full w-[6%] py-4 pl-4 fixed z-10">
         <Sidebar />
       </div>
 

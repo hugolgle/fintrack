@@ -2,7 +2,12 @@ const OperationModel = require("../models/transaction.model");
 
 module.exports.addTransaction = async (req, res) => {
   try {
-    if (!req.body.date || !req.body.amount) {
+    if (
+      !req.body.date ||
+      !req.body.amount ||
+      !req.body.title ||
+      !req.body.date
+    ) {
       return res
         .status(400)
         .json({ message: "Veuillez fournir les informations nécessaires" });

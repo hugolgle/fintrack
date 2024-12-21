@@ -111,7 +111,7 @@ export default function PageAddInvestment() {
           </PopoverContent>
         </Popover>
         {formik.touched.date && formik.errors.date && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.date}
           </p>
         )}
@@ -123,7 +123,7 @@ export default function PageAddInvestment() {
           {...formik.getFieldProps("amount")}
         />
         {formik.touched.amount && formik.errors.amount && (
-          <p className="text-xs text-left flex items-start w-full text-red-500 -mt-3 ml-2">
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.amount}
           </p>
         )}

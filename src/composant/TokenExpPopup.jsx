@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { ROUTES } from "./Routes";
 
 const TokenExpirationPopup = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -51,7 +52,7 @@ const TokenExpirationPopup = () => {
   }, []);
 
   const handleLoginRedirect = () => {
-    window.location.href = "/login";
+    window.location.href = ROUTES.LOGIN;
   };
 
   if (!showPopup) return null;

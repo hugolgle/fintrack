@@ -110,14 +110,14 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-full relative items-center h-full p-4 bg-primary-foreground">
+    <div className="flex flex-col justify-between overflow-hidden rounded-xl relative items-center h-full p-4 bg-secondary">
       <Link
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center w-auto overflow-hidden"
       >
         <img
           src="/public/logoFinTrack.png"
-          className="size-10 hover:scale-95 transition-all"
+          className="size-10  hover:scale-95 transition-all"
           alt="logo"
         />
       </Link>
@@ -128,9 +128,9 @@ function Sidebar() {
             <TooltipTrigger asChild>
               <Link
                 to={link}
-                className={`my-1 p-3 rounded-full overflow-hidden transition-all ${
+                className={`my-1 p-3 rounded-xl overflow-hidden transition-all ${
                   activeLink.startsWith(link)
-                    ? "bg-primary text-foreground"
+                    ? "bg-primary text-primary-foreground"
                     : ""
                 }`}
               >
@@ -146,7 +146,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 cursor-pointer hover:scale-95 transition-all">
+              <Avatar className="w-12 h-12 rounded-xl cursor-pointer hover:scale-95 transition-all">
                 <AvatarImage
                   className="object-cover"
                   src={`http://localhost:5001/${userInfo?.img}`}

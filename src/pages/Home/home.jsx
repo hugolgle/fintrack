@@ -27,14 +27,14 @@ export default function Home() {
       {isAuthenticated ? (
         <Link
           to={ROUTES.DASHBOARD}
-          className="p-4 bg-primary-foreground rounded-xl transition-all duration-500 hover:!bg-cyan-500"
+          className="px-4 py-2 bg-secondary rounded-xl transition-all hover:bg-primary "
         >
           C'est parti !
         </Link>
       ) : (
         <Link
           to={ROUTES.LOGIN}
-          className="p-4 bg-primary-foreground rounded-xl transition-all duration-500 hover:!bg-lime-500"
+          className="px-4 py-2 bg-secondary rounded-xl transition-all hover:bg-primary "
         >
           Connectez-vous !
         </Link>
