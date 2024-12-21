@@ -34,7 +34,7 @@ import { FormEditTransac } from "./FormEditTransac.jsx";
 import { Trash } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { formatEuro } from "../../utils/fonctionnel.js";
+import { formatCurrency } from "../../utils/fonctionnel.js";
 import { FormAddRefund } from "./FormAddRefund.jsx";
 import { TicketSlash } from "lucide-react";
 import { Plus } from "lucide-react";
@@ -195,6 +195,7 @@ export default function PageTransactions(props) {
       category,
       detail,
       amount,
+      initialAmount,
       refunds,
       tag,
       date,
@@ -210,6 +211,7 @@ export default function PageTransactions(props) {
         refunds,
         tag,
         amount,
+        initialAmount,
         createdAt,
       };
     }
@@ -340,7 +342,9 @@ export default function PageTransactions(props) {
       row.title,
       row.category,
       format(row.date, "PP", { locale: fr }),
-      formatEuro.format(row.amount),
+      row.refunds.length > 0
+        ? `${formatCurrency.format(row.amount)} *`
+        : formatCurrency.format(row.amount),
     ];
   };
 
@@ -354,7 +358,7 @@ export default function PageTransactions(props) {
       return [
         row.title,
         format(row.date, "PP", { locale: fr }),
-        formatEuro.format(row.amount),
+        formatCurrency.format(row.amount),
       ];
     };
     return (

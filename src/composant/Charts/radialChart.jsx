@@ -9,7 +9,7 @@ import {
   Legend,
 } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 import { Dot } from "lucide-react";
 
 export function RadialChart({
@@ -53,7 +53,7 @@ export function RadialChart({
                     </div>
                     <p className="italic font-black">
                       {key === "amount"
-                        ? formatEuro.format(value)
+                        ? formatCurrency.format(value)
                         : value.toFixed(0)}
                       {key !== "amount" && "%"}
                     </p>
@@ -108,7 +108,7 @@ export function RadialChart({
                           y={viewBox.cy}
                           className={`text-[${fontSizeTotal}px] italic font-thin fill-foreground`}
                         >
-                          {formatEuro.format(total)}
+                          {formatCurrency.format(total)}
                         </tspan>
                       </text>
                     );

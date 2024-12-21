@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { formatEuro } from "../../utils/fonctionnel.js";
+import { formatCurrency } from "../../utils/fonctionnel.js";
 
 export default function BoardTransactions({ type }) {
   const { month, year } = currentDate();
@@ -390,7 +390,7 @@ export default function BoardTransactions({ type }) {
                                 "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           }`}
                         >
-                          {formatEuro.format(operation.amount)}
+                          {formatCurrency.format(operation.amount)}
                         </p>
                       </tr>
                     ))}

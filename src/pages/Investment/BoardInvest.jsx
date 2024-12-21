@@ -9,7 +9,7 @@ import { Pickaxe } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
 import BoxInfos from "../../composant/Box/BoxInfos";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
@@ -291,7 +291,7 @@ export default function BoardInvest() {
                         </td>
 
                         <p className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
-                          {formatEuro.format(operation?.amount)}
+                          {formatCurrency.format(operation?.amount)}
                         </p>
                       </tr>
                     ))}

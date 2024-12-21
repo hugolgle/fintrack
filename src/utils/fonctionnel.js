@@ -12,7 +12,7 @@ export function formatCapitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export const formatEuro = new Intl.NumberFormat("fr-FR", {
+export const formatCurrency = new Intl.NumberFormat("fr-FR", {
   style: "currency",
   currency: "EUR",
 });

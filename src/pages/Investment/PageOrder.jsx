@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import Header from "../../composant/Header.jsx";
 import Loader from "../../composant/Loader/Loader";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
@@ -80,7 +80,7 @@ export function PageOrder() {
       row.type,
       row.name,
       format(row?.date, "PP", { locale: fr }),
-      formatEuro.format(row.amount),
+      formatCurrency.format(row.amount),
       row.isSale ? "Vente" : "Achat",
     ];
   };
@@ -215,7 +215,7 @@ export function PageOrder() {
                         <p className="truncate text-sm">{name}</p>
                         <div className="flex justify-between">
                           <p className="text-sm italic">
-                            {formatEuro.format(amountBuy)}
+                            {formatCurrency.format(amountBuy)}
                           </p>
                           <p className="text-sm italic">{type}</p>
                         </div>

@@ -11,7 +11,7 @@ import { ChartLine } from "../../composant/Charts/ChartLine";
 import { Pencil } from "lucide-react";
 import ModalTable from "./Modal/ModalTable";
 import { ROUTES } from "../../composant/Routes";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 
 export default function PageAccount() {
   const { id } = useParams();
@@ -103,7 +103,7 @@ export default function PageAccount() {
           ? getAccountName(transaction.toAccount)
           : "-",
       new Date(transaction.date).toLocaleDateString(),
-      `${transaction.amount > 0 ? "+" : ""}${formatEuro.format(transaction.amount)}`,
+      `${transaction.amount > 0 ? "+" : ""}${formatCurrency.format(transaction.amount)}`,
     ];
   };
 
@@ -153,7 +153,7 @@ export default function PageAccount() {
 
         <div className="flex flex-col gap-4  w-1/5">
           <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4">
-            <div className="flex w-full justify-between cursor-pointer items-center mb-4">
+            <div className="flex w-full justify-between items-center mb-4">
               <h2 className="text-left">Transactions</h2>
 
               <ModalTable
@@ -221,8 +221,8 @@ export default function PageAccount() {
                           }`}
                         >
                           {transaction?.amount > 0
-                            ? `+${formatEuro.format(transaction.amount)}`
-                            : formatEuro.format(transaction.amount)}
+                            ? `+${formatCurrency.format(transaction.amount)}`
+                            : formatCurrency.format(transaction.amount)}
                         </p>
                       </div>
                     );
@@ -236,9 +236,9 @@ export default function PageAccount() {
           </div>
 
           <div className="ring-1 ring-border bg-secondary h-fit rounded-xl p-4">
-            <div className="flex w-full justify-between cursor-pointer items-center mb-4">
+            <div className="flex w-full justify-between items-center mb-4">
               <h2 className=" text-left">Caractéristiques</h2>
-              <p className="flex items-center text-gray-500">
+              <p className="flex items-center cursor-pointer text-gray-500">
                 <Pencil size={14} />
               </p>
             </div>
@@ -246,13 +246,15 @@ export default function PageAccount() {
               <div className="flex justify-between">
                 <span className="text-xs">Solde</span>
                 <span className="italic text-xs">
-                  {!isLoading ? formatEuro.format(account?.balance) : "-"}
+                  {!isLoading ? formatCurrency.format(account?.balance) : "-"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs">Plafond</span>
                 <span className="italic text-xs">
-                  {!isLoading ? formatEuro.format(account?.maxBalance) : "-"}
+                  {!isLoading
+                    ? formatCurrency.format(account?.maxBalance)
+                    : "-"}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -271,7 +273,7 @@ export default function PageAccount() {
                 <span className="text-xs">Intérets cumulé</span>
                 <span className="italic text-xs">
                   {!isLoading
-                    ? `≈ ${formatEuro.format(account?.amountInterest)}`
+                    ? `≈ ${formatCurrency.format(account?.amountInterest)}`
                     : "-"}
                 </span>
               </div>

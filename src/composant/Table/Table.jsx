@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronUp } from "lucide-react";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 
 export default function Tableau({
   columns,
@@ -184,11 +184,11 @@ export default function Tableau({
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />
-            <b>{formatEuro.format(amountSelect)}</b>
+            <b>{formatCurrency.format(amountSelect)}</b>
           </>
         ) : (
           <>
-            Total : <b>{formatEuro.format(amountTotal)}</b>
+            Total : <b>{formatCurrency.format(amountTotal)}</b>
             <br />
             <b>{theData.length}</b> opération(s)
           </>

@@ -4,7 +4,7 @@ import {
   calculTotal,
   calculTotalByMonth,
 } from "../../utils/calcul.js";
-import { formatEuro } from "../../utils/fonctionnel.js";
+import { formatCurrency } from "../../utils/fonctionnel.js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
@@ -466,7 +466,7 @@ export default function Dashboard() {
                                 : "bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900"
                           }`}
                         >
-                          {formatEuro.format(operation.amount)}
+                          {formatCurrency.format(operation.amount)}
                         </p>
                       </tr>
                     ))}
@@ -510,7 +510,7 @@ export default function Dashboard() {
                           </div>
 
                           <div className="text-xs text-right">
-                            <p>{formatEuro.format(item.amountBuy)}</p>
+                            <p>{formatCurrency.format(item.amountBuy)}</p>
                           </div>
                         </div>
                       );

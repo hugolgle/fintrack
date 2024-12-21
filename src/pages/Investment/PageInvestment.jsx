@@ -31,7 +31,7 @@ import { fr } from "date-fns/locale";
 import { Eye } from "lucide-react";
 import { useState } from "react";
 import { ROUTES } from "../../composant/Routes.jsx";
-import { formatEuro } from "../../utils/fonctionnel.js";
+import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
 
 export default function PageInvestment() {
@@ -184,7 +184,7 @@ export default function PageInvestment() {
       row.type,
       row.name,
       format(row.date, "PP", { locale: fr }),
-      formatEuro.format(row.amount),
+      formatCurrency.format(row.amount),
       row.isSale ? "Vente" : "Achat",
     ];
   };

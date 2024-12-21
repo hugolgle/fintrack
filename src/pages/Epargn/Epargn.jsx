@@ -12,7 +12,7 @@ import { RadialChart } from "../../composant/Charts/RadialChart";
 import LoaderDots from "../../composant/Loader/LoaderDots";
 import ModalTable from "./Modal/ModalTable";
 import { ROUTES } from "../../composant/Routes";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 
 export default function Epargn() {
   const navigate = useNavigate();
@@ -136,7 +136,7 @@ export default function Epargn() {
       transaction.accountName ?? transaction.fromAccount,
       transaction.toAccount ?? "-",
       new Date(transaction.date).toLocaleDateString(),
-      formatEuro.format(transaction.amount),
+      formatCurrency.format(transaction.amount),
     ];
   };
 
@@ -238,8 +238,8 @@ export default function Epargn() {
                       }`}
                     >
                       {transaction?.type === "transfer"
-                        ? formatEuro.format(Math.abs(transaction.amount))
-                        : formatEuro.format(transaction.amount)}
+                        ? formatCurrency.format(Math.abs(transaction.amount))
+                        : formatCurrency.format(transaction.amount)}
                     </span>
                   </p>
                 </div>

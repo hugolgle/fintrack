@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
@@ -57,7 +57,7 @@ function BoxStat(props) {
           {props.selectedYear}
         </p>
       </div>
-      <p className="text-2xl">{formatEuro.format(currentMontant)}</p>
+      <p className="text-2xl">{formatCurrency.format(currentMontant)}</p>
     </div>
   );
 }

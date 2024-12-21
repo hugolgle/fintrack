@@ -76,15 +76,28 @@ module.exports.editTransaction = async (req, res) => {
     }
 
     let amount = req.body.amount;
+    let initialAmount = 0;
+
     if (req.body.type === "Expense") {
       amount = -Math.abs(amount);
+    }
+
+    if (transaction.refunds.length > 0) {
+      const totalRefunds = transaction.refunds.reduce(
+        (acc, refund) => acc + (refund.amount || 0),
+        0
+      );
+
+      initialAmount = req.body.amount;
+      const newAmount = initialAmount - totalRefunds;
+      amount = -newAmount;
     }
 
     const updatedTags = req.body.tag || transaction.tag;
 
     const updatedOperation = await OperationModel.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, amount, tag: updatedTags },
+      { ...req.body, amount, initialAmount: -initialAmount, tag: updatedTags },
       { new: true }
     );
 

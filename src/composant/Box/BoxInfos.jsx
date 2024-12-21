@@ -1,5 +1,5 @@
 import { TrendingDown } from "lucide-react";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 import { TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
@@ -52,7 +52,7 @@ function BoxInfos({
       </div>
       <div className="w-full flex flex-col h-full justify-end items-start">
         <p className="font-bold flex italic items-end gap-2 text-2xl">
-          {isAmount ? formatEuro.format(value) : value}
+          {isAmount ? formatCurrency.format(value) : value}
           {valueLast && diffAmount < 0 ? (
             <TrendingDown size={15} color="red" />
           ) : diffAmount > 0 ? (
@@ -63,7 +63,7 @@ function BoxInfos({
         {valueLast && (
           <p className="text-muted-foreground text-xs">
             {diffAmount > 0 && "+"}
-            {formatEuro.format(diffAmount)} par rapport
+            {formatCurrency.format(diffAmount)} par rapport
             {year ? " à l'année dernière" : " au mois dernier"}
           </p>
         )}

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CardContent } from "@/components/ui/card";
-import { formatEuro } from "../../utils/fonctionnel";
+import { formatCurrency } from "../../utils/fonctionnel";
 
 export function ChartLine({
   data,
@@ -48,7 +48,7 @@ export function ChartLine({
                   </p>
                 </div>
                 <p className="italic font-black">
-                  {formatEuro.format(entry.value)}
+                  {formatCurrency.format(entry.value)}
                 </p>
               </div>
             ))}
@@ -64,7 +64,7 @@ export function ChartLine({
                   className={`italic font-black ${economieMonth < 0 ? "text-red-500" : "text-green-500"}`}
                 >
                   {economieMonth > 0 ? "+" : ""}
-                  {formatEuro.format(economieMonth)}
+                  {formatCurrency.format(economieMonth)}
                 </p>
               </div>
             )}
@@ -99,7 +99,7 @@ export function ChartLine({
           <YAxis
             domain={yAxisDomain}
             ticks={ticks}
-            tickFormatter={(value) => formatEuro.format(value)}
+            tickFormatter={(value) => formatCurrency.format(value)}
             tick={{ fontSize: 10, fill: chartConfig.text.color }}
             axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
           />
