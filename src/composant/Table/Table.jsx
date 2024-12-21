@@ -30,7 +30,9 @@ export default function Tableau({
     }));
   };
 
-  const theData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const theData = data
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const sortedData = [...theData].sort((a, b) => {
     if (!sortConfig.key) return 0;
@@ -175,7 +177,7 @@ export default function Tableau({
           </TableBody>
         </Table>
       ) : (
-        <p className="animate-fade italic text-gray-400">
+        <p className="animate-fade text-sm italic text-gray-400">
           Aucune opération n'a été trouvée !
         </p>
       )}

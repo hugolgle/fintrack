@@ -89,7 +89,11 @@ export default function PageAddInvestmentMain() {
     enabled: !!userId,
   });
 
-  const { isLoading: loadingInvestments, data: dataInvest } = useQuery({
+  const {
+    isLoading: loadingInvestments,
+    data: dataInvest,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -164,7 +168,11 @@ export default function PageAddInvestmentMain() {
 
   return (
     <section className="h-full">
-      <Header title="Ajouter un investissement" btnReturn />
+      <Header
+        title="Ajouter un investissement"
+        isFetching={isFetching}
+        btnReturn
+      />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"

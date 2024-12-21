@@ -383,6 +383,7 @@ export default function PageTransactions(props) {
 
           {item?.refunds && item?.refunds?.length > 0 && (
             <ModalTable
+              initialAmount={item.initialAmount}
               btnOpen={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <TicketSlash className="mr-2 h-4 w-4" />
@@ -451,6 +452,7 @@ export default function PageTransactions(props) {
           selectedCategorys={selectedCategorys}
           selectedTags={selectedTags}
           btnSearch
+          isFetching={isFetching}
           handleSearchChange={handleSearchChange}
           btnAdd={`/${props.type.toLowerCase()}/add`}
           btnReturn
@@ -462,7 +464,6 @@ export default function PageTransactions(props) {
           columns={columns}
           action={action}
           type="transactions"
-          isFetching={isFetching}
           formatData={formatData}
           multiselect
         />

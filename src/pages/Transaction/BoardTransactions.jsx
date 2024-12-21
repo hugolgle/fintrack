@@ -40,7 +40,7 @@ export default function BoardTransactions({ type }) {
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
   const [monthChartRadial, setMonth] = useState(currentYearMonth);
   const navigate = useNavigate();
-  const { isLoading, data, isFetching, refetch } = useQuery({
+  const { isLoading, data, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -70,9 +70,7 @@ export default function BoardTransactions({ type }) {
   const revenuePieChartMonth = getTransactionsByMonth(
     data,
     monthChartRadial,
-    type,
-    null,
-    null
+    type
   );
 
   const chartData = aggregateTransactions(revenuePieChartMonth);
@@ -124,20 +122,9 @@ export default function BoardTransactions({ type }) {
 
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
-  const formatData = (data) => {
-    if (data === null || data === undefined) {
-      return "0.00";
-    }
-
-    const cleanedData = String(data)
-      .replace(/[^\d.-]/g, "")
-      .replace(/ /g, "");
-    return Math.abs(cleanedData);
-  };
-
   monthsGraph.forEach(({ code }) => {
     const amount = calculTotalByMonth(data, type, code, null, null);
-    amountMonth.push(formatData(amount));
+    amountMonth.push(Math.abs(amount));
   });
 
   const dataGraph = monthsGraph.map((monthData, index) => ({
@@ -396,9 +383,6 @@ export default function BoardTransactions({ type }) {
                     ))}
                   </tbody>
                 </table>
-              </div>
-              <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
-                <h2 className=" text-left">Budget</h2>
               </div>
             </div>
           </div>

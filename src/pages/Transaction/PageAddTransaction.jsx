@@ -95,7 +95,7 @@ export default function PageAddTransac(props) {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
 
-  const { data, refetch } = useQuery({
+  const { data, refetch, isFetching } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions(userInfo?._id);
@@ -210,13 +210,15 @@ export default function PageAddTransac(props) {
     }
   }, [formik.values.title, data]);
 
-  console.log(formik.errors);
-
   if (loadingUser) return <Loader />;
 
   return (
     <section className="w-full">
-      <Header title={`Ajouter une ${props.title}`} btnReturn />
+      <Header
+        title={`Ajouter une ${props.title}`}
+        isFetching={isFetching}
+        btnReturn
+      />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
@@ -241,6 +243,7 @@ export default function PageAddTransac(props) {
                         key={index}
                         onSelect={() => {
                           formik.setFieldValue("title", suggestion);
+                          formik.setTouched({ ...formik.touched, title: true });
                           setValue(suggestion);
                           setOpen(false);
                         }}

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Separator } from "@/components/ui/separator";
+import { formatCurrency } from "../../../utils/fonctionnel";
 
 export default function ModalTable({
   btnOpen,
@@ -17,6 +18,7 @@ export default function ModalTable({
   formatData,
   title,
   description,
+  initialAmount,
 }) {
   return (
     <Dialog>
@@ -48,6 +50,13 @@ export default function ModalTable({
               </div>
             );
           })}
+          <Separator className="w-full mx-auto" />
+          {initialAmount && (
+            <div className="text-xs flex justify-end gap-4 items-center py-2">
+              <p className="text-gray-400">Montant initial:</p>
+              <p>{formatCurrency.format(initialAmount)}</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

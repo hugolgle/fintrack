@@ -141,17 +141,6 @@ export default function BoardInvest() {
     {}
   );
 
-  const formatData = (data) => {
-    if (data === null || data === undefined) {
-      return "0.00";
-    }
-
-    const cleanedData = String(data)
-      .replace(/[^\d.-]/g, "")
-      .replace(/ /g, "");
-    return Math.abs(cleanedData);
-  };
-
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   const montantInvestByMonth = [];
@@ -165,7 +154,7 @@ export default function BoardInvest() {
 
   monthsGraph.forEach(({ code }) => {
     const montantInvests = calculInvestByMonth(dataTransacInvest, code);
-    montantInvestByMonth.push(formatData(montantInvests));
+    montantInvestByMonth.push(Math.abs(montantInvests));
   });
 
   const dataGraph = monthsGraph.map((monthData, index) => ({

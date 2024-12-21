@@ -179,16 +179,7 @@ export function calculEconomie(data, year, month) {
 }
 
 export function calculMoyenneEconomie(depensesMoyennes, recettesMoyennes) {
-  const depensesMoyennesString = String(depensesMoyennes || 0);
-  const recettesMoyennesString = String(recettesMoyennes || 0);
-
-  const depensesMoyennesNumber = depensesMoyennesString
-    .replace(/\s/g, "")
-    .replace("€", "");
-  const recettesMoyennesNumber = recettesMoyennesString
-    .replace(/\s/g, "")
-    .replace("€", "");
-  const economieMoyenne = recettesMoyennesNumber + depensesMoyennesNumber;
+  const economieMoyenne = recettesMoyennes + depensesMoyennes;
 
   return economieMoyenne;
 }

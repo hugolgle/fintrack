@@ -10,7 +10,7 @@ export function MainLayout() {
         <Sidebar />
       </div>
 
-      <div className="ml-auto w-[94%] h-full p-4">
+      <div className="ml-auto w-[94%] animate__animated animate__fadeInRight h-full p-4">
         <Outlet />
         <p className="fixed top-0 right-0 mr-1 text-[10px] text-gray-500 italic">
           {versionApp}

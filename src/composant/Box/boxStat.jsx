@@ -4,18 +4,13 @@ function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
 
-  const amountAsString = String(props.amount || 0);
-
-  const targetMontant = amountAsString.replace(/\s/g, "").replace(",", ".");
-  const validTargetMontant = isNaN(targetMontant) ? 0 : targetMontant;
-
   let ringColor = "";
   if (props.type === "Expense") {
     ringColor = "ring-red-500";
   } else if (props.type === "Revenue") {
     ringColor = "ring-green-500";
   } else if (props.type === "State") {
-    ringColor = validTargetMontant >= 0 ? "ring-green-500" : "ring-red-500";
+    ringColor = props.amount >= 0 ? "ring-green-500" : "ring-red-500";
   }
 
   useEffect(() => {
@@ -23,16 +18,16 @@ function BoxStat(props) {
     const duration = 200;
     const stepTime = 10;
 
-    const difference = validTargetMontant - previousMontant;
+    const difference = props.amount - previousMontant;
     const incrementMontant = difference / (duration / stepTime);
 
     const timer = setInterval(() => {
       startMontant += incrementMontant;
       if (
-        (incrementMontant > 0 && startMontant >= validTargetMontant) ||
-        (incrementMontant < 0 && startMontant <= validTargetMontant)
+        (incrementMontant > 0 && startMontant >= props.amount) ||
+        (incrementMontant < 0 && startMontant <= props.amount)
       ) {
-        setCurrentMontant(validTargetMontant);
+        setCurrentMontant(props.amount);
         clearInterval(timer);
       } else {
         setCurrentMontant(Math.round(startMontant * 100) / 100);
@@ -40,7 +35,7 @@ function BoxStat(props) {
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [validTargetMontant, previousMontant]);
+  }, [props.amount, previousMontant]);
 
   useEffect(() => {
     setPreviousMontant(currentMontant);

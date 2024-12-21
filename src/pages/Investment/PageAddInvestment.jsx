@@ -70,7 +70,7 @@ export default function PageAddInvestment() {
 
   return (
     <section className="h-full">
-      <Header title={`Ajouter une opération `} btnReturn />
+      <Header title="Ajouter une opération" btnReturn />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"

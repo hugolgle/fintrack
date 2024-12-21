@@ -141,11 +141,11 @@ function Header({
                 (date !== "all" && (
                   <div className="flex gap-4 top-0 right-0">
                     <ChevronLeft
-                      className="rounded-full p-1 cursor-pointer transition-all"
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
                       onClick={clickLastMonth}
                     />
                     <ChevronRight
-                      className="rounded-full p-1 cursor-pointer transition-all"
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
                       onClick={clickNextMonth}
                     />
                   </div>
@@ -155,7 +155,7 @@ function Header({
         )}
       </div>
       {isFetching && (
-        <LoaderCircle className="absolute top-0 right-0 animate-spin" />
+        <LoaderCircle className="absolute p-1 mb-1 bottom-0 right-0 animate-spin" />
       )}
     </div>
   );

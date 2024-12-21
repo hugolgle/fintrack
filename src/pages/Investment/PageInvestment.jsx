@@ -120,15 +120,20 @@ export default function PageInvestment() {
   const dataById = processTransactions([dataTransactions] || []);
 
   let investissements = [];
+  let routeBtnAdd = "";
 
   if (location.pathname === ROUTES.INVESTMENT_ALL) {
     investissements = dataAll;
+    routeBtnAdd = ROUTES.ADD_ORDER;
   } else if (location.pathname === ROUTES.INVESTMENT_SOLD) {
     investissements = dataSold;
+    routeBtnAdd = ROUTES.ADD_ORDER;
   } else if (location.pathname === ROUTES.INVESTMENT_IN_PROGRESS) {
     investissements = dataInProgress;
+    routeBtnAdd = ROUTES.ADD_ORDER;
   } else {
     investissements = dataById;
+    routeBtnAdd = "add";
   }
 
   const columns = [
@@ -261,8 +266,9 @@ export default function PageInvestment() {
           searchTerm={searchTerm}
           handleSearchChange={handleSearchChange}
           btnReturn
-          btnAdd={"add"}
+          btnAdd={routeBtnAdd}
           btnSelect
+          isFetching={isFetching}
         />
 
         <Tableau

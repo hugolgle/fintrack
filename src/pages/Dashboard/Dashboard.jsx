@@ -143,17 +143,6 @@ export default function Dashboard() {
 
   const lastOperations = getLastOperations(dataOperations, null, 6, false);
 
-  const formatData = (data) => {
-    if (data === null || data === undefined) {
-      return "0.00";
-    }
-
-    const cleanedData = String(data)
-      .replace(/[^\d.-]/g, "")
-      .replace(/ /g, "");
-    return Math.abs(cleanedData);
-  };
-
   const [month, setMonth] = useState(currentYearMonth);
 
   const clickLastMonth = () => {
@@ -268,9 +257,9 @@ export default function Dashboard() {
     );
     const montantInvests = calculInvestByMonth(dataTransacInvest, code);
 
-    amountExpenseByMonth.push(formatData(amountExpenses));
-    amountRevenueByMonth.push(formatData(amountRevenues));
-    montantInvestByMonth.push(formatData(montantInvests));
+    amountExpenseByMonth.push(Math.abs(amountExpenses));
+    amountRevenueByMonth.push(Math.abs(amountRevenues));
+    montantInvestByMonth.push(Math.abs(montantInvests));
   });
 
   const dataGraph = monthsGraph.map((monthData, index) => ({

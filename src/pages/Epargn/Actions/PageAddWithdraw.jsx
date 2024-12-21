@@ -33,7 +33,11 @@ const validationSchema = yup.object({
 });
 
 export default function PageAddWithdraw() {
-  const { isLoading, data: accounts } = useQuery({
+  const {
+    isLoading,
+    data: accounts,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
       const response = await fetchAccounts();
@@ -72,7 +76,7 @@ export default function PageAddWithdraw() {
 
   return (
     <section className="w-full">
-      <Header title="Retrait" btnReturn />
+      <Header title="Retrait" isFetching={isFetching} btnReturn />
       <form
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
