@@ -205,3 +205,12 @@ export function calculInvestByMonth(data, date) {
 
   return totalAmount;
 }
+
+export function calculTotalAmount(data) {
+  let total = 0;
+
+  data?.forEach((transaction) => {
+    total += transaction.amount;
+  });
+  return total;
+}

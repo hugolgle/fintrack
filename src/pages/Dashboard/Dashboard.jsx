@@ -31,6 +31,7 @@ import { fetchAccounts } from "../../Service/Epargn.service.jsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { Swords } from "lucide-react";
+import { fetchAssets } from "../../Service/Heritage.service.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -82,6 +83,23 @@ export default function Dashboard() {
         toast.warn(message);
       }
       return response?.data;
+    },
+    refetchOnMount: true,
+  });
+
+  const {
+    isLoading: isLoadingAssets,
+    data: dataAssets,
+    isFetching: isFetchingAssets,
+  } = useQuery({
+    queryKey: ["fetchAssets"],
+    queryFn: async () => {
+      const response = await fetchAssets();
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
+        toast.warn(message);
+      }
+      return response?.data || [];
     },
     refetchOnMount: true,
   });
@@ -382,13 +400,18 @@ export default function Dashboard() {
     0
   );
 
+  const amountAssets = (dataAssets || []).reduce(
+    (total, account) => total + account.estimatePrice,
+    0
+  );
+
   const amountInvestAll = Array.isArray(dataInvests)
     ? dataInvests.reduce((total, item) => {
         return total + (item?.amountBuy || 0);
       }, 0)
     : 0;
 
-  const amountHeritage = amountInvestAll + amountEpargn;
+  const amountHeritage = amountInvestAll + amountEpargn + amountAssets;
 
   return (
     <>
@@ -407,7 +430,7 @@ export default function Dashboard() {
               title="Revenu"
               icon={<DollarSign size={15} color="grey" />}
               value={amountRevenuesMonth}
-              valueLast={amountRevenuesLastMonth}
+              valueLast={amountRevenuesLastMonth || null}
               isAmount
             />
             <BoxInfos
@@ -416,7 +439,7 @@ export default function Dashboard() {
               title="Dépense"
               icon={<WalletCards size={15} color="grey" />}
               value={amountExpensesMonth}
-              valueLast={amountExpensesLastMonth}
+              valueLast={amountExpensesLastMonth || null}
               isAmount
             />
             <BoxInfos

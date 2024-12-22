@@ -24,7 +24,11 @@ module.exports.loginUser = async (req, res) => {
         expiresIn: "1h",
       });
 
-      return res.status(200).json({ user, token });
+      return res.status(200).json({
+        message: "Vous êtes connecté !",
+        user,
+        token,
+      });
     } else {
       return res
         .status(401)
@@ -93,11 +97,10 @@ module.exports.editUser = async (req, res) => {
       return res.status(400).json({ message: "L'e-mail n'est pas valide" });
     }
 
-    // Check if the new email is already in use by another user
     if (req.body.username) {
       const existingUser = await UserModel.findOne({
         username: req.body.username,
-        _id: { $ne: user._id }, // exclude the current user
+        _id: { $ne: user._id },
       });
 
       if (existingUser) {

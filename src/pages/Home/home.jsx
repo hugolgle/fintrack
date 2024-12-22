@@ -4,9 +4,11 @@ import { ROUTES } from "../../composant/Routes.jsx";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../Service/User.service";
 import { useIsAuthenticated } from "../../utils/users";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
+  const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { isAuthenticated, isLoading: isLoadingAuth } = useIsAuthenticated();
   const { data: dataUser, isLoading } = useQuery({
@@ -17,28 +19,29 @@ export default function Home() {
   if (isLoadingAuth || isLoading) return <Loader />;
 
   return (
-    <section className="flex flex-col justify-center items-center h-full gap-14 animate-fade">
-      <div>
-        <h1 className="font-light text-5xl">
-          Bienvenue <span className="font-bold">{dataUser?.prenom}</span> sur
-        </h1>
-        <p className="text-5xl mt-3 font-logo">FinTrack</p>
+    <section className="w-full h-screen">
+      <div className="flex flex-col justify-center animate__animated animate__zoomIn animate__faster items-center h-full gap-10 animate-fade">
+        <img
+          src="/public/logoFinTrack.png"
+          className="size-16 mx-auto"
+          alt="logo"
+        />
+        <div>
+          <h1 className="font-light text-5xl">
+            Bienvenue <span className="font-bold">{dataUser?.prenom}</span> sur
+          </h1>
+          <p className="text-5xl mt-3 font-logo">FinTrack</p>
+        </div>
+        {isAuthenticated ? (
+          <Button variant="outline" onClick={() => navigate(ROUTES.DASHBOARD)}>
+            C'est parti !
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={() => navigate(ROUTES.LOGIN)}>
+            Connectez-vous !
+          </Button>
+        )}
       </div>
-      {isAuthenticated ? (
-        <Link
-          to={ROUTES.DASHBOARD}
-          className="px-4 py-2 bg-secondary rounded-xl transition-all hover:bg-primary "
-        >
-          C'est parti !
-        </Link>
-      ) : (
-        <Link
-          to={ROUTES.LOGIN}
-          className="px-4 py-2 bg-secondary rounded-xl transition-all hover:bg-primary "
-        >
-          Connectez-vous !
-        </Link>
-      )}
     </section>
   );
 }

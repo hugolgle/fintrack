@@ -228,7 +228,6 @@ export default function BoardTransactions({ type }) {
         <div className="flex flex-col">
           <Header
             title={type === "Expense" ? "Dépenses" : "Revenus"}
-            typeProps={type.toLowerCase()}
             btnAdd="add"
             isFetching={isFetching}
           />
@@ -250,11 +249,10 @@ export default function BoardTransactions({ type }) {
                     type,
                     currentYearMonth
                   )}
-                  valueLast={calculTotalByMonth(
-                    dataTransactions,
-                    type,
-                    lastMonthYear
-                  )}
+                  valueLast={
+                    calculTotalByMonth(dataTransactions, type, lastMonthYear) ||
+                    null
+                  }
                   icon={<Calendar size={15} color="grey" />}
                   isAmount
                 />
@@ -266,11 +264,9 @@ export default function BoardTransactions({ type }) {
                       : type === "Revenue" && "Revenus cette année"
                   }
                   value={calculTotalByYear(dataTransactions, type, year)}
-                  valueLast={calculTotalByYear(
-                    dataTransactions,
-                    type,
-                    year - 1
-                  )}
+                  valueLast={
+                    calculTotalByYear(dataTransactions, type, year - 1) || null
+                  }
                   icon={<PieChart size={15} color="grey" />}
                   year
                   isAmount

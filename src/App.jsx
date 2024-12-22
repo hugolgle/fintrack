@@ -28,8 +28,10 @@ import PageAddWithdraw from "./Pages/Epargn/Actions/PageAddWithdraw.jsx";
 import Heritage from "./Pages/Heritage/Heritage.jsx";
 import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx";
 import PageOrderById from "./Pages/Investment/PageOrderById.jsx";
+import PageAddAsset from "./Pages/Heritage/PageAddAsset.jsx";
+import PageAssets from "./Pages/Heritage/PageAssets.jsx";
 
-function App() {
+export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
 
   const transactionRoutes = [
@@ -80,7 +82,11 @@ function App() {
     { path: ROUTES.ADD_WITHDRAW, component: <PageAddWithdraw /> },
   ];
 
-  const heritageRoutes = [{ path: ROUTES.HERITAGE, component: <Heritage /> }];
+  const heritageRoutes = [
+    { path: ROUTES.HERITAGE, component: <Heritage /> },
+    { path: ROUTES.ADD_ASSET, component: <PageAddAsset /> },
+    { path: ROUTES.ASSETS_LIST, component: <PageAssets /> },
+  ];
 
   const publicRoutes = [
     { path: ROUTES.LOGIN, element: <Login /> },
@@ -93,7 +99,6 @@ function App() {
   ];
 
   const routesWithLayout = [
-    { path: ROUTES.HOME, element: <Home /> },
     { path: ROUTES.DASHBOARD, element: <Dashboard /> },
     ...transactionRoutes.map((route) => ({
       path: route.path,
@@ -123,6 +128,7 @@ function App() {
         element: route.element,
       })),
     },
+    { path: ROUTES.HOME, element: <Home /> }, // Route Home en dehors de MainLayout
     ...publicRoutes.map((route) => ({
       path: route.path,
       element: route.element,
@@ -131,5 +137,3 @@ function App() {
 
   return <RouterProvider router={router} />;
 }
-
-export default App;

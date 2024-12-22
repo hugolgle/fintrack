@@ -69,7 +69,10 @@ function BoxInfos({
         )}
         {plafond && (
           <div className="relative flex gap-2 items-center w-full">
-            <Progress value={progress} className="w-full h-1" />
+            <Progress
+              value={progress > 100 ? 100 : progress}
+              className="w-full h-1"
+            />
             <p className="text-gray-500 italic text-[10px] text-nowrap">
               {progress.toFixed(2)} %
             </p>

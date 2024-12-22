@@ -18,31 +18,20 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
+import { ROUTES } from "./Routes.jsx";
 
 function Header({
   title,
-  typeProps,
-  check,
   clickLastMonth,
   switchComponent,
   clickNextMonth,
-  date,
-  handleSearchChange,
-  searchTerm,
-  categories,
-  titles,
-  clearFilters,
-  handleCheckboxChange,
-  selectedTitles,
-  selectedCategorys,
-  selectedTags,
+  btnSearch,
   btnReturn,
   btnAdd,
-  tags,
   btnFilter,
-  btnSearch,
   isFetching,
   btnAction,
+  navigateDate,
 }) {
   const location = useLocation();
 
@@ -78,45 +67,43 @@ function Header({
           {btnAction && (
             <Link
               className="cursor-pointer hover:scale-110 transition-all"
-              to="/epargn/action"
+              to={ROUTES.ACTION_EPARGN}
             >
               <ArrowLeftRight size={20} />
             </Link>
           )}
           {switchComponent && switchComponent}
           {btnFilter && (
-            <>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="none" className="p-0 h-fit">
-                    <div className="relative hover:scale-110 transition-all">
-                      <Filter size={20} className="cursor-pointer" />
-                      {check > 0 ? (
-                        <>
-                          <span className="absolute text-xs -top-2 bg-primary rounded-full px-1 animate-pop-up">
-                            {check}
-                          </span>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="select-none w-80 max-h-80 overflow-auto">
-                  <PopoverFilter
-                    tags={tags}
-                    categories={categories}
-                    titles={titles}
-                    clearFilters={clearFilters}
-                    handleCheckboxChange={handleCheckboxChange}
-                    selectedTitles={selectedTitles}
-                    selectedCategorys={selectedCategorys}
-                    selectedTags={selectedTags}
-                  />
-                </PopoverContent>
-              </Popover>
-            </>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="none" className="p-0 h-fit">
+                  <div className="relative hover:scale-110 transition-all">
+                    <Filter size={20} className="cursor-pointer" />
+                    {btnFilter.check > 0 ? (
+                      <>
+                        <span className="absolute text-xs -top-2 bg-primary rounded-full px-1 animate-pop-up">
+                          {btnFilter.check}
+                        </span>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="select-none w-80 max-h-80 overflow-auto">
+                <PopoverFilter
+                  tags={btnFilter.tags}
+                  categories={btnFilter.categories}
+                  titles={btnFilter.titles}
+                  clearFilters={btnFilter.clearFilters}
+                  handleCheckboxChange={btnFilter.handleCheckboxChange}
+                  selectedTitles={btnFilter.selectedTitles}
+                  selectedCategorys={btnFilter.selectedCategorys}
+                  selectedTags={btnFilter.selectedTags}
+                />
+              </PopoverContent>
+            </Popover>
           )}
         </div>
       </div>
@@ -124,35 +111,32 @@ function Header({
         {title}
       </h1>
       <div className="w-1/4 flex justify-end">
-        {btnSearch && (
-          <>
-            <div className="flex gap-8">
-              <div className="relative">
-                <Input
-                  className="pl-8"
-                  type="search"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  placeholder="Rechercher"
-                />
-                <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              </div>
-              {typeProps === "investment" ||
-                (date !== "all" && (
-                  <div className="flex gap-4 top-0 right-0">
-                    <ChevronLeft
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickLastMonth}
-                    />
-                    <ChevronRight
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickNextMonth}
-                    />
-                  </div>
-                ))}
+        <div className="flex gap-8">
+          {btnSearch && (
+            <div className="relative">
+              <Input
+                className="pl-8"
+                type="search"
+                value={btnSearch.searchTerm}
+                onChange={btnSearch.handleSearchChange}
+                placeholder="Rechercher"
+              />
+              <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             </div>
-          </>
-        )}
+          )}
+          {clickLastMonth && clickNextMonth && navigateDate && (
+            <div className="flex gap-4 top-0 right-0">
+              <ChevronLeft
+                className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                onClick={clickLastMonth}
+              />
+              <ChevronRight
+                className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                onClick={clickNextMonth}
+              />
+            </div>
+          )}
+        </div>
       </div>
       {isFetching && (
         <LoaderCircle className="absolute p-1 mb-1 bottom-0 right-0 animate-spin" />

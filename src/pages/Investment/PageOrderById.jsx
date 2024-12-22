@@ -30,6 +30,7 @@ import { useState } from "react";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
+import { calculTotalAmount } from "../../utils/calcul.js";
 
 export default function PageOrderById() {
   const { id } = useParams();
@@ -118,11 +119,11 @@ export default function PageOrderById() {
   }
 
   const columns = [
-    { id: 2, name: "Type", key: "type" },
-    { id: 4, name: "Nom", key: "name" },
-    { id: 5, name: "Date", key: "date" },
-    { id: 6, name: "Montant", key: "amount" },
-    { id: 7, name: "Action", key: "isSale" },
+    { id: 1, name: "Type", key: "type" },
+    { id: 2, name: "Nom", key: "name" },
+    { id: 3, name: "Date", key: "date" },
+    { id: 4, name: "Montant", key: "amount" },
+    { id: 5, name: "Action", key: "isSale" },
   ];
 
   const displayData = investissements.map(
@@ -235,6 +236,10 @@ export default function PageOrderById() {
     );
   };
 
+  const data = searchTerm ? searchResults : displayData;
+
+  const amountTotal = calculTotalAmount(data);
+
   if (isLoading) return <Loader />;
 
   return (
@@ -242,24 +247,21 @@ export default function PageOrderById() {
       <section className="w-full relative">
         <Header
           title={title}
-          typeProps="investment"
-          btnSearch
-          searchTerm={searchTerm}
-          handleSearchChange={handleSearchChange}
+          btnSearch={{ handleSearchChange, searchTerm }}
           btnReturn
           btnAdd={routeBtnAdd}
-          btnSelect
           isFetching={isFetching}
         />
 
         <Tableau
           formatData={formatData}
-          data={searchTerm ? searchResults : displayData}
+          data={data}
           columns={columns}
           type="investments"
           isFetching={isFetching}
           action={action}
           firstItem={avatar}
+          amountTotal={amountTotal}
         />
       </section>
     </>

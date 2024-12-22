@@ -205,7 +205,6 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             )}
 
             <ButtonLoading
-              variant="default"
               type="submit"
               text="Enregistrer"
               isPending={isPending}

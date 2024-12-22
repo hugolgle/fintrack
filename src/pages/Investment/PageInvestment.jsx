@@ -30,6 +30,7 @@ import { useState } from "react";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
+import { calculTotalAmount } from "../../utils/calcul.js";
 
 export default function PageInvestment() {
   const { id } = useParams();
@@ -133,7 +134,7 @@ export default function PageInvestment() {
   ];
 
   const displayData = investissements.map(
-    ({ _id, name, type, symbol, transaction }) => {
+    ({ _id, name, type, symbol, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
@@ -143,6 +144,7 @@ export default function PageInvestment() {
         date: transaction.date,
         amount: transaction.amount,
         isSale: transaction.isSale,
+        createdAt,
       };
     }
   );
@@ -161,6 +163,10 @@ export default function PageInvestment() {
     });
     setSearchResults(filteredData);
   };
+
+  const data = searchTerm ? searchResults : displayData;
+
+  const amountTotal = calculTotalAmount(data);
 
   const title =
     location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
@@ -248,24 +254,21 @@ export default function PageInvestment() {
       <section className="w-full relative">
         <Header
           title={title}
-          typeProps="investment"
-          btnSearch
-          searchTerm={searchTerm}
-          handleSearchChange={handleSearchChange}
+          btnSearch={{ handleSearchChange, searchTerm }}
           btnReturn
           btnAdd={routeBtnAdd}
-          btnSelect
           isFetching={isFetching}
         />
 
         <Tableau
           formatData={formatData}
-          data={searchTerm ? searchResults : displayData}
+          data={data}
           columns={columns}
           type="investments"
           isFetching={isFetching}
           action={action}
           firstItem={avatar}
+          amountTotal={amountTotal}
         />
       </section>
     </>

@@ -5,9 +5,9 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  user-select: none;
 }
 
-/* Ne pas utiliser de variables personnalisées ici, Tailwind gérera les couleurs et le thème */
 body {
   color: var(--color-light);
   background-color: var(--background);

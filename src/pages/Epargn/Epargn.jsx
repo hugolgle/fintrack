@@ -210,42 +210,47 @@ export default function Epargn() {
                 ))}
               </div>
               <Separator className="w-4/5 mx-auto" />
-              {mergedTransactions.slice(0, 6).map((transaction, index) => (
-                <div
-                  key={index}
-                  className="flex w-full items-center py-2 text-xs"
-                >
-                  <p className="w-1/5">
-                    {transaction.type === "withdraw"
-                      ? "Retrait"
-                      : transaction.type === "transfer"
-                        ? "Transfert"
-                        : transaction.type === "deposit" && "Dépôt"}
-                  </p>
-                  <p className="w-1/5">
-                    {transaction.accountName ?? transaction.fromAccount}
-                  </p>
-                  <p className="w-1/5">{transaction.toAccount ?? "-"}</p>
-                  <p className="w-1/5">
-                    {new Date(transaction.date).toLocaleDateString()}
-                  </p>
-                  <p className="italic px-2 py-[2px] w-1/5 text-center">
-                    <span
-                      className={`px-2 py-1 w-fit text-center rounded-sm bg-opacity-40 ${
-                        transaction?.type !== "transfer"
-                          ? transaction?.amount < 0
-                            ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                            : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
-                          : ""
-                      }`}
-                    >
-                      {transaction?.type === "transfer"
-                        ? formatCurrency.format(Math.abs(transaction.amount))
-                        : formatCurrency.format(transaction.amount)}
-                    </span>
-                  </p>
-                </div>
-              ))}
+              {mergedTransactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5)
+                .map((transaction, index) => (
+                  <div
+                    key={index}
+                    className="flex w-full items-center py-2 text-xs"
+                  >
+                    <p className="w-1/5">
+                      {transaction.type === "withdraw"
+                        ? "Retrait"
+                        : transaction.type === "transfer"
+                          ? "Transfert"
+                          : transaction.type === "deposit"
+                            ? "Dépôt"
+                            : transaction.type === "interest" && "Intérêts"}
+                    </p>
+                    <p className="w-1/5">
+                      {transaction.accountName ?? transaction.fromAccount}
+                    </p>
+                    <p className="w-1/5">{transaction.toAccount ?? "-"}</p>
+                    <p className="w-1/5">
+                      {new Date(transaction.date).toLocaleDateString()}
+                    </p>
+                    <p className="italic px-2 py-[2px] w-1/5 text-center">
+                      <span
+                        className={`px-2 py-1 w-fit text-center rounded-sm bg-opacity-40 ${
+                          transaction?.type !== "transfer"
+                            ? transaction?.amount < 0
+                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
+                              : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                            : ""
+                        }`}
+                      >
+                        {transaction?.type === "transfer"
+                          ? formatCurrency.format(Math.abs(transaction.amount))
+                          : formatCurrency.format(transaction.amount)}
+                      </span>
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
 

@@ -227,7 +227,6 @@ export default function BoardInvest() {
       <div className="flex flex-col">
         <Header
           title="Investissement"
-          typeProps="investment"
           btnAdd={ROUTES.ADD_ORDER}
           isFetching={isFetching}
         />

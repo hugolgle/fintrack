@@ -135,9 +135,7 @@ export default function PageAddTransac(props) {
       return await addTransaction(postData, dataUser?._id);
     },
     onSuccess: (response) => {
-      toast.success(
-        `Votre ${nameType(response?.data?.type).toLowerCase()} a été ajouté ! `
-      );
+      toast.success(response?.data?.message);
       queryClient.invalidateQueries(["fetchTransactions"]);
       refetch();
       formik.resetForm();
@@ -224,7 +222,7 @@ export default function PageAddTransac(props) {
   return (
     <section className="w-full">
       <Header
-        title={`Ajouter une ${props.title}`}
+        title={`Ajouter ${props.title === "dépense" ? "une" : "un"} ${props.title}`}
         isFetching={isFetchingTransactions || isFetchingUser}
         btnReturn
       />
@@ -432,6 +430,7 @@ export default function PageAddTransac(props) {
         </div>
 
         <ButtonLoading
+          variant="secondary"
           type="submit"
           text="Soumettre"
           isPending={addTransactionMutation.isPending}

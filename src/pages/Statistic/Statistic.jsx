@@ -315,7 +315,7 @@ export default function Statistic() {
                   selectedMonth === String(monthIndex).padStart(2, "0") &&
                   "secondary"
                 }
-                className="w-full"
+                className="w-full max-w-auto animate-fade"
                 key={index}
                 onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
               >

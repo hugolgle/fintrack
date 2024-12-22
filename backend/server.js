@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use("/heritage", require("./routes/heritage.routes"));
 app.use("/investments", require("./routes/investment.routes"));
 app.use("/transactions", require("./routes/transaction.routes"));
 app.use("/epargns", require("./routes/epargn.routes"));

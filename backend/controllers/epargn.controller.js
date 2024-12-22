@@ -6,7 +6,7 @@ module.exports.addAccount = async (req, res) => {
   try {
     const { user, name, balance, interestRate, maxBalance } = req.body;
 
-    if (!name || balance === undefined || interestRate === undefined) {
+    if (!user || !name || balance === undefined || interestRate === undefined) {
       return res.status(400).json({
         message: "Veuillez fournir toutes les informations nécessaires",
       });
@@ -42,6 +42,16 @@ module.exports.editAccount = async (req, res) => {
     if (!account) {
       return res.status(404).json({
         message: "Compte introuvable",
+      });
+    }
+
+    const isSame = Object.keys(updates).every(
+      (key) => account[key] == updates[key]
+    );
+
+    if (isSame) {
+      return res.status(400).json({
+        message: "Aucune modification détectée",
       });
     }
 
@@ -106,28 +116,24 @@ module.exports.addTransfert = async (req, res) => {
       return res.status(400).json({ message: "Solde insuffisant" });
     }
 
-    // Calcul des dates spécifiques en fonction de la règle des quinzaines
     const today = new Date();
     let debitDate, creditDate;
 
     if (today.getDate() <= 15) {
-      debitDate = new Date(today.getFullYear(), today.getMonth(), 1); // 1er du mois courant
-      creditDate = new Date(today.getFullYear(), today.getMonth(), 16); // 16 du mois courant
+      debitDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      creditDate = new Date(today.getFullYear(), today.getMonth(), 16);
     } else {
-      debitDate = new Date(today.getFullYear(), today.getMonth(), 16); // 16 du mois courant
-      creditDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // 1er du mois suivant
+      debitDate = new Date(today.getFullYear(), today.getMonth(), 16);
+      creditDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
     }
 
-    // Générer un _id unique pour le transfert
     const transferId = new mongoose.Types.ObjectId();
 
-    // Effectuer le transfert
     fromAccount.balance -= amount;
     toAccount.balance += amount;
 
-    // Ajouter les transactions avec un _id commun
     fromAccount.transactions.push({
-      _id: transferId, // Utilisation de l'_id partagé
+      _id: transferId,
       type: "transfer",
       amount: -amount,
       date: debitDate,
@@ -135,7 +141,7 @@ module.exports.addTransfert = async (req, res) => {
     });
 
     toAccount.transactions.push({
-      _id: transferId, // Utilisation de l'_id partagé
+      _id: transferId,
       type: "transfer",
       amount: amount,
       date: creditDate,
@@ -179,13 +185,12 @@ module.exports.depositAccount = async (req, res) => {
         .json({ message: "Le montant dépasse le plafond autorisé" });
     }
 
-    // Calcul de la date du dépôt en fonction de la règle des quinzaines
     const today = new Date();
     let depositDate;
     if (today.getDate() <= 15) {
-      depositDate = new Date(today.getFullYear(), today.getMonth(), 16); // 16 du mois courant
+      depositDate = new Date(today.getFullYear(), today.getMonth(), 16);
     } else {
-      depositDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // 1er du mois suivant
+      depositDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
     }
 
     account.balance = newBalance;
@@ -235,13 +240,12 @@ module.exports.withdrawAccount = async (req, res) => {
         .json({ message: "Solde insuffisant pour effectuer ce retrait" });
     }
 
-    // Déterminer la date du retrait en fonction de la règle des quinzaines
     const today = new Date();
     let withdrawalDate;
     if (today.getDate() <= 15) {
-      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 1); // 1er du mois
+      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 1);
     } else {
-      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 16); // 16 du mois
+      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 16);
     }
 
     account.balance = newBalance;
@@ -265,7 +269,6 @@ module.exports.withdrawAccount = async (req, res) => {
   }
 };
 
-// Calcul des intérêts
 module.exports.calculateInterest = async (req, res) => {
   try {
     const accounts = await EpargnModel.find();
@@ -273,41 +276,32 @@ module.exports.calculateInterest = async (req, res) => {
 
     for (const account of accounts) {
       const lastCalc = new Date(account.lastInterestCalculation);
-      const diffDays = (today - lastCalc) / (1000 * 60 * 60 * 24); // Différence en jours
+      const diffDays = (today - lastCalc) / (1000 * 60 * 60 * 24);
 
       if (diffDays > 0) {
-        // Calcul des intérêts
         let interest = 0;
 
-        // Si plus d'un an, on calcule l'année entière
         if (diffDays >= 365) {
-          const dailyRate = account.interestRate / 100 / 365; // Taux journalier
+          const dailyRate = account.interestRate / 100 / 365;
 
-          // Période 1 : 1er Janvier au 15 Juin (151 jours)
           interest += account.balance * dailyRate * 151;
 
-          // Période 2 : 16 Juin au 31 Décembre (214 jours)
           interest += account.balance * dailyRate * 214;
         } else {
-          // Si moins d'un an, calculez selon les jours exacts restants
-          const dailyRate = account.interestRate / 100 / 365; // Taux journalier
+          const dailyRate = account.interestRate / 100 / 365;
           interest = account.balance * dailyRate * diffDays;
         }
 
-        // Enregistrer les intérêts
         const calculatedInterest = interest;
 
-        // Mettre à jour le montant total des intérêts
         account.amountInterest = account.amountInterest + calculatedInterest;
 
-        // Ajouter une transaction pour les intérêts
         account.transactions.push({
           type: "interest",
           amount: calculatedInterest,
           date: today,
         });
 
-        // Mettre à jour le solde et la date de calcul des intérêts
         account.balance = account.balance + calculatedInterest;
         account.lastInterestCalculation = today;
 
@@ -333,17 +327,14 @@ const calculateYearlyInterest = async () => {
     const totalInterest = account.amountInterest || 0;
 
     if (totalInterest > 0) {
-      // Ajouter une transaction de type 'interest'
       account.transactions.push({
         type: "interest",
         amount: totalInterest,
-        date: new Date(), // Date du 1er janvier
+        date: new Date(),
       });
 
-      // Réinitialiser les intérêts accumulés pour la nouvelle année
       account.amountInterest = "0.00";
 
-      // Sauvegarder le compte
       await account.save();
     }
   }

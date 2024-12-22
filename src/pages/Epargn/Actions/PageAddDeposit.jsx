@@ -108,6 +108,7 @@ export default function PageAddDeposit() {
           <p className="text-red-500 text-sm">{formik.errors.amount}</p>
         )}
         <ButtonLoading
+          variant="secondary"
           type="submit"
           text="Soumettre"
           isPending={mutation.isPending}

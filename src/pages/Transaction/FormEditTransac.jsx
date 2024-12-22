@@ -279,7 +279,6 @@ export function FormEditTransac({ transaction, refetch }) {
 
       <DialogFooter className="sm:justify-between">
         <ButtonLoading
-          variant="default"
           type="submit"
           text="Modifier"
           isPending={mutationEdit.isPending}

@@ -23,6 +23,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Eye } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
+import { calculTotalAmount } from "../../utils/calcul.js";
 
 export function PageOrder() {
   const {
@@ -46,6 +47,12 @@ export function PageOrder() {
 
   const handleSwitchMode = (checked) => {
     setMode(checked);
+  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    performSearch(event.target.value);
   };
 
   const orderData = dataInvestments?.sort((a, b) => {
@@ -144,12 +151,43 @@ export function PageOrder() {
     }
   );
 
+  const performSearch = (term) => {
+    const filteredData = displayData.filter((item) => {
+      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
+      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
+      const isSaleMatches = item.isSale
+        ?.toLowerCase()
+        .includes(term.toLowerCase());
+      const symbolMatches = item.symbol
+        ?.toLowerCase()
+        .includes(term.toLowerCase());
+      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
+      const amountMatches = item.amount
+        .toString()
+        .toLowerCase()
+        .includes(term.toLowerCase());
+
+      return (
+        nameMatches ||
+        typeMatches ||
+        dateMatches ||
+        amountMatches ||
+        symbolMatches ||
+        isSaleMatches
+      );
+    });
+    setSearchResults(filteredData);
+  };
+
+  const data = searchTerm ? searchResults : displayData;
+
+  const amountTotal = calculTotalAmount(data);
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
         <Header
           title="Mon portefeuille"
-          typeProps="investment"
           btnReturn
           isFetching={isFetching}
           switchComponent={
@@ -166,6 +204,7 @@ export function PageOrder() {
             </div>
           }
           btnAdd={ROUTES.ADD_ORDER}
+          btnSearch={{ handleSearchChange, searchTerm }}
         />
         <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
           {orderData?.length > 0 ? (
@@ -173,57 +212,54 @@ export function PageOrder() {
               {mode ? (
                 <Tableau
                   formatData={formatData}
-                  data={displayData}
+                  data={data}
                   columns={columns}
                   type="investments"
                   isFetching={isFetching}
                   action={action}
                   firstItem={avatar}
+                  amountTotal={amountTotal}
                 />
               ) : (
-                dataInvestments?.map(
-                  ({ _id, name, type, transaction, symbol, amountBuy }) => {
-                    const category = type === "Crypto" ? "crypto" : "symbol";
-                    const date = transaction[0]?.date
-                      ? new Date(transaction[0].date)
-                      : null;
+                data?.map(({ idInvest, name, type, date, symbol, amount }) => {
+                  const category = type === "Crypto" ? "crypto" : "symbol";
+                  const theDate = date ? new Date(date) : null;
 
-                    return (
-                      <Link
-                        key={_id}
-                        to={ROUTES.INVESTMENT_BY_ID.replace(":id", _id)}
-                        className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
-                          type
-                        )}`}
-                      >
-                        <div className="flex justify-between">
-                          <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
-                            {date
-                              ? format(date, "dd/MM/yyyy")
-                              : "Date non disponible"}
-                          </p>
+                  return (
+                    <Link
+                      key={idInvest}
+                      to={ROUTES.INVESTMENT_BY_ID.replace(":id", idInvest)}
+                      className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
+                        type
+                      )}`}
+                    >
+                      <div className="flex justify-between">
+                        <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
+                          {date
+                            ? format(theDate, "dd/MM/yyyy")
+                            : "Date non disponible"}
+                        </p>
 
-                          <Avatar className="size-8 cursor-pointer transition-all">
-                            <AvatarImage
-                              src={`https://assets.parqet.com/logos/${category}/${symbol}`}
-                            />
-                            <AvatarFallback className="font-thin text-xs">
-                              {name.toUpperCase().substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
+                        <Avatar className="size-8 cursor-pointer transition-all">
+                          <AvatarImage
+                            src={`https://assets.parqet.com/logos/${category}/${symbol}`}
+                          />
+                          <AvatarFallback className="font-thin text-xs">
+                            {name.toUpperCase().substring(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
 
-                        <p className="truncate text-sm">{name}</p>
-                        <div className="flex justify-between">
-                          <p className="text-sm italic">
-                            {formatCurrency.format(amountBuy)}
-                          </p>
-                          <p className="text-sm italic">{type}</p>
-                        </div>
-                      </Link>
-                    );
-                  }
-                )
+                      <p className="truncate text-sm">{name}</p>
+                      <div className="flex justify-between">
+                        <p className="text-sm italic">
+                          {formatCurrency.format(amount)}
+                        </p>
+                        <p className="text-sm italic">{type}</p>
+                      </div>
+                    </Link>
+                  );
+                })
               )}
             </>
           ) : (

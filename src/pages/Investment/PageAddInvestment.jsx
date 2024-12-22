@@ -60,8 +60,8 @@ export default function PageAddInvestment() {
       const response = await addTransaction(id, postData);
       return response;
     },
-    onSuccess: () => {
-      toast.success("Votre investissement a été ajouté !");
+    onSuccess: (response) => {
+      toast.success(response?.response?.data?.message);
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
@@ -117,7 +117,7 @@ export default function PageAddInvestment() {
         )}
         <Input
           id="amount"
-          type="float"
+          type="number"
           name="amount"
           placeholder="Montant"
           {...formik.getFieldProps("amount")}
@@ -129,6 +129,7 @@ export default function PageAddInvestment() {
         )}
 
         <ButtonLoading
+          variant="secondary"
           text="Soumettre"
           disabled={addTransactionInvestmentMutation.isPending}
           isPending={addTransactionInvestmentMutation.isPending}

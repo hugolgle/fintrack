@@ -20,9 +20,9 @@ export default function Login() {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-      sessionStorage.setItem("token", data.token);
-      toast.success("Vous êtes connecté !");
+    onSuccess: (response) => {
+      sessionStorage.setItem("token", response.token);
+      toast.success(response.message);
       navigate(ROUTES.HOME);
     },
     onError: (error) => {
@@ -130,7 +130,6 @@ export default function Login() {
             </p>
           )}
           <ButtonLoading
-            variant="default"
             type="submit"
             text="Connexion"
             disabled={mutation.isPending}

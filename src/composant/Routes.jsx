@@ -24,6 +24,8 @@ export const ROUTES = {
   ADD_DEPOSIT: "/epargn/deposit",
   ADD_WITHDRAW: "/epargn/withdraw",
   HERITAGE: "/heritage",
+  ADD_ASSET: "/heritage/add",
+  ASSETS_LIST: "/heritage/list",
   STATISTICS: "/statistics",
   PROFILE: "/profile",
   LOGIN: "/login",

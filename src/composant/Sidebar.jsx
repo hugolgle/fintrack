@@ -18,16 +18,17 @@ import { toast } from "sonner";
 import { DropdownProfil } from "../Pages/Profile/DropDownProfile.jsx";
 import { getUserIdFromToken } from "../utils/users";
 import { getCurrentUser, logoutUser } from "../Service/User.service";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { DollarSign } from "lucide-react";
 import { ROUTES } from "./Routes.jsx";
 import { Landmark } from "lucide-react";
 import { Swords } from "lucide-react";
+import Loader from "./Loader/Loader.jsx";
 
 function Sidebar() {
   const userId = getUserIdFromToken();
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
   const { isAuthenticated } = useIsAuthenticated();
@@ -59,7 +60,7 @@ function Sidebar() {
     enabled: !!userId,
   });
   if (isLoadingUser) {
-    return null;
+    return <Loader />;
   }
 
   const initialName = getInitials(dataUser?.prenom, dataUser?.nom);

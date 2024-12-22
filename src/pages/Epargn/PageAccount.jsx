@@ -98,7 +98,9 @@ export default function PageAccount() {
         ? "Retrait"
         : transaction.type === "transfer"
           ? "Transfert"
-          : "Dépôt",
+          : transaction.type === "interest"
+            ? "Intérêts"
+            : transaction.type === "deposit" && "Dépôt",
       account?.name || "Compte inconnu",
       transaction.fromAccount
         ? getAccountName(transaction.fromAccount)
@@ -210,7 +212,8 @@ export default function PageAccount() {
                                 ? "Dépôt"
                                 : transaction.type === "withdraw"
                                   ? "Retrait"
-                                  : "Opération inconnue"}
+                                  : transaction.type === "interest" &&
+                                    "Intérêts"}
                           </p>
                           <p className="italic text-[10px] text-gray-500">
                             {new Date(transaction.date).toLocaleDateString()}

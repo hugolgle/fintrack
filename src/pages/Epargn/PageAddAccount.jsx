@@ -119,6 +119,7 @@ export default function PageAddAccount() {
           </p>
         )}
         <ButtonLoading
+          variant="secondary"
           type="submit"
           text="Soumettre"
           disabled={mutation.isPending}

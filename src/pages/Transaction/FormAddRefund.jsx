@@ -135,7 +135,6 @@ export function FormAddRefund({ transaction, refetch }) {
 
       <DialogFooter className="sm:justify-between">
         <ButtonLoading
-          variant="default"
           type="submit"
           text="Soumettre"
           disabled={mutationPost.isPending}

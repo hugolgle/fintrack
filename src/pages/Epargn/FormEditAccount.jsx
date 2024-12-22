@@ -61,7 +61,7 @@ export function FormEditAccount({ account, refetch }) {
       refetch();
     },
     onError: (error) => {
-      toast.error(error?.response?.message);
+      toast.error(error?.response?.data?.message);
     },
   });
 

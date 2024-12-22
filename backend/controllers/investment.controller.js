@@ -5,6 +5,7 @@ module.exports.addInvestment = async (req, res) => {
     const { name, type, symbol, transaction, user } = req.body;
 
     if (
+      !user ||
       !name ||
       !type ||
       !transaction?.amount ||
@@ -22,7 +23,6 @@ module.exports.addInvestment = async (req, res) => {
       return res.status(400).json({ message: "Cet actif existe déjà !" });
     }
 
-    // Création de l'investissement avec la transaction
     const investment = await InvestmentModel.create({
       user,
       name,
@@ -69,7 +69,6 @@ module.exports.addInvestment = async (req, res) => {
 
 module.exports.addTransaction = async (req, res) => {
   try {
-    // Trouver l'investissement par son ID
     const investment = await InvestmentModel.findById(req.params.id);
 
     if (!investment) {
@@ -78,17 +77,14 @@ module.exports.addTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    // Créer une nouvelle transaction
     const newTransaction = {
       amount: req.body.amount,
       date: req.body.date,
       isSale: req.body.isSale,
     };
 
-    // Ajouter la transaction au tableau des transactions de l'investissement
     investment.transaction.push(newTransaction);
 
-    // Recalculer les montants d'achat et de vente
     let amountBuy = 0;
     let amountSale = 0;
     investment.transaction.forEach((t) => {
@@ -99,15 +95,12 @@ module.exports.addTransaction = async (req, res) => {
       }
     });
 
-    // Calculer le résultat avec deux décimales
     const amountResult = amountSale - amountBuy;
 
-    // Formater les montants avec deux décimales
-    investment.amountBuy = amountBuy; // "10.00"
-    investment.amountSale = amountSale; // "10.00"
-    investment.amountResult = amountResult; // "0.00"
+    investment.amountBuy = amountBuy;
+    investment.amountSale = amountSale;
+    investment.amountResult = amountResult;
 
-    // Sauvegarder l'investissement avec la nouvelle transaction
     const updatedInvestment = await investment.save();
 
     return res.status(201).json({
@@ -158,9 +151,20 @@ module.exports.editInvestment = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    if (req.body.name) investment.name = req.body.name;
-    if (req.body.symbol) investment.symbol = req.body.symbol;
-    if (req.body.type) investment.type = req.body.type;
+    const updates = req.body;
+    const isSame = Object.keys(updates).every(
+      (key) => investment[key] == updates[key]
+    );
+
+    if (isSame) {
+      return res.status(400).json({
+        message: "Aucune modification détectée",
+      });
+    }
+
+    if (updates.name) investment.name = updates.name;
+    if (updates.symbol) investment.symbol = updates.symbol;
+    if (updates.type) investment.type = updates.type;
 
     let amountBuy = 0;
     let amountSale = 0;
@@ -202,7 +206,6 @@ module.exports.editTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    // Trouver l'index de la transaction à modifier
     const transactionIndex = investment.transaction.findIndex(
       (t) => t._id.toString() === req.params.transactionId
     );
@@ -211,14 +214,23 @@ module.exports.editTransaction = async (req, res) => {
       return res.status(400).json({ message: "Transaction non trouvée" });
     }
 
-    // Mise à jour des informations de la transaction
     const transaction = investment.transaction[transactionIndex];
+
+    const isSame =
+      (req.body.amount === undefined ||
+        req.body.amount == transaction.amount) &&
+      (req.body.date === undefined || req.body.date == transaction.date) &&
+      (req.body.isSale === undefined || req.body.isSale == transaction.isSale);
+
+    if (isSame) {
+      return res.status(400).json({ message: "Aucune modification détectée" });
+    }
+
     transaction.amount = req.body.amount || transaction.amount;
     transaction.date = req.body.date || transaction.date;
     transaction.isSale =
       req.body.isSale !== undefined ? req.body.isSale : transaction.isSale;
 
-    // Recalcul des montants après modification
     let amountBuy = 0;
     let amountSale = 0;
     investment.transaction.forEach((t) => {
@@ -231,12 +243,10 @@ module.exports.editTransaction = async (req, res) => {
 
     const amountResult = amountSale - amountBuy;
 
-    // Mise à jour des montants dans l'investissement
     investment.amountBuy = amountBuy.toString();
     investment.amountSale = amountSale.toString();
     investment.amountResult = amountResult.toString();
 
-    // Sauvegarde de l'investissement mis à jour
     const updatedInvestment = await investment.save();
 
     return res.status(200).json({
@@ -261,7 +271,6 @@ module.exports.deleteTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    // Trouver l'index de la transaction à supprimer par son _id
     const transactionIndex = investment.transaction.findIndex(
       (t) => t._id.toString() === req.params.transactionId
     );
@@ -270,7 +279,6 @@ module.exports.deleteTransaction = async (req, res) => {
       return res.status(400).json({ message: "Transaction non trouvée" });
     }
 
-    // Supprimer la transaction
     investment.transaction.splice(transactionIndex, 1);
 
     if (investment.transaction.length === 0) {
@@ -278,7 +286,6 @@ module.exports.deleteTransaction = async (req, res) => {
       return res.status(200).json({ message: "Transaction supprimée" });
     }
 
-    // Recalculer les montants d'achat, de vente et de résultat
     let amountBuy = 0;
     let amountSale = 0;
     investment.transaction.forEach((t) => {
@@ -291,12 +298,10 @@ module.exports.deleteTransaction = async (req, res) => {
 
     const amountResult = amountSale - amountBuy;
 
-    // Mettre à jour les montants dans l'investissement
     investment.amountBuy = amountBuy.toString();
     investment.amountSale = amountSale.toString();
     investment.amountResult = amountResult.toString();
 
-    // Sauvegarder l'investissement après suppression
     const updatedInvestment = await investment.save();
 
     return res.status(200).json({

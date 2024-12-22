@@ -18,6 +18,7 @@ export default function Tableau({
   action,
   firstItem,
   multiselect,
+  amountTotal,
 }) {
   const [selectAllRow, setSelectAllRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
@@ -69,26 +70,13 @@ export default function Tableau({
     let total = 0;
     theData?.forEach((transaction) => {
       if (selectedRows[transaction._id]) {
-        total += transaction.isSale ? transaction.amount : -transaction.amount;
+        total += transaction.amount;
       }
     });
     return total;
   };
 
-  const calculTotalAmount = () => {
-    let total = 0;
-    theData?.forEach((transaction) => {
-      total += transaction.isSale
-        ? transaction.amount
-        : transaction.type === "expense"
-          ? -transaction.amount
-          : transaction.amount;
-    });
-    return total;
-  };
-
   const amountSelect = calculMontantSelect();
-  const amountTotal = calculTotalAmount();
 
   return (
     <>
@@ -182,7 +170,7 @@ export default function Tableau({
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-border animate-fade rounded-xl z-50 bg-secondary p-3 transition-all">
+      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-ring animate-fade rounded-xl z-50 bg-secondary p-3 transition-all">
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />

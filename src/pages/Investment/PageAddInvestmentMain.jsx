@@ -149,10 +149,16 @@ export default function PageAddInvestmentMain() {
   });
 
   const addInvestmentMutation = useMutation({
-    mutationFn: (postData) => addInvestment(postData, dataUser?._id),
-    onSuccess: () => toast.success("Votre investissement a été ajouté !"),
-    onError: (error) =>
-      toast.error(error?.response?.data?.message || "Une erreur est survenue."),
+    mutationFn: async (postData) => {
+      const response = await addInvestment(postData, dataUser?._id);
+      return response;
+    },
+    onSuccess: (response) => {
+      toast.success(response?.response?.data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Une erreur est survenue.");
+    },
   });
 
   const addTransactionInvestmentMutation = useMutation({
@@ -160,11 +166,11 @@ export default function PageAddInvestmentMain() {
       const response = await addTransaction(idInvest, postData);
       return response;
     },
-    onSuccess: () => {
-      toast.success("Votre investissement a été ajouté !");
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.data?.message);
     },
   });
 
@@ -270,7 +276,7 @@ export default function PageAddInvestmentMain() {
               )}
               <Input
                 id="amount"
-                type="float"
+                type="number"
                 name="amount"
                 placeholder="Montant"
                 {...formik.getFieldProps("amount")}
@@ -377,7 +383,7 @@ export default function PageAddInvestmentMain() {
               )}
               <Input
                 id="amount"
-                type="float"
+                type="number"
                 name="amount"
                 placeholder="Montant"
                 {...formik.getFieldProps("amount")}
@@ -392,6 +398,7 @@ export default function PageAddInvestmentMain() {
         </Tabs>
 
         <ButtonLoading
+          variant="secondary"
           text="Soumettre"
           isPending={addInvestmentMutation.isPending}
           disabled={addInvestmentMutation.isPending}

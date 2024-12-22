@@ -242,7 +242,6 @@ export default function SignUp() {
           )}
 
           <ButtonLoading
-            variant="default"
             type="submit"
             text="Inscription"
             disabled={addUserMutation.isPending}

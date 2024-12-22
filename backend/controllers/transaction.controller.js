@@ -3,6 +3,7 @@ const OperationModel = require("../models/transaction.model");
 module.exports.addTransaction = async (req, res) => {
   try {
     if (
+      !req.body.user ||
       !req.body.date ||
       !req.body.amount ||
       !req.body.title ||
@@ -35,7 +36,7 @@ module.exports.addTransaction = async (req, res) => {
       tag: tags,
     });
 
-    return res.status(201).json(transaction);
+    return res.status(201).json({ message: "Transaction ajouté", transaction });
   } catch (error) {
     return res
       .status(500)
@@ -75,29 +76,46 @@ module.exports.editTransaction = async (req, res) => {
       return res.status(400).json({ message: "Cette opération n'existe pas" });
     }
 
-    let amount = req.body.amount;
-    let initialAmount = 0;
+    const updates = req.body;
 
-    if (req.body.type === "Expense") {
+    const isSame = Object.keys(updates).every((key) => {
+      if (Array.isArray(updates[key])) {
+        return (
+          JSON.stringify(transaction[key]) === JSON.stringify(updates[key])
+        );
+      }
+      return transaction[key] === updates[key];
+    });
+
+    if (isSame) {
+      return res.status(400).json({
+        message: "Aucune modification détectée",
+      });
+    }
+
+    let amount = updates.amount || transaction.amount;
+    let initialAmount = transaction.initialAmount || 0;
+
+    if (updates.type === "Expense") {
       amount = -Math.abs(amount);
     }
 
-    if (transaction.refunds.length > 0) {
+    if (transaction.refunds && transaction.refunds.length > 0) {
       const totalRefunds = transaction.refunds.reduce(
         (acc, refund) => acc + (refund.amount || 0),
         0
       );
 
-      initialAmount = req.body.amount;
+      initialAmount = updates.amount || transaction.amount;
       const newAmount = initialAmount - totalRefunds;
       amount = -newAmount;
     }
 
-    const updatedTags = req.body.tag || transaction.tag;
+    const updatedTags = updates.tag || transaction.tag;
 
     const updatedOperation = await OperationModel.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, amount, initialAmount: -initialAmount, tag: updatedTags },
+      { ...updates, amount, initialAmount: -initialAmount, tag: updatedTags },
       { new: true }
     );
 
@@ -106,9 +124,10 @@ module.exports.editTransaction = async (req, res) => {
       updatedOperation,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Erreur lors de la mise à jour de l'opération", error });
+    return res.status(500).json({
+      message: "Erreur lors de la mise à jour de l'opération",
+      error,
+    });
   }
 };
 

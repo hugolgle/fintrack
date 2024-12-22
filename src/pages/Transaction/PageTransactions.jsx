@@ -40,6 +40,7 @@ import { TicketSlash } from "lucide-react";
 import { Plus } from "lucide-react";
 import ModalTable from "../Epargn/Modal/ModalTable.jsx";
 import { toast } from "sonner";
+import { calculTotalAmount } from "../../utils/calcul.js";
 
 export default function PageTransactions(props) {
   const { date } = useParams();
@@ -187,7 +188,7 @@ export default function PageTransactions(props) {
             selectedTags
           );
 
-  const theData = transactions.map(
+  const displayData = transactions.map(
     ({
       _id,
       type,
@@ -220,7 +221,7 @@ export default function PageTransactions(props) {
   const tags = getTagsOfTransactions(dataTransactions);
 
   const performSearch = (term) => {
-    const filteredData = theData.filter((item) => {
+    const filteredData = displayData.filter((item) => {
       const titleMatches = item.title
         .toLowerCase()
         .includes(term.toLowerCase());
@@ -425,7 +426,12 @@ export default function PageTransactions(props) {
     );
   };
 
+  const data = searchTerm ? searchResults : displayData;
+
+  const amountTotal = calculTotalAmount(data);
+
   if (isLoading) return <Loader />;
+
   return (
     <>
       <section className="w-full">
@@ -437,35 +443,34 @@ export default function PageTransactions(props) {
                 ? `${nameType(props.type)}s de ${date}`
                 : `${nameType(props.type)}s de ${convertDate(date)}`
           }`}
-          typeProps={props.type}
-          categories={categories}
-          tags={tags}
-          check={check}
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
-          date={date}
-          searchTerm={searchTerm}
-          titles={titles}
-          clearFilters={clearFilters}
-          handleCheckboxChange={handleCheckboxChange}
-          selectedTitles={selectedTitles}
-          selectedCategorys={selectedCategorys}
-          selectedTags={selectedTags}
-          btnSearch
           isFetching={isFetching}
-          handleSearchChange={handleSearchChange}
+          btnSearch={{ handleSearchChange, searchTerm }}
           btnAdd={`/${props.type.toLowerCase()}/add`}
           btnReturn
-          btnFilter
+          btnFilter={{
+            selectedTags,
+            selectedCategorys,
+            selectedTitles,
+            clearFilters,
+            handleCheckboxChange,
+            check,
+            tags,
+            categories,
+            titles,
+          }}
+          navigateDate={date !== "all"}
         />
 
         <Tableau
-          data={searchTerm ? searchResults : theData}
+          data={data}
           columns={columns}
           action={action}
           type="transactions"
           formatData={formatData}
           multiselect
+          amountTotal={amountTotal}
         />
       </section>
     </>
