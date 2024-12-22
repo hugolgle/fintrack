@@ -53,16 +53,16 @@ function Sidebar() {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const { data: userInfo, isLoading: loadingUser } = useQuery({
+  const { data: dataUser, isLoading: isLoadingUser } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
-  if (loadingUser) {
+  if (isLoadingUser) {
     return null;
   }
 
-  const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
+  const initialName = getInitials(dataUser?.prenom, dataUser?.nom);
 
   const menu = [
     {
@@ -90,19 +90,19 @@ function Sidebar() {
       icon: <HandCoins />,
     },
     {
-      id: 4,
+      id: 5,
       name: "Épargne",
       link: ROUTES.EPARGN,
       icon: <Landmark />,
     },
     {
-      id: 5,
+      id: 6,
       name: "Patrimoine",
       link: ROUTES.HERITAGE,
       icon: <Swords />,
     },
     {
-      id: 6,
+      id: 7,
       name: "Statistiques",
       link: ROUTES.STATISTICS,
       icon: <BarChart />,
@@ -149,7 +149,7 @@ function Sidebar() {
               <Avatar className="w-12 h-12 rounded-xl cursor-pointer hover:scale-95 transition-all">
                 <AvatarImage
                   className="object-cover"
-                  src={`http://localhost:5001/${userInfo?.img}`}
+                  src={`http://localhost:5001/${dataUser?.img}`}
                 />
                 <AvatarFallback className="bg-secondary">
                   {initialName}

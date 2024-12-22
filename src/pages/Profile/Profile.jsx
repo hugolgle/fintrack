@@ -11,8 +11,8 @@ export default function Profile() {
   const userId = getUserIdFromToken();
 
   const {
-    data: userInfo,
-    isLoading: loadingUser,
+    isLoading,
+    data: dataUser,
     isFetching,
     refetch,
   } = useQuery({
@@ -21,9 +21,9 @@ export default function Profile() {
     enabled: !!userId,
   });
 
-  if (loadingUser) return <Loader />;
+  if (isLoading) return <Loader />;
 
-  const initialName = getInitials(userInfo?.prenom, userInfo?.nom);
+  const initialName = getInitials(dataUser?.prenom, dataUser?.nom);
 
   return (
     <section className="w-full">
@@ -34,7 +34,7 @@ export default function Profile() {
             <Avatar className="w-28 h-28">
               <AvatarImage
                 className="object-cover"
-                src={`http://localhost:5001/${userInfo?.img}`}
+                src={`http://localhost:5001/${dataUser?.img}`}
               />
               <AvatarFallback className="bg-secondary">
                 {initialName}
@@ -43,13 +43,13 @@ export default function Profile() {
           </div>
 
           <p className="text-2xl">
-            {userInfo?.prenom} {userInfo?.nom}
+            {dataUser?.prenom} {dataUser?.nom}
           </p>
 
           <p className="text-xs text-gray-500 dark:text-gray-500">
-            {userInfo?.username}
+            {dataUser?.username}
           </p>
-          <SheetEditProfile dataProfil={userInfo} refetch={refetch} />
+          <SheetEditProfile dataProfil={dataUser} refetch={refetch} />
         </div>
       </div>
     </section>

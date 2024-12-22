@@ -23,9 +23,7 @@ export function RadialChart({
   sideLegend = "left",
   outer,
 }) {
-  const CustomTooltipContent = (props) => {
-    const { active, payload } = props;
-
+  const CustomTooltipContent = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const { payload: data } = payload[0];
       return (

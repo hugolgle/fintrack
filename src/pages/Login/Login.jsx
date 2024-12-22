@@ -96,7 +96,6 @@ export default function Login() {
             className="border-none bg-background"
             {...formik.getFieldProps("username")}
             placeholder="Votre e-mail"
-            required
             autoComplete="new-email"
           />
           {formik.touched.username && formik.errors.username && (
@@ -112,7 +111,6 @@ export default function Login() {
               {...formik.getFieldProps("password")}
               placeholder="Mot de passe"
               ref={passwordRef}
-              required
               autoComplete="new-password"
             />
             <div
@@ -135,7 +133,7 @@ export default function Login() {
             variant="default"
             type="submit"
             text="Connexion"
-            disabled={mutation.isPending || !formik.isValid}
+            disabled={mutation.isPending}
             isPending={mutation.isPending}
           />
         </form>

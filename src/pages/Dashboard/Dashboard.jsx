@@ -36,9 +36,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const {
-    isLoading,
-    data: dataTransac,
-    isFetching,
+    isLoading: isLoadingTransacs,
+    data: dataTransacs,
+    isFetching: isFetchingTransacs,
   } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
@@ -52,7 +52,11 @@ export default function Dashboard() {
     refetchOnMount: true,
   });
 
-  const { data: accounts } = useQuery({
+  const {
+    isLoading: isLoadingAccounts,
+    data: dataAccounts,
+    isFetching: isFetchingAccounts,
+  } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
       const response = await fetchAccounts();
@@ -65,7 +69,11 @@ export default function Dashboard() {
     refetchOnMount: true,
   });
 
-  const { data: dataInvest } = useQuery({
+  const {
+    isLoading: isLoadingInvests,
+    data: dataInvests,
+    isFetching: isFetchingInvests,
+  } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -78,8 +86,9 @@ export default function Dashboard() {
     refetchOnMount: true,
   });
 
-  const dataTransacInvest = dataInvest?.flatMap((investment) => {
+  const dataTransacsInvest = dataInvests?.flatMap((investment) => {
     return investment.transaction.map((trans) => ({
+      _id: trans._id,
       title: investment.name,
       amount: trans.amount,
       date: trans.date,
@@ -92,17 +101,17 @@ export default function Dashboard() {
   const currentYearMonth = `${currentYear}${currentMonth}`;
 
   const amountRevenuesMonth = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Revenue",
     currentYearMonth
   );
   const amountExpensesMonth = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Expense",
     currentYearMonth
   );
 
-  const investCurrentMonth = calculTotal(dataTransacInvest);
+  const investCurrentMonth = calculTotal(dataTransacsInvest);
 
   const getPreviousMonthAndYear = (month, year) => {
     let previousMonth = month - 1;
@@ -122,14 +131,14 @@ export default function Dashboard() {
   const newPreviousMonth = String(previousMonth).padStart(2, "0");
   const previousDate = `${previousYear}${newPreviousMonth}`;
   const amountRevenuesLastMonth = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Revenue",
     previousDate,
     null,
     null
   );
   const amountExpensesLastMonth = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Expense",
     previousDate,
     null,
@@ -137,8 +146,8 @@ export default function Dashboard() {
   );
 
   const dataOperations = [
-    ...(Array.isArray(dataTransac) ? dataTransac : []),
-    ...(Array.isArray(dataTransacInvest) ? dataTransacInvest : []),
+    ...(Array.isArray(dataTransacs) ? dataTransacs : []),
+    ...(Array.isArray(dataTransacsInvest) ? dataTransacsInvest : []),
   ];
 
   const lastOperations = getLastOperations(dataOperations, null, 6, false);
@@ -188,23 +197,21 @@ export default function Dashboard() {
   });
 
   const dataDf = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Expense",
     month,
-    categoriesDf,
-    null
+    categoriesDf
   );
   const dataLoisir = calculTotalByMonth(
-    dataTransac,
+    dataTransacs,
     "Expense",
     month,
-    categoriesLoisir,
-    null
+    categoriesLoisir
   );
 
-  const total = calculTotalByMonth(dataTransac, "Revenue", month);
+  const total = calculTotalByMonth(dataTransacs, "Revenue", month);
 
-  const montantInvest = calculInvestByMonth(dataTransacInvest, month);
+  const montantInvest = calculInvestByMonth(dataTransacsInvest, month);
 
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
@@ -242,20 +249,20 @@ export default function Dashboard() {
 
   monthsGraph.forEach(({ code }) => {
     const amountExpenses = calculTotalByMonth(
-      dataTransac,
+      dataTransacs,
       "Expense",
       code,
       null,
       null
     );
     const amountRevenues = calculTotalByMonth(
-      dataTransac,
+      dataTransacs,
       "Revenue",
       code,
       null,
       null
     );
-    const montantInvests = calculInvestByMonth(dataTransacInvest, code);
+    const montantInvests = calculInvestByMonth(dataTransacsInvest, code);
 
     amountExpenseByMonth.push(Math.abs(amountExpenses));
     amountRevenueByMonth.push(Math.abs(amountRevenues));
@@ -303,7 +310,8 @@ export default function Dashboard() {
   const dLoisir = Math.abs(dataLoisir);
   const mInvest = montantInvest;
 
-  if (isLoading) return <Loader />;
+  if (isLoadingTransacs || isLoadingAccounts || isLoadingInvests)
+    return <Loader />;
 
   let epargne = total - (dFix + dLoisir + mInvest);
 
@@ -369,13 +377,13 @@ export default function Dashboard() {
     )
   );
 
-  const amountEpargn = (accounts || []).reduce(
+  const amountEpargn = (dataAccounts || []).reduce(
     (total, account) => total + account.balance,
     0
   );
 
-  const amountInvestAll = Array.isArray(dataInvest)
-    ? dataInvest.reduce((total, item) => {
+  const amountInvestAll = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
         return total + (item?.amountBuy || 0);
       }, 0)
     : 0;
@@ -385,7 +393,12 @@ export default function Dashboard() {
   return (
     <>
       <section className="w-full">
-        <Header title="Tableau de bord" isFetching={isFetching} />
+        <Header
+          title="Tableau de bord"
+          isFetching={
+            isFetchingAccounts || isFetchingTransacs || isFetchingInvests
+          }
+        />
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex gap-4 w-full">
             <BoxInfos
@@ -434,33 +447,30 @@ export default function Dashboard() {
             <div className="w-2/5 flex flex-col h-fit gap-4">
               <div className="bg-secondary h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <h2 className="text-left">Dernières opérations</h2>
-                <table className="h-full">
-                  <tbody className="w-full gap-2 h-full flex flex-col">
-                    {lastOperations.map((operation) => (
-                      <tr
-                        key={operation._id}
-                        className=" w-full rounded-lg h-full flex flex-row items-center text-xs"
+                <div className="w-full gap-2 h-full flex flex-col">
+                  {lastOperations.map((operation) => (
+                    <div
+                      key={operation._id}
+                      className="w-full rounded-lg h-full flex flex-row items-center text-xs"
+                    >
+                      <div className="flex flex-row space-x-4 w-full">
+                        <span>{format(operation.date, "dd/MM")}</span>
+                        <span className="truncate">{operation.title}</span>
+                      </div>
+                      <p
+                        className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
+                          operation.type === "Expense"
+                            ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
+                            : operation.type === "Revenue"
+                              ? "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                              : "bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900"
+                        }`}
                       >
-                        <td className="flex flex-row space-x-4 w-full">
-                          <span>{format(operation.date, "dd/MM")}</span>
-                          <span className="truncate">{operation.title}</span>
-                        </td>
-
-                        <p
-                          className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
-                            operation.type === "Expense"
-                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                              : operation.type === "Revenue"
-                                ? "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
-                                : "bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900"
-                          }`}
-                        >
-                          {formatCurrency.format(operation.amount)}
-                        </p>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        {formatCurrency.format(operation.amount)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="bg-secondary ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between w-full gap-4">
@@ -477,7 +487,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {dataInvest
+                  {dataInvests
                     ?.sort((a, b) => b.amountBuy - a.amountBuy)
                     .slice(0, 3)
                     .map((item) => {
@@ -485,7 +495,7 @@ export default function Dashboard() {
                         item?.type === "Crypto" ? "crypto" : "symbol";
                       return (
                         <div
-                          key={item?.id}
+                          key={item?._id}
                           className="flex items-center justify-between"
                         >
                           <div className="flex items-center">
@@ -510,7 +520,7 @@ export default function Dashboard() {
 
             <div className="w-full relative h-fit flex flex-col justify-between bg-secondary ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Graphique</h2>
-              {!isFetching ? (
+              {!isFetchingTransacs ? (
                 <ChartLine
                   data={dataGraph}
                   defaultConfig={defaultConfig}
@@ -556,7 +566,7 @@ export default function Dashboard() {
             </div>
             <div className="w-2/4 bg-secondary ring-1 ring-border rounded-xl h-full p-4">
               <h2 className=" text-left">Répartitions</h2>
-              {!isFetching ? (
+              {!isFetchingTransacs ? (
                 total !== "0.00" ? (
                   <RadialChart
                     chartData={chartDataRadial}

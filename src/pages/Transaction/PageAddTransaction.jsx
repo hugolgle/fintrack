@@ -84,7 +84,11 @@ const validationSchema = yup.object().shape({
 export default function PageAddTransac(props) {
   const userId = getUserIdFromToken();
 
-  const { data: userInfo, isLoading: loadingUser } = useQuery({
+  const {
+    isLoading: isLoadingUser,
+    data: dataUser,
+    isFetching: isFetchingUser,
+  } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
@@ -95,10 +99,15 @@ export default function PageAddTransac(props) {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
 
-  const { data, refetch, isFetching } = useQuery({
+  const {
+    isLoading: isLoadingTransactions,
+    data: dataTransactions,
+    isFetching: isFetchingTransactions,
+    refetch,
+  } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userInfo?._id);
+      const response = await fetchTransactions();
       if (response?.status !== HttpStatusCode.Ok) {
         const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
@@ -116,14 +125,14 @@ export default function PageAddTransac(props) {
 
   const suggestions = [
     "Autre",
-    ...getTitleOfTransactionsByType(data, props.type),
+    ...getTitleOfTransactionsByType(dataTransactions, props.type),
   ];
 
-  const tagsSuggestions = getTagsOfTransactions(data);
+  const tagsSuggestions = getTagsOfTransactions(dataTransactions);
 
   const addTransactionMutation = useMutation({
     mutationFn: async (postData) => {
-      return await addTransaction(postData, userInfo?._id);
+      return await addTransaction(postData, dataUser?._id);
     },
     onSuccess: (response) => {
       toast.success(
@@ -153,7 +162,7 @@ export default function PageAddTransac(props) {
     validateOnMount: true,
     onSubmit: async (values) => {
       const postData = {
-        user: userInfo?._id,
+        user: dataUser?._id,
         type: props.type,
         category: values.category,
         title: values.title === "Autre" ? values.titleBis : values.title,
@@ -196,7 +205,7 @@ export default function PageAddTransac(props) {
   };
 
   useEffect(() => {
-    const dataByType = getTransactionsByType(data, props.type);
+    const dataByType = getTransactionsByType(dataTransactions, props.type);
     if (dataByType && formik.values.title) {
       const existingTransaction = dataByType.find(
         (transaction) => transaction.title === formik.values.title
@@ -208,15 +217,15 @@ export default function PageAddTransac(props) {
         formik.setFieldValue("amount", Math.abs(existingTransaction.amount));
       }
     }
-  }, [formik.values.title, data]);
+  }, [formik.values.title, dataTransactions]);
 
-  if (loadingUser) return <Loader />;
+  if (isLoadingUser || isLoadingTransactions) return <Loader />;
 
   return (
     <section className="w-full">
       <Header
         title={`Ajouter une ${props.title}`}
-        isFetching={isFetching}
+        isFetching={isFetchingTransactions || isFetchingUser}
         btnReturn
       />
       <form
@@ -230,6 +239,11 @@ export default function PageAddTransac(props) {
               <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
+          {formik.touched.title && formik.errors.title && (
+            <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+              {formik.errors.title}
+            </p>
+          )}
           <PopoverContent className="p-0" align="start">
             <Command>
               <CommandInput placeholder="Rechercher un titre..." />
@@ -421,7 +435,7 @@ export default function PageAddTransac(props) {
           type="submit"
           text="Soumettre"
           isPending={addTransactionMutation.isPending}
-          disabled={addTransactionMutation.isPending || !formik.isValid}
+          disabled={addTransactionMutation.isPending}
         />
       </form>
     </section>

@@ -27,7 +27,11 @@ import { calculInvestByMonth } from "../../utils/calcul.js";
 export default function BoardInvest() {
   const navigate = useNavigate();
   const [selectNbMonth, setSelectNbMonth] = useState(6);
-  const { isLoading, data, isFetching } = useQuery({
+  const {
+    isLoading,
+    data: dataInvests,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -44,32 +48,32 @@ export default function BoardInvest() {
   const currentYearMonth = `${currentYear}${currentMonth}`;
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
-  const amountBuy = Array.isArray(data)
-    ? data.reduce((total, item) => {
+  const amountBuy = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
         return total + (item.amountBuy || 0);
       }, 0)
     : 0;
 
-  const amountSale = Array.isArray(data)
-    ? data.reduce((total, item) => {
+  const amountSale = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
         return total + (item.amountSale || 0);
       }, 0)
     : 0;
 
-  const amountResult = Array.isArray(data)
-    ? data.reduce((total, item) => {
+  const amountResult = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
         return total + (item.amountResult || 0);
       }, 0)
     : 0;
 
   if (isLoading) return <Loader />;
 
-  const totalAmountBuy = data.reduce(
+  const totalAmountBuy = dataInvests.reduce(
     (total, item) => total + (item.amountBuy || 0),
     0
   );
 
-  const categorySums = data.reduce((acc, investment) => {
+  const categorySums = dataInvests.reduce((acc, investment) => {
     const type = investment.type;
     const amountBuy = investment.amountBuy || 0;
 
@@ -84,7 +88,7 @@ export default function BoardInvest() {
     return acc;
   }, {});
 
-  const titleSums = data.reduce((acc, investment) => {
+  const titleSums = dataInvests.reduce((acc, investment) => {
     const name = investment.name;
     const amountBuy = investment.amountBuy || 0;
 
@@ -144,7 +148,7 @@ export default function BoardInvest() {
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   const montantInvestByMonth = [];
-  const dataTransacInvest = data?.flatMap((investment) => {
+  const dataTransacInvest = dataInvests?.flatMap((investment) => {
     return investment.transaction.map((trans) => ({
       title: investment.name,
       amount: trans.amount,
@@ -207,7 +211,7 @@ export default function BoardInvest() {
     setGraphMonth(newDate);
   };
 
-  const simplifiedData = data.flatMap((item) =>
+  const simplifiedData = dataInvests.flatMap((item) =>
     item.transaction.map((trans) => ({
       name: item.name,
       type: item.type,
@@ -252,7 +256,7 @@ export default function BoardInvest() {
             />
             <BoxInfos
               title="Mon portefeuille"
-              value={data.length}
+              value={dataInvests.length}
               icon={<BookA size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
             />
@@ -279,9 +283,11 @@ export default function BoardInvest() {
                           </span>
                         </td>
 
-                        <p className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
-                          {formatCurrency.format(operation?.amount)}
-                        </p>
+                        <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
+                          <span>
+                            {formatCurrency.format(operation?.amount)}
+                          </span>
+                        </td>
                       </tr>
                     ))}
                 </tbody>

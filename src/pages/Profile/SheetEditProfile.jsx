@@ -209,7 +209,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               type="submit"
               text="Enregistrer"
               isPending={isPending}
-              disabled={isPending || !formik.isValid || isSaveDisabled}
+              disabled={isPending || isSaveDisabled}
             />
           </SheetFooter>
         </form>

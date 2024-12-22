@@ -29,23 +29,24 @@ import { getCurrentUser } from "../../Service/User.service";
 import { RadialChart } from "../../composant/Charts/RadialChart";
 import { renderCustomLegend } from "../../composant/Legend";
 import Header from "../../composant/Header";
+import { useRef } from "react";
 
 export default function Statistic() {
   const userId = getUserIdFromToken();
 
-  const { data: userInfo } = useQuery({
+  const { data: dataUser } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
   const {
-    data: transactionsData = [],
     isLoading,
+    data: dataTransactions,
     isFetching,
   } = useQuery({
-    queryKey: ["fetchTransactions", userInfo?._id],
+    queryKey: ["fetchTransactions"],
     queryFn: async () => {
-      const response = await fetchTransactions(userInfo?._id);
+      const response = await fetchTransactions();
       if (response?.status !== HttpStatusCode.Ok) {
         const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
@@ -65,10 +66,18 @@ export default function Statistic() {
   const [filteredOperation, setFilteredOperation] = useState([]);
   const [selectedByYear, setSelectedByYear] = useState(false);
 
+  const prevTransactionsRef = useRef();
+
   useEffect(() => {
-    if (!Array.isArray(transactionsData)) return;
-    setFilteredOperation(transactionsData);
-  }, [transactionsData]);
+    if (
+      Array.isArray(dataTransactions) &&
+      JSON.stringify(dataTransactions) !==
+        JSON.stringify(prevTransactionsRef.current)
+    ) {
+      setFilteredOperation(dataTransactions);
+      prevTransactionsRef.current = dataTransactions;
+    }
+  }, [dataTransactions]);
 
   useEffect(() => {
     const yearsSet = new Set();
@@ -76,7 +85,7 @@ export default function Statistic() {
 
     filteredOperation?.forEach((transaction) => {
       const year = new Date(transaction.date).getFullYear();
-      if (transaction.user === userInfo?._id) {
+      if (transaction.user === dataUser?._id) {
         yearsSet?.add(year);
         if (year < minYear) {
           minYear = year;
@@ -85,7 +94,7 @@ export default function Statistic() {
     });
 
     setFirstYear(minYear);
-  }, [filteredOperation, userInfo?._id, currentYear]);
+  }, [filteredOperation, dataUser?._id, currentYear]);
 
   const clickMonth = (month) => {
     setSelectedMonth(month);
@@ -121,14 +130,14 @@ export default function Statistic() {
   const selectedDate = `${selectedYear}${selectedMonth}`;
 
   const depenseYear = calculTotalByYear(
-    transactionsData,
+    dataTransactions,
     "Expense",
     `${selectedYear}`,
     null,
     null
   );
   const recetteYear = calculTotalByYear(
-    transactionsData,
+    dataTransactions,
     "Revenue",
     `${selectedYear}`,
     null,
@@ -136,14 +145,14 @@ export default function Statistic() {
   );
 
   const depenseMonth = calculTotalByMonth(
-    transactionsData,
+    dataTransactions,
     "Expense",
     selectedDate,
     null,
     null
   );
   const recetteMonth = calculTotalByMonth(
-    transactionsData,
+    dataTransactions,
     "Revenue",
     selectedDate,
     null,
@@ -153,25 +162,25 @@ export default function Statistic() {
   const nbMonth = generateMonths().length;
 
   const moyenneDepenseMois = calculMoyenne(
-    transactionsData,
+    dataTransactions,
     "Expense",
     `${selectedYear}`,
     nbMonth
   );
   const moyenneRecetteMois = calculMoyenne(
-    transactionsData,
+    dataTransactions,
     "Revenue",
     `${selectedYear}`,
     nbMonth
   );
 
   const economieTotale = calculEconomie(
-    transactionsData,
+    dataTransactions,
     `${selectedYear}`,
     null
   );
   const economieMonth = calculEconomie(
-    transactionsData,
+    dataTransactions,
     `${selectedYear}`,
     selectedMonth
   );
@@ -183,7 +192,7 @@ export default function Statistic() {
   if (isLoading) return <Loader />;
 
   const expensePieChartYear = getTransactionsByYear(
-    transactionsData,
+    dataTransactions,
     `${selectedYear}`,
     "Expense",
     null,
@@ -191,7 +200,7 @@ export default function Statistic() {
   );
 
   const expensePieChartMonth = getTransactionsByMonth(
-    transactionsData,
+    dataTransactions,
     selectedDate,
     "Expense",
     null,
@@ -199,7 +208,7 @@ export default function Statistic() {
   );
 
   const revenuePieChartYear = getTransactionsByYear(
-    transactionsData,
+    dataTransactions,
     `${selectedYear}`,
     "Revenue",
     null,
@@ -207,7 +216,7 @@ export default function Statistic() {
   );
 
   const revenuePieChartMonth = getTransactionsByMonth(
-    transactionsData,
+    dataTransactions,
     selectedDate,
     "Revenue",
     null,

@@ -138,7 +138,7 @@ export function FormAddRefund({ transaction, refetch }) {
           variant="default"
           type="submit"
           text="Soumettre"
-          disabled={mutationPost.isPending || !formik.isValid}
+          disabled={mutationPost.isPending}
           isPending={mutationPost.isPending}
         />
         <DialogClose>

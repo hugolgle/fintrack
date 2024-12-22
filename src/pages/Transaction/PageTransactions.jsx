@@ -51,7 +51,7 @@ export default function PageTransactions(props) {
 
   const {
     isLoading,
-    data,
+    data: dataTransactions,
     isFetching,
     refetch: refectTransac,
   } = useQuery({
@@ -108,7 +108,7 @@ export default function PageTransactions(props) {
     searchParams.getAll("titles")
   );
 
-  const titles = getTitleOfTransactionsByType(data, props.type);
+  const titles = getTitleOfTransactionsByType(dataTransactions, props.type);
 
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
@@ -163,7 +163,7 @@ export default function PageTransactions(props) {
   const transactions =
     date === "all"
       ? getTransactionsByType(
-          data,
+          dataTransactions,
           props.type,
           selectedCategorys,
           selectedTitles,
@@ -171,7 +171,7 @@ export default function PageTransactions(props) {
         )
       : date?.length === 4
         ? getTransactionsByYear(
-            data,
+            dataTransactions,
             date,
             props.type,
             selectedCategorys,
@@ -179,7 +179,7 @@ export default function PageTransactions(props) {
             selectedTags
           )
         : getTransactionsByMonth(
-            data,
+            dataTransactions,
             date,
             props.type,
             selectedCategorys,
@@ -217,7 +217,7 @@ export default function PageTransactions(props) {
     }
   );
 
-  const tags = getTagsOfTransactions(data);
+  const tags = getTagsOfTransactions(dataTransactions);
 
   const performSearch = (term) => {
     const filteredData = theData.filter((item) => {

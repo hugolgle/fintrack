@@ -148,7 +148,7 @@ export default function Epargn() {
           {Array.isArray(accounts) &&
             accounts.map((account) => (
               <BoxInfos
-                key={account.id}
+                key={account._id}
                 onClick={() =>
                   navigate(ROUTES.ACCOUNT_BY_ID.replace(":id", account._id))
                 }
@@ -203,8 +203,10 @@ export default function Epargn() {
             </div>
             <div className="w-full text-sm mt-4">
               <div className="flex w-full font-thin italic pb-2">
-                {columns?.map(({ name }) => (
-                  <p className="w-1/5 text-center">{name}</p>
+                {columns?.map(({ id, name }) => (
+                  <p key={id} className="w-1/5 text-center">
+                    {name}
+                  </p>
                 ))}
               </div>
               <Separator className="w-4/5 mx-auto" />

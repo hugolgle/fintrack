@@ -12,7 +12,7 @@ import { CardContent } from "@/components/ui/card";
 import { formatCurrency } from "../../utils/fonctionnel";
 
 export function ChartLine({
-  data,
+  data = [],
   defaultConfig,
   config = {},
   maxValue,
@@ -22,9 +22,7 @@ export function ChartLine({
 }) {
   const chartConfig = { ...defaultConfig, ...config };
 
-  const CustomTooltip = (props) => {
-    const { active, payload, label } = props;
-
+  const CustomTooltip = ({ active = false, payload = [], label = "" }) => {
     if (active && payload && payload.length) {
       const year = data.find((d) => d.month === label)?.year;
       const economieMonth = payload[0]?.value - payload[1]?.value;

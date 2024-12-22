@@ -40,7 +40,11 @@ export default function BoardTransactions({ type }) {
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
   const [monthChartRadial, setMonth] = useState(currentYearMonth);
   const navigate = useNavigate();
-  const { isLoading, data, isFetching } = useQuery({
+  const {
+    isLoading,
+    data: dataTransactions,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
@@ -68,7 +72,7 @@ export default function BoardTransactions({ type }) {
   const lastMonthYear = `${lastYear}${lastMonth}`;
 
   const revenuePieChartMonth = getTransactionsByMonth(
-    data,
+    dataTransactions,
     monthChartRadial,
     type
   );
@@ -123,7 +127,7 @@ export default function BoardTransactions({ type }) {
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   monthsGraph.forEach(({ code }) => {
-    const amount = calculTotalByMonth(data, type, code, null, null);
+    const amount = calculTotalByMonth(dataTransactions, type, code, null, null);
     amountMonth.push(Math.abs(amount));
   });
 
@@ -135,7 +139,9 @@ export default function BoardTransactions({ type }) {
 
   const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
 
-  const dataOperations = [...(Array.isArray(data) ? data : [])];
+  const dataOperations = [
+    ...(Array.isArray(dataTransactions) ? dataTransactions : []),
+  ];
 
   const lastOperations = getLastOperations(dataOperations, type, 6, false);
 
@@ -208,7 +214,13 @@ export default function BoardTransactions({ type }) {
 
   const chevronIsVisible = monthChartRadial < currentYearMonth;
   const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
-  const total = calculTotalByMonth(data, type, monthChartRadial, null, null);
+  const total = calculTotalByMonth(
+    dataTransactions,
+    type,
+    monthChartRadial,
+    null,
+    null
+  );
 
   return (
     <>
@@ -233,8 +245,16 @@ export default function BoardTransactions({ type }) {
                       ? "Dépenses ce mois"
                       : type === "Revenue" && "Revenus ce mois"
                   }
-                  value={calculTotalByMonth(data, type, currentYearMonth)}
-                  valueLast={calculTotalByMonth(data, type, lastMonthYear)}
+                  value={calculTotalByMonth(
+                    dataTransactions,
+                    type,
+                    currentYearMonth
+                  )}
+                  valueLast={calculTotalByMonth(
+                    dataTransactions,
+                    type,
+                    lastMonthYear
+                  )}
                   icon={<Calendar size={15} color="grey" />}
                   isAmount
                 />
@@ -245,8 +265,12 @@ export default function BoardTransactions({ type }) {
                       ? "Dépenses cette année"
                       : type === "Revenue" && "Revenus cette année"
                   }
-                  value={calculTotalByYear(data, type, year)}
-                  valueLast={calculTotalByYear(data, type, year - 1)}
+                  value={calculTotalByYear(dataTransactions, type, year)}
+                  valueLast={calculTotalByYear(
+                    dataTransactions,
+                    type,
+                    year - 1
+                  )}
                   icon={<PieChart size={15} color="grey" />}
                   year
                   isAmount
@@ -258,7 +282,7 @@ export default function BoardTransactions({ type }) {
                       ? "Dépenses totales"
                       : type === "Revenue" && "Revenus totals"
                   }
-                  value={calculTotal(data, type)}
+                  value={calculTotal(dataTransactions, type)}
                   icon={<DollarSign size={15} color="grey" />}
                   isAmount
                 />
@@ -369,7 +393,7 @@ export default function BoardTransactions({ type }) {
                           <span className="truncate">{operation.title}</span>
                         </td>
 
-                        <p
+                        <td
                           className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${
                             operation.type === "Expense"
                               ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
@@ -377,8 +401,8 @@ export default function BoardTransactions({ type }) {
                                 "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           }`}
                         >
-                          {formatCurrency.format(operation.amount)}
-                        </p>
+                          <span>{formatCurrency.format(operation.amount)}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

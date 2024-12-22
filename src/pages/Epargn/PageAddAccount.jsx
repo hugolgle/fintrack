@@ -121,7 +121,7 @@ export default function PageAddAccount() {
         <ButtonLoading
           type="submit"
           text="Soumettre"
-          disabled={mutation.isPending || !formik.isValid}
+          disabled={mutation.isPending}
           isPending={mutation.isPending}
         />
       </form>

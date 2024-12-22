@@ -245,7 +245,7 @@ export default function SignUp() {
             variant="default"
             type="submit"
             text="Inscription"
-            disabled={addUserMutation.isPending || !formik.isValid}
+            disabled={addUserMutation.isPending}
             isPending={addUserMutation.isPending}
           />
         </form>

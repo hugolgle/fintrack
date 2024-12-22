@@ -1,14 +1,14 @@
-import Tableau from "../../composant/Table/Table";
+import Tableau from "../../composant/Table/Table.jsx";
 import Header from "../../composant/Header.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchInvestments } from "../../Service/Investment.service.jsx";
-import Loader from "../../composant/Loader/Loader";
+import { fetchInvestmentById } from "../../Service/Investment.service.jsx";
+import Loader from "../../composant/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
 import { useParams } from "react-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { FormEditInvestment } from "../../Pages/Investment/FormEditInvestment";
+import { FormEditInvestment } from "./FormEditInvestment.jsx";
 import { useNavigate } from "react-router";
 
 import {
@@ -31,7 +31,7 @@ import { ROUTES } from "../../composant/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
 
-export default function PageInvestment() {
+export default function PageOrderById() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,13 +46,13 @@ export default function PageInvestment() {
 
   const {
     isLoading,
-    data: dataInvestments,
+    data: dataTransactionsByInvestment,
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["fetchInvestments"],
+    queryKey: ["fetchInvestmentById", id],
     queryFn: async () => {
-      const response = await fetchInvestments();
+      const response = await fetchInvestmentById(id);
       if (response?.status !== HttpStatusCode.Ok) {
         const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
@@ -68,7 +68,7 @@ export default function PageInvestment() {
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
-      queryClient.invalidateQueries(["fetchInvestments"]);
+      queryClient.invalidateQueries(["fetchInvestmentById", id]);
       refetch();
     },
     onError: (error) => {
@@ -98,14 +98,7 @@ export default function PageInvestment() {
     });
   };
 
-  const normalizedData = processTransactions(dataInvestments || []);
-  const dataAll = normalizedData;
-  const dataSold = normalizedData.filter(
-    (item) => item.transaction.isSale === true
-  );
-  const dataInProgress = normalizedData.filter(
-    (item) => item.transaction.isSale === false
-  );
+  const dataById = processTransactions([dataTransactionsByInvestment] || []);
 
   let investissements = [];
   let routeBtnAdd = "";
@@ -120,7 +113,7 @@ export default function PageInvestment() {
     investissements = dataInProgress;
     routeBtnAdd = ROUTES.ADD_ORDER;
   } else {
-    investissements = [];
+    investissements = dataById;
     routeBtnAdd = "add";
   }
 
@@ -163,13 +156,14 @@ export default function PageInvestment() {
   };
 
   const title =
-    location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
+    dataTransactionsByInvestment?.name ??
+    (location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
       ? "Investissement en cours"
       : location.pathname === ROUTES.INVESTMENT_ALL
         ? "Tous les investissements"
         : location.pathname === ROUTES.INVESTMENT_SOLD
           ? "Investissements vendu"
-          : "Investissement";
+          : "Investissement");
 
   const formatData = (row) => {
     return [

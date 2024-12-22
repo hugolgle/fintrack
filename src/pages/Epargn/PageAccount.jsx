@@ -19,9 +19,9 @@ export default function PageAccount() {
   const { id } = useParams();
 
   const {
+    isLoading,
     data: account,
     isFetching,
-    isLoading,
     refetch,
   } = useQuery({
     queryKey: ["fetchAccount", id],

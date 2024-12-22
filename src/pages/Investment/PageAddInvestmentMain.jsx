@@ -83,16 +83,20 @@ export default function PageAddInvestmentMain() {
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
   const [idInvest, setIdInvest] = useState("");
 
-  const { data: userInfo, isLoading: loadingUser } = useQuery({
+  const {
+    isLoading: isisLoadingUser,
+    data: dataUser,
+    isFetching: isFetchingUser,
+  } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
 
   const {
-    isLoading: loadingInvestments,
-    data: dataInvest,
-    isFetching,
+    isLoading: isLoadingInvestments,
+    data: dataInvests,
+    isFetching: isFetchingInvestments,
   } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
@@ -121,7 +125,7 @@ export default function PageAddInvestmentMain() {
       const postData =
         activeTab === "autre"
           ? {
-              user: userInfo?._id,
+              user: dataUser?._id,
               name: values.name,
               type: values.type,
               symbol: values.symbol,
@@ -145,7 +149,7 @@ export default function PageAddInvestmentMain() {
   });
 
   const addInvestmentMutation = useMutation({
-    mutationFn: (postData) => addInvestment(postData, userInfo?._id),
+    mutationFn: (postData) => addInvestment(postData, dataUser?._id),
     onSuccess: () => toast.success("Votre investissement a été ajouté !"),
     onError: (error) =>
       toast.error(error?.response?.data?.message || "Une erreur est survenue."),
@@ -164,13 +168,13 @@ export default function PageAddInvestmentMain() {
     },
   });
 
-  if (loadingUser || loadingInvestments) return <Loader />;
+  if (isisLoadingUser || isLoadingInvestments) return <Loader />;
 
   return (
     <section className="h-full">
       <Header
         title="Ajouter un investissement"
-        isFetching={isFetching}
+        isFetching={isFetchingInvestments || isFetchingUser}
         btnReturn
       />
       <form
@@ -196,11 +200,11 @@ export default function PageAddInvestmentMain() {
                   <Command>
                     <CommandInput placeholder="Rechercher un actif..." />
                     <CommandList>
-                      {dataInvest?.length === 0 ? (
+                      {dataInvests?.length === 0 ? (
                         <CommandEmpty>Aucune suggestion trouvée.</CommandEmpty>
                       ) : (
                         <CommandGroup>
-                          {dataInvest?.map((suggestion, index) => (
+                          {dataInvests?.map((suggestion, index) => (
                             <CommandItem
                               key={index}
                               onSelect={() => {
@@ -390,7 +394,7 @@ export default function PageAddInvestmentMain() {
         <ButtonLoading
           text="Soumettre"
           isPending={addInvestmentMutation.isPending}
-          disabled={addInvestmentMutation.isPending || !formik.isValid}
+          disabled={addInvestmentMutation.isPending}
         />
       </form>
     </section>

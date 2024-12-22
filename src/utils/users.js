@@ -20,8 +20,8 @@ export const useIsAuthenticated = () => {
   const userId = getUserIdFromToken();
 
   const {
-    data: currentUser,
     isLoading,
+    data: currentUser,
     isError,
   } = useQuery({
     queryKey: ["currentUser", userId],

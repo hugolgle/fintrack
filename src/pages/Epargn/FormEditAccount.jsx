@@ -117,7 +117,7 @@ export function FormEditAccount({ account, refetch }) {
           type="submit"
           text="Modifier"
           isPending={mutationEdit.isPending}
-          disabled={mutationEdit.isPending || !formik.isValid}
+          disabled={mutationEdit.isPending}
         />
         <DialogClose>
           <Button type="button" variant="outline">

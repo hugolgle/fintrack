@@ -30,8 +30,10 @@ export default function ModalTable({
         </DialogHeader>
         <div className="w-full text-sm mt-4 max-h-52 overflow-auto">
           <div className="flex w-full font-thin italic pb-2">
-            {columns?.map(({ name }) => (
-              <p className="w-full text-center">{name}</p>
+            {columns?.map(({ id, name }) => (
+              <p key={id} className="w-full text-center">
+                {name}
+              </p>
             ))}
           </div>
           <Separator className="w-full mx-auto" />
@@ -50,12 +52,14 @@ export default function ModalTable({
               </div>
             );
           })}
-          <Separator className="w-full mx-auto" />
           {initialAmount && (
-            <div className="text-xs flex justify-end gap-4 items-center py-2">
-              <p className="text-gray-400">Montant initial:</p>
-              <p>{formatCurrency.format(initialAmount)}</p>
-            </div>
+            <>
+              <Separator className="w-full mx-auto" />
+              <div className="text-xs flex justify-end gap-4 items-center py-2">
+                <p className="text-gray-400">Montant initial:</p>
+                <p>{formatCurrency.format(initialAmount)}</p>
+              </div>
+            </>
           )}
         </div>
       </DialogContent>

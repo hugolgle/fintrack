@@ -27,6 +27,7 @@ import EpargnAction from "./Pages/Epargn/Action.jsx";
 import PageAddWithdraw from "./Pages/Epargn/Actions/PageAddWithdraw.jsx";
 import Heritage from "./Pages/Heritage/Heritage.jsx";
 import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx";
+import PageOrderById from "./Pages/Investment/PageOrderById.jsx";
 
 function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
@@ -62,7 +63,7 @@ function App() {
     { path: ROUTES.INVESTMENT, component: <BoardInvest /> },
     { path: ROUTES.ADD_ORDER, component: <PageAddInvestmentMain /> },
     { path: ROUTES.ADD_INVESTMENT, component: <PageAddInvestment /> },
-    { path: ROUTES.INVESTMENT_BY_ID, component: <PageInvestment /> },
+    { path: ROUTES.INVESTMENT_BY_ID, component: <PageOrderById /> },
     { path: ROUTES.INVESTMENT_ALL, component: <PageInvestment /> },
     { path: ROUTES.INVESTMENT_IN_PROGRESS, component: <PageInvestment /> },
     { path: ROUTES.INVESTMENT_SOLD, component: <PageInvestment /> },

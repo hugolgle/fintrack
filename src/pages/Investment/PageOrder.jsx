@@ -25,7 +25,11 @@ import { Eye } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
 
 export function PageOrder() {
-  const { isLoading, data, isFetching } = useQuery({
+  const {
+    isLoading,
+    data: dataInvestments,
+    isFetching,
+  } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -44,7 +48,7 @@ export function PageOrder() {
     setMode(checked);
   };
 
-  const orderData = data?.sort((a, b) => {
+  const orderData = dataInvestments?.sort((a, b) => {
     const dateA = a.transaction[0]?.date
       ? new Date(a.transaction[0].date)
       : new Date(0);
@@ -125,7 +129,7 @@ export function PageOrder() {
     );
   };
 
-  const displayData = data.map(
+  const displayData = dataInvestments.map(
     ({ _id, name, type, symbol, amountBuy, transaction }) => {
       return {
         _id: transaction._id,
@@ -177,11 +181,8 @@ export function PageOrder() {
                   firstItem={avatar}
                 />
               ) : (
-                data?.map(
-                  (
-                    { _id, name, type, transaction, symbol, amountBuy },
-                    index
-                  ) => {
+                dataInvestments?.map(
+                  ({ _id, name, type, transaction, symbol, amountBuy }) => {
                     const category = type === "Crypto" ? "crypto" : "symbol";
                     const date = transaction[0]?.date
                       ? new Date(transaction[0].date)
@@ -189,7 +190,7 @@ export function PageOrder() {
 
                     return (
                       <Link
-                        key={index}
+                        key={_id}
                         to={ROUTES.INVESTMENT_BY_ID.replace(":id", _id)}
                         className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
                           type
