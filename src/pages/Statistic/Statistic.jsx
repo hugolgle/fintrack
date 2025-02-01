@@ -14,6 +14,11 @@ import {
   getTransactionsByYear,
 } from "../../utils/operations";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
@@ -293,27 +298,38 @@ export default function Statistic() {
     return `${months[mois - 1]} ${annee}`;
   };
 
+  const years = generateYears().reverse();
+
   return (
     <section className="w-full">
       <Header title="Statistiques" isFetching={isFetching} />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-row gap-2">
-          {generateYears().map((year, index) => (
-            <Button
-              variant={selectedYear === year ? "secondary" : "none"}
-              key={index}
-              onClick={() => clickYear(year)}
-            >
-              {year}
-            </Button>
-          ))}
+          <Carousel className="max-w-xs overflow-hidden">
+            <CarouselContent className="flex gap-2 px-4 snap-x snap-mandatory">
+              {years.map((year, index) => (
+                <CarouselItem className="basis-1/2 pl-0">
+                  <Button
+                    variant={selectedYear === year ? "secondary" : "outline"}
+                    key={index}
+                    onClick={() => clickYear(year)}
+                    className="w-full"
+                  >
+                    {year}
+                  </Button>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+
           <Separator orientation="vertical" className="h-7 my-auto" />
           <div className="flex w-full gap-2">
             {generateMonths().map((monthIndex, index) => (
               <Button
                 variant={
-                  selectedMonth === String(monthIndex).padStart(2, "0") &&
-                  "secondary"
+                  selectedMonth === String(monthIndex).padStart(2, "0")
+                    ? "secondary"
+                    : "outline"
                 }
                 className="w-full max-w-auto animate-fade"
                 key={index}

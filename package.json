@@ -50,6 +50,7 @@
     "d3": "^7.9.0",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+    "embla-carousel-react": "^8.5.2",
     "express": "^4.19.2",
     "formik": "^2.4.6",
     "fs": "0.0.1-security",
