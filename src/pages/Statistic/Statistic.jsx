@@ -310,7 +310,7 @@ export default function Statistic() {
               {years.map((year, index) => (
                 <CarouselItem className="basis-1/2 pl-0">
                   <Button
-                    variant={selectedYear === year ? "secondary" : "outline"}
+                    variant={selectedYear === year ? "secondary" : "none"}
                     key={index}
                     onClick={() => clickYear(year)}
                     className="w-full"
@@ -329,9 +329,9 @@ export default function Statistic() {
                 variant={
                   selectedMonth === String(monthIndex).padStart(2, "0")
                     ? "secondary"
-                    : "outline"
+                    : "none"
                 }
-                className="w-full max-w-auto animate-fade"
+                className="w-full max-w-fit animate-fade"
                 key={index}
                 onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
               >
@@ -435,7 +435,7 @@ export default function Statistic() {
 
             <div className="flex gap-2 w-full">
               <Button
-                variant={!selectedByYear ? "secondary" : "none"}
+                variant={!selectedByYear ? "secondary" : "outline"}
                 onClick={handleByMonth}
                 className="w-full"
               >
@@ -443,7 +443,7 @@ export default function Statistic() {
               </Button>
 
               <Button
-                variant={selectedByYear ? "secondary" : "none"}
+                variant={selectedByYear ? "secondary" : "outline"}
                 onClick={handleByYear}
                 className="w-full"
               >

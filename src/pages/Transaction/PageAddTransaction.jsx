@@ -24,7 +24,7 @@ import {
   categoryDepense,
 } from "../../../public/categories.json";
 import { useEffect } from "react";
-import { categorySort, nameType } from "../../utils/other";
+import { alphaSort, nameType } from "../../utils/other";
 import {
   getTagsOfTransactions,
   getTitleOfTransactionsByType,
@@ -120,8 +120,8 @@ export default function PageAddTransac(props) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
 
-  const categoryD = categorySort(categoryDepense);
-  const categoryR = categorySort(categoryRecette);
+  const categoryD = alphaSort(categoryDepense);
+  const categoryR = alphaSort(categoryRecette);
 
   const suggestions = [
     "Autre",

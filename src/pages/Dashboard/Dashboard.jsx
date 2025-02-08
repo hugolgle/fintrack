@@ -468,13 +468,13 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-row gap-4 h-full">
             <div className="w-2/5 flex flex-col h-fit gap-4">
-              <div className="bg-secondary h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <div className="bg-secondary/40 h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <h2 className="text-left">Dernières opérations</h2>
                 <div className="w-full gap-2 h-full flex flex-col">
                   {lastOperations.map((operation) => (
                     <div
                       key={operation._id}
-                      className="w-full rounded-lg h-full flex flex-row items-center text-xs"
+                      className="w-full rounded-lg gap-x-1 h-full flex flex-row items-center text-xs"
                     >
                       <div className="flex flex-row space-x-4 w-full">
                         <span>{format(operation.date, "dd/MM")}</span>
@@ -495,7 +495,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               </div>
-              <div className="bg-secondary ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <div className="bg-secondary/40 ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between w-full gap-4">
                   <h2 className="text-nowrap">Mes investissements</h2>
                   <p
@@ -512,7 +512,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-2">
                   {dataInvests
                     ?.sort((a, b) => b.amountBuy - a.amountBuy)
-                    .slice(0, 3)
+                    .slice(0, 4)
                     .map((item) => {
                       const category =
                         item?.type === "Crypto" ? "crypto" : "symbol";
@@ -541,7 +541,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="w-full relative h-fit flex flex-col justify-between bg-secondary ring-1 ring-border rounded-xl p-4">
+            <div className="w-full relative h-fit flex flex-col justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Graphique</h2>
               {!isFetchingTransacs ? (
                 <ChartLine
@@ -587,7 +587,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="w-2/4 bg-secondary ring-1 ring-border rounded-xl h-full p-4">
+            <div className="w-2/4 bg-secondary/40 ring-1 ring-border rounded-xl h-full p-4">
               <h2 className=" text-left">Répartitions</h2>
               {!isFetchingTransacs ? (
                 total !== "0.00" ? (

@@ -121,7 +121,7 @@ export default function PageAccount() {
         isFetching={isFetching}
       />
       <div className="flex w-full gap-4 animate-fade">
-        <div className="w-4/5 flex flex-col h-fit ring-1 ring-border justify-between bg-secondary rounded-xl p-4">
+        <div className="w-4/5 flex flex-col h-fit ring-1 ring-border justify-between bg-secondary/40 rounded-xl p-4">
           <h2 className=" text-left">Graphique</h2>
           {!isFetching ? (
             <ChartLine
@@ -157,7 +157,7 @@ export default function PageAccount() {
         </div>
 
         <div className="flex flex-col gap-4  w-1/5">
-          <div className="bg-secondary ring-1 ring-border rounded-xl h-fit p-4">
+          <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4">
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className="text-left">Transactions</h2>
 
@@ -241,7 +241,7 @@ export default function PageAccount() {
             )}
           </div>
 
-          <div className="ring-1 ring-border bg-secondary h-fit rounded-xl p-4">
+          <div className="ring-1 ring-border bg-secondary/40 h-fit rounded-xl p-4">
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className=" text-left">Caractéristiques</h2>
               <Dialog>

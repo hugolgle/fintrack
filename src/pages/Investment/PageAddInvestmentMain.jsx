@@ -46,6 +46,7 @@ import { fr } from "date-fns/locale";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loader from "../../composant/Loader/Loader.jsx";
+import { alphaSort } from "../../utils/other.js";
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -210,7 +211,7 @@ export default function PageAddInvestmentMain() {
                         <CommandEmpty>Aucune suggestion trouvée.</CommandEmpty>
                       ) : (
                         <CommandGroup>
-                          {dataInvests?.map((suggestion, index) => (
+                          {alphaSort(dataInvests)?.map((suggestion, index) => (
                             <CommandItem
                               key={index}
                               onSelect={() => {

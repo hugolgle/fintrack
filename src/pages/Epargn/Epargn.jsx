@@ -161,26 +161,7 @@ export default function Epargn() {
             ))}
         </div>
         <div className="w-full flex gap-4">
-          <div className="w-1/3 bg-secondary ring-1 ring-border h-fit rounded-xl p-4">
-            <h2 className=" text-left">Répartitions</h2>
-            {!isFetching ? (
-              totalAmount !== "0.00" ? (
-                <RadialChart
-                  chartData={transformedData}
-                  chartConfig={chartConfig}
-                  total={totalAmount}
-                  fontSizeTotal={8}
-                  inner={60}
-                  outer={80}
-                />
-              ) : (
-                <p className="h-[225px] ">Aucune donnée</p>
-              )
-            ) : (
-              <LoaderDots />
-            )}
-          </div>
-          <div className="w-2/3 h-fit ring-1 ring-border bg-secondary rounded-xl p-4">
+          <div className="w-2/3 h-fit ring-1 ring-border bg-secondary/40 rounded-xl p-4">
             <div className="flex justify-between w-full cursor-pointer items-center">
               <h2 className="text-left">Transactions</h2>
               <ModalTable
@@ -254,7 +235,7 @@ export default function Epargn() {
             </div>
           </div>
 
-          <div className="w-1/3 bg-secondary ring-1 ring-border h-fit rounded-xl p-4">
+          <div className="w-1/3 bg-secondary/40 ring-1 ring-border h-fit rounded-xl p-4">
             <h2 className=" text-left">Répartitions</h2>
             {!isFetching ? (
               totalAmount !== "0.00" ? (

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { categorySort, months, nameType } from "../../utils/other";
+import { alphaSort, months, nameType } from "../../utils/other";
 import {
   categoryDepense,
   categoryRecette,
@@ -96,9 +96,9 @@ export default function PageTransactions(props) {
 
   const categories =
     props.type === "Expense"
-      ? categorySort(categoryDepense)
+      ? alphaSort(categoryDepense)
       : props.type === "Revenue"
-        ? categorySort(categoryRecette)
+        ? alphaSort(categoryRecette)
         : "";
 
   const [selectedCategorys, setSelectedCategorys] = useState(

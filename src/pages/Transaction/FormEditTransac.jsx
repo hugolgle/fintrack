@@ -30,7 +30,7 @@ import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { categorySort } from "../../utils/other";
+import { alphaSort } from "../../utils/other";
 import {
   categoryRecette,
   categoryDepense,
@@ -103,8 +103,8 @@ export function FormEditTransac({ transaction, refetch }) {
     },
   });
 
-  const categoryD = categorySort(categoryDepense);
-  const categoryR = categorySort(categoryRecette);
+  const categoryD = alphaSort(categoryDepense);
+  const categoryR = alphaSort(categoryRecette);
 
   const dataBase = [
     transaction?.title,

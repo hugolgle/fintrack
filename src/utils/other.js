@@ -56,11 +56,11 @@ export function getLastMonths(date, numberOfMonths) {
   return lastMonths;
 }
 
-export function categorySort(categories) {
-  if (!Array.isArray(categories)) {
+export function alphaSort(arrayData) {
+  if (!Array.isArray(arrayData)) {
     throw new Error("Input must be an array");
   }
-  return categories.sort((a, b) => {
+  return arrayData.sort((a, b) => {
     if (a.name.toLowerCase() < b.name.toLowerCase()) {
       return -1;
     }

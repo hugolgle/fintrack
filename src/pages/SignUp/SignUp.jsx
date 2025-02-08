@@ -117,7 +117,7 @@ export default function SignUp() {
 
   return (
     <section className="w-full flex justify-center items-center h-screen p-4">
-      <div className="w-1/4 p-4 rounded-3xl bg-secondary  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
+      <div className="w-1/4 p-4 rounded-3xl bg-secondary/40  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
         <img
           src="/public/logoFinTrack.png"
           className="size-16 mx-auto mb-4"

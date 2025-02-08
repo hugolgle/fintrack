@@ -78,14 +78,14 @@ export default function Login() {
   }, [passwordRef]);
 
   return (
-    <section className="w-full flex justify-center items-center h-screen p-4">
-      <div className="w-1/4 p-4 rounded-3xl bg-secondary  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
+    <section className="w-full flex flex-col justify-center items-center h-screen p-4">
+      <div className="w-1/4 p-4 rounded-3xl bg-secondary/40  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
         <img
           src="/public/logoFinTrack.png"
           className="size-16 mx-auto mb-4"
           alt="logo"
         />
-        <h1 className="text-2xl font-thin font-logo">Connectez-vous</h1>
+        <h1 className="text-2xl font-logo">Connectez-vous</h1>
         <form
           onSubmit={formik.handleSubmit}
           className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-6 animate-fade"

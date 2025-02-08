@@ -111,7 +111,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-xl relative items-center h-full p-4 bg-secondary">
+    <div className="flex flex-col justify-between overflow-hidden rounded-xl relative items-center h-full p-4 bg-secondary/40">
       <Link
         to={ROUTES.HOME}
         className="cursor-pointer rounded-xl text-2xl group text-center w-auto overflow-hidden"

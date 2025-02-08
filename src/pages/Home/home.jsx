@@ -33,11 +33,19 @@ export default function Home() {
           <p className="text-5xl mt-3 font-logo">FinTrack</p>
         </div>
         {isAuthenticated ? (
-          <Button variant="outline" onClick={() => navigate(ROUTES.DASHBOARD)}>
+          <Button
+            variant="outline"
+            className="bg-transparent"
+            onClick={() => navigate(ROUTES.DASHBOARD)}
+          >
             C'est parti !
           </Button>
         ) : (
-          <Button variant="outline" onClick={() => navigate(ROUTES.LOGIN)}>
+          <Button
+            variant="outline"
+            className="bg-transparent"
+            onClick={() => navigate(ROUTES.LOGIN)}
+          >
             Connectez-vous !
           </Button>
         )}

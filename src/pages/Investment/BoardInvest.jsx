@@ -261,7 +261,7 @@ export default function BoardInvest() {
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-2/5 bg-secondary h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+            <div className="w-2/5 bg-secondary/40 h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
               <h2 className=" text-left">Dernières opérations</h2>
               <table className="h-full">
                 <tbody className="w-full h-full gap-2 flex flex-col">
@@ -292,7 +292,7 @@ export default function BoardInvest() {
                 </tbody>
               </table>
             </div>
-            <div className="w-full relative flex flex-col h-fit justify-between bg-secondary ring-1 ring-border rounded-xl p-4">
+            <div className="w-full relative flex flex-col h-fit justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
@@ -340,7 +340,7 @@ export default function BoardInvest() {
                 </Tabs>
               </div>
             </div>
-            <div className="w-2/4 bg-secondary backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
+            <div className="w-2/4 bg-secondary/40 backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
               <h2 className=" text-left">Position</h2>
 
               {!isFetching ? (

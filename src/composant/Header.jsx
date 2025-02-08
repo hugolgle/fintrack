@@ -80,11 +80,11 @@ function Header({
                   <div className="relative hover:scale-110 transition-all">
                     <Filter size={20} className="cursor-pointer" />
                     {btnFilter.check > 0 ? (
-                      <>
-                        <span className="absolute text-xs -top-2 bg-primary rounded-full px-1 animate-pop-up">
+                      <div className="absolute -top-2 -right-1 bg-primary rounded-full size-[14px] animate-pop-up flex items-center justify-center">
+                        <p className="text-[10px] text-secondary">
                           {btnFilter.check}
-                        </span>
-                      </>
+                        </p>
+                      </div>
                     ) : (
                       ""
                     )}

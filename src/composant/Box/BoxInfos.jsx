@@ -44,14 +44,14 @@ function BoxInfos({
   return (
     <div
       onClick={onClick}
-      className={`p-5 w-full max-w-2xl bg-secondary h-auto rounded-xl ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-4 w-full max-w-2xl bg-secondary/40 h-auto rounded-xl ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>
         {icon}
       </div>
       <div className="w-full flex flex-col h-full justify-end items-start">
-        <p className="font-bold flex italic items-end gap-2 text-2xl">
+        <p className="font-bold flex italic items-end gap-2 text-lg">
           {isAmount ? formatCurrency.format(value) : value}
           {valueLast && diffAmount < 0 ? (
             <TrendingDown size={15} color="red" />
