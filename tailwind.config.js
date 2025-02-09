@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      logo: ["Nixie One", "sans-serif", "system-ui"],
+      logo: ["Ojuju", "serif", "system-ui"],
     },
     extend: {
       colors: {

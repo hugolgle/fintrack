@@ -144,34 +144,6 @@ export default function BoardTransactions({ type }) {
   ];
 
   const lastOperations = getLastOperations(dataOperations, type, 6, false);
-  const currentDateBis = new Date();
-
-  const lastMonthDate = new Date(
-    currentDateBis.setMonth(currentDateBis.getMonth() - 1)
-  );
-
-  const startOfLastMonth = new Date(
-    lastMonthDate.getFullYear(),
-    lastMonthDate.getMonth(),
-    1
-  );
-
-  const endOfLastMonth = new Date(
-    lastMonthDate.getFullYear(),
-    lastMonthDate.getMonth() + 1,
-    0
-  );
-
-  const mySubscription = dataOperations.filter(
-    (data) =>
-      data.category === "Abonnement" &&
-      new Date(data.date) >= startOfLastMonth &&
-      new Date(data.date) <= endOfLastMonth
-  );
-
-  const totalMySubscription = mySubscription.reduce((total, item) => {
-    return total + (item.amount || 0);
-  }, 0);
 
   const convertDate = (date) => {
     const annee = Math.floor(date / 100);
@@ -432,35 +404,6 @@ export default function BoardTransactions({ type }) {
                   </tbody>
                 </table>
               </div>
-              {type === "Expense" && (
-                <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
-                  <h2 className=" text-left">Mes abonnements</h2>
-                  <table className="h-full">
-                    <tbody className="w-full h-full gap-2 flex flex-col">
-                      {mySubscription.map((operation) => (
-                        <tr
-                          key={operation._id}
-                          className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
-                        >
-                          <td className="flex flex-row space-x-4 w-full">
-                            <span>{format(operation.date, "dd/MM")}</span>
-                            <span className="truncate">{operation.title}</span>
-                          </td>
-
-                          <td className="text-[10px] italic text-nowrap">
-                            <span>
-                              {formatCurrency.format(operation.amount)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                      <p className="text-[12px] text-right italic font-black">
-                        = {formatCurrency.format(totalMySubscription)}
-                      </p>
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
           </div>
         </div>

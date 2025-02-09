@@ -13,7 +13,7 @@ export const renderCustomLegend = (props) => {
     <ul className="flex flex-col justify-center w-40">
       {payloadTopN.map((entry, index) => (
         <li key={`item-${index}`} className="flex flex-col items-center">
-          {index > 0 && <Separator />}
+          {index > 0 && <Separator className="bg-secondary" />}
           <div className="flex items-center w-full animate-fade">
             <Dot strokeWidth={10} color={entry.color} />
             <span className="text-[10px] gap-2 font-thin w-full flex items-center">

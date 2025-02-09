@@ -31,6 +31,7 @@ import { ROUTES } from "../../composant/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
 import { calculTotalAmount } from "../../utils/calcul.js";
+import { FormEditOrder } from "./FormEditOrder.jsx";
 
 export default function PageOrderById() {
   const { id } = useParams();
@@ -251,6 +252,22 @@ export default function PageOrderById() {
           btnReturn
           btnAdd={routeBtnAdd}
           isFetching={isFetching}
+          actionEdit={
+            <Dialog>
+              <DialogTrigger asChild>
+                <Pencil
+                  size={20}
+                  className="cursor-pointer hover:scale-110 transition-all"
+                />
+              </DialogTrigger>
+              <DialogContent>
+                <FormEditOrder
+                  transaction={dataTransactionsByInvestment}
+                  refetch={refetch}
+                />
+              </DialogContent>
+            </Dialog>
+          }
         />
 
         <Tableau

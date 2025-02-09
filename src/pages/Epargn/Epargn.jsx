@@ -13,6 +13,7 @@ import LoaderDots from "../../composant/Loader/LoaderDots";
 import ModalTable from "./Modal/ModalTable";
 import { ROUTES } from "../../composant/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { renderCustomLegend } from "../../composant/Legend";
 
 export default function Epargn() {
   const navigate = useNavigate();
@@ -167,7 +168,7 @@ export default function Epargn() {
               <ModalTable
                 btnOpen={
                   <p className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all">
-                    Voir plus
+                    Voir tout
                     <ChevronRight
                       size={12}
                       className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
@@ -190,7 +191,7 @@ export default function Epargn() {
                   </p>
                 ))}
               </div>
-              <Separator className="w-4/5 mx-auto" />
+              <Separator className="w-4/5 mx-auto bg-secondary" />
               {mergedTransactions
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .slice(0, 5)
@@ -236,7 +237,7 @@ export default function Epargn() {
           </div>
 
           <div className="w-1/3 bg-secondary/40 ring-1 ring-border h-fit rounded-xl p-4">
-            <h2 className=" text-left">Répartitions</h2>
+            <h2 className="text-left">Répartitions</h2>
             {!isFetching ? (
               totalAmount !== "0.00" ? (
                 <RadialChart
@@ -246,6 +247,7 @@ export default function Epargn() {
                   fontSizeTotal={8}
                   inner={60}
                   outer={80}
+                  legend={renderCustomLegend}
                 />
               ) : (
                 <p className="h-[225px] ">Aucune donnée</p>

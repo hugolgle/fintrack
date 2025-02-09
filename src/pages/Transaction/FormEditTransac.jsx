@@ -58,6 +58,7 @@ const validationSchema = yup.object().shape({
 export function FormEditTransac({ transaction, refetch }) {
   const [tags, setTags] = useState(transaction.tag || []);
   const [tagInput, setTagInput] = useState("");
+  const [open, setOpen] = useState(false);
 
   const initialValues = {
     title: transaction.title || "",
@@ -194,7 +195,7 @@ export function FormEditTransac({ transaction, refetch }) {
           </p>
         )}
 
-        <Popover modal={true}>
+        <Popover modal={true} open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline">
               {formik.values.date ? (
@@ -211,6 +212,7 @@ export function FormEditTransac({ transaction, refetch }) {
               selected={formik.values.date}
               onSelect={(date) => {
                 formik.setFieldValue("date", date);
+                setOpen(false);
               }}
               initialFocus
               locale={fr}

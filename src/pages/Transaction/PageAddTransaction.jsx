@@ -119,6 +119,7 @@ export default function PageAddTransac(props) {
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [openCalendar, setOpenCalendar] = useState(false);
 
   const categoryD = alphaSort(categoryDepense);
   const categoryR = alphaSort(categoryRecette);
@@ -318,7 +319,7 @@ export default function PageAddTransac(props) {
           </p>
         )}
 
-        <Popover>
+        <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
           <PopoverTrigger asChild>
             <Button variant="input">
               {formik.values.date ? (
@@ -333,7 +334,10 @@ export default function PageAddTransac(props) {
             <Calendar
               mode="single"
               selected={formik.values.date}
-              onSelect={(date) => formik.setFieldValue("date", date)}
+              onSelect={(date) => {
+                formik.setFieldValue("date", date);
+                setOpenCalendar(false);
+              }}
               initialFocus
               locale={fr}
             />

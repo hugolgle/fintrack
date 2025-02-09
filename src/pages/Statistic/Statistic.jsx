@@ -35,6 +35,7 @@ import { RadialChart } from "../../composant/Charts/RadialChart";
 import { renderCustomLegend } from "../../composant/Legend";
 import Header from "../../composant/Header";
 import { useRef } from "react";
+import { fetchInvestments } from "../../Service/Investment.service";
 
 export default function Statistic() {
   const userId = getUserIdFromToken();
@@ -61,6 +62,19 @@ export default function Statistic() {
     refetchOnMount: true,
   });
 
+  const { data: dataInvests } = useQuery({
+    queryKey: ["fetchInvestments"],
+    queryFn: async () => {
+      const response = await fetchInvestments();
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
+        toast.warn(message);
+      }
+      return response?.data;
+    },
+    refetchOnMount: true,
+  });
+
   const { month: currentMonth, year: currentYear } = currentDate();
 
   const [selectedMonth, setSelectedMonth] = useState(
@@ -69,7 +83,6 @@ export default function Statistic() {
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [firstYear, setFirstYear] = useState(currentYear);
   const [filteredOperation, setFilteredOperation] = useState([]);
-  const [selectedByYear, setSelectedByYear] = useState(false);
 
   const prevTransactionsRef = useRef();
 
@@ -83,7 +96,7 @@ export default function Statistic() {
       prevTransactionsRef.current = dataTransactions;
     }
   }, [dataTransactions]);
-
+  console.log(selectedMonth);
   useEffect(() => {
     const yearsSet = new Set();
     let minYear = currentYear;
@@ -109,14 +122,6 @@ export default function Statistic() {
     setSelectedYear(year);
   };
 
-  const handleByMonth = () => {
-    setSelectedByYear(false);
-  };
-
-  const handleByYear = () => {
-    setSelectedByYear(true);
-  };
-
   const generateYears = () => {
     const years = [];
     for (let year = firstYear; year <= currentYear; year++) {
@@ -137,116 +142,130 @@ export default function Statistic() {
   const depenseYear = calculTotalByYear(
     dataTransactions,
     "Expense",
-    `${selectedYear}`,
-    null,
-    null
+    `${selectedYear}`
   );
   const recetteYear = calculTotalByYear(
     dataTransactions,
     "Revenue",
-    `${selectedYear}`,
-    null,
-    null
+    `${selectedYear}`
   );
 
   const depenseMonth = calculTotalByMonth(
     dataTransactions,
     "Expense",
-    selectedDate,
-    null,
-    null
+    selectedDate
   );
+
   const recetteMonth = calculTotalByMonth(
     dataTransactions,
     "Revenue",
-    selectedDate,
-    null,
-    null
+    selectedDate
   );
 
   const nbMonth = generateMonths().length;
 
-  const moyenneDepenseMois = calculMoyenne(
-    dataTransactions,
-    "Expense",
-    `${selectedYear}`,
-    nbMonth
-  );
-  const moyenneRecetteMois = calculMoyenne(
-    dataTransactions,
-    "Revenue",
-    `${selectedYear}`,
-    nbMonth
-  );
+  const moyenneDepenseMois = depenseYear / nbMonth;
+  const moyenneRecetteMois = recetteYear / nbMonth;
 
-  const economieTotale = calculEconomie(
-    dataTransactions,
-    `${selectedYear}`,
-    null
-  );
+  // ---------
+
+  const economieTotale = calculEconomie(dataTransactions, `${selectedYear}`);
   const economieMonth = calculEconomie(
     dataTransactions,
     `${selectedYear}`,
     selectedMonth
   );
-  const moyenneEconomie = calculMoyenneEconomie(
-    moyenneDepenseMois,
-    moyenneRecetteMois
-  );
+  const moyenneEconomie = moyenneDepenseMois + moyenneRecetteMois;
+  // ---------
+  const amountInvestisYear = dataInvests
+    ?.map((data) =>
+      data.transaction
+        .filter((transaction) => {
+          return transaction.date.slice(0, 4) === `${selectedYear}`;
+        })
+        .reduce((total, item) => {
+          return total + (item.amount || 0);
+        }, 0)
+    )
+    .reduce((total, item) => {
+      return total + (item || 0);
+    }, 0);
+
+  const AmountInvestisMonth = dataInvests
+    ?.map((data) =>
+      data.transaction
+        .filter((transaction) => {
+          return (
+            transaction.date.slice(0, 7) === `${selectedYear}-${selectedMonth}`
+          );
+        })
+        .reduce((total, item) => {
+          return total + (item.amount || 0);
+        }, 0)
+    )
+    .reduce((total, item) => {
+      return total + (item || 0);
+    }, 0);
+
+  const amountInvestisAverage = amountInvestisYear / nbMonth;
+
+  // ---------
 
   if (isLoading) return <Loader />;
 
   const expensePieChartYear = getTransactionsByYear(
     dataTransactions,
     `${selectedYear}`,
-    "Expense",
-    null,
-    null
+    "Expense"
   );
 
   const expensePieChartMonth = getTransactionsByMonth(
     dataTransactions,
     selectedDate,
-    "Expense",
-    null,
-    null
+    "Expense"
   );
 
   const revenuePieChartYear = getTransactionsByYear(
     dataTransactions,
     `${selectedYear}`,
-    "Revenue",
-    null,
-    null
+    "Revenue"
   );
 
   const revenuePieChartMonth = getTransactionsByMonth(
     dataTransactions,
     selectedDate,
-    "Revenue",
-    null,
-    null
+    "Revenue"
   );
-
-  const transactionsExpense = selectedByYear
-    ? expensePieChartYear
-    : expensePieChartMonth;
 
   const categoryColorsExpense = categoryDepense.reduce((acc, category) => {
     acc[category.name] = category.color;
     return acc;
   }, {});
 
-  const chartDataExpense = aggregateTransactions(transactionsExpense);
-  const totalAmountExpense = chartDataExpense.reduce(
+  const chartDataExpenseYear = aggregateTransactions(expensePieChartYear);
+  const chartDataExpenseMonth = aggregateTransactions(expensePieChartMonth);
+
+  const totalAmountExpenseYear = chartDataExpenseYear.reduce(
     (sum, item) => sum + item.amount,
     0
   );
 
-  const transformedDataExpense = chartDataExpense.map((item) => ({
+  const totalAmountExpenseMonth = chartDataExpenseMonth.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+
+  const transformedDataExpenseYear = chartDataExpenseYear.map((item) => ({
     name: item.nomCate,
     amount: item.amount,
-    pourcentage: (item.amount / totalAmountExpense) * 100,
+    pourcentage: (item.amount / totalAmountExpenseYear) * 100,
+    fill: categoryColorsExpense[item.nomCate],
+  }));
+
+  const transformedDataExpenseMonth = chartDataExpenseMonth.map((item) => ({
+    name: item.nomCate,
+    amount: item.amount,
+    pourcentage: (item.amount / totalAmountExpenseMonth) * 100,
     fill: categoryColorsExpense[item.nomCate],
   }));
 
@@ -260,25 +279,35 @@ export default function Statistic() {
     }, {}),
   };
 
-  const transactionsRevenue = selectedByYear
-    ? revenuePieChartYear
-    : revenuePieChartMonth;
-
   const categoryColorsRevenue = categoryRecette.reduce((acc, category) => {
     acc[category.name] = category.color;
     return acc;
   }, {});
 
-  const chartDataRevenue = aggregateTransactions(transactionsRevenue);
-  const totalAmountRevenue = chartDataRevenue.reduce(
+  const chartDataRevenueMonth = aggregateTransactions(revenuePieChartMonth);
+  const chartDataRevenueYear = aggregateTransactions(revenuePieChartYear);
+
+  const totalAmountRevenueMonth = chartDataRevenueMonth.reduce(
     (sum, item) => sum + item.amount,
     0
   );
 
-  const transformedDataRevenue = chartDataRevenue.map((item) => ({
+  const totalAmountRevenueYear = chartDataRevenueYear.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+
+  const transformedDataRevenueMonth = chartDataRevenueMonth.map((item) => ({
     name: item.nomCate,
     amount: item.amount,
-    pourcentage: (item.amount / totalAmountRevenue) * 100,
+    pourcentage: (item.amount / totalAmountRevenueMonth) * 100,
+    fill: categoryColorsRevenue[item.nomCate],
+  }));
+
+  const transformedDataRevenueYear = chartDataRevenueYear.map((item) => ({
+    name: item.nomCate,
+    amount: item.amount,
+    pourcentage: (item.amount / totalAmountRevenueYear) * 100,
     fill: categoryColorsRevenue[item.nomCate],
   }));
 
@@ -321,8 +350,10 @@ export default function Statistic() {
               ))}
             </CarouselContent>
           </Carousel>
-
-          <Separator orientation="vertical" className="h-7 my-auto" />
+          <Separator
+            orientation="vertical"
+            className="h-7 my-auto bg-secondary"
+          />
           <div className="flex w-full gap-2">
             {generateMonths().map((monthIndex, index) => (
               <Button
@@ -340,50 +371,105 @@ export default function Statistic() {
             ))}
           </div>
         </div>
-        <div className="flex flex-row gap-4 animate-fade">
+        <div className="bg-secondary/40 flex w-full rounded-2xl border">
+          <div className="flex flex-col w-full p-4">
+            <p className="italic font-thin text-left text-xs">
+              Revenus de {selectedYear}
+            </p>
+
+            {!isFetching ? (
+              <RadialChart
+                chartData={transformedDataRevenueYear}
+                chartConfig={chartConfigRevenue}
+                legend={renderCustomLegend}
+                inner={30}
+                outer={45}
+                height={110}
+              />
+            ) : (
+              <LoaderDots size={180} />
+            )}
+          </div>
+          <Separator
+            orientation="vertical"
+            className="h-32 my-auto bg-secondary"
+          />
+          <div className="flex flex-col w-full p-4">
+            <p className="italic font-thin text-left text-xs">
+              Dépenses {selectedYear}
+            </p>
+            {!isFetching ? (
+              <RadialChart
+                chartData={transformedDataExpenseYear}
+                chartConfig={chartConfigExpense}
+                legend={renderCustomLegend}
+                inner={30}
+                outer={45}
+                height={110}
+              />
+            ) : (
+              <LoaderDots />
+            )}
+          </div>
+          <Separator
+            orientation="vertical"
+            className="h-32 my-auto bg-secondary"
+          />
+          <div className="flex flex-col w-full p-4">
+            <p className="italic font-thin text-left text-xs">
+              Revenus de {convertDate(selectedDate)}
+            </p>
+
+            {!isFetching ? (
+              <RadialChart
+                chartData={transformedDataRevenueMonth}
+                chartConfig={chartConfigRevenue}
+                legend={renderCustomLegend}
+                inner={30}
+                outer={45}
+                height={110}
+              />
+            ) : (
+              <LoaderDots size={180} />
+            )}
+          </div>
+          <Separator
+            orientation="vertical"
+            className="h-32 my-auto bg-secondary"
+          />
+          <div className="flex flex-col w-full p-4">
+            <p className="italic font-thin text-left text-xs">
+              Dépenses de {convertDate(selectedDate)}
+            </p>
+            {!isFetching ? (
+              <RadialChart
+                chartData={transformedDataExpenseMonth}
+                chartConfig={chartConfigExpense}
+                legend={renderCustomLegend}
+                inner={30}
+                outer={45}
+                height={110}
+              />
+            ) : (
+              <LoaderDots />
+            )}
+          </div>
+        </div>
+        <div className="flex gap-4 animate-fade">
           <div className="flex flex-col items-center gap-4 w-2/3">
             <div className="flex flex-row gap-4 w-full h-full text-right">
+              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
+                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+                  Revenu
+                </h1>
+              </div>
+
               <BoxStat
-                title="Revenu totale"
-                type="Revenue"
-                selectedYear={selectedYear}
-                amount={recetteYear}
-              />
-              <BoxStat
-                title="Dépense totale"
-                type="Expense"
-                selectedYear={selectedYear}
-                amount={depenseYear}
-              />
-              <BoxStat
-                title="Économie totale"
-                type="State"
-                selectedYear={selectedYear}
-                amount={economieTotale}
-              />
-            </div>
-            <div className="flex flex-row gap-4 w-full h-full text-right">
-              <BoxStat
-                title="Revenu/Mois"
+                title="Revenu par Mois"
                 type="Revenue"
                 selectedYear={selectedYear}
                 amount={moyenneRecetteMois}
               />
-              <BoxStat
-                title="Dépense/Mois"
-                type="Expense"
-                selectedYear={selectedYear}
-                amount={moyenneDepenseMois}
-              />
-              <BoxStat
-                title="Économie/Mois"
-                type="State"
-                selectedYear={selectedYear}
-                amount={moyenneEconomie}
-              />
-            </div>
-            <Separator className="w-5/6" />
-            <div className="flex flex-row gap-4 text-right w-full h-full">
               <BoxStat
                 title="Revenu"
                 type="Revenue"
@@ -391,6 +477,25 @@ export default function Statistic() {
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
                 amount={recetteMonth}
+              />
+              <BoxStat
+                title="Revenu totale"
+                type="Revenue"
+                selectedYear={selectedYear}
+                amount={recetteYear}
+              />
+            </div>
+            <div className="flex flex-row gap-4 w-full h-full text-right">
+              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
+                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+                  Dépense
+                </h1>
+              </div>
+              <BoxStat
+                title="Dépense par Mois"
+                type="Expense"
+                selectedYear={selectedYear}
+                amount={moyenneDepenseMois}
               />
               <BoxStat
                 title="Dépense"
@@ -401,6 +506,25 @@ export default function Statistic() {
                 amount={depenseMonth}
               />
               <BoxStat
+                title="Dépense totale"
+                type="Expense"
+                selectedYear={selectedYear}
+                amount={depenseYear}
+              />
+            </div>
+            <div className="flex flex-row gap-4 text-right w-full h-full">
+              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
+                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+                  Économie
+                </h1>
+              </div>
+              <BoxStat
+                title="Économie par Mois"
+                type="State"
+                selectedYear={selectedYear}
+                amount={moyenneEconomie}
+              />
+              <BoxStat
                 type="State"
                 title={economieMonth < 0 ? "Déficit" : "Économie"}
                 selectedYear={selectedYear}
@@ -408,68 +532,43 @@ export default function Statistic() {
                 months={months}
                 selectedMonth={selectedMonth}
               />
+              <BoxStat
+                title="Économie totale"
+                type="State"
+                selectedYear={selectedYear}
+                amount={economieTotale}
+              />
+            </div>
+            <div className="flex flex-row gap-4 text-right w-full h-full">
+              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
+                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+                  Investissement
+                </h1>
+              </div>
+              <BoxStat
+                title="Investissement par Mois"
+                type="State"
+                selectedYear={selectedYear}
+                amount={amountInvestisAverage}
+              />
+              <BoxStat
+                type="State"
+                title="Investissement"
+                selectedYear={selectedYear}
+                amount={AmountInvestisMonth}
+                months={months}
+                selectedMonth={selectedMonth}
+              />
+              <BoxStat
+                title="Investissement totale"
+                type="State"
+                selectedYear={selectedYear}
+                amount={amountInvestisYear}
+              />
             </div>
           </div>
-          <Separator orientation="vertical" className="h-80 my-auto" />
-          <div className="flex flex-col gap-4 w-1/3 text-right rounded-2xl items-center h-full">
-            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 ring-[2px] ring-green-500">
-              <p className="italic font-thin text-center">
-                {selectedByYear
-                  ? `Revenus de ${selectedYear}`
-                  : `Revenus de ${convertDate(selectedDate)}`}
-              </p>
-
-              {!isFetching ? (
-                <RadialChart
-                  chartData={transformedDataRevenue}
-                  chartConfig={chartConfigRevenue}
-                  legend={renderCustomLegend}
-                  inner={40}
-                  outer={55}
-                  height={150}
-                />
-              ) : (
-                <LoaderDots size={180} />
-              )}
-            </div>
-
-            <div className="flex gap-2 w-full">
-              <Button
-                variant={!selectedByYear ? "secondary" : "outline"}
-                onClick={handleByMonth}
-                className="w-full"
-              >
-                {convertDate(selectedDate)}
-              </Button>
-
-              <Button
-                variant={selectedByYear ? "secondary" : "outline"}
-                onClick={handleByYear}
-                className="w-full"
-              >
-                {selectedYear}
-              </Button>
-            </div>
-
-            <div className="flex flex-col w-full rounded-2xl h-full items-center p-4 ring-[2px] ring-red-500">
-              <p className="italic font-thin text-center">
-                {selectedByYear
-                  ? `Dépenses de ${selectedYear}`
-                  : `Dépenses de ${convertDate(selectedDate)}`}
-              </p>
-              {!isFetching ? (
-                <RadialChart
-                  chartData={transformedDataExpense}
-                  chartConfig={chartConfigExpense}
-                  legend={renderCustomLegend}
-                  inner={40}
-                  outer={55}
-                  height={150}
-                />
-              ) : (
-                <LoaderDots />
-              )}
-            </div>
+          <div className="bg-secondary/40 flex w-1/3 rounded-2xl border p-4">
+            <h2 className="text-left">Récapitulatif</h2>
           </div>
         </div>
       </div>

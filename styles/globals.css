@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Ojuju:wght@200..800&display=swap");
 :root {
   font-family: "GeistSans", sans-serif;
   line-height: 1.5;
@@ -18,12 +19,12 @@ body::before {
   content: "";
   position: fixed;
   top: 30%;
-  left: 70%;
+  left: 80%;
   width: 100%;
   height: 100vh;
   background: radial-gradient(
     circle,
-    rgba(34, 0, 255, 0.167) 0%,
+    rgba(111, 0, 255, 0.167) 0%,
     rgba(0, 255, 100, 0) 100%
   );
   transform: translate(-50%, -50%);
@@ -120,7 +121,7 @@ input:-webkit-autofill {
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --radius: 0.65rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;

@@ -164,7 +164,7 @@ export default function PageAccount() {
               <ModalTable
                 btnOpen={
                   <p className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all">
-                    Voir plus
+                    Voir tout
                     <ChevronRight
                       size={12}
                       className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"

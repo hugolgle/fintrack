@@ -23,6 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { editInvestmentsTransaction } from "../../Service/Investment.service";
 import ButtonLoading from "../../composant/Button/ButtonLoading";
+import { useState } from "react";
 
 const validationSchema = yup.object().shape({
   date: yup.date().required("La date est requise"),
@@ -33,6 +34,8 @@ const validationSchema = yup.object().shape({
 });
 
 export function FormEditInvestment({ transaction, refetch }) {
+  const [open, setOpen] = useState(false);
+
   const initialValues = {
     date: transaction?.date ? new Date(transaction?.date) : new Date(),
     amount: Math.abs(transaction?.amount) || "",
@@ -86,7 +89,7 @@ export function FormEditInvestment({ transaction, refetch }) {
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
-        <Popover modal={true}>
+        <Popover modal={true} open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline">
               {formik.values.date ? (
@@ -103,6 +106,7 @@ export function FormEditInvestment({ transaction, refetch }) {
               selected={formik.values.date}
               onSelect={(date) => {
                 formik.setFieldValue("date", date);
+                setOpen(false);
               }}
               initialFocus
               locale={fr}

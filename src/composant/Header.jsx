@@ -19,6 +19,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { ROUTES } from "./Routes.jsx";
+import { Pencil } from "lucide-react";
 
 function Header({
   title,
@@ -32,6 +33,7 @@ function Header({
   isFetching,
   btnAction,
   navigateDate,
+  actionEdit,
 }) {
   const location = useLocation();
 
@@ -105,6 +107,7 @@ function Header({
               </PopoverContent>
             </Popover>
           )}
+          {actionEdit}
         </div>
       </div>
       <h1 className="text-4xl font-thin mb-5 font-logo animate-fade w-2/4 truncate">

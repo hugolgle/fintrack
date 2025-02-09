@@ -92,7 +92,6 @@ export function PageOrder() {
       row.name,
       format(row?.date, "PP", { locale: fr }),
       formatCurrency.format(row.amount),
-      row.isSale ? "Vente" : "Achat",
     ];
   };
 
@@ -112,7 +111,6 @@ export function PageOrder() {
     { id: 4, name: "Nom", key: "name" },
     { id: 5, name: "Date", key: "date" },
     { id: 6, name: "Montant", key: "amount" },
-    { id: 7, name: "Action", key: "isSale" },
   ];
 
   const action = (item) => {
@@ -146,7 +144,6 @@ export function PageOrder() {
         name,
         date: transaction[0]?.date,
         amount: amountBuy,
-        isSale: transaction.isSale,
       };
     }
   );

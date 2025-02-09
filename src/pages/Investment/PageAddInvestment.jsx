@@ -25,6 +25,7 @@ import * as yup from "yup";
 
 import { useParams } from "react-router";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import { useState } from "react";
 
 const validationSchema = yup.object().shape({
   action: yup.string().required("L'action est requise"),
@@ -34,6 +35,8 @@ const validationSchema = yup.object().shape({
 
 export default function PageAddInvestment() {
   const { id } = useParams();
+
+  const [open, setOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -89,7 +92,7 @@ export default function PageAddInvestment() {
             <SelectItem value="false">Acheter</SelectItem>
           </SelectContent>
         </Select>
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="input">
               {formik.values.date ? (
@@ -104,7 +107,10 @@ export default function PageAddInvestment() {
             <Calendar
               mode="single"
               selected={formik.values.date}
-              onSelect={(date) => formik.setFieldValue("date", date)}
+              onSelect={(date) => {
+                formik.setFieldValue("date", date);
+                setOpen(false);
+              }}
               initialFocus
               locale={fr}
             />

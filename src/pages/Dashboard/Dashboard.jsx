@@ -113,7 +113,7 @@ export default function Dashboard() {
     }));
   });
 
-  const [selectNbMonth, setSelectNbMonth] = useState(6);
+  const [selectNbMonth, setSelectNbMonth] = useState(12);
 
   const { month: currentMonth, year: currentYear } = currentDate();
   const currentYearMonth = `${currentYear}${currentMonth}`;
@@ -168,7 +168,7 @@ export default function Dashboard() {
     ...(Array.isArray(dataTransacsInvest) ? dataTransacsInvest : []),
   ];
 
-  const lastOperations = getLastOperations(dataOperations, null, 6, false);
+  const lastOperations = getLastOperations(dataOperations, null, 4, false);
 
   const [month, setMonth] = useState(currentYearMonth);
 
@@ -413,6 +413,71 @@ export default function Dashboard() {
 
   const amountHeritage = amountInvestAll + amountEpargn + amountAssets;
 
+  const currentDateBis = new Date();
+
+  const lastMonthDate = new Date(
+    currentDateBis.setMonth(currentDateBis.getMonth() - 1)
+  );
+
+  const startOfLastMonth = new Date(
+    lastMonthDate.getFullYear(),
+    lastMonthDate.getMonth(),
+    1
+  );
+
+  const endOfLastMonth = new Date(
+    lastMonthDate.getFullYear(),
+    lastMonthDate.getMonth() + 1,
+    0
+  );
+
+  const mySubscription = dataTransacs.filter(
+    (data) =>
+      data.category === "Abonnement" &&
+      new Date(data.date) >= startOfLastMonth &&
+      new Date(data.date) <= endOfLastMonth
+  );
+
+  const totalMySubscription = mySubscription.reduce((total, item) => {
+    return total + (item.amount || 0);
+  }, 0);
+
+  // --------
+
+  const dataHeritage = [
+    {
+      name: "Épargne",
+      amount: amountEpargn || 0.0,
+    },
+    {
+      name: "Investissement",
+      amount: amountInvestAll || 0.0,
+    },
+    { name: "Bien", amount: amountAssets || 0.0 },
+  ];
+
+  const chartDataAccount = dataHeritage.map((account) => {
+    return { name: account.name, amount: account.amount };
+  });
+
+  const transformedDataAccount = chartDataAccount.map((item, key) => ({
+    name: item.name,
+    amount: item.amount,
+    pourcentage: (item.amount / amountHeritage) * 100,
+    fill: `hsl(var(--chart-${key + 2}))`,
+  }));
+
+  const chartConfigAccount = chartDataAccount.reduce(
+    (config, { name }, key) => {
+      config[name] = {
+        label: name,
+        color: `hsl(var(--chart-${key + 1}))`,
+      };
+      return config;
+    },
+    {}
+  );
+
   return (
     <>
       <section className="w-full">
@@ -467,7 +532,131 @@ export default function Dashboard() {
             />
           </div>
           <div className="flex flex-row gap-4 h-full">
-            <div className="w-2/5 flex flex-col h-fit gap-4">
+            <div className="flex flex-col w-full gap-4 h-fit">
+              <div className="w-full relative h-fit flex flex-col justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+                <h2 className=" text-left">Graphique</h2>
+                {!isFetchingTransacs ? (
+                  <ChartLine
+                    data={dataGraph}
+                    defaultConfig={defaultConfig}
+                    maxValue={maxValue}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}
+                <div className="flex flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between bottom-2">
+                  <div className="w-1/12">
+                    <ChevronLeft
+                      size={25}
+                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      onClick={clickLastMonthGraph}
+                    />
+                  </div>
+                  <p className="font-thin text-sm w-10/12 italic">
+                    {theMonthGraph}
+                  </p>
+                  <div className="w-1/12">
+                    {chevronGraphIsVisible && (
+                      <ChevronRight
+                        size={25}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        onClick={clickNextMonthGraph}
+                      />
+                    )}
+                  </div>
+                  <div className="absolute top-0 right-0 m-2">
+                    <Tabs
+                      name="selectNbMonth"
+                      value={selectNbMonth}
+                      onValueChange={(value) => setSelectNbMonth(Number(value))}
+                      className="w-full"
+                    >
+                      <TabsList>
+                        <TabsTrigger value={6}>6 mois</TabsTrigger>
+                        <TabsTrigger value={12}>1 an</TabsTrigger>
+                      </TabsList>
+                    </Tabs>{" "}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-full bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+                  <h2 className=" text-left">Répartitions transactions</h2>
+                  {!isFetchingTransacs ? (
+                    total !== "0.00" ? (
+                      <RadialChart
+                        chartData={chartDataRadial}
+                        chartConfig={chartConfigRadial}
+                        total={total}
+                        legend={renderCustomLegend}
+                        inner={45}
+                        outer={70}
+                      />
+                    ) : (
+                      <p className="h-[225px] ">Aucune donnée</p>
+                    )
+                  ) : (
+                    <LoaderDots />
+                  )}
+
+                  <div className="flex flex-row justify-between w-3/4 max-w-[200px] mx-auto">
+                    <div className="w-1/12">
+                      <ChevronLeft
+                        size={25}
+                        onClick={clickLastMonth}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                      />
+                    </div>
+
+                    <p className="font-thin text-sm w-10/12 italic">
+                      {convertDate(month)}
+                    </p>
+
+                    <div className="w-1/12">
+                      {chevronIsVisible && (
+                        <ChevronRight
+                          size={25}
+                          onClick={clickNextMonth}
+                          className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+                  <div className="flex justify-between w-full gap-4">
+                    <h2 className=" text-left">Répartitions patrimoine</h2>
+                    <p
+                      className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
+                      onClick={() => navigate(ROUTES.HERITAGE)}
+                    >
+                      Voir tout
+                      <ChevronRight
+                        size={12}
+                        className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                      />
+                    </p>
+                  </div>
+                  {!isFetchingTransacs ? (
+                    total !== "0.00" ? (
+                      <RadialChart
+                        chartData={transformedDataAccount}
+                        chartConfig={chartConfigAccount}
+                        total={amountHeritage}
+                        legend={renderCustomLegend}
+                        inner={45}
+                        outer={70}
+                      />
+                    ) : (
+                      <p className="h-[225px] ">Aucune donnée</p>
+                    )
+                  ) : (
+                    <LoaderDots />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="w-1/5 flex flex-col h-fit gap-4">
               <div className="bg-secondary/40 h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
                 <h2 className="text-left">Dernières opérations</h2>
                 <div className="w-full gap-2 h-full flex flex-col">
@@ -502,7 +691,7 @@ export default function Dashboard() {
                     className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
                     onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
                   >
-                    Voir plus
+                    Voir tout
                     <ChevronRight
                       size={12}
                       className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
@@ -512,7 +701,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-2">
                   {dataInvests
                     ?.sort((a, b) => b.amountBuy - a.amountBuy)
-                    .slice(0, 4)
+                    .slice(0, 3)
                     .map((item) => {
                       const category =
                         item?.type === "Crypto" ? "crypto" : "symbol";
@@ -531,7 +720,7 @@ export default function Dashboard() {
                             <p className="text-xs ">{item?.name}</p>
                           </div>
 
-                          <div className="text-xs text-right">
+                          <div className="text-[10px] italic text-right">
                             <p>{formatCurrency.format(item.amountBuy)}</p>
                           </div>
                         </div>
@@ -539,95 +728,31 @@ export default function Dashboard() {
                     })}
                 </div>
               </div>
-            </div>
 
-            <div className="w-full relative h-fit flex flex-col justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
-              <h2 className=" text-left">Graphique</h2>
-              {!isFetchingTransacs ? (
-                <ChartLine
-                  data={dataGraph}
-                  defaultConfig={defaultConfig}
-                  maxValue={maxValue}
-                />
-              ) : (
-                <LoaderDots />
-              )}
-              <div className="flex flex-row w-4/5 mx-auto px-20 items-center justify-between bottom-2">
-                <div className="w-1/12">
-                  <ChevronLeft
-                    size={25}
-                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    onClick={clickLastMonthGraph}
-                  />
-                </div>
-                <p className="font-thin text-sm w-10/12 italic">
-                  {theMonthGraph}
-                </p>
-                <div className="w-1/12">
-                  {chevronGraphIsVisible && (
-                    <ChevronRight
-                      size={25}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickNextMonthGraph}
-                    />
-                  )}
-                </div>
-                <div className="absolute top-0 right-0 m-2">
-                  <Tabs
-                    name="selectNbMonth"
-                    value={selectNbMonth}
-                    onValueChange={(value) => setSelectNbMonth(Number(value))}
-                    className="w-full"
-                  >
-                    <TabsList>
-                      <TabsTrigger value={6}>6 mois</TabsTrigger>
-                      <TabsTrigger value={12}>1 an</TabsTrigger>
-                    </TabsList>
-                  </Tabs>{" "}
-                </div>
-              </div>
-            </div>
-            <div className="w-2/4 bg-secondary/40 ring-1 ring-border rounded-xl h-full p-4">
-              <h2 className=" text-left">Répartitions</h2>
-              {!isFetchingTransacs ? (
-                total !== "0.00" ? (
-                  <RadialChart
-                    chartData={chartDataRadial}
-                    chartConfig={chartConfigRadial}
-                    total={total}
-                    legend={renderCustomLegend}
-                    inner={40}
-                    outer={55}
-                  />
-                ) : (
-                  <p className="h-[225px] ">Aucune donnée</p>
-                )
-              ) : (
-                <LoaderDots />
-              )}
+              <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
+                <h2 className=" text-left">Mes abonnements</h2>
+                <table className="h-full">
+                  <tbody className="w-full h-full gap-2 flex flex-col">
+                    {mySubscription.map((operation) => (
+                      <tr
+                        key={operation._id}
+                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                      >
+                        <td className="flex flex-row space-x-4 w-full">
+                          <span>{format(operation.date, "dd/MM")}</span>
+                          <span className="truncate">{operation.title}</span>
+                        </td>
 
-              <div className="flex flex-row justify-between w-3/4 mx-auto">
-                <div className="w-1/12">
-                  <ChevronLeft
-                    size={25}
-                    onClick={clickLastMonth}
-                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                  />
-                </div>
-
-                <p className="font-thin text-sm w-10/12 italic">
-                  {convertDate(month)}
-                </p>
-
-                <div className="w-1/12">
-                  {chevronIsVisible && (
-                    <ChevronRight
-                      size={25}
-                      onClick={clickNextMonth}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    />
-                  )}
-                </div>
+                        <td className="text-[10px] italic text-nowrap">
+                          <span>{formatCurrency.format(operation.amount)}</span>
+                        </td>
+                      </tr>
+                    ))}
+                    <p className="text-[12px] text-right italic font-black">
+                      = {formatCurrency.format(totalMySubscription)}
+                    </p>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

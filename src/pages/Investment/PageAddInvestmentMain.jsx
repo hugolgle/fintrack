@@ -80,6 +80,8 @@ const validationSchema = yup.object().shape({
 export default function PageAddInvestmentMain() {
   const userId = getUserIdFromToken();
   const [open, setOpen] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [openCalendarBis, setOpenCalendarBis] = useState(false);
   const [activeTab, setActiveTab] = useState("transaction");
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
   const [idInvest, setIdInvest] = useState("");
@@ -249,7 +251,7 @@ export default function PageAddInvestmentMain() {
                 </SelectContent>
               </Select>
 
-              <Popover>
+              <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
                 <PopoverTrigger asChild>
                   <Button variant="input">
                     {formik.values.date ? (
@@ -264,7 +266,10 @@ export default function PageAddInvestmentMain() {
                   <Calendar
                     mode="single"
                     selected={formik.values.date}
-                    onSelect={(date) => formik.setFieldValue("date", date)}
+                    onSelect={(date) => {
+                      formik.setFieldValue("date", date);
+                      setOpenCalendar(false);
+                    }}
                     initialFocus
                     locale={fr}
                   />
@@ -356,7 +361,7 @@ export default function PageAddInvestmentMain() {
                 </SelectContent>
               </Select>
 
-              <Popover>
+              <Popover open={openCalendarBis} onOpenChange={setOpenCalendarBis}>
                 <PopoverTrigger asChild>
                   <Button variant="input">
                     {formik.values.date ? (
@@ -371,7 +376,10 @@ export default function PageAddInvestmentMain() {
                   <Calendar
                     mode="single"
                     selected={formik.values.date}
-                    onSelect={(date) => formik.setFieldValue("date", date)}
+                    onSelect={(date) => {
+                      formik.setFieldValue("date", date);
+                      setOpenCalendarBis(false);
+                    }}
                     initialFocus
                     locale={fr}
                   />

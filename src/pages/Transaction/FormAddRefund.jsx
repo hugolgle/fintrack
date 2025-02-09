@@ -23,6 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { addRefund } from "../../Service/Transaction.service";
 import ButtonLoading from "../../composant/Button/ButtonLoading";
+import { useState } from "react";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -37,6 +38,8 @@ const validationSchema = yup.object().shape({
 });
 
 export function FormAddRefund({ transaction, refetch }) {
+  const [open, setOpen] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -88,7 +91,7 @@ export function FormAddRefund({ transaction, refetch }) {
           </p>
         )}
 
-        <Popover modal={true}>
+        <Popover modal={true} open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline">
               {formik.values.date ? (
@@ -105,6 +108,7 @@ export function FormAddRefund({ transaction, refetch }) {
               selected={formik.values.date}
               onSelect={(date) => {
                 formik.setFieldValue("date", date);
+                setOpen(false);
               }}
               initialFocus
               locale={fr}
