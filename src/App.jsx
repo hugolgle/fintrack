@@ -4,7 +4,6 @@ import "../styles/globals.css";
 import { ROUTES } from "./composant/Routes.jsx";
 import PrivateRoute from "./composant/PrivateRoute.jsx";
 import BoardTransactions from "./Pages/Transaction/BoardTransactions.jsx";
-import PageTransactions from "./Pages/Transaction/PageTransactions.jsx";
 import PageAddTransac from "./Pages/Transaction/PageAddTransaction.jsx";
 import BoardInvest from "./Pages/Investment/BoardInvest.jsx";
 import PageAddInvestment from "./Pages/Investment/PageAddInvestment.jsx";
@@ -14,7 +13,6 @@ import SignUp from "./Pages/SignUp/SignUp.jsx";
 import PageError from "./Pages/404/404.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import { PageOrder } from "./Pages/Investment/PageOrder.jsx";
-import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
 import Statistic from "./Pages/Statistic/Statistic.jsx";
 import { MainLayout } from "./Layout/MainLayout.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
@@ -30,34 +28,29 @@ import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx"
 import PageOrderById from "./Pages/Investment/PageOrderById.jsx";
 import PageAddAsset from "./Pages/Heritage/PageAddAsset.jsx";
 import PageAssets from "./Pages/Heritage/PageAssets.jsx";
+import PageExpense from "./Pages/Transaction/PageExpense.jsx";
+import PageRevenue from "./Pages/Transaction/PageRevenue.jsx";
+import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
 
 export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
 
   const transactionRoutes = [
     {
-      path: ROUTES.EXPENSE,
-      component: <BoardTransactions key={ROUTES.EXPENSE} type="Expense" />,
+      path: ROUTES.FINANCE,
+      component: <BoardTransactions />,
     },
     {
-      path: ROUTES.ADD_EXPENSE,
-      component: <PageAddTransac type="Expense" title="dépense" />,
+      path: ROUTES.FINANCE_ADD,
+      component: <PageAddTransac />,
     },
     {
       path: ROUTES.EXPENSE_BY_DATE,
-      component: <PageTransactions type="Expense" />,
-    },
-    {
-      path: ROUTES.REVENUE,
-      component: <BoardTransactions key={ROUTES.REVENUE} type="Revenue" />,
-    },
-    {
-      path: ROUTES.ADD_REVENUE,
-      component: <PageAddTransac type="Revenue" title="revenu" />,
+      component: <PageExpense />,
     },
     {
       path: ROUTES.REVENUE_BY_DATE,
-      component: <PageTransactions type="Revenue" />,
+      component: <PageRevenue />,
     },
   ];
 

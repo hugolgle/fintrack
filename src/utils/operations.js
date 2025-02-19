@@ -1,5 +1,5 @@
 import { subMonths, startOfMonth } from "date-fns";
-import { currentDate } from "./other";
+import { alphaSort, currentDate } from "./other";
 
 // -------------------------------- Transactions
 
@@ -196,11 +196,11 @@ export function getTitleOfTransactionsByType(data, type) {
     return transaction.type === type && transactionDate >= startDate;
   });
 
-  const titles = filteredTransactions.map((transaction) => transaction.title);
+  const uniqueTitles = Array.from(
+    new Set(filteredTransactions.map((transaction) => transaction.title))
+  );
 
-  const uniqueTitles = Array.from(new Set(titles));
-
-  return uniqueTitles;
+  return uniqueTitles.sort((a, b) => a.localeCompare(b));
 }
 
 // -------------------------------- Tags

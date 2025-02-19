@@ -19,9 +19,14 @@ export const renderCustomLegend = (props) => {
             <span className="text-[10px] gap-2 font-thin w-full flex items-center">
               <span className="truncateCustom">{entry.value}</span>
             </span>
-            <span className="text-[10px] text-nowrap">
-              {entry.payload.pourcentage.toFixed(0)}%
-            </span>
+            <p className="text-[8px] text-nowrap">
+              <span className="text-muted-foreground">
+                {entry.payload.objectif && `${entry.payload.objectif}%`}{" "}
+              </span>
+              <span className="text-[10px] text-nowrap">
+                {entry.payload.pourcentage.toFixed(0)}%
+              </span>
+            </p>
           </div>
         </li>
       ))}

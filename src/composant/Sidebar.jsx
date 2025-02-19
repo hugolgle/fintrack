@@ -25,6 +25,7 @@ import { ROUTES } from "./Routes.jsx";
 import { Landmark } from "lucide-react";
 import { Swords } from "lucide-react";
 import Loader from "./Loader/Loader.jsx";
+import { Coins } from "lucide-react";
 
 function Sidebar() {
   const userId = getUserIdFromToken();
@@ -74,15 +75,9 @@ function Sidebar() {
     },
     {
       id: 2,
-      name: "Dépenses",
-      link: ROUTES.EXPENSE,
-      icon: <WalletCards />,
-    },
-    {
-      id: 3,
-      name: "Revenus",
-      link: ROUTES.REVENUE,
-      icon: <DollarSign />,
+      name: "Finances",
+      link: ROUTES.FINANCE,
+      icon: <Coins />,
     },
     {
       id: 4,

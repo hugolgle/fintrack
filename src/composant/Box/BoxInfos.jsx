@@ -44,7 +44,7 @@ function BoxInfos({
   return (
     <div
       onClick={onClick}
-      className={`p-4 w-full max-w-2xl bg-secondary/40 h-auto rounded-xl ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+      className={`p-4 w-full bg-secondary/40 h-auto rounded-xl ring-opacity-65 hover:ring-opacity-100 transition-all cursor-pointer ring-1 ${color} flex flex-col gap-3`}
     >
       <div className="flex justify-between items-center">
         <p className="font-medium tracking-tight text-sm">{title}</p>

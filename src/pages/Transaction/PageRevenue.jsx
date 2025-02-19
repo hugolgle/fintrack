@@ -6,7 +6,7 @@ import {
   getTransactionsByType,
   getTitleOfTransactionsByType,
   getTagsOfTransactions,
-} from "../../utils/operations";
+} from "../../utils/operations.js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,19 +14,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { alphaSort, months, nameType } from "../../utils/other";
-import {
-  categoryDepense,
-  categoryRecette,
-} from "../../../public/categories.json";
+import { alphaSort, months, nameType } from "../../utils/other.js";
+import { categoryRecette } from "../../../public/categories.json";
 import Header from "../../composant/Header.jsx";
-import Tableau from "../../composant/Table/Table";
+import Tableau from "../../composant/Table/Table.jsx";
 import {
   deleteTransactions,
   fetchTransactions,
-} from "../../Service/Transaction.service";
+} from "../../Service/Transaction.service.jsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Loader from "../../composant/Loader/Loader";
+import Loader from "../../composant/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
@@ -41,8 +38,9 @@ import { Plus } from "lucide-react";
 import ModalTable from "../Epargn/Modal/ModalTable.jsx";
 import { toast } from "sonner";
 import { calculTotalAmount } from "../../utils/calcul.js";
+import { ROUTES } from "../../composant/Routes.jsx";
 
-export default function PageTransactions(props) {
+export default function PageRevenue() {
   const { date } = useParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,19 +85,7 @@ export default function PageTransactions(props) {
     performSearch(event.target.value);
   };
 
-  const typeProps =
-    props.type === "Expense"
-      ? "expense"
-      : props.type === "Revenue"
-        ? "revenue"
-        : undefined;
-
-  const categories =
-    props.type === "Expense"
-      ? alphaSort(categoryDepense)
-      : props.type === "Revenue"
-        ? alphaSort(categoryRecette)
-        : "";
+  const categories = alphaSort(categoryRecette);
 
   const [selectedCategorys, setSelectedCategorys] = useState(
     searchParams.getAll("categories")
@@ -109,7 +95,7 @@ export default function PageTransactions(props) {
     searchParams.getAll("titles")
   );
 
-  const titles = getTitleOfTransactionsByType(dataTransactions, props.type);
+  const titles = getTitleOfTransactionsByType(dataTransactions, "Revenue");
 
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
@@ -165,7 +151,7 @@ export default function PageTransactions(props) {
     date === "all"
       ? getTransactionsByType(
           dataTransactions,
-          props.type,
+          "Revenue",
           selectedCategorys,
           selectedTitles,
           selectedTags
@@ -174,7 +160,7 @@ export default function PageTransactions(props) {
         ? getTransactionsByYear(
             dataTransactions,
             date,
-            props.type,
+            "Revenue",
             selectedCategorys,
             selectedTitles,
             selectedTags
@@ -182,7 +168,7 @@ export default function PageTransactions(props) {
         : getTransactionsByMonth(
             dataTransactions,
             date,
-            props.type,
+            "Revenue",
             selectedCategorys,
             selectedTitles,
             selectedTags
@@ -276,9 +262,9 @@ export default function PageTransactions(props) {
       const newMonth = monthNum.toString().padStart(2, "0");
       const newDate = `${yearNum}${newMonth}`;
       if (date.length === 4) {
-        navigate(`/${typeProps}/${yearNum}`);
+        navigate(`/finance/revenue/${yearNum}`);
       } else if (date.length === 6) {
-        navigate(`/${typeProps}/${newDate}`);
+        navigate(`/finance/revenue/${newDate}`);
       } else {
         return "";
       }
@@ -300,9 +286,9 @@ export default function PageTransactions(props) {
       const newMonth = monthNum.toString().padStart(2, "0");
       const newDate = `${yearNum}${newMonth}`;
       if (date.length === 4) {
-        navigate(`/${typeProps}/${yearNum}`);
+        navigate(`/finance/revenue/${yearNum}`);
       } else if (date.length === 6) {
-        navigate(`/${typeProps}/${newDate}`);
+        navigate(`/finance/revenue/${newDate}`);
       } else {
         return "";
       }
@@ -438,16 +424,16 @@ export default function PageTransactions(props) {
         <Header
           title={`${
             date === "all"
-              ? `Toutes les ${nameType(props.type).toLowerCase()}s`
+              ? `Toutes les ${nameType("Revenue").toLowerCase()}s`
               : date?.length === 4
-                ? `${nameType(props.type)}s de ${date}`
-                : `${nameType(props.type)}s de ${convertDate(date)}`
+                ? `${nameType("Revenue")}s de ${date}`
+                : `${nameType("Revenue")}s de ${convertDate(date)}`
           }`}
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
           isFetching={isFetching}
           btnSearch={{ handleSearchChange, searchTerm }}
-          btnAdd={`/${props.type.toLowerCase()}/add`}
+          btnAdd={ROUTES.FINANCE_ADD}
           btnReturn
           btnFilter={{
             selectedTags,

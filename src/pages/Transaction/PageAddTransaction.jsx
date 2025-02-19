@@ -81,7 +81,7 @@ const validationSchema = yup.object().shape({
   tag: yup.array().of(yup.string()).nullable(),
 });
 
-export default function PageAddTransac(props) {
+export default function PageAddTransac() {
   const userId = getUserIdFromToken();
 
   const {
@@ -124,11 +124,6 @@ export default function PageAddTransac(props) {
   const categoryD = alphaSort(categoryDepense);
   const categoryR = alphaSort(categoryRecette);
 
-  const suggestions = [
-    "Autre",
-    ...getTitleOfTransactionsByType(dataTransactions, props.type),
-  ];
-
   const tagsSuggestions = getTagsOfTransactions(dataTransactions);
 
   const addTransactionMutation = useMutation({
@@ -149,6 +144,7 @@ export default function PageAddTransac(props) {
 
   const formik = useFormik({
     initialValues: {
+      type: "",
       title: "",
       titleBis: "",
       category: "",
@@ -162,7 +158,7 @@ export default function PageAddTransac(props) {
     onSubmit: async (values) => {
       const postData = {
         user: dataUser?._id,
-        type: props.type,
+        type: values.type,
         category: values.category,
         title: values.title === "Autre" ? values.titleBis : values.title,
         date: values.date.toLocaleDateString("fr-CA"),
@@ -173,6 +169,11 @@ export default function PageAddTransac(props) {
       addTransactionMutation.mutate(postData);
     },
   });
+
+  const suggestions = [
+    "Autre",
+    ...getTitleOfTransactionsByType(dataTransactions, formik.values.type),
+  ];
 
   const handleAddTag = () => {
     if (tagInput.trim() === "") {
@@ -204,7 +205,10 @@ export default function PageAddTransac(props) {
   };
 
   useEffect(() => {
-    const dataByType = getTransactionsByType(dataTransactions, props.type);
+    const dataByType = getTransactionsByType(
+      dataTransactions,
+      formik.values.type
+    );
     if (dataByType && formik.values.title) {
       const existingTransaction = dataByType.find(
         (transaction) => transaction.title === formik.values.title
@@ -223,7 +227,7 @@ export default function PageAddTransac(props) {
   return (
     <section className="w-full">
       <Header
-        title={`Ajouter ${props.title === "dépense" ? "une" : "un"} ${props.title}`}
+        title="Ajouter une finance"
         isFetching={isFetchingTransactions || isFetchingUser}
         btnReturn
       />
@@ -231,6 +235,29 @@ export default function PageAddTransac(props) {
         onSubmit={formik.handleSubmit}
         className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
       >
+        <Select
+          name="type"
+          value={formik.values.type}
+          onValueChange={(value) => formik.setFieldValue("type", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Entrez la catégorie" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem key="Revenue" value="Revenue">
+              Revenue
+            </SelectItem>
+            <SelectItem key="Expense" value="Expense">
+              Dépense
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        {formik.touched.type && formik.errors.type && (
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+            {formik.errors.type}
+          </p>
+        )}
+
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="input" role="combobox" aria-expanded={open}>
@@ -299,13 +326,13 @@ export default function PageAddTransac(props) {
             <SelectValue placeholder="Entrez la catégorie" />
           </SelectTrigger>
           <SelectContent>
-            {props.type === "Expense" &&
+            {formik.values.type === "Expense" &&
               categoryD.map(({ name }) => (
                 <SelectItem key={name} value={name}>
                   {name}
                 </SelectItem>
               ))}
-            {props.type === "Revenue" &&
+            {formik.values.type === "Revenue" &&
               categoryR.map(({ name }) => (
                 <SelectItem key={name} value={name}>
                   {name}

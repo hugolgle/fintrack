@@ -93,3 +93,16 @@ export function nameType(typeBdd) {
 
   return name;
 }
+
+export function updateMonth(dateStr, delta) {
+  let year = parseInt(dateStr.slice(0, 4), 10);
+  let month = parseInt(dateStr.slice(4), 10) + delta;
+  if (month > 12) {
+    month = 1;
+    year++;
+  } else if (month < 1) {
+    month = 12;
+    year--;
+  }
+  return `${year}${month.toString().padStart(2, "0")}`;
+}

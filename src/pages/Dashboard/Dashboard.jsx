@@ -228,7 +228,6 @@ export default function Dashboard() {
   );
 
   const total = calculTotalByMonth(dataTransacs, "Revenue", month);
-
   const montantInvest = calculInvestByMonth(dataTransacsInvest, month);
 
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
@@ -273,13 +272,7 @@ export default function Dashboard() {
       null,
       null
     );
-    const amountRevenues = calculTotalByMonth(
-      dataTransacs,
-      "Revenue",
-      code,
-      null,
-      null
-    );
+    const amountRevenues = calculTotalByMonth(dataTransacs, "Revenue", code);
     const montantInvests = calculInvestByMonth(dataTransacsInvest, code);
 
     amountExpenseByMonth.push(Math.abs(amountExpenses));
@@ -431,12 +424,14 @@ export default function Dashboard() {
     0
   );
 
-  const mySubscription = dataTransacs.filter(
-    (data) =>
-      data.category === "Abonnement" &&
-      new Date(data.date) >= startOfLastMonth &&
-      new Date(data.date) <= endOfLastMonth
-  );
+  const mySubscription = dataTransacs
+    ?.filter(
+      (data) =>
+        data.category === "Abonnement" &&
+        new Date(data.date) >= startOfLastMonth &&
+        new Date(data.date) <= endOfLastMonth
+    )
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const totalMySubscription = mySubscription.reduce((total, item) => {
     return total + (item.amount || 0);
@@ -490,7 +485,11 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4 animate-fade">
           <div className="flex gap-4 w-full">
             <BoxInfos
-              onClick={() => navigate(ROUTES.REVENUE)}
+              onClick={() =>
+                navigate(
+                  ROUTES.REVENUE_BY_DATE.replace(":date", currentYearMonth)
+                )
+              }
               type="revenue"
               title="Revenu"
               icon={<DollarSign size={15} color="grey" />}
@@ -499,7 +498,11 @@ export default function Dashboard() {
               isAmount
             />
             <BoxInfos
-              onClick={() => navigate(ROUTES.EXPENSE)}
+              onClick={() =>
+                navigate(
+                  ROUTES.EXPENSE_BY_DATE.replace(":date", currentYearMonth)
+                )
+              }
               type="depense"
               title="Dépense"
               icon={<WalletCards size={15} color="grey" />}
@@ -581,7 +584,7 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-4">
                 <div className="w-full bg-secondary/40 ring-1 ring-border rounded-xl p-4">
-                  <h2 className=" text-left">Répartitions transactions</h2>
+                  <h2 className=" text-left">Répartitions finance</h2>
                   {!isFetchingTransacs ? (
                     total !== "0.00" ? (
                       <RadialChart
