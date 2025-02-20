@@ -6,11 +6,14 @@ import { toast } from "sonner";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "../../Service/User.service";
+import { addUser, loginUser } from "../../Service/User.service";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { HttpStatusCode } from "axios";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import AppleIcon from "../../../public/apple-icon.svg";
+import GoogleIcon from "../../../public/google-icon.svg";
+import { signInWithGoogle } from "../../config/firebase.js";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,6 +39,38 @@ export default function Login() {
       }
     },
   });
+
+  const addUserMutation = useMutation({
+    mutationFn: addUser,
+    onSuccess: (response) => {
+      toast.success(response.message);
+    },
+    onError: (error) => {
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+      }
+    },
+  });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithGoogle();
+
+      const loginData = {
+        username: result.email,
+        googleId: result.uid,
+      };
+
+      // Effectuer la connexion
+      mutation.mutate(loginData);
+
+      console.log("Utilisateur connecté :", result);
+    } catch (error) {
+      console.error("Erreur d'authentification :", error);
+    }
+  };
 
   const validationSchema = yup.object().shape({
     username: yup.string().email("Email invalide").required("Email requis"),
@@ -136,6 +171,21 @@ export default function Login() {
             isPending={mutation.isPending}
           />
         </form>
+        <div className="flex items-center gap-2 mb-4">
+          <hr className="flex-grow border-border h-[1px]" />
+          <p className="text-gray-400 text-xs">Ou</p>
+          <hr className="flex-grow border-border h-[1px]" />
+        </div>
+
+        <div className="flex gap-4 p-4">
+          <div
+            onClick={handleGoogleSignIn}
+            className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-lg hover:bg-muted/75 transition-all"
+          >
+            <img src={GoogleIcon} className="size-5" />
+            <span className="text-xs font-thin">Se connecter Google</span>
+          </div>
+        </div>
         <div className="flex flex-col justify-center items-center mt-5 gap-2">
           <p className="text-xs">
             Nouveau sur FinTrack ?{" "}

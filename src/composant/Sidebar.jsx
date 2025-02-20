@@ -143,13 +143,18 @@ function Sidebar() {
           <DropdownProfil
             btnOpen={
               <Avatar className="w-12 h-12 rounded-xl cursor-pointer hover:scale-95 transition-all">
-                <AvatarImage
-                  className="object-cover"
-                  src={`http://localhost:5001/${dataUser?.img}`}
-                />
-                <AvatarFallback className="bg-secondary">
-                  {initialName}
-                </AvatarFallback>
+                {dataUser?.img ? (
+                  <img
+                    src={dataUser.img}
+                    alt="User Avatar"
+                    className="object-cover w-full h-full rounded-full"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <AvatarFallback className="bg-secondary">
+                    {initialName}
+                  </AvatarFallback>
+                )}
               </Avatar>
             }
             handleLogout={handleLogout}

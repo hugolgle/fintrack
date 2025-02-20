@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false, // Maintenant optionnel pour les utilisateurs Google
     },
     nom: {
       type: String,
@@ -22,6 +22,11 @@ const userSchema = mongoose.Schema(
     img: {
       type: String,
       required: false,
+    },
+    googleId: {
+      type: String,
+      required: false, // Stocke l'ID unique de Google si l'utilisateur se connecte avec Google
+      unique: true,
     },
   },
   { timestamps: true }

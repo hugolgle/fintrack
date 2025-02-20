@@ -10,6 +10,9 @@ import * as yup from "yup";
 import { addUser } from "../../Service/User.service";
 import { useMutation } from "@tanstack/react-query";
 import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import AppleIcon from "../../../public/apple-icon.svg";
+import GoogleIcon from "../../../public/google-icon.svg";
+import { signInWithGoogle } from "../../config/firebase.js";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -80,6 +83,26 @@ export default function SignUp() {
     },
   });
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithGoogle();
+      const nameParts = result.displayName.split(" ");
+      const prenom = nameParts[0] || "";
+      const nom = nameParts.slice(1).join(" ") || "";
+      console.log(result);
+      const userData = {
+        username: result.email,
+        nom,
+        prenom,
+        img: result.photoURL,
+        googleId: result.uid,
+      };
+      addUserMutation.mutate(userData);
+    } catch (error) {
+      toast.error("Erreur d'authentification");
+    }
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] || null;
     setImage(file);
@@ -117,7 +140,7 @@ export default function SignUp() {
 
   return (
     <section className="w-full flex justify-center items-center h-screen p-4">
-      <div className="w-1/4 p-4 rounded-3xl bg-secondary/40  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
+      <div className="w-1/4 p-4 rounded-3xl bg-secondary/40 ring-1 ring-border animate__animated animate__zoomIn animate__faster">
         <img
           src="/public/logoFinTrack.png"
           className="size-16 mx-auto mb-4"
@@ -248,6 +271,22 @@ export default function SignUp() {
             isPending={addUserMutation.isPending}
           />
         </form>
+        <div className="flex items-center gap-2 mb-4">
+          <hr className="flex-grow border-border h-[1px]" />
+          <p className="text-gray-400 text-xs">Ou</p>
+          <hr className="flex-grow border-border h-[1px]" />
+        </div>
+
+        <div className="flex gap-4 p-4">
+          <div
+            onClick={handleGoogleSignIn}
+            className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-lg hover:bg-muted/75 transition-all"
+          >
+            <img src={GoogleIcon} className="size-5" />
+            <span className="text-xs font-thin">S'inscrire avec Google</span>
+          </div>
+        </div>
+
         <div className="flex flex-col justify-center items-center gap-2">
           <p className="text-xs">
             Vous possédez déjà un compte ?{" "}

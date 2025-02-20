@@ -8,32 +8,41 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 module.exports.loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await UserModel.findOne({ username });
+    const { username, password, googleId } = req.body;
 
-    if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
-    }
+    let user;
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (isMatch) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      return res.status(200).json({
-        message: "Vous êtes connecté !",
-        user,
-        token,
-      });
+    if (googleId) {
+      // Vérification de l'utilisateur par Google ID
+      user = await UserModel.findOne({ googleId });
     } else {
-      return res
-        .status(401)
-        .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
+      // Vérification de l'utilisateur avec le mot de passe
+      user = await UserModel.findOne({ username });
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
+      }
     }
+
+    // Génération du token d'authentification
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return res.status(200).json({
+      message: "Vous êtes connecté !",
+      user,
+      token,
+    });
   } catch (error) {
     return res
       .status(500)
@@ -55,9 +64,11 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.addUser = async (req, res) => {
   try {
-    const { username, password, nom, prenom } = req.body;
+    const { username, password, nom, prenom, googleId, img } = req.body;
 
-    const imgPath = req.file ? path.join("uploads", req.file.filename) : null;
+    // Ajouter le domaine au chemin de l'image uploadée
+    const domain = "http://localhost:5001/"; // À modifier selon l'environnement
+    const imgPath = req.file ? `${domain}uploads/${req.file.filename}` : null;
 
     const existingUser = await UserModel.findOne({ username });
 
@@ -65,14 +76,14 @@ module.exports.addUser = async (req, res) => {
       return res.status(400).json({ message: "Cet utilisateur existe déjà !" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // Si l'utilisateur vient de Google, on ne hash pas de mot de passe
     const newUser = await UserModel.create({
       username,
-      password: hashedPassword,
+      password: googleId ? null : await bcrypt.hash(password, 10), // Pas de mot de passe si connexion Google
       nom,
       prenom,
-      img: imgPath,
+      img: imgPath ?? img,
+      googleId: googleId || null, // Enregistre l'ID Google
     });
 
     return res.status(201).json({
@@ -91,6 +102,12 @@ module.exports.editUser = async (req, res) => {
     const user = await UserModel.findById(req.params.id);
     if (!user) {
       return res.status(400).json({ message: "Cet utilisateur n'existe pas" });
+    }
+
+    if (req.body.googleId) {
+      return res
+        .status(400)
+        .json({ message: "Vous ne pouvez pas modifier l'ID Google" });
     }
 
     if (req.body.username && !emailRegex.test(req.body.username)) {

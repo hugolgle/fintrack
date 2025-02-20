@@ -29,6 +29,7 @@ const validationSchema = yup.object({
 
 export function SheetEditProfile({ refetch, dataProfil }) {
   const userId = getUserIdFromToken();
+  const isGoogleAccount = !!dataProfil?.googleId;
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -137,6 +138,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               {...formik.getFieldProps("prenom")}
               className="col-span-3"
               required
+              disabled={isGoogleAccount}
             />
             {formik.touched.prenom && formik.errors.prenom && (
               <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
@@ -154,6 +156,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               {...formik.getFieldProps("nom")}
               className="col-span-3"
               required
+              disabled={isGoogleAccount}
             />
             {formik.touched.nom && formik.errors.nom && (
               <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
@@ -172,6 +175,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               {...formik.getFieldProps("username")}
               className="col-span-3"
               required
+              disabled={isGoogleAccount}
             />
             {formik.touched.username && formik.errors.username && (
               <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
@@ -190,6 +194,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               accept="image/*"
               onChange={handleFileChange}
               className="col-span-3"
+              disabled={isGoogleAccount}
             />
           </div>
           <SheetFooter>
@@ -208,12 +213,18 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               type="submit"
               text="Enregistrer"
               isPending={isPending}
-              disabled={isPending || isSaveDisabled}
+              disabled={isPending || isGoogleAccount}
             />
           </SheetFooter>
         </form>
+        {isGoogleAccount && (
+          <p className="text-[10px] italic text-muted-foreground">
+            <span className="text-red-500">*</span> Impossible de modifier un
+            compte google
+          </p>
+        )}
         <div className="relative rounded-full group mx-auto mt-16 w-fit">
-          {dataProfil?.img && !hiddenImg && (
+          {dataProfil?.img && !hiddenImg && !isGoogleAccount && (
             <Trash2
               size={50}
               strokeWidth={1}
@@ -231,9 +242,11 @@ export function SheetEditProfile({ refetch, dataProfil }) {
           ) : (
             !hiddenImg && (
               <Avatar className="w-48 h-48">
-                <AvatarImage
-                  className="object-cover animate-fade transition-all duration-300 group-hover:brightness-75"
-                  src={`http://localhost:5001/${dataProfil?.img}`}
+                <img
+                  src={dataProfil.img}
+                  alt="User Avatar"
+                  className="object-cover w-full h-full rounded-full"
+                  referrerPolicy="no-referrer"
                 />
               </Avatar>
             )
