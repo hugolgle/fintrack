@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   calculEconomie,
-  calculMoyenne,
-  calculMoyenneEconomie,
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../utils/calcul";

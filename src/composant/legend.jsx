@@ -14,7 +14,7 @@ export const renderCustomLegend = (props) => {
       {payloadTopN.map((entry, index) => (
         <li key={`item-${index}`} className="flex flex-col items-center">
           {index > 0 && <Separator className="bg-secondary" />}
-          <div className="flex items-center w-full animate-fade">
+          <div className="flex items-center w-full">
             <Dot strokeWidth={10} color={entry.color} />
             <span className="text-[10px] gap-2 font-thin w-full flex items-center">
               <span className="truncateCustom">{entry.value}</span>

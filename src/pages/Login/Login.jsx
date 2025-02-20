@@ -114,12 +114,7 @@ export default function Login() {
 
   return (
     <section className="w-full flex flex-col justify-center items-center h-screen p-4">
-      <div className="w-1/4 p-4 rounded-3xl bg-secondary/40  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
-        <img
-          src="/public/logoFinTrack.png"
-          className="size-16 mx-auto mb-4"
-          alt="logo"
-        />
+      <div className="w-1/4 p-4 rounded-lg bg-secondary/40  ring-1 ring-border animate__animated animate__zoomIn animate__faster">
         <h1 className="text-2xl font-logo">Connectez-vous</h1>
         <form
           onSubmit={formik.handleSubmit}

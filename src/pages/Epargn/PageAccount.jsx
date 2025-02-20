@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ROUTES } from "../../composant/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { FormEditAccount } from "./FormEditAccount";
+import Container from "../../composant/Container/Container";
 
 export default function PageAccount() {
   const { id } = useParams();
@@ -121,43 +122,45 @@ export default function PageAccount() {
         isFetching={isFetching}
       />
       <div className="flex w-full gap-4 animate-fade">
-        <div className="w-4/5 flex flex-col h-fit ring-1 ring-border justify-between bg-secondary/40 rounded-xl p-4">
-          <h2 className=" text-left">Graphique</h2>
-          {!isFetching ? (
-            <ChartLine
-              data={dataGraph}
-              defaultConfig={{
-                amount: {
-                  label: "Montant",
-                  color: "hsl(var(--chart-12))",
-                  visible: true,
-                },
-                text: {
-                  color: "hsl(var(--foreground))",
-                },
-              }}
-              maxValue={Math.max(...dataGraph.map((item) => item.amount))}
-            />
-          ) : (
-            <LoaderDots />
-          )}
-          <div className="flex flex-row gap-4 w-fit mx-auto items-center justify-between">
-            <ChevronLeft
-              size={25}
-              className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-              onClick={clickLastYear}
-            />
-            <p className="font-thin text-sm">{selectedYear}</p>
-            <ChevronRight
-              size={25}
-              className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-              onClick={clickNextYear}
-            />
-          </div>
+        <div className="w-4/5">
+          <Container>
+            <h2 className=" text-left">Graphique</h2>
+            {!isFetching ? (
+              <ChartLine
+                data={dataGraph}
+                defaultConfig={{
+                  amount: {
+                    label: "Montant",
+                    color: "hsl(var(--chart-12))",
+                    visible: true,
+                  },
+                  text: {
+                    color: "hsl(var(--foreground))",
+                  },
+                }}
+                maxValue={Math.max(...dataGraph.map((item) => item.amount))}
+              />
+            ) : (
+              <LoaderDots />
+            )}
+            <div className="flex flex-row gap-4 w-fit mx-auto items-center justify-between">
+              <ChevronLeft
+                size={25}
+                className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                onClick={clickLastYear}
+              />
+              <p className="font-thin text-sm">{selectedYear}</p>
+              <ChevronRight
+                size={25}
+                className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                onClick={clickNextYear}
+              />
+            </div>
+          </Container>
         </div>
 
-        <div className="flex flex-col gap-4  w-1/5">
-          <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4">
+        <div className="flex flex-col gap-4 w-1/5">
+          <Container>
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className="text-left">Transactions</h2>
 
@@ -239,9 +242,9 @@ export default function PageAccount() {
                 Aucune transactions trouvé !
               </p>
             )}
-          </div>
+          </Container>
 
-          <div className="ring-1 ring-border bg-secondary/40 h-fit rounded-xl p-4">
+          <Container>
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className=" text-left">Caractéristiques</h2>
               <Dialog>
@@ -291,7 +294,7 @@ export default function PageAccount() {
                 </span>
               </div>
             </div>
-          </div>
+          </Container>
         </div>
       </div>
     </section>

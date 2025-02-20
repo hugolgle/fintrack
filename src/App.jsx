@@ -3,8 +3,7 @@ import "./App.css";
 import "../styles/globals.css";
 import { ROUTES } from "./composant/Routes.jsx";
 import PrivateRoute from "./composant/PrivateRoute.jsx";
-import BoardTransactions from "./Pages/Transaction/BoardTransactions.jsx";
-import PageAddTransac from "./Pages/Transaction/PageAddTransaction.jsx";
+import BoardTransactions from "./Pages/Finance/Finance.jsx";
 import BoardInvest from "./Pages/Investment/BoardInvest.jsx";
 import PageAddInvestment from "./Pages/Investment/PageAddInvestment.jsx";
 import PageInvestment from "./Pages/Investment/PageInvestment.jsx";
@@ -28,9 +27,8 @@ import PageAddInvestmentMain from "./Pages/Investment/PageAddInvestmentMain.jsx"
 import PageOrderById from "./Pages/Investment/PageOrderById.jsx";
 import PageAddAsset from "./Pages/Heritage/PageAddAsset.jsx";
 import PageAssets from "./Pages/Heritage/PageAssets.jsx";
-import PageExpense from "./Pages/Transaction/PageExpense.jsx";
-import PageRevenue from "./Pages/Transaction/PageRevenue.jsx";
-import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
+import PageTransaction from "./Pages/Finance/FinancePage.jsx";
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 
 export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
@@ -41,16 +39,28 @@ export default function App() {
       component: <BoardTransactions />,
     },
     {
-      path: ROUTES.FINANCE_ADD,
-      component: <PageAddTransac />,
+      path: ROUTES.EXPENSE,
+      component: <PageTransaction type="Expense" />,
     },
     {
-      path: ROUTES.EXPENSE_BY_DATE,
-      component: <PageExpense />,
+      path: ROUTES.REVENUE,
+      component: <PageTransaction type="Revenue" />,
     },
     {
-      path: ROUTES.REVENUE_BY_DATE,
-      component: <PageRevenue />,
+      path: ROUTES.EXPENSE_BY_YEAR,
+      component: <PageTransaction type="Expense" />,
+    },
+    {
+      path: ROUTES.REVENUE_BY_YEAR,
+      component: <PageTransaction type="Revenue" />,
+    },
+    {
+      path: ROUTES.EXPENSE_BY_MONTH,
+      component: <PageTransaction type="Expense" />,
+    },
+    {
+      path: ROUTES.REVENUE_BY_MONTH,
+      component: <PageTransaction type="Revenue" />,
     },
   ];
 

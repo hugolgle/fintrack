@@ -14,6 +14,7 @@ import ModalTable from "./Modal/ModalTable";
 import { ROUTES } from "../../composant/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { renderCustomLegend } from "../../composant/Legend";
+import Container from "../../composant/Container/Container";
 
 export default function Epargn() {
   const navigate = useNavigate();
@@ -162,99 +163,105 @@ export default function Epargn() {
             ))}
         </div>
         <div className="w-full flex gap-4">
-          <div className="w-2/3 h-fit ring-1 ring-border bg-secondary/40 rounded-xl p-4">
-            <div className="flex justify-between w-full cursor-pointer items-center">
-              <h2 className="text-left">Transactions</h2>
-              <ModalTable
-                btnOpen={
-                  <p className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all">
-                    Voir tout
-                    <ChevronRight
-                      size={12}
-                      className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
-                    />
-                  </p>
-                }
-                title="Transactions"
-                description="Liste des transactions."
-                data={mergedTransactions}
-                getAccountName={getAccountName}
-                formatData={formatData}
-                columns={columns}
-              />
-            </div>
-            <div className="w-full text-sm mt-4">
-              <div className="flex w-full font-thin italic pb-2">
-                {columns?.map(({ id, name }) => (
-                  <p key={id} className="w-1/5 text-center">
-                    {name}
-                  </p>
-                ))}
+          <div className="w-2/3">
+            <Container>
+              <div className="flex justify-between w-full cursor-pointer items-center">
+                <h2 className="text-left">Transactions</h2>
+                <ModalTable
+                  btnOpen={
+                    <p className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all">
+                      Voir tout
+                      <ChevronRight
+                        size={12}
+                        className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                      />
+                    </p>
+                  }
+                  title="Transactions"
+                  description="Liste des transactions."
+                  data={mergedTransactions}
+                  getAccountName={getAccountName}
+                  formatData={formatData}
+                  columns={columns}
+                />
               </div>
-              <Separator className="w-4/5 mx-auto bg-secondary" />
-              {mergedTransactions
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5)
-                .map((transaction, index) => (
-                  <div
-                    key={index}
-                    className="flex w-full items-center py-2 text-xs"
-                  >
-                    <p className="w-1/5">
-                      {transaction.type === "withdraw"
-                        ? "Retrait"
-                        : transaction.type === "transfer"
-                          ? "Transfert"
-                          : transaction.type === "deposit"
-                            ? "Dépôt"
-                            : transaction.type === "interest" && "Intérêts"}
+              <div className="w-full text-sm mt-4">
+                <div className="flex w-full font-thin italic pb-2">
+                  {columns?.map(({ id, name }) => (
+                    <p key={id} className="w-1/5 text-center">
+                      {name}
                     </p>
-                    <p className="w-1/5">
-                      {transaction.accountName ?? transaction.fromAccount}
-                    </p>
-                    <p className="w-1/5">{transaction.toAccount ?? "-"}</p>
-                    <p className="w-1/5">
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </p>
-                    <p className="italic px-2 py-[2px] w-1/5 text-center">
-                      <span
-                        className={`px-2 py-1 w-fit text-center rounded-sm bg-opacity-40 ${
-                          transaction?.type !== "transfer"
-                            ? transaction?.amount < 0
-                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                              : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
-                            : ""
-                        }`}
-                      >
-                        {transaction?.type === "transfer"
-                          ? formatCurrency.format(Math.abs(transaction.amount))
-                          : formatCurrency.format(transaction.amount)}
-                      </span>
-                    </p>
-                  </div>
-                ))}
-            </div>
+                  ))}
+                </div>
+                <Separator className="w-4/5 mx-auto bg-secondary" />
+                {mergedTransactions
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .slice(0, 5)
+                  .map((transaction, index) => (
+                    <div
+                      key={index}
+                      className="flex w-full items-center py-2 text-xs"
+                    >
+                      <p className="w-1/5">
+                        {transaction.type === "withdraw"
+                          ? "Retrait"
+                          : transaction.type === "transfer"
+                            ? "Transfert"
+                            : transaction.type === "deposit"
+                              ? "Dépôt"
+                              : transaction.type === "interest" && "Intérêts"}
+                      </p>
+                      <p className="w-1/5">
+                        {transaction.accountName ?? transaction.fromAccount}
+                      </p>
+                      <p className="w-1/5">{transaction.toAccount ?? "-"}</p>
+                      <p className="w-1/5">
+                        {new Date(transaction.date).toLocaleDateString()}
+                      </p>
+                      <p className="italic px-2 py-[2px] w-1/5 text-center">
+                        <span
+                          className={`px-2 py-1 w-fit text-center rounded-sm bg-opacity-40 ${
+                            transaction?.type !== "transfer"
+                              ? transaction?.amount < 0
+                                ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
+                                : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                              : ""
+                          }`}
+                        >
+                          {transaction?.type === "transfer"
+                            ? formatCurrency.format(
+                                Math.abs(transaction.amount)
+                              )
+                            : formatCurrency.format(transaction.amount)}
+                        </span>
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </Container>
           </div>
 
-          <div className="w-1/3 bg-secondary/40 ring-1 ring-border h-fit rounded-xl p-4">
-            <h2 className="text-left">Répartitions</h2>
-            {!isFetching ? (
-              totalAmount !== "0.00" ? (
-                <RadialChart
-                  chartData={transformedData}
-                  chartConfig={chartConfig}
-                  total={totalAmount}
-                  fontSizeTotal={8}
-                  inner={60}
-                  outer={80}
-                  legend={renderCustomLegend}
-                />
+          <div className="w-1/3">
+            <Container>
+              <h2 className="text-left">Répartitions</h2>
+              {!isFetching ? (
+                totalAmount !== "0.00" ? (
+                  <RadialChart
+                    chartData={transformedData}
+                    chartConfig={chartConfig}
+                    total={totalAmount}
+                    fontSizeTotal={8}
+                    inner={60}
+                    outer={80}
+                    legend={renderCustomLegend}
+                  />
+                ) : (
+                  <p className="h-[225px] ">Aucune donnée</p>
+                )
               ) : (
-                <p className="h-[225px] ">Aucune donnée</p>
-              )
-            ) : (
-              <LoaderDots />
-            )}
+                <LoaderDots />
+              )}
+            </Container>
           </div>
         </div>
       </div>

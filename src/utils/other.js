@@ -26,7 +26,9 @@ export const currentDate = () => {
     year: theDate.year(),
   };
 };
+const { month, year } = currentDate();
 
+export const currentDateMonthYear = `${year}${month}`;
 // -----------------------------
 export function getLastMonths(date, numberOfMonths) {
   const currentYear = parseInt(date.slice(0, 4), 10);

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { alphaSort, months, nameType } from "../../utils/other.js";
-import { categoryRecette } from "../../../public/categories.json";
+import { categoryDepense } from "../../../public/categories.json";
 import Header from "../../composant/Header.jsx";
 import Tableau from "../../composant/Table/Table.jsx";
 import {
@@ -27,7 +27,7 @@ import Loader from "../../composant/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
-import { FormEditTransac } from "./FormEditTransac.jsx";
+import { FormTransac } from "./FormFinance.jsx";
 import { Trash } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -38,21 +38,21 @@ import { Plus } from "lucide-react";
 import ModalTable from "../Epargn/Modal/ModalTable.jsx";
 import { toast } from "sonner";
 import { calculTotalAmount } from "../../utils/calcul.js";
-import { ROUTES } from "../../composant/Routes.jsx";
 
-export default function PageRevenue() {
-  const { date } = useParams();
+export default function PageTransaction({ type }) {
+  const { year, month } = useParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({});
   const queryClient = useQueryClient();
+  const dateSelected = year ? (month ? `${year}${month}` : year) : "all";
 
   const {
     isLoading,
     data: dataTransactions,
     isFetching,
-    refetch: refectTransac,
+    refetch,
   } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
@@ -73,7 +73,7 @@ export default function PageRevenue() {
     onSuccess: (response) => {
       toast.success(response?.data?.message);
       queryClient.invalidateQueries(["fetchTransactions"]);
-      refectTransac();
+      refetch();
     },
     onError: (error) => {
       toast.error(error?.data?.message);
@@ -85,7 +85,7 @@ export default function PageRevenue() {
     performSearch(event.target.value);
   };
 
-  const categories = alphaSort(categoryRecette);
+  const categories = alphaSort(categoryDepense);
 
   const [selectedCategorys, setSelectedCategorys] = useState(
     searchParams.getAll("categories")
@@ -95,7 +95,7 @@ export default function PageRevenue() {
     searchParams.getAll("titles")
   );
 
-  const titles = getTitleOfTransactionsByType(dataTransactions, "Revenue");
+  const titles = getTitleOfTransactionsByType(dataTransactions, type);
 
   const handleCheckboxChange = (event, type) => {
     const value = event.target.value;
@@ -147,32 +147,32 @@ export default function PageRevenue() {
   const check =
     selectedCategorys.length + selectedTitles.length + selectedTags.length;
 
-  const transactions =
-    date === "all"
-      ? getTransactionsByType(
+  const transactions = !year
+    ? getTransactionsByType(
+        dataTransactions,
+        type,
+        selectedCategorys,
+        selectedTitles,
+        selectedTags
+      )
+    : year && !month
+      ? getTransactionsByYear(
           dataTransactions,
-          "Revenue",
+          dateSelected,
+          type,
           selectedCategorys,
           selectedTitles,
           selectedTags
         )
-      : date?.length === 4
-        ? getTransactionsByYear(
-            dataTransactions,
-            date,
-            "Revenue",
-            selectedCategorys,
-            selectedTitles,
-            selectedTags
-          )
-        : getTransactionsByMonth(
-            dataTransactions,
-            date,
-            "Revenue",
-            selectedCategorys,
-            selectedTitles,
-            selectedTags
-          );
+      : month &&
+        getTransactionsByMonth(
+          dataTransactions,
+          dateSelected,
+          type,
+          selectedCategorys,
+          selectedTitles,
+          selectedTags
+        );
 
   const displayData = transactions.map(
     ({
@@ -247,50 +247,37 @@ export default function PageRevenue() {
   };
 
   const clickLastMonth = () => {
-    if (date) {
-      let yearNum = parseInt(date.slice(0, 4), 10);
-      if (date.length === 4) {
-        yearNum -= 1;
-      }
-
-      let monthNum = parseInt(date.slice(4), 10);
-      monthNum -= 1;
-      if (monthNum === 0) {
-        monthNum = 12;
-        yearNum -= 1;
-      }
-      const newMonth = monthNum.toString().padStart(2, "0");
-      const newDate = `${yearNum}${newMonth}`;
-      if (date.length === 4) {
-        navigate(`/finance/revenue/${yearNum}`);
-      } else if (date.length === 6) {
-        navigate(`/finance/revenue/${newDate}`);
+    if (year) {
+      let yearNum = parseInt(year);
+      if (!month) {
+        navigate(`/finance/${type.toLowerCase()}/${yearNum - 1}`);
       } else {
-        return "";
+        let monthNum = parseInt(month) - 1;
+        if (monthNum === 0) {
+          monthNum = 12;
+          yearNum -= 1;
+        }
+        const newMonth = monthNum.toString().padStart(2, "0");
+        const newDate = `${yearNum}/${newMonth}`;
+        navigate(`/finance/${type.toLowerCase()}/${newDate}`);
       }
     }
   };
 
   const clickNextMonth = () => {
-    if (date) {
-      let yearNum = parseInt(date.slice(0, 4), 10);
-      if (date.length === 4) {
-        yearNum += 1;
-      }
-      let monthNum = parseInt(date.slice(4), 10);
-      monthNum += 1;
-      if (monthNum === 13) {
-        monthNum = 1;
-        yearNum += 1;
-      }
-      const newMonth = monthNum.toString().padStart(2, "0");
-      const newDate = `${yearNum}${newMonth}`;
-      if (date.length === 4) {
-        navigate(`/finance/revenue/${yearNum}`);
-      } else if (date.length === 6) {
-        navigate(`/finance/revenue/${newDate}`);
+    if (year) {
+      let yearNum = parseInt(year);
+      if (!month) {
+        navigate(`/finance/${type.toLowerCase()}/${yearNum + 1}`);
       } else {
-        return "";
+        let monthNum = parseInt(month) + 1;
+        if (monthNum > 12) {
+          monthNum = 1;
+          yearNum += 1;
+        }
+        const newMonth = monthNum.toString().padStart(2, "0");
+        const newDate = `${yearNum}/${newMonth}`;
+        navigate(`/finance/${type.toLowerCase()}/${newDate}`);
       }
     }
   };
@@ -348,13 +335,14 @@ export default function PageRevenue() {
         formatCurrency.format(row.amount),
       ];
     };
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <MoreHorizontal className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left">
-          {item.type === "Expense" && (
+          {type === "Expense" && (
             <Dialog>
               <DialogTrigger asChild>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -363,7 +351,7 @@ export default function PageRevenue() {
                 </DropdownMenuItem>
               </DialogTrigger>
               <DialogContent>
-                <FormAddRefund transaction={item} refetch={refectTransac} />
+                <FormAddRefund transaction={item} refetch={refetch} />
               </DialogContent>
             </Dialog>
           )}
@@ -393,7 +381,7 @@ export default function PageRevenue() {
               </DropdownMenuItem>
             </DialogTrigger>
             <DialogContent>
-              <FormEditTransac transaction={item} refetch={refectTransac} />
+              <FormTransac editMode transaction={item} refetch={refetch} />
             </DialogContent>
           </Dialog>
 
@@ -423,17 +411,17 @@ export default function PageRevenue() {
       <section className="w-full">
         <Header
           title={`${
-            date === "all"
-              ? `Toutes les ${nameType("Revenue").toLowerCase()}s`
-              : date?.length === 4
-                ? `${nameType("Revenue")}s de ${date}`
-                : `${nameType("Revenue")}s de ${convertDate(date)}`
+            !year
+              ? `Toutes les ${nameType(type).toLowerCase()}s`
+              : year && !month
+                ? `${nameType(type)}s de ${dateSelected}`
+                : `${nameType(type)}s de ${convertDate(dateSelected)}`
           }`}
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
           isFetching={isFetching}
           btnSearch={{ handleSearchChange, searchTerm }}
-          btnAdd={ROUTES.FINANCE_ADD}
+          modalAdd={<FormTransac refetch={refetch} />}
           btnReturn
           btnFilter={{
             selectedTags,
@@ -446,7 +434,7 @@ export default function PageRevenue() {
             categories,
             titles,
           }}
-          navigateDate={date !== "all"}
+          navigateDate={year}
         />
 
         <Tableau

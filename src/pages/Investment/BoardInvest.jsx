@@ -23,6 +23,7 @@ import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import { calculInvestByMonth } from "../../utils/calcul.js";
+import Container from "../../composant/Container/Container.jsx";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
@@ -261,38 +262,41 @@ export default function BoardInvest() {
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-2/4 bg-secondary/40 backdrop-blur-2xl ring-1 ring-border rounded-xl p-4">
-              <h2 className=" text-left">Position</h2>
+            <div className="w-2/4">
+              <Container>
+                <h2 className=" text-left">Position</h2>
 
-              {!isFetching ? (
-                <RadialChart
-                  chartData={chartDataByType}
-                  chartConfig={chartConfigByType}
-                  total={amountBuy}
-                  inner={40}
-                  outer={55}
-                  sideLegend="right"
-                  height={140}
-                  legend={renderCustomLegend}
-                />
-              ) : (
-                <LoaderDots />
-              )}
-              {!isFetching ? (
-                <RadialChart
-                  chartData={chartDataByName}
-                  chartConfig={chartConfigByName}
-                  total={amountBuy}
-                  inner={40}
-                  outer={55}
-                  height={140}
-                  legend={renderCustomLegend}
-                />
-              ) : (
-                <LoaderDots />
-              )}
+                {!isFetching ? (
+                  <RadialChart
+                    chartData={chartDataByType}
+                    chartConfig={chartConfigByType}
+                    total={amountBuy}
+                    inner={40}
+                    outer={55}
+                    sideLegend="right"
+                    height={140}
+                    legend={renderCustomLegend}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}
+                {!isFetching ? (
+                  <RadialChart
+                    chartData={chartDataByName}
+                    chartConfig={chartConfigByName}
+                    total={amountBuy}
+                    inner={40}
+                    outer={55}
+                    height={140}
+                    legend={renderCustomLegend}
+                  />
+                ) : (
+                  <LoaderDots />
+                )}
+              </Container>
             </div>
-            <div className="w-full relative flex flex-col h-fit justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+
+            <Container>
               <h2 className=" text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
@@ -339,38 +343,39 @@ export default function BoardInvest() {
                   </TabsList>
                 </Tabs>
               </div>
-            </div>
+            </Container>
+            <div className="w-2/5">
+              <Container>
+                <h2 className="mb-4 text-left">Dernières opérations</h2>
+                <table className="h-full">
+                  <tbody className="w-full h-full gap-2 flex flex-col">
+                    {simplifiedData
+                      .sort((a, b) => new Date(b.date) - new Date(a.date))
+                      .slice(0, 6)
+                      .map((operation, index) => (
+                        <tr
+                          key={index}
+                          className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                        >
+                          <td className="flex flex-row space-x-4 w-4/5">
+                            <span>
+                              {format(new Date(operation.date), "dd/MM")}
+                            </span>
+                            <span className="truncate max-w-40">
+                              {operation.name}
+                            </span>
+                          </td>
 
-            <div className="w-2/5 bg-secondary/40 h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
-              <h2 className=" text-left">Dernières opérations</h2>
-              <table className="h-full">
-                <tbody className="w-full h-full gap-2 flex flex-col">
-                  {simplifiedData
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
-                    .slice(0, 6)
-                    .map((operation, index) => (
-                      <tr
-                        key={index}
-                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
-                      >
-                        <td className="flex flex-row space-x-4 w-4/5">
-                          <span>
-                            {format(new Date(operation.date), "dd/MM")}
-                          </span>
-                          <span className="truncate max-w-40">
-                            {operation.name}
-                          </span>
-                        </td>
-
-                        <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
-                          <span>
-                            {formatCurrency.format(operation?.amount)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+                          <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
+                            <span>
+                              {formatCurrency.format(operation?.amount)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </Container>
             </div>
           </div>
         </div>

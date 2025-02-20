@@ -4,19 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { HttpStatusCode } from "axios";
 import { ChevronLeft, ChevronRight, Calendar, PieChart } from "lucide-react";
-
-import { calculTotalByMonth } from "../../utils/calcul";
+import { calculTotalByMonth, calculTotalByYear } from "../../utils/calcul.js";
 import {
   currentDate,
   getLastMonths,
   months,
   updateMonth,
-} from "../../utils/other";
-import { fetchTransactions } from "../../Service/Transaction.service";
+} from "../../utils/other.js";
+import { FormTransac } from "./FormFinance.jsx";
+import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import Header from "../../composant/Header.jsx";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
-import Loader from "../../composant/Loader/Loader";
-import BoxInfos from "../../composant/Box/BoxInfos";
+import Loader from "../../composant/Loader/Loader.jsx";
+import BoxInfos from "../../composant/Box/BoxInfos.jsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   aggregateTransactions,
@@ -33,10 +33,13 @@ import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
+import { CircleDollarSign } from "lucide-react";
+import { WalletCards } from "lucide-react";
+import Container from "../../composant/Container/Container.jsx";
 
 export default function BoardTransactions() {
   const { month, year } = currentDate();
-  const currentYearMonth = `${year}${month.toString().padStart(2, "0")}`;
+  const currentYearMonth = `${year}${month}`;
   const [selectNbMonth, setSelectNbMonth] = useState(12);
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
   const [monthChartRadial, setMonth] = useState(currentYearMonth);
@@ -46,6 +49,7 @@ export default function BoardTransactions() {
     isLoading,
     data: dataTransactions,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
@@ -201,6 +205,7 @@ export default function BoardTransactions() {
   const lastMonthDate = new Date(
     currentDateBis.setMonth(currentDateBis.getMonth() - 1)
   );
+
   const startOfLastMonth = new Date(
     lastMonthDate.getFullYear(),
     lastMonthDate.getMonth(),
@@ -307,7 +312,7 @@ export default function BoardTransactions() {
       <div className="flex flex-col">
         <Header
           title="Finance"
-          btnAdd={ROUTES.FINANCE_ADD}
+          modalAdd={<FormTransac refetch={refetch} />}
           isFetching={isFetching}
         />
         <div className="flex flex-col gap-4 w-full animate-fade">
@@ -315,7 +320,10 @@ export default function BoardTransactions() {
             <BoxInfos
               onClick={() =>
                 navigate(
-                  ROUTES.EXPENSE_BY_DATE.replace(":date", currentYearMonth)
+                  ROUTES.EXPENSE_BY_MONTH.replace(":year", year).replace(
+                    ":month",
+                    month
+                  )
                 )
               }
               title="Dépense ce mois"
@@ -331,13 +339,16 @@ export default function BoardTransactions() {
                   lastMonthYear
                 ) || null
               }
-              icon={<Calendar size={15} color="grey" />}
+              icon={<WalletCards size={15} color="grey" />}
               isAmount
             />
             <BoxInfos
               onClick={() =>
                 navigate(
-                  ROUTES.REVENUE_BY_DATE.replace(":date", currentYearMonth)
+                  ROUTES.REVENUE_BY_MONTH.replace(":year", year).replace(
+                    ":month",
+                    month
+                  )
                 )
               }
               title="Revenu ce mois"
@@ -353,15 +364,44 @@ export default function BoardTransactions() {
                   lastMonthYear
                 ) || null
               }
-              icon={<PieChart size={15} color="grey" />}
-              year
+              icon={<CircleDollarSign size={15} color="grey" />}
+              isAmount
+            />
+            <BoxInfos
+              onClick={() =>
+                navigate(ROUTES.EXPENSE_BY_YEAR.replace(":year", year))
+              }
+              title={`Dépense en ${year}`}
+              value={
+                calculTotalByYear(dataTransactions, "Expense", year) || null
+              }
+              valueLast={
+                calculTotalByYear(dataTransactions, "Expense", year - 1) || null
+              }
+              yearLast={year - 1}
+              icon={<WalletCards size={15} color="grey" />}
+              isAmount
+            />
+            <BoxInfos
+              onClick={() =>
+                navigate(ROUTES.REVENUE_BY_YEAR.replace(":year", year))
+              }
+              title={`Revenu en ${year}`}
+              value={
+                calculTotalByYear(dataTransactions, "Revenue", year) || null
+              }
+              valueLast={
+                calculTotalByYear(dataTransactions, "Revenue", year - 1) || null
+              }
+              yearLast={year - 1}
+              icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
             />
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col gap-4 w-4/5">
               <div className="flex flex-col gap-4">
-                <div className="w-full relative flex flex-col ring-1 ring-border justify-between bg-secondary/40 rounded-xl p-4">
+                <Container>
                   <h2 className="text-left">Graphique</h2>
                   {!isFetching ? (
                     <ChartLine
@@ -406,8 +446,8 @@ export default function BoardTransactions() {
                       </TabsList>
                     </Tabs>
                   </div>
-                </div>
-                <div className="ring-1 ring-border bg-secondary/40 rounded-xl p-4">
+                </Container>
+                <Container>
                   <h2 className="text-left">Répartitions</h2>
                   <div className="flex">
                     <div className="flex flex-col w-full p-4">
@@ -506,12 +546,12 @@ export default function BoardTransactions() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Container>
               </div>
             </div>
             <div className="w-1/5 flex flex-col gap-4">
-              <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
-                <h2 className="text-left">Dernières opérations</h2>
+              <Container>
+                <h2 className="text-left mb-4">Dernières opérations</h2>
                 <table className="h-full">
                   <tbody className="w-full h-full gap-2 flex flex-col">
                     {lastOperations.map((operation) => (
@@ -532,9 +572,9 @@ export default function BoardTransactions() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-              <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4">
-                <h2 className="text-left">Mes abonnements</h2>
+              </Container>
+              <Container>
+                <h2 className="text-left mb-4">Mes abonnements</h2>
                 <table className="h-full">
                   <tbody className="w-full h-full gap-2 flex flex-col">
                     {mySubscription.map((operation) => (
@@ -556,7 +596,7 @@ export default function BoardTransactions() {
                     </p>
                   </tbody>
                 </table>
-              </div>
+              </Container>
             </div>
           </div>
         </div>

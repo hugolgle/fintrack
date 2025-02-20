@@ -5,11 +5,16 @@ import {
   calculTotalByMonth,
 } from "../../utils/calcul.js";
 import { formatCurrency } from "../../utils/fonctionnel.js";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleDollarSign } from "lucide-react";
 import { useState } from "react";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import { categoryDepense } from "../../../public/categories.json";
-import { currentDate, getLastMonths, months } from "../../utils/other.js";
+import {
+  currentDate,
+  currentDateMonthYear,
+  getLastMonths,
+  months,
+} from "../../utils/other.js";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../composant/Header.jsx";
@@ -32,6 +37,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "../../composant/Routes.jsx";
 import { Swords } from "lucide-react";
 import { fetchAssets } from "../../Service/Heritage.service.jsx";
+import Container from "../../composant/Container/Container.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -116,17 +122,16 @@ export default function Dashboard() {
   const [selectNbMonth, setSelectNbMonth] = useState(12);
 
   const { month: currentMonth, year: currentYear } = currentDate();
-  const currentYearMonth = `${currentYear}${currentMonth}`;
 
   const amountRevenuesMonth = calculTotalByMonth(
     dataTransacs,
     "Revenue",
-    currentYearMonth
+    currentDateMonthYear
   );
   const amountExpensesMonth = calculTotalByMonth(
     dataTransacs,
     "Expense",
-    currentYearMonth
+    currentDateMonthYear
   );
 
   const investCurrentMonth = calculTotal(dataTransacsInvest);
@@ -170,7 +175,7 @@ export default function Dashboard() {
 
   const lastOperations = getLastOperations(dataOperations, null, 4, false);
 
-  const [month, setMonth] = useState(currentYearMonth);
+  const [month, setMonth] = useState(currentDateMonthYear);
 
   const clickLastMonth = () => {
     let yearNum = parseInt(month.slice(0, 4), 10);
@@ -230,7 +235,7 @@ export default function Dashboard() {
   const total = calculTotalByMonth(dataTransacs, "Revenue", month);
   const montantInvest = calculInvestByMonth(dataTransacsInvest, month);
 
-  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
+  const [graphMonth, setGraphMonth] = useState(currentDateMonthYear);
 
   const clickNextMonthGraph = () => {
     let yearNum = parseInt(graphMonth.slice(0, 4), 10);
@@ -314,8 +319,8 @@ export default function Dashboard() {
 
   const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
 
-  const chevronIsVisible = month < currentYearMonth;
-  const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
+  const chevronIsVisible = month < currentDateMonthYear;
+  const chevronGraphIsVisible = lastMonthGraph.code < currentDateMonthYear;
 
   const dFix = Math.abs(dataDf);
   const dLoisir = Math.abs(dataLoisir);
@@ -487,12 +492,15 @@ export default function Dashboard() {
             <BoxInfos
               onClick={() =>
                 navigate(
-                  ROUTES.REVENUE_BY_DATE.replace(":date", currentYearMonth)
+                  ROUTES.REVENUE_BY_MONTH.replace(":year", currentYear).replace(
+                    ":month",
+                    currentMonth
+                  )
                 )
               }
               type="revenue"
               title="Revenu"
-              icon={<DollarSign size={15} color="grey" />}
+              icon={<CircleDollarSign size={15} color="grey" />}
               value={amountRevenuesMonth}
               valueLast={amountRevenuesLastMonth || null}
               isAmount
@@ -500,7 +508,10 @@ export default function Dashboard() {
             <BoxInfos
               onClick={() =>
                 navigate(
-                  ROUTES.EXPENSE_BY_DATE.replace(":date", currentYearMonth)
+                  ROUTES.EXPENSE_BY_MONTH.replace(":year", currentYear).replace(
+                    ":month",
+                    currentMonth
+                  )
                 )
               }
               type="depense"
@@ -536,7 +547,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-row gap-4 h-full">
             <div className="flex flex-col w-full gap-4 h-fit">
-              <div className="w-full relative h-fit flex flex-col justify-between bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+              <Container>
                 <h2 className=" text-left">Graphique</h2>
                 {!isFetchingTransacs ? (
                   <ChartLine
@@ -581,9 +592,9 @@ export default function Dashboard() {
                     </Tabs>{" "}
                   </div>
                 </div>
-              </div>
+              </Container>
               <div className="flex gap-4">
-                <div className="w-full bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+                <Container>
                   <h2 className=" text-left">Répartitions finance</h2>
                   {!isFetchingTransacs ? (
                     total !== "0.00" ? (
@@ -625,8 +636,8 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                </div>
-                <div className="w-full bg-secondary/40 ring-1 ring-border rounded-xl p-4">
+                </Container>
+                <Container>
                   <div className="flex justify-between w-full gap-4">
                     <h2 className=" text-left">Répartitions patrimoine</h2>
                     <p
@@ -656,11 +667,11 @@ export default function Dashboard() {
                   ) : (
                     <LoaderDots />
                   )}
-                </div>
+                </Container>
               </div>
             </div>
             <div className="w-1/5 flex flex-col h-fit gap-4">
-              <div className="bg-secondary/40 h-fit ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
+              <Container custom="gap-4">
                 <h2 className="text-left">Dernières opérations</h2>
                 <div className="w-full gap-2 h-full flex flex-col">
                   {lastOperations.map((operation) => (
@@ -686,9 +697,9 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="bg-secondary/40 ring-1 ring-border rounded-xl p-4 flex flex-col gap-4">
-                <div className="flex justify-between w-full gap-4">
+              </Container>
+              <Container>
+                <div className="flex justify-between w-full mb-4 gap-4">
                   <h2 className="text-nowrap">Mes investissements</h2>
                   <p
                     className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
@@ -730,10 +741,10 @@ export default function Dashboard() {
                       );
                     })}
                 </div>
-              </div>
+              </Container>
 
-              <div className="bg-secondary/40 ring-1 ring-border rounded-xl h-fit p-4 flex flex-col gap-4 ">
-                <h2 className=" text-left">Mes abonnements</h2>
+              <Container>
+                <h2 className="mb-4 text-left">Mes abonnements</h2>
                 <table className="h-full">
                   <tbody className="w-full h-full gap-2 flex flex-col">
                     {mySubscription.map((operation) => (
@@ -756,7 +767,7 @@ export default function Dashboard() {
                     </p>
                   </tbody>
                 </table>
-              </div>
+              </Container>
             </div>
           </div>
           <div className="flex flex-row gap-4 h-full"></div>

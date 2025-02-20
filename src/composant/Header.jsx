@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import PopoverFilter from "./PopoverFilter.jsx";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useLocation } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
@@ -19,7 +20,6 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { ROUTES } from "./Routes.jsx";
-import { Pencil } from "lucide-react";
 
 function Header({
   title,
@@ -34,6 +34,7 @@ function Header({
   btnAction,
   navigateDate,
   actionEdit,
+  modalAdd,
 }) {
   const location = useLocation();
 
@@ -65,6 +66,17 @@ function Header({
             >
               <CirclePlus size={20} />
             </Link>
+          )}
+          {modalAdd && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <CirclePlus
+                  size={20}
+                  className="cursor-pointer hover:scale-110 transition-all"
+                />
+              </DialogTrigger>
+              <DialogContent>{modalAdd}</DialogContent>
+            </Dialog>
           )}
           {btnAction && (
             <Link
