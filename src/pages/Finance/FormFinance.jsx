@@ -48,6 +48,7 @@ import {
   getTitleOfTransactionsByType,
   getTransactionsByType,
 } from "../../utils/operations";
+import { TYPES } from "../../StaticData/StaticData";
 
 const validationSchema = yup.object().shape({
   title: yup
@@ -70,7 +71,7 @@ const validationSchema = yup.object().shape({
   tag: yup.array().of(yup.string()).nullable(),
 });
 
-export function FormTransac({ transaction, refetch, editMode, dataUser }) {
+export function FormTransac({ transaction, refetch, editMode, type }) {
   const queryClient = useQueryClient();
   const [tags, setTags] = useState(transaction?.tag ?? []);
   const [tagInput, setTagInput] = useState("");
@@ -85,11 +86,11 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
       }
       return response?.data;
     },
-    refetchOnMount: true,
+    refetchOnMount: false,
   });
 
   const initialValues = {
-    type: transaction?.type ?? "",
+    type: transaction?.type ?? type ?? "",
     title: transaction?.title ?? "",
     titleBis: "",
     category: transaction?.category ?? "",
@@ -139,7 +140,7 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
 
   const mutationAdd = useMutation({
     mutationFn: async (postData) => {
-      return await addTransaction(postData, dataUser?._id);
+      return await addTransaction(postData);
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
@@ -173,7 +174,10 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
 
   const suggestions = [
     "Autre",
-    ...getTitleOfTransactionsByType(dataTransactions, formik.values.type),
+    ...getTitleOfTransactionsByType(
+      dataTransactions,
+      formik.values.type
+    ).filter((title) => title.trim() !== ""),
   ];
 
   const tagsSuggestions = getTagsOfTransactions(dataTransactions);
@@ -224,6 +228,7 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
           name="type"
           value={formik.values.type}
           onValueChange={(value) => formik.setFieldValue("type", value)}
+          disabled={editMode}
         >
           <SelectTrigger>
             <SelectValue placeholder="Entrez le type" />
@@ -231,15 +236,15 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
           <SelectContent>
             <SelectItem
               className="hover:bg-accent"
-              key="Revenue"
-              value="Revenue"
+              key={TYPES.INCOME}
+              value={TYPES.INCOME}
             >
-              Revenue
+              Revenu
             </SelectItem>
             <SelectItem
               className="hover:bg-accent"
-              key="Expense"
-              value="Expense"
+              key={TYPES.EXPENSE}
+              value={TYPES.EXPENSE}
             >
               Dépense
             </SelectItem>
@@ -301,13 +306,13 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
             <SelectValue placeholder="Entrez la catégorie" />
           </SelectTrigger>
           <SelectContent>
-            {formik.values.type === "Expense" &&
+            {formik.values.type === TYPES.EXPENSE &&
               categoryD.map(({ name }) => (
                 <SelectItem className="hover:bg-accent" key={name} value={name}>
                   {name}
                 </SelectItem>
               ))}
-            {formik.values.type === "Revenue" &&
+            {formik.values.type === TYPES.INCOME &&
               categoryR.map(({ name }) => (
                 <SelectItem className="hover:bg-accent" key={name} value={name}>
                   {name}
@@ -369,6 +374,7 @@ export function FormTransac({ transaction, refetch, editMode, dataUser }) {
             {formik.errors.amount}
           </p>
         )}
+
         <div className="flex gap-2">
           <Input
             value={tagInput}

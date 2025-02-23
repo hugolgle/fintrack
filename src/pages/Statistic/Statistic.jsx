@@ -1,48 +1,47 @@
-import { useEffect, useState } from "react";
-import {
-  calculEconomie,
-  calculTotalByMonth,
-  calculTotalByYear,
-} from "../../utils/calcul";
-import BoxStat from "../../composant/Box/BoxStat";
-import { Separator } from "@/components/ui/separator";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { calculTotalByMonth, calculTotalByYear } from "../../utils/calcul";
 import {
   aggregateTransactions,
-  getTransactionsByMonth,
-  getTransactionsByYear,
+  getTransactionsByType,
 } from "../../utils/operations";
+import { fetchTransactions } from "../../Service/Transaction.service";
+import { fetchInvestments } from "../../Service/Investment.service";
+import { getCurrentUser } from "../../Service/User.service";
+import { getUserIdFromToken } from "../../utils/users";
+import { currentDate, months } from "../../utils/other";
+import { HttpStatusCode } from "axios";
+import BoxStat from "../../composant/Box/BoxStat";
+import Header from "../../composant/Header";
+import Container from "../../composant/Container/Container";
+import Loader from "../../composant/Loader/Loader";
+import LoaderDots from "../../composant/Loader/LoaderDots";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { RadialChart } from "../../composant/Charts/RadialChart";
+import { renderCustomLegend } from "../../composant/Legend";
 import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
-import { Button } from "@/components/ui/button";
-import { fetchTransactions } from "../../Service/Transaction.service";
-import { useQuery } from "@tanstack/react-query";
-import Loader from "../../composant/Loader/Loader";
-import { currentDate, months } from "../../utils/other";
-import LoaderDots from "../../composant/Loader/LoaderDots";
-import { HttpStatusCode } from "axios";
-import { getUserIdFromToken } from "../../utils/users";
-import { getCurrentUser } from "../../Service/User.service";
-import { RadialChart } from "../../composant/Charts/RadialChart";
-import { renderCustomLegend } from "../../composant/Legend";
-import Header from "../../composant/Header";
-import { useRef } from "react";
-import { fetchInvestments } from "../../Service/Investment.service";
+import { toast } from "sonner";
+import { TYPES } from "../../StaticData/StaticData";
 
 export default function Statistic() {
   const userId = getUserIdFromToken();
+  const { month: currentMonth, year: currentYear } = currentDate();
 
   const { data: dataUser } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getCurrentUser(userId),
     enabled: !!userId,
   });
+
   const {
     isLoading,
     data: dataTransactions,
@@ -51,10 +50,8 @@ export default function Statistic() {
     queryKey: ["fetchTransactions"],
     queryFn: async () => {
       const response = await fetchTransactions();
-      if (response?.status !== HttpStatusCode.Ok) {
-        const message = response?.response?.data?.message || "Erreur";
-        toast.warn(message);
-      }
+      if (response?.status !== HttpStatusCode.Ok)
+        toast.warn(response?.response?.data?.message || "Erreur");
       return response?.data;
     },
     refetchOnMount: true,
@@ -64,192 +61,129 @@ export default function Statistic() {
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
       const response = await fetchInvestments();
-      if (response?.status !== HttpStatusCode.Ok) {
-        const message = response?.response?.data?.message || "Erreur";
-        toast.warn(message);
-      }
+      if (response?.status !== HttpStatusCode.Ok)
+        toast.warn(response?.response?.data?.message || "Erreur");
       return response?.data;
     },
     refetchOnMount: true,
   });
 
-  const { month: currentMonth, year: currentYear } = currentDate();
-
   const [selectedMonth, setSelectedMonth] = useState(
     String(currentMonth).padStart(2, "0")
   );
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [firstYear, setFirstYear] = useState(currentYear);
-  const [filteredOperation, setFilteredOperation] = useState([]);
 
-  const prevTransactionsRef = useRef();
+  const firstYear = useMemo(() => {
+    if (!dataTransactions || !dataUser) return currentYear;
+    return dataTransactions.reduce((min, t) => {
+      const year = new Date(t.date).getFullYear();
+      return t.user === dataUser._id ? Math.min(min, year) : min;
+    }, currentYear);
+  }, [dataTransactions, dataUser, currentYear]);
 
-  useEffect(() => {
-    if (
-      Array.isArray(dataTransactions) &&
-      JSON.stringify(dataTransactions) !==
-        JSON.stringify(prevTransactionsRef.current)
-    ) {
-      setFilteredOperation(dataTransactions);
-      prevTransactionsRef.current = dataTransactions;
-    }
-  }, [dataTransactions]);
-  console.log(selectedMonth);
-  useEffect(() => {
-    const yearsSet = new Set();
-    let minYear = currentYear;
+  const years = useMemo(() => {
+    const arr = [];
+    for (let y = firstYear; y <= currentYear; y++) arr.push(y);
+    return arr.reverse();
+  }, [firstYear, currentYear]);
 
-    filteredOperation?.forEach((transaction) => {
-      const year = new Date(transaction.date).getFullYear();
-      if (transaction.user === dataUser?._id) {
-        yearsSet?.add(year);
-        if (year < minYear) {
-          minYear = year;
-        }
-      }
-    });
-
-    setFirstYear(minYear);
-  }, [filteredOperation, dataUser?._id, currentYear]);
-
-  const clickMonth = (month) => {
-    setSelectedMonth(month);
-  };
-
-  const clickYear = (year) => {
-    setSelectedYear(year);
-  };
-
-  const generateYears = () => {
-    const years = [];
-    for (let year = firstYear; year <= currentYear; year++) {
-      years.push(year);
-    }
-    return years;
-  };
-
-  const generateMonths = () => {
-    if (selectedYear === currentYear) {
-      return Array.from({ length: currentMonth }, (_, i) => i + 1);
-    }
-    return Array.from({ length: 12 }, (_, i) => i + 1);
-  };
+  const monthsList = useMemo(() => {
+    const len = selectedYear === currentYear ? currentMonth : 12;
+    return Array.from({ length: len }, (_, i) => i + 1);
+  }, [selectedYear, currentYear, currentMonth]);
 
   const selectedDate = `${selectedYear}${selectedMonth}`;
 
-  const depenseYear = calculTotalByYear(
-    dataTransactions,
-    "Expense",
-    `${selectedYear}`
+  const depenseYear = useMemo(
+    () => calculTotalByYear(dataTransactions, TYPES.EXPENSE, `${selectedYear}`),
+    [dataTransactions, selectedYear]
   );
-  const recetteYear = calculTotalByYear(
-    dataTransactions,
-    "Revenue",
-    `${selectedYear}`
+  const recetteYear = useMemo(
+    () => calculTotalByYear(dataTransactions, TYPES.INCOME, `${selectedYear}`),
+    [dataTransactions, selectedYear]
   );
-
-  const depenseMonth = calculTotalByMonth(
-    dataTransactions,
-    "Expense",
-    selectedDate
+  const depenseMonth = useMemo(
+    () => calculTotalByMonth(dataTransactions, TYPES.EXPENSE, selectedDate),
+    [dataTransactions, selectedDate]
   );
-
-  const recetteMonth = calculTotalByMonth(
-    dataTransactions,
-    "Revenue",
-    selectedDate
+  const recetteMonth = useMemo(
+    () => calculTotalByMonth(dataTransactions, TYPES.INCOME, selectedDate),
+    [dataTransactions, selectedDate]
   );
 
-  const nbMonth = generateMonths().length;
-
+  const nbMonth = monthsList.length;
   const moyenneDepenseMois = depenseYear / nbMonth;
   const moyenneRecetteMois = recetteYear / nbMonth;
-
-  // ---------
-
-  const economieTotale = calculEconomie(dataTransactions, `${selectedYear}`);
-  const economieMonth = calculEconomie(
-    dataTransactions,
-    `${selectedYear}`,
-    selectedMonth
-  );
+  const economieTotale = recetteYear + depenseYear;
+  const economieMonth = recetteMonth + depenseMonth;
   const moyenneEconomie = moyenneDepenseMois + moyenneRecetteMois;
-  // ---------
-  const amountInvestisYear = dataInvests
-    ?.map((data) =>
-      data.transaction
-        .filter((transaction) => {
-          return transaction.date.slice(0, 4) === `${selectedYear}`;
-        })
-        .reduce((total, item) => {
-          return total + (item.amount || 0);
-        }, 0)
-    )
-    .reduce((total, item) => {
-      return total + (item || 0);
-    }, 0);
 
-  const AmountInvestisMonth = dataInvests
-    ?.map((data) =>
-      data.transaction
-        .filter((transaction) => {
-          return (
-            transaction.date.slice(0, 7) === `${selectedYear}-${selectedMonth}`
-          );
-        })
-        .reduce((total, item) => {
-          return total + (item.amount || 0);
-        }, 0)
-    )
-    .reduce((total, item) => {
-      return total + (item || 0);
+  const amountInvestisYear = useMemo(() => {
+    if (!dataInvests) return 0;
+    return dataInvests.reduce((acc, d) => {
+      const total = d.transaction
+        .filter((t) => t.date.slice(0, 4) === `${selectedYear}`)
+        .reduce((s, t) => s + (t.amount || 0), 0);
+      return acc + total;
     }, 0);
+  }, [dataInvests, selectedYear]);
+
+  const AmountInvestisMonth = useMemo(() => {
+    if (!dataInvests) return 0;
+    return dataInvests.reduce((acc, d) => {
+      const total = d.transaction
+        .filter(
+          (t) => t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}`
+        )
+        .reduce((s, t) => s + (t.amount || 0), 0);
+      return acc + total;
+    }, 0);
+  }, [dataInvests, selectedYear, selectedMonth]);
 
   const amountInvestisAverage = amountInvestisYear / nbMonth;
 
-  // ---------
+  const dataRevenue = getTransactionsByType(dataTransactions, TYPES.INCOME);
+  const dataExpense = getTransactionsByType(dataTransactions, TYPES.EXPENSE);
 
-  if (isLoading) return <Loader />;
+  const filterBy = (data, type) =>
+    data.filter(
+      (t) =>
+        t.date.slice(0, type === "year" ? 4 : 7) ===
+        (type === "year"
+          ? `${selectedYear}`
+          : `${selectedYear}-${selectedMonth}`)
+    );
 
-  const expensePieChartYear = getTransactionsByYear(
-    dataTransactions,
-    `${selectedYear}`,
-    "Expense"
+  const expensePieChartYear = filterBy(dataExpense, "year");
+  const expensePieChartMonth = filterBy(dataExpense, "month");
+  const revenuePieChartYear = filterBy(dataRevenue, "year");
+  const revenuePieChartMonth = filterBy(dataRevenue, "month");
+
+  const categoryColorsExpense = useMemo(
+    () =>
+      categoryDepense.reduce(
+        (acc, cat) => ({ ...acc, [cat.name]: cat.color }),
+        {}
+      ),
+    []
   );
-
-  const expensePieChartMonth = getTransactionsByMonth(
-    dataTransactions,
-    selectedDate,
-    "Expense"
+  const categoryColorsRevenue = useMemo(
+    () =>
+      categoryRecette.reduce(
+        (acc, cat) => ({ ...acc, [cat.name]: cat.color }),
+        {}
+      ),
+    []
   );
-
-  const revenuePieChartYear = getTransactionsByYear(
-    dataTransactions,
-    `${selectedYear}`,
-    "Revenue"
-  );
-
-  const revenuePieChartMonth = getTransactionsByMonth(
-    dataTransactions,
-    selectedDate,
-    "Revenue"
-  );
-
-  const categoryColorsExpense = categoryDepense.reduce((acc, category) => {
-    acc[category.name] = category.color;
-    return acc;
-  }, {});
 
   const chartDataExpenseYear = aggregateTransactions(expensePieChartYear);
   const chartDataExpenseMonth = aggregateTransactions(expensePieChartMonth);
-
   const totalAmountExpenseYear = chartDataExpenseYear.reduce(
-    (sum, item) => sum + item.amount,
+    (s, i) => s + i.amount,
     0
   );
-
   const totalAmountExpenseMonth = chartDataExpenseMonth.reduce(
-    (sum, item) => sum + item.amount,
+    (s, i) => s + i.amount,
     0
   );
 
@@ -267,31 +201,24 @@ export default function Statistic() {
     fill: categoryColorsExpense[item.nomCate],
   }));
 
-  const chartConfigExpense = {
-    ...Object.keys(categoryColorsExpense).reduce((acc, category) => {
-      acc[category.toLocaleLowerCase()] = {
-        label: category,
-        color: categoryColorsExpense[category],
+  const chartConfigExpense = useMemo(() => {
+    return Object.keys(categoryColorsExpense).reduce((acc, cat) => {
+      acc[cat.toLowerCase()] = {
+        label: cat,
+        color: categoryColorsExpense[cat],
       };
       return acc;
-    }, {}),
-  };
-
-  const categoryColorsRevenue = categoryRecette.reduce((acc, category) => {
-    acc[category.name] = category.color;
-    return acc;
-  }, {});
+    }, {});
+  }, [categoryColorsExpense]);
 
   const chartDataRevenueMonth = aggregateTransactions(revenuePieChartMonth);
   const chartDataRevenueYear = aggregateTransactions(revenuePieChartYear);
-
   const totalAmountRevenueMonth = chartDataRevenueMonth.reduce(
-    (sum, item) => sum + item.amount,
+    (s, i) => s + i.amount,
     0
   );
-
   const totalAmountRevenueYear = chartDataRevenueYear.reduce(
-    (sum, item) => sum + item.amount,
+    (s, i) => s + i.amount,
     0
   );
 
@@ -309,15 +236,15 @@ export default function Statistic() {
     fill: categoryColorsRevenue[item.nomCate],
   }));
 
-  const chartConfigRevenue = {
-    ...Object.keys(categoryColorsRevenue).reduce((acc, category) => {
-      acc[category.toLocaleLowerCase()] = {
-        label: category,
-        color: categoryColorsRevenue[category],
+  const chartConfigRevenue = useMemo(() => {
+    return Object.keys(categoryColorsRevenue).reduce((acc, cat) => {
+      acc[cat.toLowerCase()] = {
+        label: cat,
+        color: categoryColorsRevenue[cat],
       };
       return acc;
-    }, {}),
-  };
+    }, {});
+  }, [categoryColorsRevenue]);
 
   const convertDate = (date) => {
     const annee = Math.floor(date / 100);
@@ -325,7 +252,7 @@ export default function Statistic() {
     return `${months[mois - 1]} ${annee}`;
   };
 
-  const years = generateYears().reverse();
+  if (isLoading) return <Loader />;
 
   return (
     <section className="w-full">
@@ -334,12 +261,11 @@ export default function Statistic() {
         <div className="flex flex-row gap-2">
           <Carousel className="max-w-xs overflow-hidden">
             <CarouselContent className="flex gap-2 px-4 snap-x snap-mandatory">
-              {years.map((year, index) => (
-                <CarouselItem className="basis-1/2 pl-0">
+              {years.map((year, i) => (
+                <CarouselItem key={i} className="basis-1/2 pl-0">
                   <Button
                     variant={selectedYear === year ? "secondary" : "none"}
-                    key={index}
-                    onClick={() => clickYear(year)}
+                    onClick={() => setSelectedYear(year)}
                     className="w-full"
                   >
                     {year}
@@ -353,28 +279,27 @@ export default function Statistic() {
             className="h-7 my-auto bg-secondary"
           />
           <div className="flex w-full gap-2">
-            {generateMonths().map((monthIndex, index) => (
+            {monthsList.map((m, i) => (
               <Button
+                key={i}
                 variant={
-                  selectedMonth === String(monthIndex).padStart(2, "0")
+                  selectedMonth === String(m).padStart(2, "0")
                     ? "secondary"
                     : "none"
                 }
                 className="w-full max-w-fit animate-fade"
-                key={index}
-                onClick={() => clickMonth(String(monthIndex).padStart(2, "0"))}
+                onClick={() => setSelectedMonth(String(m).padStart(2, "0"))}
               >
-                {months[monthIndex - 1]}
+                {months[m - 1]}
               </Button>
             ))}
           </div>
         </div>
-        <div className="bg-secondary/40 flex w-full rounded-2xl border">
-          <div className="flex flex-col w-full p-4">
-            <p className="italic font-thin text-left text-xs">
+        <Container custom="!flex-row">
+          <div className="flex flex-col w-full">
+            <p className="italic font-thin text-xs text-left">
               Revenus de {selectedYear}
             </p>
-
             {!isFetching ? (
               <RadialChart
                 chartData={transformedDataRevenueYear}
@@ -390,10 +315,10 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary"
+            className="h-32 my-auto bg-secondary mr-4"
           />
-          <div className="flex flex-col w-full p-4">
-            <p className="italic font-thin text-left text-xs">
+          <div className="flex flex-col w-full">
+            <p className="italic font-thin text-xs text-left">
               Dépenses {selectedYear}
             </p>
             {!isFetching ? (
@@ -411,13 +336,12 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary"
+            className="h-32 my-auto bg-secondary mr-4"
           />
-          <div className="flex flex-col w-full p-4">
-            <p className="italic font-thin text-left text-xs">
+          <div className="flex flex-col w-full">
+            <p className="italic font-thin text-xs text-left">
               Revenus de {convertDate(selectedDate)}
             </p>
-
             {!isFetching ? (
               <RadialChart
                 chartData={transformedDataRevenueMonth}
@@ -433,10 +357,10 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary"
+            className="h-32 my-auto bg-secondary mr-4"
           />
-          <div className="flex flex-col w-full p-4">
-            <p className="italic font-thin text-left text-xs">
+          <div className="flex flex-col w-full">
+            <p className="italic font-thin text-xs text-left">
               Dépenses de {convertDate(selectedDate)}
             </p>
             {!isFetching ? (
@@ -452,25 +376,24 @@ export default function Statistic() {
               <LoaderDots />
             )}
           </div>
-        </div>
+        </Container>
         <div className="flex gap-4 animate-fade">
           <div className="flex flex-col items-center gap-4 w-2/3">
-            <div className="flex flex-row gap-4 w-full h-full text-right">
-              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
-                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+            <div className="flex flex-row gap-4 w-full text-right">
+              <Container custom="!w-10 !justify-center items-center">
+                <h1 className="text-center italic text-xs -rotate-90">
                   Revenu
                 </h1>
-              </div>
-
+              </Container>
               <BoxStat
                 title="Revenu par Mois"
-                type="Revenue"
+                type={TYPES.INCOME}
                 selectedYear={selectedYear}
                 amount={moyenneRecetteMois}
               />
               <BoxStat
                 title="Revenu"
-                type="Revenue"
+                type={TYPES.INCOME}
                 months={months}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
@@ -478,26 +401,26 @@ export default function Statistic() {
               />
               <BoxStat
                 title="Revenu totale"
-                type="Revenue"
+                type={TYPES.INCOME}
                 selectedYear={selectedYear}
                 amount={recetteYear}
               />
             </div>
-            <div className="flex flex-row gap-4 w-full h-full text-right">
-              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
-                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+            <div className="flex flex-row gap-4 w-full text-right">
+              <Container custom="!w-10 !justify-center items-center">
+                <h1 className="text-center italic text-xs -rotate-90">
                   Dépense
                 </h1>
-              </div>
+              </Container>
               <BoxStat
                 title="Dépense par Mois"
-                type="Expense"
+                type={TYPES.EXPENSE}
                 selectedYear={selectedYear}
                 amount={moyenneDepenseMois}
               />
               <BoxStat
                 title="Dépense"
-                type="Expense"
+                type={TYPES.EXPENSE}
                 months={months}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
@@ -505,17 +428,17 @@ export default function Statistic() {
               />
               <BoxStat
                 title="Dépense totale"
-                type="Expense"
+                type={TYPES.EXPENSE}
                 selectedYear={selectedYear}
                 amount={depenseYear}
               />
             </div>
-            <div className="flex flex-row gap-4 text-right w-full h-full">
-              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
-                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+            <div className="flex flex-row gap-4 w-full text-right">
+              <Container custom="!w-10 !justify-center items-center">
+                <h1 className="text-center italic text-xs -rotate-90">
                   Économie
                 </h1>
-              </div>
+              </Container>
               <BoxStat
                 title="Économie par Mois"
                 type="State"
@@ -537,12 +460,12 @@ export default function Statistic() {
                 amount={economieTotale}
               />
             </div>
-            <div className="flex flex-row gap-4 text-right w-full h-full">
-              <div className="flex w-10 rounded-2xl justify-center items-center border bg-secondary/40 transition-all hover:bg-opacity-95">
-                <h1 className="text-center italic text-xs w-fit h-fit -rotate-90">
+            <div className="flex flex-row gap-4 w-full text-right">
+              <Container custom="!w-10 !justify-center items-center">
+                <h1 className="text-center italic text-xs -rotate-90">
                   Investissement
                 </h1>
-              </div>
+              </Container>
               <BoxStat
                 title="Investissement par Mois"
                 type="State"
@@ -565,8 +488,10 @@ export default function Statistic() {
               />
             </div>
           </div>
-          <div className="bg-secondary/40 flex w-1/3 rounded-2xl border p-4">
-            <h2 className="text-left">Récapitulatif</h2>
+          <div className="w-1/3">
+            <Container custom="h-full">
+              <h2 className="text-left">Récapitulatif</h2>
+            </Container>
           </div>
         </div>
       </div>

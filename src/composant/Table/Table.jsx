@@ -10,6 +10,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronUp } from "lucide-react";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { calculTotalAmount } from "../../utils/calcul";
 
 export default function Tableau({
   columns,
@@ -18,7 +19,6 @@ export default function Tableau({
   action,
   firstItem,
   multiselect,
-  amountTotal,
 }) {
   const [selectAllRow, setSelectAllRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
@@ -77,6 +77,7 @@ export default function Tableau({
   };
 
   const amountSelect = calculMontantSelect();
+  const amountTotal = calculTotalAmount(data);
 
   return (
     <>
@@ -94,8 +95,8 @@ export default function Tableau({
                 </TableHead>
               )}
               {columns.map(({ name, key }) => (
-                <TableHead key={key} className="w-full text-center">
-                  <div className="flex items-center justify-center gap-1">
+                <TableHead key={key} className="w-full px-10 text-center">
+                  <div className="flex items-center gap-1">
                     {name}
                     <button
                       onClick={() => handleSort(key)}
@@ -123,8 +124,8 @@ export default function Tableau({
               return (
                 <TableRow
                   key={item._id}
-                  className={`w-full flex flex-row h-12 hover:bg-muted items-center animate-fade ${
-                    selectedRows[item._id] && "bg-muted"
+                  className={`w-full flex flex-row h-12 hover:bg-muted/50 items-center text-left animate-fade ${
+                    selectedRows[item._id] && "bg-muted/50"
                   }`}
                 >
                   {multiselect && (
@@ -140,10 +141,7 @@ export default function Tableau({
                   )}
 
                   {formattedRow.map((value, index) => (
-                    <TableCell
-                      key={index}
-                      className="w-full text-center truncate"
-                    >
+                    <TableCell key={index} className="w-full px-10 truncate">
                       {value}
                     </TableCell>
                   ))}
@@ -155,7 +153,9 @@ export default function Tableau({
                   )}
 
                   {firstItem && (
-                    <TableCell className="absolute left-0">
+                    <TableCell
+                      className={`absolute ${multiselect ? "left-8" : "left-0"}`}
+                    >
                       {firstItem(item)}
                     </TableCell>
                   )}
@@ -170,7 +170,7 @@ export default function Tableau({
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-ring animate-fade rounded-xl z-50 bg-secondary p-3 transition-all">
+      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-ring animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />

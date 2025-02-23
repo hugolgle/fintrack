@@ -128,7 +128,7 @@ export default function PageOrderById() {
   ];
 
   const displayData = investissements.map(
-    ({ _id, name, type, symbol, transaction }) => {
+    ({ _id, name, type, symbol, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
@@ -138,6 +138,7 @@ export default function PageOrderById() {
         date: transaction.date,
         amount: transaction.amount,
         isSale: transaction.isSale,
+        createdAt,
       };
     }
   );
@@ -239,8 +240,6 @@ export default function PageOrderById() {
 
   const data = searchTerm ? searchResults : displayData;
 
-  const amountTotal = calculTotalAmount(data);
-
   if (isLoading) return <Loader />;
 
   return (
@@ -278,7 +277,6 @@ export default function PageOrderById() {
           isFetching={isFetching}
           action={action}
           firstItem={avatar}
-          amountTotal={amountTotal}
         />
       </section>
     </>

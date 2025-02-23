@@ -199,7 +199,7 @@ export default function PageAccount() {
                     return (
                       <div
                         key={transaction._id || index}
-                        className="flex justify-between items-center rounded-lg"
+                        className="flex justify-between items-center rounded-md"
                       >
                         <div className="text-left">
                           <p className="text-xs">
@@ -223,7 +223,7 @@ export default function PageAccount() {
                           </p>
                         </div>
                         <p
-                          className={`italic px-2 py-[2px] rounded-sm bg-opacity-40 text-[11px] ${
+                          className={`italic px-2 py-[2px] rounded-md bg-opacity-40 text-[11px] ${
                             transaction?.amount < 0
                               ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
                               : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"

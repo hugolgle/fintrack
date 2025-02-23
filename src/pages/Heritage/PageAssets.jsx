@@ -141,8 +141,6 @@ export default function PageAssets() {
 
   const data = searchTerm ? searchResults : displayData;
 
-  const amountTotal = calculTotalAmount(data);
-
   const action = (item) => {
     return (
       <DropdownMenu>
@@ -196,7 +194,6 @@ export default function PageAssets() {
           columns={columns}
           isFetching={isFetching}
           action={action}
-          amountTotal={amountTotal}
           multiselect
         />
       </section>

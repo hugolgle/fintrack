@@ -48,7 +48,7 @@ function Header({
   };
 
   return (
-    <div className="w-full justify-between flex animate-fade relative">
+    <div className="w-full justify-between flex animate-fade relative mb-8">
       <div className="flex flex-col gap-2 items-start w-1/4 justify-start">
         {/* <BreadcrumbDemo /> */}
         <div className="flex gap-2">
@@ -68,8 +68,8 @@ function Header({
             </Link>
           )}
           {modalAdd && (
-            <Dialog>
-              <DialogTrigger asChild>
+            <Dialog modal>
+              <DialogTrigger>
                 <CirclePlus
                   size={20}
                   className="cursor-pointer hover:scale-110 transition-all"
@@ -122,7 +122,7 @@ function Header({
           {actionEdit}
         </div>
       </div>
-      <h1 className="text-4xl font-thin mb-5 font-logo animate-fade w-2/4 truncate">
+      <h1 className="text-4xl font-thin font-logo animate-fade w-2/4 truncate">
         {title}
       </h1>
       <div className="w-1/4 flex justify-end">

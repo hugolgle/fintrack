@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -59,9 +60,12 @@ const TokenExpirationPopup = () => {
 
   return (
     <Dialog open={showPopup}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] [&>button]:hidden">
         <DialogHeader>
           <DialogTitle>Votre session a expiré !</DialogTitle>
+          <DialogDescription>
+            Veuillez vous identifiez a nouveau
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button onClick={handleLoginRedirect}>Se reconnecter</Button>

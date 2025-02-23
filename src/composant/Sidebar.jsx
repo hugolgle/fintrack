@@ -106,10 +106,10 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-xl relative items-center h-full p-4 bg-secondary/40">
+    <div className="flex flex-col justify-between overflow-hidden rounded-md relative items-center h-full p-4 bg-secondary/40">
       <Link
         to={ROUTES.HOME}
-        className="cursor-pointer rounded-xl text-2xl group text-center w-auto overflow-hidden"
+        className="cursor-pointer text-2xl group text-center w-auto overflow-hidden"
       >
         <img
           src="/public/logoFinTrack.png"
@@ -124,7 +124,7 @@ function Sidebar() {
             <TooltipTrigger asChild>
               <Link
                 to={link}
-                className={`my-1 p-3 rounded-xl overflow-hidden transition-all ${
+                className={`my-1 p-3 rounded-md overflow-hidden transition-all ${
                   activeLink.startsWith(link)
                     ? "bg-primary text-primary-foreground"
                     : ""
@@ -142,7 +142,7 @@ function Sidebar() {
         {isAuthenticated ? (
           <DropdownProfil
             btnOpen={
-              <Avatar className="w-12 h-12 rounded-xl cursor-pointer hover:scale-95 transition-all">
+              <Avatar className="w-12 h-12 cursor-pointer hover:scale-95 transition-all">
                 {dataUser?.img ? (
                   <img
                     src={dataUser.img}
@@ -162,7 +162,7 @@ function Sidebar() {
         ) : (
           <Link
             to={ROUTES.LOGIN}
-            className={`my-1 p-3 rounded-xl font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+            className={`my-1 p-3 font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
               activeLink.startsWith(ROUTES.LOGIN) ||
               activeLink.startsWith(ROUTES.SIGNUP)
                 ? "text-black dark:text-white"

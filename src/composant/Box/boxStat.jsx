@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { formatCurrency } from "../../utils/fonctionnel";
-import { ChevronRight } from "lucide-react";
+import Container from "../Container/Container";
 function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
@@ -34,8 +34,8 @@ function BoxStat(props) {
   }, [currentMontant]);
 
   return (
-    <div className="w-full flex flex-col italic gap-10 justify-between font-thin rounded-2xl border bg-secondary/40 transition-all px-4 py-2 hover:bg-opacity-95">
-      <p className="text-xl text-left">
+    <Container custom="gap-10 px-4 py-2">
+      <p className="text-xl text-left italic">
         {formatCurrency.format(currentMontant)}
       </p>
 
@@ -44,7 +44,7 @@ function BoxStat(props) {
         {props.months ? props.months[parseInt(props.selectedMonth) - 1] : ""}{" "}
         {props.selectedYear}
       </p>
-    </div>
+    </Container>
   );
 }
 

@@ -58,7 +58,10 @@ module.exports.addInvestment = async (req, res) => {
 
     const updatedInvestment = await investment.save();
 
-    return res.status(201).json(updatedInvestment);
+    return res.status(201).json({
+      message: "Investissement ajouté avec succès !",
+      updatedInvestment,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la création de l'investissement",

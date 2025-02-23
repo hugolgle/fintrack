@@ -135,7 +135,8 @@ module.exports.editUser = async (req, res) => {
       }
       imgPath = null;
     } else {
-      imgPath = req.file ? path.join("uploads", req.file.filename) : user.img;
+      const domain = "http://localhost:5001/";
+      imgPath = req.file ? `${domain}uploads/${req.file.filename}` : user.img;
       if (req.file && user.img) {
         const oldImgPath = path.join(__dirname, "..", user.img);
         if (fs.existsSync(oldImgPath)) {

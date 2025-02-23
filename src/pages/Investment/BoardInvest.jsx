@@ -22,7 +22,6 @@ import { format } from "date-fns";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import { calculInvestByMonth } from "../../utils/calcul.js";
 import Container from "../../composant/Container/Container.jsx";
 
 export default function BoardInvest() {
@@ -149,16 +148,26 @@ export default function BoardInvest() {
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   const montantInvestByMonth = [];
-  const dataTransacInvest = dataInvests?.flatMap((investment) => {
-    return investment.transaction.map((trans) => ({
+  const dataTransacInvest = dataInvests?.flatMap((investment) =>
+    investment.transaction.map((trans) => ({
       title: investment.name,
       amount: trans.amount,
-      date: trans.date,
-    }));
-  });
+      date: new Date(trans.date),
+    }))
+  );
 
   monthsGraph.forEach(({ code }) => {
-    const montantInvests = calculInvestByMonth(dataTransacInvest, code);
+    const targetYear = parseInt(code.slice(0, 4));
+    const targetMonth = parseInt(code.slice(4, 6));
+
+    const montantInvests = dataTransacInvest
+      ?.filter(
+        ({ date }) =>
+          date.getFullYear() === targetYear &&
+          date.getMonth() + 1 === targetMonth
+      )
+      .reduce((total, { amount }) => total + amount, 0);
+
     montantInvestByMonth.push(Math.abs(montantInvests));
   });
 
@@ -355,7 +364,7 @@ export default function BoardInvest() {
                       .map((operation, index) => (
                         <tr
                           key={index}
-                          className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                          className="justify-between h-full flex flex-row items-center text-xs"
                         >
                           <td className="flex flex-row space-x-4 w-4/5">
                             <span>
@@ -366,7 +375,7 @@ export default function BoardInvest() {
                             </span>
                           </td>
 
-                          <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
+                          <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-md bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
                             <span>
                               {formatCurrency.format(operation?.amount)}
                             </span>

@@ -32,13 +32,4 @@ const epargnSchema = new mongoose.Schema({
   ],
 });
 
-epargnSchema.pre("save", function (next) {
-  if (this.balance > this.maxBalance) {
-    return next(
-      new Error(`Le solde dépasse le plafond autorisé de ${this.maxBalance}€`)
-    );
-  }
-  next();
-});
-
 module.exports = mongoose.model("epargn", epargnSchema);

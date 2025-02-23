@@ -3,15 +3,18 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { HttpStatusCode } from "axios";
-import { ChevronLeft, ChevronRight, Calendar, PieChart } from "lucide-react";
-import { calculTotalByMonth, calculTotalByYear } from "../../utils/calcul.js";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  calculTotalAmount,
+  calculTotalByMonth,
+  calculTotalByYear,
+} from "../../utils/calcul.js";
 import {
   currentDate,
   getLastMonths,
   months,
   updateMonth,
 } from "../../utils/other.js";
-import { FormTransac } from "./FormFinance.jsx";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import Header from "../../composant/Header.jsx";
 import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
@@ -21,7 +24,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   aggregateTransactions,
   getLastOperations,
-  getTransactionsByMonth,
+  getTransactionsByType,
 } from "../../utils/operations.js";
 import { renderCustomLegend } from "../../composant/Legend.jsx";
 import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
@@ -36,6 +39,8 @@ import {
 import { CircleDollarSign } from "lucide-react";
 import { WalletCards } from "lucide-react";
 import Container from "../../composant/Container/Container.jsx";
+import { TYPES } from "../../StaticData/StaticData.js";
+import { FormTransac } from "./FormFinance.jsx";
 
 export default function BoardTransactions() {
   const { month, year } = currentDate();
@@ -66,16 +71,28 @@ export default function BoardTransactions() {
 
   const lastMonthYear = updateMonth(currentYearMonth, -1);
 
-  const revenuePieChartMonth = getTransactionsByMonth(
-    dataTransactions,
-    monthChartRadial,
-    "Revenue"
-  );
-  const expensePieChartMonth = getTransactionsByMonth(
-    dataTransactions,
-    monthChartRadial,
-    "Expense"
-  );
+  const dataRevenue = getTransactionsByType(dataTransactions, TYPES.INCOME);
+  const dataExpense = getTransactionsByType(dataTransactions, TYPES.EXPENSE);
+
+  const revenuePieChartMonth = dataRevenue?.filter((transaction) => {
+    const transactionDate = transaction.date.split("T")[0];
+    const transactionMonth = transactionDate.slice(0, 7);
+
+    return (
+      transactionMonth ===
+      `${monthChartRadial.slice(0, 4)}-${monthChartRadial.slice(4)}`
+    );
+  });
+
+  const expensePieChartMonth = dataExpense?.filter((transaction) => {
+    const transactionDate = transaction.date.split("T")[0];
+    const transactionMonth = transactionDate.slice(0, 7);
+
+    return (
+      transactionMonth ===
+      `${monthChartRadial.slice(0, 4)}-${monthChartRadial.slice(4)}`
+    );
+  });
 
   const chartDataRevenue = aggregateTransactions(revenuePieChartMonth);
   const chartDataExpense = aggregateTransactions(expensePieChartMonth);
@@ -139,7 +156,7 @@ export default function BoardTransactions() {
       visible: true,
     },
     amountRevenue: {
-      label: "Revenue",
+      label: TYPES.INCOME,
       color: "hsl(var(--graph-revenue))",
       visible: true,
     },
@@ -151,10 +168,10 @@ export default function BoardTransactions() {
   const amountMonthRevenue = [];
   monthsGraph.forEach(({ code }) => {
     amountMonthExpense.push(
-      Math.abs(calculTotalByMonth(dataTransactions, "Expense", code))
+      Math.abs(calculTotalByMonth(dataTransactions, TYPES.EXPENSE, code))
     );
     amountMonthRevenue.push(
-      Math.abs(calculTotalByMonth(dataTransactions, "Revenue", code))
+      Math.abs(calculTotalByMonth(dataTransactions, TYPES.INCOME, code))
     );
   });
   const dataGraph = monthsGraph.map((m, i) => ({
@@ -190,16 +207,8 @@ export default function BoardTransactions() {
   const chevronIsVisible = monthChartRadial < currentYearMonth;
   const chevronGraphIsVisible = lastMonthGraph.code < currentYearMonth;
 
-  const totalRevenue = calculTotalByMonth(
-    dataTransactions,
-    "Revenue",
-    monthChartRadial
-  );
-  const totalExpense = calculTotalByMonth(
-    dataTransactions,
-    "Expense",
-    monthChartRadial
-  );
+  const totalRevenue = calculTotalAmount(revenuePieChartMonth);
+  const totalExpense = calculTotalAmount(revenuePieChartMonth);
 
   const currentDateBis = new Date();
   const lastMonthDate = new Date(
@@ -243,13 +252,13 @@ export default function BoardTransactions() {
 
   const dataDf = calculTotalByMonth(
     dataTransactions,
-    "Expense",
+    TYPES.EXPENSE,
     monthChartRadial,
     categoriesDf
   );
   const dataLoisir = calculTotalByMonth(
     dataTransactions,
-    "Expense",
+    TYPES.EXPENSE,
     monthChartRadial,
     categoriesLoisir
   );
@@ -258,7 +267,7 @@ export default function BoardTransactions() {
   const dLoisir = Math.abs(dataLoisir);
   const totalPart = calculTotalByMonth(
     dataTransactions,
-    "Revenue",
+    TYPES.INCOME,
     monthChartRadial
   );
 
@@ -329,13 +338,13 @@ export default function BoardTransactions() {
               title="Dépense ce mois"
               value={calculTotalByMonth(
                 dataTransactions,
-                "Expense",
+                TYPES.EXPENSE,
                 currentYearMonth
               )}
               valueLast={
                 calculTotalByMonth(
                   dataTransactions,
-                  "Expense",
+                  TYPES.EXPENSE,
                   lastMonthYear
                 ) || null
               }
@@ -354,13 +363,13 @@ export default function BoardTransactions() {
               title="Revenu ce mois"
               value={calculTotalByMonth(
                 dataTransactions,
-                "Revenue",
+                TYPES.INCOME,
                 currentYearMonth
               )}
               valueLast={
                 calculTotalByMonth(
                   dataTransactions,
-                  "Revenue",
+                  TYPES.INCOME,
                   lastMonthYear
                 ) || null
               }
@@ -373,10 +382,11 @@ export default function BoardTransactions() {
               }
               title={`Dépense en ${year}`}
               value={
-                calculTotalByYear(dataTransactions, "Expense", year) || null
+                calculTotalByYear(dataTransactions, TYPES.EXPENSE, year) || null
               }
               valueLast={
-                calculTotalByYear(dataTransactions, "Expense", year - 1) || null
+                calculTotalByYear(dataTransactions, TYPES.EXPENSE, year - 1) ||
+                null
               }
               yearLast={year - 1}
               icon={<WalletCards size={15} color="grey" />}
@@ -388,10 +398,11 @@ export default function BoardTransactions() {
               }
               title={`Revenu en ${year}`}
               value={
-                calculTotalByYear(dataTransactions, "Revenue", year) || null
+                calculTotalByYear(dataTransactions, TYPES.INCOME, year) || null
               }
               valueLast={
-                calculTotalByYear(dataTransactions, "Revenue", year - 1) || null
+                calculTotalByYear(dataTransactions, TYPES.INCOME, year - 1) ||
+                null
               }
               yearLast={year - 1}
               icon={<CircleDollarSign size={15} color="grey" />}
@@ -412,7 +423,7 @@ export default function BoardTransactions() {
                   ) : (
                     <LoaderDots />
                   )}
-                  <div className="flex flex-row min-w-fit w-4/5 mx-auto px-20 items-center justify-between bottom-2">
+                  <div className="flex flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
                     <div className="w-1/12">
                       <ChevronLeft
                         size={25}
@@ -551,20 +562,20 @@ export default function BoardTransactions() {
             </div>
             <div className="w-1/5 flex flex-col gap-4">
               <Container>
-                <h2 className="text-left mb-4">Dernières opérations</h2>
+                <h2 className="text-left mb-4">Dernières transactions</h2>
                 <table className="h-full">
                   <tbody className="w-full h-full gap-2 flex flex-col">
                     {lastOperations.map((operation) => (
                       <tr
                         key={operation._id}
-                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                        className="justify-between h-full flex flex-row items-center text-xs"
                       >
                         <td className="flex flex-row space-x-4 w-full">
                           <span>{format(operation.date, "dd/MM")}</span>
                           <span className="truncate">{operation.title}</span>
                         </td>
                         <td
-                          className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-sm ${operation.type === "Expense" ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900" : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"}`}
+                          className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-md ${operation.type === TYPES.EXPENSE ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900" : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"}`}
                         >
                           <span>{formatCurrency.format(operation.amount)}</span>
                         </td>
@@ -580,7 +591,7 @@ export default function BoardTransactions() {
                     {mySubscription.map((operation) => (
                       <tr
                         key={operation._id}
-                        className="justify-between rounded-lg h-full flex flex-row items-center text-xs"
+                        className="justify-between h-full flex flex-row items-center text-xs"
                       >
                         <td className="flex flex-row space-x-4 w-full">
                           <span>{format(operation.date, "dd/MM")}</span>

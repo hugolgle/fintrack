@@ -157,10 +157,11 @@ export default function PageAddInvestmentMain() {
       return response;
     },
     onSuccess: (response) => {
-      toast.success(response?.response?.data?.message);
+      console.log(response);
+      toast.success(response?.data?.message);
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.message || "Une erreur est survenue.");
+      toast.error(error?.data?.message || "Une erreur est survenue.");
     },
   });
 
@@ -283,6 +284,7 @@ export default function PageAddInvestmentMain() {
               <Input
                 id="amount"
                 type="number"
+                step="0.01"
                 name="amount"
                 placeholder="Montant"
                 {...formik.getFieldProps("amount")}
@@ -393,6 +395,7 @@ export default function PageAddInvestmentMain() {
               <Input
                 id="amount"
                 type="number"
+                step="0.01"
                 name="amount"
                 placeholder="Montant"
                 {...formik.getFieldProps("amount")}

@@ -172,6 +172,7 @@ export function FormEditAsset({ asset, refetch }) {
           id="acquisitionPrice"
           type="number"
           name="acquisitionPrice"
+          step="0.01"
           placeholder="Prix d'acquisition"
           {...formik.getFieldProps("acquisitionPrice")}
         />
@@ -184,6 +185,7 @@ export function FormEditAsset({ asset, refetch }) {
         <Input
           id="estimatePrice"
           type="number"
+          step="0.01"
           name="estimatePrice"
           placeholder="Prix d'estimation"
           {...formik.getFieldProps("estimatePrice")}

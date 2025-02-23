@@ -28,7 +28,8 @@ import PageOrderById from "./Pages/Investment/PageOrderById.jsx";
 import PageAddAsset from "./Pages/Heritage/PageAddAsset.jsx";
 import PageAssets from "./Pages/Heritage/PageAssets.jsx";
 import PageTransaction from "./Pages/Finance/FinancePage.jsx";
-import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import { TYPES } from "./StaticData/StaticData.js";
+import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
 
 export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
@@ -39,28 +40,32 @@ export default function App() {
       component: <BoardTransactions />,
     },
     {
+      path: ROUTES.TRANSACTIONS,
+      component: <PageTransaction />,
+    },
+    {
       path: ROUTES.EXPENSE,
-      component: <PageTransaction type="Expense" />,
+      component: <PageTransaction type={TYPES.EXPENSE} />,
     },
     {
       path: ROUTES.REVENUE,
-      component: <PageTransaction type="Revenue" />,
+      component: <PageTransaction type={TYPES.INCOME} />,
     },
     {
       path: ROUTES.EXPENSE_BY_YEAR,
-      component: <PageTransaction type="Expense" />,
+      component: <PageTransaction type={TYPES.EXPENSE} />,
     },
     {
       path: ROUTES.REVENUE_BY_YEAR,
-      component: <PageTransaction type="Revenue" />,
+      component: <PageTransaction type={TYPES.INCOME} />,
     },
     {
       path: ROUTES.EXPENSE_BY_MONTH,
-      component: <PageTransaction type="Expense" />,
+      component: <PageTransaction type={TYPES.EXPENSE} />,
     },
     {
       path: ROUTES.REVENUE_BY_MONTH,
-      component: <PageTransaction type="Revenue" />,
+      component: <PageTransaction type={TYPES.INCOME} />,
     },
   ];
 

@@ -29,7 +29,7 @@ export default function Profile() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header title="Profil" isFetching={isFetching} />
-        <div className="flex-col w-1/2 py-12 mx-auto bg-secondary/40 flex justify-start items-center rounded-2xl border animate-fade gap-1">
+        <div className="flex-col w-1/2 py-12 mx-auto bg-secondary/40 flex justify-start items-center rounded-md border animate-fade gap-1">
           <div className="relative">
             <Avatar className="w-28 h-28">
               {dataUser?.img ? (

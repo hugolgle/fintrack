@@ -27,7 +27,7 @@ export function RadialChart({
     if (active && payload && payload.length) {
       const { payload: data } = payload[0];
       return (
-        <div className="bg-white dark:bg-black text-[10px] max-w-40 p-2 rounded-xl shadow-2xl">
+        <div className="bg-white dark:bg-black text-[10px] max-w-40 p-2 rounded-md shadow-2xl">
           <div className="text-left mb-1 flex items-center">
             <Dot strokeWidth={5} color={data.fill} />
             <p className="truncate">{data.name}</p>

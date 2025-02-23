@@ -27,7 +27,7 @@ export function ChartLine({
       const year = data.find((d) => d.month === label)?.year;
       const economieMonth = payload[0]?.value - payload[1]?.value;
       return (
-        <div className="bg-background text-[10px] p-2 rounded-xl shadow-2xl ">
+        <div className="bg-background text-[10px] p-2 rounded-md shadow-2xl ">
           <div className="text-left mb-1">
             <p style={{ color: "hsl(var(--primary))" }}>
               {label} {year}

@@ -38,6 +38,19 @@ export default function PageAddInvestment() {
 
   const [open, setOpen] = useState(false);
 
+  const addTransactionInvestmentMutation = useMutation({
+    mutationFn: async (postData) => {
+      const response = await addTransaction(id, postData);
+      return response;
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
   const formik = useFormik({
     initialValues: {
       action: "",
@@ -55,19 +68,6 @@ export default function PageAddInvestment() {
 
       addTransactionInvestmentMutation.mutate(postData);
       formik.resetForm();
-    },
-  });
-
-  const addTransactionInvestmentMutation = useMutation({
-    mutationFn: async (postData) => {
-      const response = await addTransaction(id, postData);
-      return response;
-    },
-    onSuccess: (response) => {
-      toast.success(response?.response?.data?.message);
-    },
-    onError: (error) => {
-      toast.error(error?.response?.data?.message);
     },
   });
 
@@ -125,6 +125,7 @@ export default function PageAddInvestment() {
           id="amount"
           type="number"
           name="amount"
+          step="0.01"
           placeholder="Montant"
           {...formik.getFieldProps("amount")}
         />

@@ -245,7 +245,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
                 <img
                   src={dataProfil.img}
                   alt="User Avatar"
-                  className="object-cover w-full h-full rounded-full"
+                  className="object-cover w-full h-full"
                   referrerPolicy="no-referrer"
                 />
               </Avatar>

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
-  getTransactionsByYear,
-  getTransactionsByMonth,
   getTransactionsByType,
   getTitleOfTransactionsByType,
   getTagsOfTransactions,
@@ -13,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { alphaSort, months, nameType } from "../../utils/other.js";
 import { categoryDepense } from "../../../public/categories.json";
@@ -25,7 +24,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loader from "../../composant/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
-import { MoreHorizontal } from "lucide-react";
+import { Dot, MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { FormTransac } from "./FormFinance.jsx";
 import { Trash } from "lucide-react";
@@ -37,7 +36,7 @@ import { TicketSlash } from "lucide-react";
 import { Plus } from "lucide-react";
 import ModalTable from "../Epargn/Modal/ModalTable.jsx";
 import { toast } from "sonner";
-import { calculTotalAmount } from "../../utils/calcul.js";
+import { TYPES } from "../../StaticData/StaticData.js";
 
 export default function PageTransaction({ type }) {
   const { year, month } = useParams();
@@ -147,32 +146,31 @@ export default function PageTransaction({ type }) {
   const check =
     selectedCategorys.length + selectedTitles.length + selectedTags.length;
 
+  const dataTransacs = getTransactionsByType(
+    dataTransactions,
+    type,
+    selectedCategorys,
+    selectedTitles,
+    selectedTags
+  );
+
+  const dataTransacsByYear = dataTransacs?.filter((transaction) => {
+    const transactionYear = transaction.date.slice(0, 4);
+    return transactionYear === year;
+  });
+
+  const dataTransacsByMonth = dataTransacs?.filter((transaction) => {
+    const transactionDate = transaction.date.split("T")[0];
+    const transactionMonth = transactionDate.slice(0, 7);
+
+    return transactionMonth === `${year}-${month}`;
+  });
+
   const transactions = !year
-    ? getTransactionsByType(
-        dataTransactions,
-        type,
-        selectedCategorys,
-        selectedTitles,
-        selectedTags
-      )
+    ? dataTransacs
     : year && !month
-      ? getTransactionsByYear(
-          dataTransactions,
-          dateSelected,
-          type,
-          selectedCategorys,
-          selectedTitles,
-          selectedTags
-        )
-      : month &&
-        getTransactionsByMonth(
-          dataTransactions,
-          dateSelected,
-          type,
-          selectedCategorys,
-          selectedTitles,
-          selectedTags
-        );
+      ? dataTransacsByYear
+      : month && dataTransacsByMonth;
 
   const displayData = transactions.map(
     ({
@@ -182,6 +180,7 @@ export default function PageTransaction({ type }) {
       category,
       detail,
       amount,
+      group,
       initialAmount,
       refunds,
       tag,
@@ -198,6 +197,7 @@ export default function PageTransaction({ type }) {
         refunds,
         tag,
         amount,
+        group,
         initialAmount,
         createdAt,
       };
@@ -250,7 +250,7 @@ export default function PageTransaction({ type }) {
     if (year) {
       let yearNum = parseInt(year);
       if (!month) {
-        navigate(`/finance/${type.toLowerCase()}/${yearNum - 1}`);
+        navigate(`/finance/transactions/${type.toLowerCase()}/${yearNum - 1}`);
       } else {
         let monthNum = parseInt(month) - 1;
         if (monthNum === 0) {
@@ -259,7 +259,7 @@ export default function PageTransaction({ type }) {
         }
         const newMonth = monthNum.toString().padStart(2, "0");
         const newDate = `${yearNum}/${newMonth}`;
-        navigate(`/finance/${type.toLowerCase()}/${newDate}`);
+        navigate(`/finance/transactions/${type.toLowerCase()}/${newDate}`);
       }
     }
   };
@@ -268,7 +268,7 @@ export default function PageTransaction({ type }) {
     if (year) {
       let yearNum = parseInt(year);
       if (!month) {
-        navigate(`/finance/${type.toLowerCase()}/${yearNum + 1}`);
+        navigate(`/finance/transactions/${type.toLowerCase()}/${yearNum + 1}`);
       } else {
         let monthNum = parseInt(month) + 1;
         if (monthNum > 12) {
@@ -277,7 +277,7 @@ export default function PageTransaction({ type }) {
         }
         const newMonth = monthNum.toString().padStart(2, "0");
         const newDate = `${yearNum}/${newMonth}`;
-        navigate(`/finance/${type.toLowerCase()}/${newDate}`);
+        navigate(`/finance/transactions/${type.toLowerCase()}/${newDate}`);
       }
     }
   };
@@ -311,14 +311,38 @@ export default function PageTransaction({ type }) {
     return `${months[mois - 1]} ${annee}`;
   };
 
+  const pastilleType = (item) => {
+    return item.type === "Expense" ? (
+      <Dot color="red" />
+    ) : item.type === "Revenue" ? (
+      <Dot color="green" />
+    ) : null;
+  };
+
   const formatData = (row) => {
     return [
-      row.title,
+      <div className="flex gap-2 items-center">
+        {` ${row.title}`}
+        {row.tag.map((t, index) => (
+          <Badge
+            key={index}
+            className="group relative flex items-center animate-pop-up gap-2"
+            variant="secondary"
+          >
+            {t}
+          </Badge>
+        ))}
+      </div>,
       row.category,
       format(row.date, "PP", { locale: fr }),
-      row.refunds.length > 0
-        ? `${formatCurrency.format(row.amount)} *`
-        : formatCurrency.format(row.amount),
+      row.refunds.length > 0 ? (
+        <div className="flex gap-2 items-center">
+          {formatCurrency.format(row.amount)}
+          <TicketSlash strokeWidth={1} color="grey" />
+        </div>
+      ) : (
+        formatCurrency.format(row.amount)
+      ),
     ];
   };
 
@@ -338,11 +362,11 @@ export default function PageTransaction({ type }) {
 
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <MoreHorizontal className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left">
-          {type === "Expense" && (
+          {item.type === TYPES.EXPENSE && (
             <Dialog>
               <DialogTrigger asChild>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -381,7 +405,13 @@ export default function PageTransaction({ type }) {
               </DropdownMenuItem>
             </DialogTrigger>
             <DialogContent>
-              <FormTransac editMode transaction={item} refetch={refetch} />
+              <FormTransac
+                key={item}
+                editMode
+                transaction={item}
+                refetch={refetch}
+                type={type}
+              />
             </DialogContent>
           </Dialog>
 
@@ -402,26 +432,26 @@ export default function PageTransaction({ type }) {
 
   const data = searchTerm ? searchResults : displayData;
 
-  const amountTotal = calculTotalAmount(data);
-
   if (isLoading) return <Loader />;
 
   return (
     <>
       <section className="w-full">
         <Header
-          title={`${
-            !year
-              ? `Toutes les ${nameType(type).toLowerCase()}s`
-              : year && !month
-                ? `${nameType(type)}s de ${dateSelected}`
-                : `${nameType(type)}s de ${convertDate(dateSelected)}`
-          }`}
+          title={
+            !type
+              ? "Toutes les transactions"
+              : !year
+                ? `Toutes les ${nameType(type).toLowerCase()}s`
+                : year && !month
+                  ? `${nameType(type)}s de ${dateSelected}`
+                  : `${nameType(type)}s de ${convertDate(dateSelected)}`
+          }
           clickLastMonth={clickLastMonth}
           clickNextMonth={clickNextMonth}
           isFetching={isFetching}
           btnSearch={{ handleSearchChange, searchTerm }}
-          modalAdd={<FormTransac refetch={refetch} />}
+          modalAdd={<FormTransac refetch={refetch} type={type} />}
           btnReturn
           btnFilter={{
             selectedTags,
@@ -443,8 +473,8 @@ export default function PageTransaction({ type }) {
           action={action}
           type="transactions"
           formatData={formatData}
+          firstItem={pastilleType}
           multiselect
-          amountTotal={amountTotal}
         />
       </section>
     </>

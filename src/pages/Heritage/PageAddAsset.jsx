@@ -162,6 +162,7 @@ export default function PageAddAsset() {
         <Input
           id="acquisitionPrice"
           type="number"
+          step="0.01"
           name="acquisitionPrice"
           placeholder="Prix d'acquisition"
           {...formik.getFieldProps("acquisitionPrice")}
@@ -175,6 +176,7 @@ export default function PageAddAsset() {
         <Input
           id="estimatePrice"
           type="number"
+          step="0.01"
           name="estimatePrice"
           placeholder="Prix d'estimation"
           {...formik.getFieldProps("estimatePrice")}

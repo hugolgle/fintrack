@@ -66,9 +66,10 @@ module.exports.editAccount = async (req, res) => {
       account,
     });
   } catch (error) {
+    console.error("Erreur lors de la mise à jour du compte :", error);
     return res.status(500).json({
       message: "Erreur lors de la mise à jour du compte",
-      error,
+      error: error.message, // renvoie uniquement le message d'erreur
     });
   }
 };
@@ -114,6 +115,13 @@ module.exports.addTransfert = async (req, res) => {
 
     if (fromAccount.balance < amount) {
       return res.status(400).json({ message: "Solde insuffisant" });
+    }
+
+    const newBalance = toAccount.balance + amount;
+    if (toAccount.maxBalance && newBalance > toAccount.maxBalance) {
+      return res
+        .status(400)
+        .json({ message: "Le montant dépasse le plafond autorisé" });
     }
 
     const today = new Date();

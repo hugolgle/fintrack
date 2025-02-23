@@ -70,7 +70,7 @@ export function PageOrder() {
   const getHoverClass = (type) => {
     switch (type) {
       case "Action":
-        return "ring-pink-500";
+        return "ring-pink-500 ";
       case "ETF":
         return "ring-blue-500";
       case "Crypto":
@@ -135,7 +135,7 @@ export function PageOrder() {
   };
 
   const displayData = dataInvestments.map(
-    ({ _id, name, type, symbol, amountBuy, transaction }) => {
+    ({ _id, name, type, symbol, amountBuy, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
@@ -144,6 +144,7 @@ export function PageOrder() {
         name,
         date: transaction[0]?.date,
         amount: amountBuy,
+        createdAt,
       };
     }
   );
@@ -177,8 +178,6 @@ export function PageOrder() {
   };
 
   const data = searchTerm ? searchResults : displayData;
-
-  const amountTotal = calculTotalAmount(data);
 
   return (
     <section className="w-full">
@@ -215,20 +214,18 @@ export function PageOrder() {
                   isFetching={isFetching}
                   action={action}
                   firstItem={avatar}
-                  amountTotal={amountTotal}
                 />
               ) : (
                 data?.map(({ idInvest, name, type, date, symbol, amount }) => {
                   const category = type === "Crypto" ? "crypto" : "symbol";
                   const theDate = date ? new Date(date) : null;
+                  const color = getHoverClass(type);
 
                   return (
                     <Link
                       key={idInvest}
                       to={ROUTES.INVESTMENT_BY_ID.replace(":id", idInvest)}
-                      className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-2xl p-4 transition-all ring-[1px] hover:scale-95 hover:bg-opacity-80 ${getHoverClass(
-                        type
-                      )}`}
+                      className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-md p-4 transition-all ring-[1px] hover:ring-opacity-75 ${color}`}
                     >
                       <div className="flex justify-between">
                         <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">

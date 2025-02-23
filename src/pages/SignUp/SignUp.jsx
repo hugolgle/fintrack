@@ -89,7 +89,7 @@ export default function SignUp() {
       const nameParts = result.displayName.split(" ");
       const prenom = nameParts[0] || "";
       const nom = nameParts.slice(1).join(" ") || "";
-      console.log(result);
+
       const userData = {
         username: result.email,
         nom,
@@ -140,7 +140,7 @@ export default function SignUp() {
 
   return (
     <section className="w-full flex justify-center items-center h-screen p-4">
-      <div className="w-1/4 p-4 rounded-lg bg-secondary/40 ring-1 ring-border animate__animated animate__zoomIn animate__faster">
+      <div className="w-1/4 p-4 rounded-md bg-secondary/40 ring-1 ring-border animate__animated animate__zoomIn animate__faster">
         <h1 className="text-2xl font-thin font-logo">Inscrivez-vous</h1>
         <form
           onSubmit={formik.handleSubmit}
@@ -275,7 +275,7 @@ export default function SignUp() {
         <div className="flex gap-4 p-4">
           <div
             onClick={handleGoogleSignIn}
-            className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-lg hover:bg-muted/75 transition-all"
+            className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-md hover:bg-muted/75 transition-all"
           >
             <img src={GoogleIcon} className="size-5" />
             <span className="text-xs font-thin">S'inscrire avec Google</span>

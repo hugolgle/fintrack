@@ -166,8 +166,6 @@ export default function PageInvestment() {
 
   const data = searchTerm ? searchResults : displayData;
 
-  const amountTotal = calculTotalAmount(data);
-
   const title =
     location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
       ? "Investissement en cours"
@@ -268,7 +266,7 @@ export default function PageInvestment() {
           isFetching={isFetching}
           action={action}
           firstItem={avatar}
-          amountTotal={amountTotal}
+          multiselect
         />
       </section>
     </>
