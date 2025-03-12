@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: false, // Maintenant optionnel pour les utilisateurs Google
+      required: false,
     },
     nom: {
       type: String,
@@ -25,7 +25,7 @@ const userSchema = mongoose.Schema(
     },
     googleId: {
       type: String,
-      required: false, // Stocke l'ID unique de Google si l'utilisateur se connecte avec Google
+      required: false,
       unique: true,
     },
   },

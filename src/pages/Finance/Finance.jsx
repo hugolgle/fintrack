@@ -150,14 +150,14 @@ export default function BoardTransactions() {
   );
 
   const defaultConfig = {
-    amountExpense: {
-      label: "Dépense",
-      color: "hsl(var(--graph-expense))",
-      visible: true,
-    },
     amountRevenue: {
       label: TYPES.INCOME,
       color: "hsl(var(--graph-revenue))",
+      visible: true,
+    },
+    amountExpense: {
+      label: "Dépense",
+      color: "hsl(var(--graph-expense))",
       visible: true,
     },
     text: { color: "hsl(var(--foreground))" },

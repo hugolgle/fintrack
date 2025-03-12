@@ -12,18 +12,18 @@ module.exports.addInvestment = async (req, res) => {
       !transaction?.date ||
       transaction?.isSale === undefined
     ) {
-      return res
-        .status(400)
-        .json({ message: "Veuillez fournir les informations nécessaires" });
+      return res.status(400).json({
+        message: "Veuillez fournir toutes les informations nécessaires",
+      });
     }
 
-    const existingAsset = await InvestmentModel.findOne({ name });
+    const existingAsset = await InvestmentModel.findOne({ name, user });
 
     if (existingAsset) {
       return res.status(400).json({ message: "Cet actif existe déjà !" });
     }
 
-    const investment = await InvestmentModel.create({
+    const investment = new InvestmentModel({
       user,
       name,
       type,
@@ -35,26 +35,18 @@ module.exports.addInvestment = async (req, res) => {
           isSale: transaction.isSale,
         },
       ],
-      amountBuy: "0.00",
-      amountSale: "0.00",
-      amountResult: "0.00",
+      amountBuy: 0,
+      amountSale: 0,
+      amountResult: 0,
     });
 
-    let amountBuy = 0;
-    let amountSale = 0;
-    investment.transaction.forEach((t) => {
-      if (t.isSale) {
-        amountSale += t.amount;
-      } else {
-        amountBuy += t.amount;
-      }
+    investment.transaction.forEach(({ amount, isSale }) => {
+      isSale
+        ? (investment.amountSale += amount)
+        : (investment.amountBuy += amount);
     });
 
-    const amountResult = amountSale - amountBuy;
-
-    investment.amountBuy = amountBuy;
-    investment.amountSale = amountSale;
-    investment.amountResult = amountResult;
+    investment.amountResult = investment.amountSale - investment.amountBuy;
 
     const updatedInvestment = await investment.save();
 
@@ -72,7 +64,10 @@ module.exports.addInvestment = async (req, res) => {
 
 module.exports.addTransaction = async (req, res) => {
   try {
-    const investment = await InvestmentModel.findById(req.params.id);
+    const { id } = req.params;
+    const { amount, date, isSale, user } = req.body;
+
+    const investment = await InvestmentModel.findOne({ _id: id, user });
 
     if (!investment) {
       return res
@@ -80,29 +75,19 @@ module.exports.addTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    const newTransaction = {
-      amount: req.body.amount,
-      date: req.body.date,
-      isSale: req.body.isSale,
-    };
-
+    const newTransaction = { amount, date, isSale };
     investment.transaction.push(newTransaction);
 
-    let amountBuy = 0;
-    let amountSale = 0;
-    investment.transaction.forEach((t) => {
-      if (t.isSale) {
-        amountSale += t.amount;
-      } else {
-        amountBuy += t.amount;
-      }
+    investment.amountBuy = 0;
+    investment.amountSale = 0;
+
+    investment.transaction.forEach(({ amount, isSale }) => {
+      isSale
+        ? (investment.amountSale += amount)
+        : (investment.amountBuy += amount);
     });
 
-    const amountResult = amountSale - amountBuy;
-
-    investment.amountBuy = amountBuy;
-    investment.amountSale = amountSale;
-    investment.amountResult = amountResult;
+    investment.amountResult = investment.amountSale - investment.amountBuy;
 
     const updatedInvestment = await investment.save();
 
@@ -113,7 +98,7 @@ module.exports.addTransaction = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de l'ajout de la transaction",
-      error,
+      error: error.message,
     });
   }
 };
