@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 import { editInvestments } from "../../Service/Investment.service";
 
 const validationSchema = yup.object().shape({

@@ -18,7 +18,7 @@ import {
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useTheme } from "../../Context/ThemeContext.jsx";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 
 export function DropdownProfil({ btnOpen, handleLogout }) {
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./Context/ThemeContext";
-import TokenExpirationPopup from "./composant/TokenExpPopup";
+import TokenExpirationPopup from "./components/TokenExpPopup";
 
 const queryClient = new QueryClient();
 

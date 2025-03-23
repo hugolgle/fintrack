@@ -1,8 +1,8 @@
-import Tableau from "../../composant/Table/Table";
-import Header from "../../composant/Header.jsx";
+import Tableau from "../../components/Table/Table";
+import Header from "../../components/Header.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
-import Loader from "../../composant/Loader/Loader";
+import Loader from "../../components/Loader/Loader";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
 import { useParams } from "react-router";
@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { EllipsisVertical, MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react";
 
@@ -27,7 +27,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Eye } from "lucide-react";
 import { useState } from "react";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
 import { calculTotalAmount } from "../../utils/calcul.js";
@@ -204,7 +204,7 @@ export default function PageInvestment() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <MoreHorizontal className="cursor-pointer" />
+          <EllipsisVertical className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left">
           {item.idInvest !== id && (

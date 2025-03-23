@@ -5,8 +5,8 @@ import * as yup from "yup";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { addAccount } from "../../Service/Epargn.service";
-import Header from "../../composant/Header";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import Header from "../../components/Header";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 
 const validationSchema = yup.object({
   name: yup.string().required("Le nom est requis"),

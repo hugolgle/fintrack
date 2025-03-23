@@ -95,7 +95,10 @@ export default function Tableau({
                 </TableHead>
               )}
               {columns.map(({ name, key }) => (
-                <TableHead key={key} className="w-full px-10 text-center">
+                <TableHead
+                  key={key}
+                  className="flex justify-center items-start w-full px-10 text-center"
+                >
                   <div className="flex items-center gap-1">
                     {name}
                     <button
@@ -124,7 +127,7 @@ export default function Tableau({
               return (
                 <TableRow
                   key={item._id}
-                  className={`w-full flex flex-row h-12 hover:bg-muted/50 items-center text-left animate-fade ${
+                  className={`group w-full flex flex-row h-12 hover:bg-muted/50 items-center text-left animate-fade ${
                     selectedRows[item._id] && "bg-muted/50"
                   }`}
                 >
@@ -147,7 +150,7 @@ export default function Tableau({
                   ))}
 
                   {action && (
-                    <TableCell className="absolute right-0">
+                    <TableCell className="absolute group-hover:opacity-100 opacity-0 transition-all right-0">
                       {action(item)}
                     </TableCell>
                   )}

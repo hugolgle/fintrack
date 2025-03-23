@@ -19,7 +19,7 @@ import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { editUser } from "../../Service/User.service";
 import { getUserIdFromToken } from "../../utils/users";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),

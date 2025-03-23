@@ -136,7 +136,7 @@ function Header({
                 onChange={btnSearch.handleSearchChange}
                 placeholder="Rechercher"
               />
-              <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
           )}
           {clickLastMonth && clickNextMonth && navigateDate && (

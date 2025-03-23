@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getInitials, useIsAuthenticated } from "../utils/users";
+import { getInitials, useIsAuthenticated } from "../utils/users.js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -9,15 +9,17 @@ import {
 } from "@/components/ui/tooltip";
 import {
   BarChart,
+  CreditCard,
   HandCoins,
   LayoutDashboard,
   Power,
+  ReceiptCent,
   WalletCards,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DropdownProfil } from "../Pages/Profile/DropDownProfile.jsx";
-import { getUserIdFromToken } from "../utils/users";
-import { getCurrentUser, logoutUser } from "../Service/User.service";
+import { getUserIdFromToken } from "../utils/users.js";
+import { getCurrentUser, logoutUser } from "../Service/User.service.jsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { DollarSign } from "lucide-react";
@@ -99,6 +101,12 @@ function Sidebar() {
     },
     {
       id: 7,
+      name: "Crédits",
+      link: ROUTES.CREDIT,
+      icon: <CreditCard />,
+    },
+    {
+      id: 8,
       name: "Statistiques",
       link: ROUTES.STATISTICS,
       icon: <BarChart />,
@@ -162,7 +170,7 @@ function Sidebar() {
         ) : (
           <Link
             to={ROUTES.LOGIN}
-            className={`my-1 p-3 font-thin text-gray-500 hover:text-black dark:hover:text-white overflow-hidden transition-all ${
+            className={`my-1 p-3 font-thin text-muted-foreground hover:text-black dark:hover:text-white overflow-hidden transition-all ${
               activeLink.startsWith(ROUTES.LOGIN) ||
               activeLink.startsWith(ROUTES.SIGNUP)
                 ? "text-black dark:text-white"

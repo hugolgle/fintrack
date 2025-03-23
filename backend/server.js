@@ -20,6 +20,7 @@ app.use("/heritage", require("./routes/heritage.routes"));
 app.use("/investments", require("./routes/investment.routes"));
 app.use("/transactions", require("./routes/transaction.routes"));
 app.use("/epargns", require("./routes/epargn.routes"));
+app.use("/credits", require("./routes/credit.routes"));
 app.use("/user", require("./routes/user.routes"));
 
 app.listen(port, () => console.log("Le serveur a démarré au port " + port));

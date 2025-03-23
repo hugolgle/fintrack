@@ -41,7 +41,7 @@ import {
   editTransactions,
   fetchTransactions,
 } from "../../Service/Transaction.service";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 import { Badge } from "@/components/ui/badge";
 import {
   getTagsOfTransactions,
@@ -109,11 +109,22 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
     validationSchema,
     enableReinitialize: editMode,
     onSubmit: (values) => {
+      const localDate = new Date(values.date);
+      const utcMidnightDate = new Date(
+        Date.UTC(
+          localDate.getFullYear(),
+          localDate.getMonth(),
+          localDate.getDate()
+        )
+      );
+
       const finalValues = {
         ...values,
         ...(editMode && { id: transaction?._id }),
         title: values.title === "Autre" ? values.titleBis : values.title,
+        date: utcMidnightDate,
       };
+
       editMode
         ? mutationEdit.mutate(finalValues)
         : mutationAdd.mutate(finalValues);
@@ -164,7 +175,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
     );
     if (dataByType && formik.values.title) {
       const existing = dataByType.find((t) => t.title === formik.values.title);
-      if (existing) {
+      if (existing && !editMode) {
         formik.setFieldValue("category", existing.category);
         formik.setFieldValue("detail", existing.detail);
         formik.setFieldValue("amount", Math.abs(existing.amount));

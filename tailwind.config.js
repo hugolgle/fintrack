@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      logo: ["Ojuju", "serif", "system-ui"],
+      logo: ["Raleway", "sans-serif", "system-ui"],
     },
     extend: {
       colors: {

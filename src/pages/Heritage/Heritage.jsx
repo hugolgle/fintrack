@@ -1,14 +1,14 @@
 import React from "react";
-import Header from "../../composant/Header";
-import BoxInfos from "../../composant/Box/BoxInfos";
-import { ROUTES } from "../../composant/Routes";
+import Header from "../../components/Header";
+import BoxInfos from "../../components/Box/BoxInfos";
+import { ROUTES } from "../../components/Routes";
 import { Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAccounts } from "../../Service/Epargn.service";
 import { HttpStatusCode } from "axios";
 import { toast } from "sonner";
-import Loader from "../../composant/Loader/Loader";
+import Loader from "../../components/Loader/Loader";
 import { fetchInvestments } from "../../Service/Investment.service";
 import { HandCoins } from "lucide-react";
 import { Landmark } from "lucide-react";

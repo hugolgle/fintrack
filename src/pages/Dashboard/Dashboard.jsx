@@ -13,24 +13,19 @@ import {
   getLastMonths,
   months,
 } from "../../utils/other.js";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import typeCreditList from "../../../public/typeCredit.json";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import { fetchAccounts } from "../../Service/Epargn.service.jsx";
 import { fetchAssets } from "../../Service/Heritage.service.jsx";
-import Header from "../../composant/Header.jsx";
-import Loader from "../../composant/Loader/Loader.jsx";
-import LoaderDots from "../../composant/Loader/LoaderDots.jsx";
-import BoxInfos from "../../composant/Box/BoxInfos.jsx";
-import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
-import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
-import { renderCustomLegend } from "../../composant/Legend.jsx";
-import Container from "../../composant/Container/Container.jsx";
-import { Badge } from "@/components/ui/badge";
+import Header from "../../components/Header.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
+import LoaderDots from "../../components/Loader/LoaderDots.jsx";
+import BoxInfos from "../../components/Box/BoxInfos.jsx";
+import { ChartLine } from "../../components/Charts/ChartLine.jsx";
+import { RadialChart } from "../../components/Charts/RadialChart.jsx";
+import { renderCustomLegend } from "../../components/Legend.jsx";
+import Container from "../../components/Container/Container.jsx";
 import {
   ChevronLeft,
   ChevronRight,
@@ -43,13 +38,14 @@ import {
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import { categoryDepense } from "../../../public/categories.json";
-
+import * as Icons from "lucide-react";
 import { HttpStatusCode } from "axios";
 import { toast } from "sonner";
 import { TYPES } from "../../StaticData/StaticData.js";
 import { FormTransac } from "../Finance/FormFinance.jsx";
+import { fetchCredits } from "../../Service/Credit.service.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -75,6 +71,17 @@ export default function Dashboard() {
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
       const res = await fetchAccounts();
+      if (res?.status !== HttpStatusCode.Ok)
+        toast.warn(res?.response?.data?.message || "Erreur");
+      return res.data;
+    },
+    refetchOnMount: true,
+  });
+
+  const { data: dataCredit } = useQuery({
+    queryKey: ["fetchCredits"],
+    queryFn: async () => {
+      const res = await fetchCredits();
       if (res?.status !== HttpStatusCode.Ok)
         toast.warn(res?.response?.data?.message || "Erreur");
       return res.data;
@@ -268,35 +275,26 @@ export default function Dashboard() {
     () => Math.max(total - (dFix + dLoisir + mInvest), 0),
     [total, dFix, dLoisir, mInvest]
   );
-  const chartDataRadial = useMemo(
-    () => [
+  const chartDataRadial = useMemo(() => {
+    const raw = [
       {
         name: "Dépenses fixes",
         amount: dFix,
-        pourcentage: (dFix / total) * 100 || 0,
         fill: "var(--color-depensesFixes)",
       },
-      {
-        name: "Loisir",
-        amount: dLoisir,
-        pourcentage: (dLoisir / total) * 100 || 0,
-        fill: "var(--color-loisir)",
-      },
-      {
-        name: "Investissements",
-        amount: mInvest,
-        pourcentage: (mInvest / total) * 100 || 0,
-        fill: "var(--color-invest)",
-      },
-      {
-        name: "Épargne",
-        amount: epargne,
-        pourcentage: (epargne / total) * 100 || 0,
-        fill: "var(--color-epargne)",
-      },
-    ],
-    [dFix, dLoisir, mInvest, epargne, total]
-  );
+      { name: "Loisir", amount: dLoisir, fill: "var(--color-loisir)" },
+      { name: "Investissements", amount: mInvest, fill: "var(--color-invest)" },
+      { name: "Épargne", amount: epargne, fill: "var(--color-epargne)" },
+    ];
+
+    return raw
+      .map((item) => ({
+        ...item,
+        pourcentage: total > 0 ? (item.amount / total) * 100 : 0,
+      }))
+      .filter((item) => item.pourcentage > 0); // <-- on enlève les slices à 0
+  }, [dFix, dLoisir, mInvest, epargne, total]);
+
   const chartConfigRadial = {
     depensesFixes: {
       label: "Dépenses fixes",
@@ -503,7 +501,7 @@ export default function Dashboard() {
               </div>
             </Container>
             <div className="flex gap-4">
-              <Container custom="h-fit">
+              <Container>
                 <h2 className="text-left">Répartition finance</h2>
                 {!isFetchingTransacs && !isFetchingInvests ? (
                   <RadialChart
@@ -570,36 +568,78 @@ export default function Dashboard() {
               </Container>
               <Container custom="h-fit">
                 <div className="flex justify-between w-full gap-4 mb-4">
-                  <h2 className="text-left">Mes tags</h2>
+                  <h2 className="text-left">Mes crédits</h2>
+                  <p
+                    className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
+                    onClick={() => navigate(ROUTES.CREDIT)}
+                  >
+                    Voir tout
+                    <ChevronRight
+                      size={12}
+                      className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                    />
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {tags?.map((tag, index) => (
-                    <Tooltip key={index} delayDuration={false}>
-                      <TooltipTrigger>
-                        <Badge
+                  {dataCredit
+                    .filter((cre) => cre.isActive === true)
+                    ?.map((credit, index) => {
+                      const typeInfo =
+                        typeCreditList.find((t) => t.key === credit.type) || {};
+                      const IconComponent =
+                        Icons[typeInfo.icon] || Icons.CreditCard;
+
+                      return (
+                        <div
                           key={index}
-                          variant="secondary"
-                          onClick={() => {
-                            navigate(`${ROUTES.TRANSACTIONS}?tags=${tag}`);
-                          }}
+                          className="flex items-center justify-between w-full"
                         >
-                          {tag}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" variant="secondary">
-                        {formatCurrency.format(
-                          cumulativeAmountsByTag[tag] || 0
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="size-8 rounded-full flex items-center justify-center"
+                              style={{
+                                backgroundColor: typeInfo.color || "#ccc",
+                              }}
+                            >
+                              <IconComponent className="size-4" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="text-sm">{credit.name}</h3>
+                              <p className="text-[10px] text-muted-foreground italic">
+                                {typeInfo.name}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs italic">
+                              {formatCurrency.format(credit.balance)}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground italic">
+                              {formatCurrency.format(credit.monthlyPayment)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </Container>
             </div>
           </div>
           <div className="w-1/5 flex flex-col gap-4">
             <Container>
-              <h2 className="text-left mb-4">Dernières transactions</h2>
+              <div className="flex justify-between w-full mb-4">
+                <h2 className="text-nowrap">Dernieres transactions</h2>
+                <p
+                  className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
+                  onClick={() => navigate(ROUTES.TRANSACTIONS)}
+                >
+                  Voir tout
+                  <ChevronRight
+                    size={12}
+                    className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                  />
+                </p>
+              </div>
               <div className="flex flex-col gap-2">
                 {lastTransactions.map((op) => (
                   <div
@@ -607,7 +647,7 @@ export default function Dashboard() {
                     className="flex items-center justify-between text-xs"
                   >
                     {" "}
-                    <div className="flex flex-row space-x-4 w-full">
+                    <div className="flex flex-row space-x-4 w-4/5">
                       <span>{format(op.date, "dd/MM")}</span>
                       <span className="truncate">{op.title}</span>
                     </div>
@@ -615,9 +655,8 @@ export default function Dashboard() {
                       className={`px-2 py-[1px] text-[10px] italic rounded-md ${
                         op.type === TYPES.EXPENSE
                           ? "bg-colorExpense text-red-900"
-                          : op.type === TYPES.INCOME
-                            ? "bg-colorRevenue text-green-900"
-                            : "bg-colorInvest text-blue-900"
+                          : op.type === TYPES.INCOME &&
+                            "bg-colorRevenue text-green-900"
                       }`}
                     >
                       {formatCurrency.format(op.amount)}
@@ -627,7 +666,19 @@ export default function Dashboard() {
               </div>
             </Container>
             <Container>
-              <h2 className="text-left mb-4">Derniers investissements</h2>
+              <div className="flex justify-between w-full mb-4">
+                <h2 className="text-nowrap">Derniers investissements</h2>
+                <p
+                  className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
+                  onClick={() => navigate(ROUTES.INVESTMENT_IN_PROGRESS)}
+                >
+                  Voir tout
+                  <ChevronRight
+                    size={12}
+                    className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                  />
+                </p>
+              </div>
               <div className="flex flex-col gap-2">
                 {lastInvestissements.map((inv) => (
                   <div
@@ -635,7 +686,7 @@ export default function Dashboard() {
                     className="flex items-center justify-between text-xs"
                   >
                     {" "}
-                    <div className="flex flex-row space-x-4 w-full">
+                    <div className="flex flex-row space-x-4 w-4/5">
                       <span>{format(inv.date, "dd/MM")}</span>
                       <span className="truncate">{inv.title}</span>
                     </div>

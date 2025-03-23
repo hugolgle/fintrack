@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import {
@@ -37,7 +37,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { getUserIdFromToken } from "../../utils/users.js";
 import { getCurrentUser } from "../../Service/User.service.jsx";
-import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import ButtonLoading from "../../components/Button/ButtonLoading.jsx";
 import { HttpStatusCode } from "axios";
 import { useState } from "react";
 import { ChevronsUpDown } from "lucide-react";
@@ -45,7 +45,7 @@ import { Check } from "lucide-react";
 import { fr } from "date-fns/locale";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Loader from "../../composant/Loader/Loader.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
 import { alphaSort } from "../../utils/other.js";
 
 const validationSchema = yup.object().shape({
@@ -128,7 +128,6 @@ export default function PageAddInvestmentMain() {
       const postData =
         activeTab === "autre"
           ? {
-              user: dataUser?._id,
               name: values.name,
               type: values.type,
               symbol: values.symbol,
@@ -412,8 +411,14 @@ export default function PageAddInvestmentMain() {
         <ButtonLoading
           variant="secondary"
           text="Soumettre"
-          isPending={addInvestmentMutation.isPending}
-          disabled={addInvestmentMutation.isPending}
+          isPending={
+            addInvestmentMutation.isPending ||
+            addTransactionInvestmentMutation.isPending
+          }
+          disabled={
+            addInvestmentMutation.isPending ||
+            addTransactionInvestmentMutation.isPending
+          }
         />
       </form>
     </section>

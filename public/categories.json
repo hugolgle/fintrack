@@ -85,6 +85,16 @@
       "name": "Voyage",
       "category": "Loisir",
       "color": "hsl(var(--chart-12))"
+    },
+    {
+      "name": "Transport",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-13))"
+    },
+    {
+      "name": "Loisir",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-14))"
     }
   ]
 }
