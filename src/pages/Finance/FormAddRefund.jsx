@@ -22,7 +22,7 @@ import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { addRefund } from "../../Service/Transaction.service";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 import { useState } from "react";
 
 const validationSchema = yup.object().shape({

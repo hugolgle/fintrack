@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../../composant/Header";
+import Header from "../../../components/Header";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Loader from "../../../composant/Loader/Loader";
+import Loader from "../../../components/Loader/Loader";
 import { HttpStatusCode } from "axios";
-import ButtonLoading from "../../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../../components/Button/ButtonLoading";
 
 const validationSchema = yup.object({
   fromAccountId: yup

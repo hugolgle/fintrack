@@ -16,29 +16,29 @@ import {
   updateMonth,
 } from "../../utils/other.js";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
-import Header from "../../composant/Header.jsx";
-import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
-import Loader from "../../composant/Loader/Loader.jsx";
-import BoxInfos from "../../composant/Box/BoxInfos.jsx";
+import Header from "../../components/Header.jsx";
+import { ChartLine } from "../../components/Charts/ChartLine.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
+import BoxInfos from "../../components/Box/BoxInfos.jsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   aggregateTransactions,
   getLastOperations,
   getTransactionsByType,
 } from "../../utils/operations.js";
-import { renderCustomLegend } from "../../composant/Legend.jsx";
-import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
-import LoaderDots from "../../composant/Loader/LoaderDots.jsx";
+import { renderCustomLegend } from "../../components/Legend.jsx";
+import { RadialChart } from "../../components/Charts/RadialChart.jsx";
+import LoaderDots from "../../components/Loader/LoaderDots.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { Separator } from "@/components/ui/separator";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import {
   categoryDepense,
   categoryRecette,
 } from "../../../public/categories.json";
 import { CircleDollarSign } from "lucide-react";
 import { WalletCards } from "lucide-react";
-import Container from "../../composant/Container/Container.jsx";
+import Container from "../../components/Container/Container.jsx";
 import { TYPES } from "../../StaticData/StaticData.js";
 import { FormTransac } from "./FormFinance.jsx";
 
@@ -350,6 +350,7 @@ export default function BoardTransactions() {
               }
               icon={<WalletCards size={15} color="grey" />}
               isAmount
+              type="depense"
             />
             <BoxInfos
               onClick={() =>
@@ -375,6 +376,7 @@ export default function BoardTransactions() {
               }
               icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
+              type="revenue"
             />
             <BoxInfos
               onClick={() =>
@@ -391,6 +393,7 @@ export default function BoardTransactions() {
               yearLast={year - 1}
               icon={<WalletCards size={15} color="grey" />}
               isAmount
+              type="depense"
             />
             <BoxInfos
               onClick={() =>
@@ -407,6 +410,7 @@ export default function BoardTransactions() {
               yearLast={year - 1}
               icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
+              type="revenue"
             />
           </div>
           <div className="flex gap-4">
@@ -570,7 +574,7 @@ export default function BoardTransactions() {
                         key={operation._id}
                         className="justify-between h-full flex flex-row items-center text-xs"
                       >
-                        <td className="flex flex-row space-x-4 w-full">
+                        <td className="flex flex-row space-x-4 w-4/5">
                           <span>{format(operation.date, "dd/MM")}</span>
                           <span className="truncate">{operation.title}</span>
                         </td>
@@ -593,7 +597,7 @@ export default function BoardTransactions() {
                         key={operation._id}
                         className="justify-between h-full flex flex-row items-center text-xs"
                       >
-                        <td className="flex flex-row space-x-4 w-full">
+                        <td className="flex flex-row space-x-4 w-4/5">
                           <span>{format(operation.date, "dd/MM")}</span>
                           <span className="truncate">{operation.title}</span>
                         </td>

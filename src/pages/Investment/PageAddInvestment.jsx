@@ -18,13 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { addTransaction } from "../../Service/Investment.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
 import { useParams } from "react-router";
-import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import ButtonLoading from "../../components/Button/ButtonLoading.jsx";
 import { useState } from "react";
 
 const validationSchema = yup.object().shape({

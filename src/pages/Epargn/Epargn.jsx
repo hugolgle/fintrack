@@ -1,20 +1,20 @@
-import Header from "../../composant/Header";
+import Header from "../../components/Header";
 import { useNavigate } from "react-router";
-import BoxInfos from "../../composant/Box/BoxInfos";
+import BoxInfos from "../../components/Box/BoxInfos";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAccounts } from "../../Service/Epargn.service";
 import { HttpStatusCode } from "axios";
-import Loader from "../../composant/Loader/Loader";
+import Loader from "../../components/Loader/Loader";
 import { Wallet } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ChevronRight } from "lucide-react";
-import { RadialChart } from "../../composant/Charts/RadialChart";
-import LoaderDots from "../../composant/Loader/LoaderDots";
+import { RadialChart } from "../../components/Charts/RadialChart";
+import LoaderDots from "../../components/Loader/LoaderDots";
 import ModalTable from "./Modal/ModalTable";
-import { ROUTES } from "../../composant/Routes";
+import { ROUTES } from "../../components/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
-import { renderCustomLegend } from "../../composant/Legend";
-import Container from "../../composant/Container/Container";
+import { renderCustomLegend } from "../../components/Legend";
+import Container from "../../components/Container/Container";
 
 export default function Epargn() {
   const navigate = useNavigate();
@@ -220,11 +220,11 @@ export default function Epargn() {
                       </p>
                       <p className="italic px-2 py-[2px] w-1/5 text-center">
                         <span
-                          className={`px-2 py-1 w-fit text-center rounded-md bg-opacity-40 ${
+                          className={`px-2 py-1 w-fit text-center rounded-md ${
                             transaction?.type !== "transfer"
                               ? transaction?.amount < 0
-                                ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                                : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                                ? "bg-red-500 text-red-900"
+                                : "bg-green-500 text-green-900"
                               : ""
                           }`}
                         >

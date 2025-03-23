@@ -1,7 +1,7 @@
 import { getInitials } from "../../utils/users.js";
 import { SheetEditProfile } from "./SheetEditProfile.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { Loader } from "lucide-react";
 import { getUserIdFromToken } from "../../utils/users.js";
 import { getCurrentUser } from "../../Service/User.service.jsx";

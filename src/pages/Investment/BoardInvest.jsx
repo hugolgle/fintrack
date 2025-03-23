@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { toast } from "sonner";
-import Loader from "../../composant/Loader/Loader";
-import { ROUTES } from "../../composant/Routes.jsx";
+import Loader from "../../components/Loader/Loader";
+import { ROUTES } from "../../components/Routes.jsx";
 import { HttpStatusCode } from "axios";
 import { Pickaxe } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,18 +11,18 @@ import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
-import BoxInfos from "../../composant/Box/BoxInfos";
-import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
+import BoxInfos from "../../components/Box/BoxInfos";
+import { RadialChart } from "../../components/Charts/RadialChart.jsx";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { renderCustomLegend } from "../../composant/Legend.jsx";
-import LoaderDots from "../../composant/Loader/LoaderDots";
+import { renderCustomLegend } from "../../components/Legend.jsx";
+import LoaderDots from "../../components/Loader/LoaderDots";
 import { currentDate, getLastMonths } from "../../utils/other.js";
 import { format } from "date-fns";
-import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
+import { ChartLine } from "../../components/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import Container from "../../composant/Container/Container.jsx";
+import Container from "../../components/Container/Container.jsx";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
@@ -248,6 +248,7 @@ export default function BoardInvest() {
               icon={<Pickaxe size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_IN_PROGRESS)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Tous les investissements"
@@ -255,6 +256,7 @@ export default function BoardInvest() {
               icon={<HandCoins size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ALL)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Investissements vendus"
@@ -262,12 +264,14 @@ export default function BoardInvest() {
               icon={<Shield size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_SOLD)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Mon portefeuille"
               value={dataInvests.length}
               icon={<BookA size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
+              type="investment"
             />
           </div>
           <div className="flex gap-4">

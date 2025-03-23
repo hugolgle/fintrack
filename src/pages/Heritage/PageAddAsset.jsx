@@ -19,11 +19,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-import ButtonLoading from "../../composant/Button/ButtonLoading.jsx";
+import ButtonLoading from "../../components/Button/ButtonLoading.jsx";
 import { addAsset } from "../../Service/Heritage.service.jsx";
 import { useState } from "react";
 

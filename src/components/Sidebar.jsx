@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getInitials, useIsAuthenticated } from "../utils/users";
+import { getInitials, useIsAuthenticated } from "../utils/users.js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -16,8 +16,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { DropdownProfil } from "../Pages/Profile/DropDownProfile.jsx";
-import { getUserIdFromToken } from "../utils/users";
-import { getCurrentUser, logoutUser } from "../Service/User.service";
+import { getUserIdFromToken } from "../utils/users.js";
+import { getCurrentUser, logoutUser } from "../Service/User.service.jsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { DollarSign } from "lucide-react";

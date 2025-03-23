@@ -22,14 +22,14 @@ import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import { fetchAccounts } from "../../Service/Epargn.service.jsx";
 import { fetchAssets } from "../../Service/Heritage.service.jsx";
-import Header from "../../composant/Header.jsx";
-import Loader from "../../composant/Loader/Loader.jsx";
-import LoaderDots from "../../composant/Loader/LoaderDots.jsx";
-import BoxInfos from "../../composant/Box/BoxInfos.jsx";
-import { ChartLine } from "../../composant/Charts/ChartLine.jsx";
-import { RadialChart } from "../../composant/Charts/RadialChart.jsx";
-import { renderCustomLegend } from "../../composant/Legend.jsx";
-import Container from "../../composant/Container/Container.jsx";
+import Header from "../../components/Header.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
+import LoaderDots from "../../components/Loader/LoaderDots.jsx";
+import BoxInfos from "../../components/Box/BoxInfos.jsx";
+import { ChartLine } from "../../components/Charts/ChartLine.jsx";
+import { RadialChart } from "../../components/Charts/RadialChart.jsx";
+import { renderCustomLegend } from "../../components/Legend.jsx";
+import Container from "../../components/Container/Container.jsx";
 import { Badge } from "@/components/ui/badge";
 import {
   ChevronLeft,
@@ -43,7 +43,7 @@ import {
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import { categoryDepense } from "../../../public/categories.json";
 
 import { HttpStatusCode } from "axios";
@@ -503,7 +503,7 @@ export default function Dashboard() {
               </div>
             </Container>
             <div className="flex gap-4">
-              <Container custom="h-fit">
+              <Container>
                 <h2 className="text-left">Répartition finance</h2>
                 {!isFetchingTransacs && !isFetchingInvests ? (
                   <RadialChart
@@ -607,18 +607,16 @@ export default function Dashboard() {
                     className="flex items-center justify-between text-xs"
                   >
                     {" "}
-                    <div className="flex flex-row space-x-4 w-full">
+                    <div className="flex flex-row space-x-4 w-4/5">
                       <span>{format(op.date, "dd/MM")}</span>
                       <span className="truncate">{op.title}</span>
                     </div>
                     <p
-                      className={`px-2 py-[1px] text-[10px] italic rounded-md ${
-                        op.type === TYPES.EXPENSE
-                          ? "bg-colorExpense text-red-900"
-                          : op.type === TYPES.INCOME
-                            ? "bg-colorRevenue text-green-900"
-                            : "bg-colorInvest text-blue-900"
-                      }`}
+                      className={`px-2 py-[1px] text-[10px] italic rounded-md ${op.type === TYPES.EXPENSE
+                        ? "bg-colorExpense text-red-900"
+                        : op.type === TYPES.INCOME &&
+                        "bg-colorRevenue text-green-900"
+                        }`}
                     >
                       {formatCurrency.format(op.amount)}
                     </p>
@@ -635,7 +633,7 @@ export default function Dashboard() {
                     className="flex items-center justify-between text-xs"
                   >
                     {" "}
-                    <div className="flex flex-row space-x-4 w-full">
+                    <div className="flex flex-row space-x-4 w-4/5">
                       <span>{format(inv.date, "dd/MM")}</span>
                       <span className="truncate">{inv.title}</span>
                     </div>

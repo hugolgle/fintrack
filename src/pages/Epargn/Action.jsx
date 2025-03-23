@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "../../composant/Header";
+import Header from "../../components/Header";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import { ROUTES } from "../../composant/Routes";
+import { ROUTES } from "../../components/Routes";
 
 export default function EpargnAction() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import Loader from "../../composant/Loader/Loader";
-import { ROUTES } from "../../composant/Routes.jsx";
+import Loader from "../../components/Loader/Loader";
+import { ROUTES } from "../../components/Routes.jsx";
 import { getUserIdFromToken } from "../../utils/users";
 import { getCurrentUser } from "../../Service/User.service";
 import { useIsAuthenticated } from "../../utils/users";
@@ -30,7 +30,7 @@ export default function Home() {
           <h1 className="font-light text-5xl">
             Bienvenue <span className="font-bold">{dataUser?.prenom}</span> sur
           </h1>
-          <p className="text-5xl mt-3 font-logo">FinTrack</p>
+          <p className="text-5xl mt-3 font-logo font-thin">FinTrack</p>
         </div>
         {isAuthenticated ? (
           <Button

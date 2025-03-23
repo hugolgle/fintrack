@@ -1,7 +1,7 @@
-import Tableau from "../../composant/Table/Table.jsx";
-import Header from "../../composant/Header.jsx";
+import Tableau from "../../components/Table/Table.jsx";
+import Header from "../../components/Header.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Loader from "../../composant/Loader/Loader.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
@@ -19,7 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
 import { deleteAsset, fetchAssets } from "../../Service/Heritage.service.jsx";

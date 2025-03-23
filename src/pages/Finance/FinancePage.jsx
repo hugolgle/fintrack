@@ -15,14 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { alphaSort, months, nameType } from "../../utils/other.js";
 import { categoryDepense } from "../../../public/categories.json";
-import Header from "../../composant/Header.jsx";
-import Tableau from "../../composant/Table/Table.jsx";
+import Header from "../../components/Header.jsx";
+import Tableau from "../../components/Table/Table.jsx";
 import {
   deleteTransactions,
   fetchTransactions,
 } from "../../Service/Transaction.service.jsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Loader from "../../composant/Loader/Loader.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { Dot, MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";

@@ -29,7 +29,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import ButtonLoading from "../../composant/Button/ButtonLoading";
+import ButtonLoading from "../../components/Button/ButtonLoading";
 import { editAsset } from "../../Service/Heritage.service";
 import { useState } from "react";
 
