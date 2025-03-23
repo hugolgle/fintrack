@@ -1,7 +1,7 @@
 import { getInitials } from "../../utils/users.js";
 import { SheetEditProfile } from "./SheetEditProfile.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Header from "../../composant/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { Loader } from "lucide-react";
 import { getUserIdFromToken } from "../../utils/users.js";
 import { getCurrentUser } from "../../Service/User.service.jsx";
@@ -51,7 +51,7 @@ export default function Profile() {
             {dataUser?.prenom} {dataUser?.nom}
           </p>
 
-          <p className="text-xs text-gray-500 dark:text-gray-500">
+          <p className="text-xs text-muted-foreground dark:text-muted-foreground">
             {dataUser?.username}
           </p>
           <SheetEditProfile dataProfil={dataUser} refetch={refetch} />

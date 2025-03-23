@@ -1,0 +1,67 @@
+[
+  {
+    "key": "mortgage",
+    "name": "Crédit immobilier",
+    "color": "#4A90E2",
+    "icon": "Home"
+  },
+  {
+    "key": "car-loan",
+    "name": "Crédit auto",
+    "color": "#F5A623",
+    "icon": "Car"
+  },
+  {
+    "key": "personal-loan",
+    "name": "Crédit à la consommation",
+    "color": "#7ED321",
+    "icon": "ShoppingCart"
+  },
+  {
+    "key": "revolving-credit",
+    "name": "Crédit renouvelable",
+    "color": "#BD10E0",
+    "icon": "RefreshCcw"
+  },
+  {
+    "key": "student-loan",
+    "name": "Crédit étudiant",
+    "color": "#50E3C2",
+    "icon": "GraduationCap"
+  },
+  {
+    "key": "home-improvement",
+    "name": "Crédit travaux",
+    "color": "#D0021B",
+    "icon": "Hammer"
+  },
+  {
+    "key": "business-loan",
+    "name": "Crédit professionnel",
+    "color": "#417505",
+    "icon": "Briefcase"
+  },
+  {
+    "key": "home-equity-loan",
+    "name": "Crédit hypothécaire",
+    "color": "#9013FE",
+    "icon": "FileText"
+  },
+  {
+    "key": "bridge-loan",
+    "name": "Crédit relais",
+    "color": "#B8E986",
+    "icon": "Shuffle"
+  },
+  {
+    "key": "leasing",
+    "name": "Crédit-bail",
+    "color": "#F8E71C",
+    "icon": "Key"
+  },
+  {
+    "key": "other",
+    "name": "Autre",
+    "color": "#FF7F7F"
+  }
+]

@@ -16,6 +16,8 @@ function BoxInfos({
   yearLast,
   isAmount,
   plafond,
+  description,
+  isPercent,
 }) {
   const [progress, setProgress] = useState(0);
 
@@ -45,7 +47,7 @@ function BoxInfos({
   return (
     <div onClick={onClick} className="w-full">
       <Container
-        custom={`ring-opacity-65 hover:ring-opacity-100 h-full cursor-pointer ring-1 ${color} flex flex-col gap-3`}
+        custom={`ring-opacity-65 ${onClick && "hover:ring-opacity-100 cursor-pointer"} h-full ring-1 ${color} flex flex-col gap-3`}
       >
         <div className="flex justify-between items-center">
           <p className="font-medium tracking-tight text-sm">{title}</p>
@@ -53,7 +55,11 @@ function BoxInfos({
         </div>
         <div className="w-full flex flex-col h-full justify-end items-start">
           <p className="font-bold flex italic items-end gap-2 text-lg">
-            {isAmount ? formatCurrency.format(value) : value}
+            {isAmount
+              ? formatCurrency.format(value)
+              : isPercent
+                ? `${value} %`
+                : value}
             {valueLast && diffAmount < 0 ? (
               <TrendingDown size={15} color="red" />
             ) : diffAmount > 0 ? (
@@ -68,13 +74,16 @@ function BoxInfos({
               {yearLast ? ` à ${yearLast}` : " au mois dernier"}
             </p>
           )}
+          {description && (
+            <p className="text-muted-foreground text-xs">{description}</p>
+          )}
           {plafond && (
             <div className="relative flex gap-2 items-center w-full">
               <Progress
                 value={progress > 100 ? 100 : progress}
                 className="w-full h-1"
               />
-              <p className="text-gray-500 italic text-[10px] text-nowrap">
+              <p className="text-muted-foreground italic text-[10px] text-nowrap">
                 {progress.toFixed(2)} %
               </p>
             </div>

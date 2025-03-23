@@ -51,9 +51,12 @@ export const addInvestment = async (investmentData) => {
 
 export const addTransaction = async (investmentId, transactionData) => {
   const token = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
 
   const { amount, date, action } = transactionData;
   const newTransaction = {
+    user: userId,
     amount,
     date,
     isSale: action,

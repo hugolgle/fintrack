@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Button } from "@/components/ui/button";
@@ -9,62 +9,59 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { addRefund } from "../../Service/Transaction.service";
 import ButtonLoading from "../../components/Button/ButtonLoading";
-import { useState } from "react";
+import { addCredit, addPayment } from "../../Service/Credit.service";
 
 const validationSchema = yup.object().shape({
-  title: yup
-    .string()
-    .max(50, "Le titre est trop long")
-    .required("Le titre est requis"),
-  date: yup.date().required("La date est requise"),
   amount: yup
     .number()
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
+  date: yup.date(),
 });
 
-export function FormAddRefund({ transaction, refetch }) {
+export function FormPayment({ credit, refetch, editMode }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
+  const initialValues = {
+    amount: null,
+    date: new Date(),
+  };
+
   const formik = useFormik({
-    initialValues: {
-      title: "",
-      date: new Date(),
-      amount: "",
-    },
+    initialValues,
     validationSchema,
+    enableReinitialize: editMode,
     onSubmit: (values) => {
-      mutationPost.mutate(values);
+      const finalValues = {
+        ...values,
+      };
+      mutationAdd.mutate(finalValues);
     },
   });
-  const mutationPost = useMutation({
-    mutationFn: async (values) => {
-      const postData = {
-        title: values.title,
-        date: values.date.toLocaleDateString("fr-CA"),
-        amount: values.amount,
-      };
 
-      return await addRefund(transaction._id, postData);
+  const mutationAdd = useMutation({
+    mutationFn: async (postData) => {
+      return await addPayment(credit._id, postData);
     },
     onSuccess: (response) => {
-      formik.resetForm();
       toast.success(response?.data?.message);
+      queryClient.invalidateQueries(["fetchCredits"]);
       refetch();
+      formik.resetForm();
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
@@ -74,35 +71,40 @@ export function FormAddRefund({ transaction, refetch }) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <DialogHeader>
-        <DialogTitle>Ajouter un remboursement</DialogTitle>
+        <DialogTitle>
+          {editMode ? "Modifier un paiement" : "Ajouter un paiement"}
+        </DialogTitle>
         <DialogDescription>
-          Ajouter les informations du remboursement.
+          {editMode
+            ? "Modifiez les informations du paiement."
+            : "Remplissez les informations pour ajouter un nouveau paiement."}
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <Input
-          name="title"
-          placeholder="Titre"
-          {...formik.getFieldProps("title")}
+          id="amount"
+          name="amount"
+          type="number"
+          step="0.01"
+          placeholder="Montant du paiement"
+          {...formik.getFieldProps("amount")}
         />
-        {formik.touched.title && formik.errors.title && (
-          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
-            {formik.errors.title}
+        {formik.touched.amount && formik.errors.amount && (
+          <p className="text-[10px] text-red-500 -mt-4 ml-2">
+            {formik.errors.amount}
           </p>
         )}
 
-        <Popover modal={true} open={open} onOpenChange={setOpen}>
+        <Popover modal open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline">
-              {formik.values.date ? (
-                format(formik.values.date, "PP", { locale: fr })
-              ) : (
-                <span>Choisir une date</span>
-              )}
+              {formik.values.date
+                ? format(formik.values.date, "PP", { locale: fr })
+                : "Choisir une date"}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto  p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
               selected={formik.values.date}
@@ -115,34 +117,18 @@ export function FormAddRefund({ transaction, refetch }) {
             />
           </PopoverContent>
         </Popover>
-
         {formik.touched.date && formik.errors.date && (
-          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+          <p className="text-[10px] text-red-500 -mt-4 ml-2">
             {formik.errors.date}
           </p>
         )}
-
-        <Input
-          id="amount"
-          name="amount"
-          type="number"
-          step="0.01"
-          placeholder="Montant"
-          {...formik.getFieldProps("amount")}
-        />
-        {formik.touched.amount && formik.errors.amount && (
-          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
-            {formik.errors.amount}
-          </p>
-        )}
       </div>
-
       <DialogFooter className="sm:justify-between">
         <ButtonLoading
           type="submit"
-          text="Soumettre"
-          disabled={mutationPost.isPending}
-          isPending={mutationPost.isPending}
+          text={editMode ? "Modifier" : "Ajouter"}
+          isPending={mutationAdd.isPending}
+          disabled={mutationAdd.isPending}
         />
         <DialogClose>
           <Button type="button" variant="outline">

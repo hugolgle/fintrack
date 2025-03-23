@@ -6,13 +6,13 @@ import { toast } from "sonner";
 import { HttpStatusCode } from "axios";
 import { format } from "date-fns";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
-import Header from "../../composant/Header.jsx";
-import Loader from "../../composant/Loader/Loader";
+import Header from "../../components/Header.jsx";
+import Loader from "../../components/Loader/Loader";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import Tableau from "../../composant/Table/Table.jsx";
+import Tableau from "../../components/Table/Table.jsx";
 import { fr } from "date-fns/locale";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Eye } from "lucide-react";
-import { ROUTES } from "../../composant/Routes.jsx";
+import { ROUTES } from "../../components/Routes.jsx";
 import { calculTotalAmount } from "../../utils/calcul.js";
 
 export function PageOrder() {

@@ -1,8 +1,8 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import "../styles/globals.css";
-import { ROUTES } from "./composant/Routes.jsx";
-import PrivateRoute from "./composant/PrivateRoute.jsx";
+import { ROUTES } from "./components/Routes.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
 import BoardTransactions from "./Pages/Finance/Finance.jsx";
 import BoardInvest from "./Pages/Investment/BoardInvest.jsx";
 import PageAddInvestment from "./Pages/Investment/PageAddInvestment.jsx";
@@ -30,6 +30,8 @@ import PageAssets from "./Pages/Heritage/PageAssets.jsx";
 import PageTransaction from "./Pages/Finance/FinancePage.jsx";
 import { TYPES } from "./StaticData/StaticData.js";
 import Dashboard from "./Pages/Dashboard/Dashboard.jsx";
+import { AuthLayout } from "./Layout/AuthLayout.jsx";
+import Credit from "./Pages/Credit/Credit.jsx";
 
 export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
@@ -90,6 +92,8 @@ export default function App() {
     { path: ROUTES.ADD_WITHDRAW, component: <PageAddWithdraw /> },
   ];
 
+  const creditRoutes = [{ path: ROUTES.CREDIT, component: <Credit /> }];
+
   const heritageRoutes = [
     { path: ROUTES.HERITAGE, component: <Heritage /> },
     { path: ROUTES.ADD_ASSET, component: <PageAddAsset /> },
@@ -107,7 +111,7 @@ export default function App() {
   ];
 
   const routesWithLayout = [
-    { path: ROUTES.DASHBOARD, element: <Dashboard /> },
+    { path: ROUTES.DASHBOARD, element: createPrivateRoute(<Dashboard />) },
     ...transactionRoutes.map((route) => ({
       path: route.path,
       element: createPrivateRoute(route.component),
@@ -120,27 +124,34 @@ export default function App() {
       path: route.path,
       element: createPrivateRoute(route.component),
     })),
+    ...creditRoutes.map((route) => ({
+      path: route.path,
+      element: createPrivateRoute(route.component),
+    })),
     ...heritageRoutes.map((route) => ({
       path: route.path,
       element: createPrivateRoute(route.component),
     })),
-    { path: ROUTES.STATISTICS, element: <Statistic /> },
-    { path: ROUTES.PROFILE, element: <Profile /> },
+    { path: ROUTES.STATISTICS, element: createPrivateRoute(<Statistic />) },
+    { path: ROUTES.PROFILE, element: createPrivateRoute(<Profile />) },
   ];
 
   const router = createBrowserRouter([
     {
-      element: <MainLayout />,
+      element: createPrivateRoute(<MainLayout />),
       children: routesWithLayout.map((route) => ({
         path: route.path,
         element: route.element,
       })),
     },
-    { path: ROUTES.HOME, element: <Home /> }, // Route Home en dehors de MainLayout
-    ...publicRoutes.map((route) => ({
-      path: route.path,
-      element: route.element,
-    })),
+    {
+      element: <AuthLayout />,
+      children: publicRoutes.map((route) => ({
+        path: route.path,
+        element: route.element,
+      })),
+    },
+    { path: ROUTES.HOME, element: createPrivateRoute(<Home />) },
   ]);
 
   return <RouterProvider router={router} />;

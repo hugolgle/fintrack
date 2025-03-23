@@ -68,6 +68,14 @@ export function RadialChart({
     return null;
   };
 
+  if (!chartData || chartData.length < 1 || !chartData[0].amount) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-xs text-muted-foreground italic">Aucune donnée</p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ChartContainer

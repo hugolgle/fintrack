@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { useParams } from "react-router";
-import Header from "../../composant/Header";
+import Header from "../../components/Header";
 import { fetchAccount, fetchAccounts } from "../../Service/Epargn.service";
 import { useQuery } from "@tanstack/react-query";
 import { HttpStatusCode } from "axios";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { currentDate, months } from "../../utils/other";
-import LoaderDots from "../../composant/Loader/LoaderDots";
-import { ChartLine } from "../../composant/Charts/ChartLine";
+import LoaderDots from "../../components/Loader/LoaderDots";
+import { ChartLine } from "../../components/Charts/ChartLine";
 import { Pencil } from "lucide-react";
 import ModalTable from "./Modal/ModalTable";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ROUTES } from "../../composant/Routes";
+import { ROUTES } from "../../components/Routes";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { FormEditAccount } from "./FormEditAccount";
-import Container from "../../composant/Container/Container";
+import Container from "../../components/Container/Container";
 
 export default function PageAccount() {
   const { id } = useParams();
@@ -218,7 +218,7 @@ export default function PageAccount() {
                                   : transaction.type === "interest" &&
                                     "Intérêts"}
                           </p>
-                          <p className="italic text-[10px] text-gray-500">
+                          <p className="italic text-[10px] text-muted-foreground">
                             {new Date(transaction.date).toLocaleDateString()}
                           </p>
                         </div>
@@ -238,7 +238,7 @@ export default function PageAccount() {
                   })}
               </div>
             ) : (
-              <p className="italic text-xs text-gray-500">
+              <p className="italic text-xs text-muted-foreground">
                 Aucune transactions trouvé !
               </p>
             )}
