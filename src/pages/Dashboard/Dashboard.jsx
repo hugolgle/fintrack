@@ -615,9 +615,8 @@ export default function Dashboard() {
                       className={`px-2 py-[1px] text-[10px] italic rounded-md ${
                         op.type === TYPES.EXPENSE
                           ? "bg-colorExpense text-red-900"
-                          : op.type === TYPES.INCOME
-                            ? "bg-colorRevenue text-green-900"
-                            : "bg-colorInvest text-blue-900"
+                          : op.type === TYPES.INCOME &&
+                            "bg-colorRevenue text-green-900"
                       }`}
                     >
                       {formatCurrency.format(op.amount)}

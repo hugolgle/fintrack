@@ -248,6 +248,7 @@ export default function BoardInvest() {
               icon={<Pickaxe size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_IN_PROGRESS)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Tous les investissements"
@@ -255,6 +256,7 @@ export default function BoardInvest() {
               icon={<HandCoins size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ALL)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Investissements vendus"
@@ -262,12 +264,14 @@ export default function BoardInvest() {
               icon={<Shield size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_SOLD)}
               isAmount
+              type="investment"
             />
             <BoxInfos
               title="Mon portefeuille"
               value={dataInvests.length}
               icon={<BookA size={15} color="grey" />}
               onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
+              type="investment"
             />
           </div>
           <div className="flex gap-4">

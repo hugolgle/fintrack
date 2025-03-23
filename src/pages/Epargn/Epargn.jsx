@@ -220,11 +220,11 @@ export default function Epargn() {
                       </p>
                       <p className="italic px-2 py-[2px] w-1/5 text-center">
                         <span
-                          className={`px-2 py-1 w-fit text-center rounded-md bg-opacity-40 ${
+                          className={`px-2 py-1 w-fit text-center rounded-md ${
                             transaction?.type !== "transfer"
                               ? transaction?.amount < 0
-                                ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                                : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                                ? "bg-red-500 text-red-900"
+                                : "bg-green-500 text-green-900"
                               : ""
                           }`}
                         >

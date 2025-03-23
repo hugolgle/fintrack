@@ -516,7 +516,7 @@ export default function Statistic() {
             <Container>
               <h2 className="text-left mb-4">Résumé</h2>
               <div className="flex flex-col gap-4">
-                <p className="text-sm text-justify">
+                <p className="text-sm text-justify font-thin">
                   {isCurrentDate
                     ? "Ce mois-ci"
                     : `En ${months[parseInt(selectedMonth) - 1]} ${selectedYear}`}
@@ -528,7 +528,9 @@ export default function Statistic() {
                     : "ce qui vous a permis d’économiser"}{" "}
                   <span
                     className={
-                      economieMonth < 0 ? "text-red-500" : "text-green-500"
+                      economieMonth < 0
+                        ? "text-colorExpense"
+                        : "text-colorRevenue"
                     }
                   >
                     {formatCurrency.format(Math.abs(economieMonth))}
@@ -549,13 +551,15 @@ export default function Statistic() {
                       ? "laissant une épargne nette de "
                       : "entraînant une dette de "}{" "}
                   <span
-                    className={rest < 0 ? "text-red-500" : "text-green-500"}
+                    className={
+                      rest < 0 ? "text-colorExpense" : "text-colorRevenue"
+                    }
                   >
                     {formatCurrency.format(Math.abs(rest))}
                   </span>
                   .
                 </p>
-                <p className="text-sm text-justify">
+                <p className="text-sm text-justify font-thin">
                   {isCurrentYear ? "Cette année" : `En ${selectedYear}`}, vous
                   avez perçu {formatCurrency.format(Math.abs(recetteYear))}, et
                   dépensé {formatCurrency.format(Math.abs(depenseYear))},{" "}
@@ -564,7 +568,9 @@ export default function Statistic() {
                     : "ce qui vous a permis d’économiser "}
                   <span
                     className={
-                      economieTotale < 0 ? "text-red-500" : "text-green-500"
+                      economieTotale < 0
+                        ? "text-colorExpense"
+                        : "text-colorRevenue"
                     }
                   >
                     {formatCurrency.format(Math.abs(economieTotale))}
@@ -585,7 +591,9 @@ export default function Statistic() {
                       ? "laissant une épargne nette de "
                       : "entraînant une dette de "}{" "}
                   <span
-                    className={restYear < 0 ? "text-red-500" : "text-green-500"}
+                    className={
+                      restYear < 0 ? "text-colorExpense" : "text-colorRevenue"
+                    }
                   >
                     {formatCurrency.format(Math.abs(restYear))}
                   </span>

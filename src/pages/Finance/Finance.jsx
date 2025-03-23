@@ -350,6 +350,7 @@ export default function BoardTransactions() {
               }
               icon={<WalletCards size={15} color="grey" />}
               isAmount
+              type="depense"
             />
             <BoxInfos
               onClick={() =>
@@ -375,6 +376,7 @@ export default function BoardTransactions() {
               }
               icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
+              type="revenue"
             />
             <BoxInfos
               onClick={() =>
@@ -391,6 +393,7 @@ export default function BoardTransactions() {
               yearLast={year - 1}
               icon={<WalletCards size={15} color="grey" />}
               isAmount
+              type="depense"
             />
             <BoxInfos
               onClick={() =>
@@ -407,6 +410,7 @@ export default function BoardTransactions() {
               yearLast={year - 1}
               icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
+              type="revenue"
             />
           </div>
           <div className="flex gap-4">
