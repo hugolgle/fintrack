@@ -7,7 +7,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
-  --colorBackground: rgba(16, 205, 76, 0.333);
+  --colorBackground: rgba(205, 16, 16, 0.333);
 }
 
 body {

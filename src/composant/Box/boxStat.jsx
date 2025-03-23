@@ -34,7 +34,7 @@ function BoxStat(props) {
   }, [currentMontant]);
 
   return (
-    <Container custom="gap-10 px-4 py-2">
+    <Container custom="gap-8 px-4 py-2">
       <p className="text-xl text-left italic">
         {formatCurrency.format(currentMontant)}
       </p>
