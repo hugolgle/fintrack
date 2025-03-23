@@ -31,6 +31,7 @@ import {
 } from "../../../public/categories.json";
 import { toast } from "sonner";
 import { TYPES } from "../../StaticData/StaticData";
+import { formatCurrency } from "../../utils/fonctionnel";
 
 export default function Statistic() {
   const userId = getUserIdFromToken();
@@ -128,7 +129,7 @@ export default function Statistic() {
     }, 0);
   }, [dataInvests, selectedYear]);
 
-  const AmountInvestisMonth = useMemo(() => {
+  const amountInvestisMonth = useMemo(() => {
     if (!dataInvests) return 0;
     return dataInvests.reduce((acc, d) => {
       const total = d.transaction
@@ -252,6 +253,14 @@ export default function Statistic() {
     return `${months[mois - 1]} ${annee}`;
   };
 
+  const rest = economieMonth - amountInvestisMonth;
+
+  const restYear = economieTotale - amountInvestisYear;
+
+  const isCurrentDate = selectedDate === `${currentYear}${currentMonth}`;
+
+  const isCurrentYear = selectedYear === currentYear;
+
   if (isLoading) return <Loader />;
 
   return (
@@ -262,7 +271,10 @@ export default function Statistic() {
           <Carousel className="max-w-xs overflow-hidden">
             <CarouselContent className="flex gap-2 px-4 snap-x snap-mandatory">
               {years.map((year, i) => (
-                <CarouselItem key={i} className="basis-1/2 pl-0">
+                <CarouselItem
+                  key={i}
+                  className={`pl-0 ${years.length > 1 && "basis-1/2"}`}
+                >
                   <Button
                     variant={selectedYear === year ? "secondary" : "none"}
                     onClick={() => setSelectedYear(year)}
@@ -380,7 +392,19 @@ export default function Statistic() {
         <div className="flex gap-4 animate-fade">
           <div className="flex flex-col items-center gap-4 w-2/3">
             <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-10 !justify-center items-center">
+              <Container custom="!w-8" />
+              <Container custom="!p-2">
+                <h1 className="text-center italic text-xs">Moyenne/Mois</h1>
+              </Container>
+              <Container custom="!p-2">
+                <h1 className="text-center italic text-xs">Par mois</h1>
+              </Container>
+              <Container custom="!p-2">
+                <h1 className="text-center italic text-xs">Par an</h1>
+              </Container>
+            </div>
+            <div className="flex flex-row gap-4 w-full text-right">
+              <Container custom="!w-8 !justify-center items-center">
                 <h1 className="text-center italic text-xs -rotate-90">
                   Revenu
                 </h1>
@@ -407,7 +431,7 @@ export default function Statistic() {
               />
             </div>
             <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-10 !justify-center items-center">
+              <Container custom="!w-8 !justify-center items-center">
                 <h1 className="text-center italic text-xs -rotate-90">
                   Dépense
                 </h1>
@@ -434,7 +458,7 @@ export default function Statistic() {
               />
             </div>
             <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-10 !justify-center items-center">
+              <Container custom="!w-8 !justify-center items-center">
                 <h1 className="text-center italic text-xs -rotate-90">
                   Économie
                 </h1>
@@ -461,7 +485,7 @@ export default function Statistic() {
               />
             </div>
             <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-10 !justify-center items-center">
+              <Container custom="!w-8 !justify-center items-center">
                 <h1 className="text-center italic text-xs -rotate-90">
                   Investissement
                 </h1>
@@ -476,7 +500,7 @@ export default function Statistic() {
                 type="State"
                 title="Investissement"
                 selectedYear={selectedYear}
-                amount={AmountInvestisMonth}
+                amount={amountInvestisMonth}
                 months={months}
                 selectedMonth={selectedMonth}
               />
@@ -489,8 +513,85 @@ export default function Statistic() {
             </div>
           </div>
           <div className="w-1/3">
-            <Container custom="h-full">
-              <h2 className="text-left">Récapitulatif</h2>
+            <Container>
+              <h2 className="text-left mb-4">Résumé</h2>
+              <div className="flex flex-col gap-4">
+                <p className="text-sm text-justify">
+                  {isCurrentDate
+                    ? "Ce mois-ci"
+                    : `En ${months[parseInt(selectedMonth) - 1]} ${selectedYear}`}
+                  , vous avez perçu{" "}
+                  {formatCurrency.format(Math.abs(recetteMonth))}, et dépensé{" "}
+                  {formatCurrency.format(Math.abs(depenseMonth))},{" "}
+                  {economieMonth < 0
+                    ? "générant un déficit de"
+                    : "ce qui vous a permis d’économiser"}{" "}
+                  <span
+                    className={
+                      economieMonth < 0 ? "text-red-500" : "text-green-500"
+                    }
+                  >
+                    {formatCurrency.format(Math.abs(economieMonth))}
+                  </span>
+                  {amountInvestisMonth !== 0 ? "." : ","}
+                  {amountInvestisMonth !== 0 && (
+                    <>
+                      {" "}
+                      {economieMonth < 0
+                        ? "De plus, vous avez investi"
+                        : "Vous avez aussi investi"}{" "}
+                      {formatCurrency.format(Math.abs(amountInvestisMonth))},
+                    </>
+                  )}{" "}
+                  {rest < 0 && economieMonth < 0
+                    ? "portant votre dette à "
+                    : rest > 0
+                      ? "laissant une épargne nette de "
+                      : "entraînant une dette de "}{" "}
+                  <span
+                    className={rest < 0 ? "text-red-500" : "text-green-500"}
+                  >
+                    {formatCurrency.format(Math.abs(rest))}
+                  </span>
+                  .
+                </p>
+                <p className="text-sm text-justify">
+                  {isCurrentYear ? "Cette année" : `En ${selectedYear}`}, vous
+                  avez perçu {formatCurrency.format(Math.abs(recetteYear))}, et
+                  dépensé {formatCurrency.format(Math.abs(depenseYear))},{" "}
+                  {economieMonth < 0
+                    ? "générant un déficit de "
+                    : "ce qui vous a permis d’économiser "}
+                  <span
+                    className={
+                      economieTotale < 0 ? "text-red-500" : "text-green-500"
+                    }
+                  >
+                    {formatCurrency.format(Math.abs(economieTotale))}
+                  </span>
+                  {amountInvestisYear !== 0 ? "." : ","}
+                  {amountInvestisYear !== 0 && (
+                    <>
+                      {" "}
+                      {economieTotale < 0
+                        ? "De plus, vous avez investi"
+                        : "Vous avez aussi investi"}{" "}
+                      {formatCurrency.format(Math.abs(amountInvestisYear))},
+                    </>
+                  )}{" "}
+                  {restYear < 0 && economieTotale < 0
+                    ? "portant votre dette à "
+                    : restYear > 0
+                      ? "laissant une épargne nette de "
+                      : "entraînant une dette de "}{" "}
+                  <span
+                    className={restYear < 0 ? "text-red-500" : "text-green-500"}
+                  >
+                    {formatCurrency.format(Math.abs(restYear))}
+                  </span>
+                  .
+                </p>
+              </div>
             </Container>
           </div>
         </div>

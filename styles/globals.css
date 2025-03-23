@@ -7,7 +7,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
-  --colorBackground: rgba(16, 205, 76, 0.333);
+  --colorBackground: rgba(205, 16, 16, 0.333);
 }
 
 body {
@@ -120,7 +120,7 @@ input:-webkit-autofill {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 90%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
