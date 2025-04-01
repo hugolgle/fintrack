@@ -1,5 +1,16 @@
-version: "3.8"
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    networks:
+      - react
+    restart: unless-stopped
+
   react-app:
     build:
       context: .
@@ -8,6 +19,9 @@ services:
       - "3000:3000"
     depends_on:
       - mongodb
+    networks:
+      - react
+    restart: unless-stopped
 
   mongodb:
     image: mongo:6
@@ -16,6 +30,36 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: mydatabase
+    networks:
+      - react
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - .:/usr/share/caddy
+    depends_on:
+      - react-app
+      - mongodb
+    networks:
+      - react
+    restart: unless-stopped
+
+networks:
+  react:
 
 volumes:
   mongo-data:
+  caddy_data:
+  caddy_config:

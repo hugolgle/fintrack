@@ -1,8 +1,15 @@
-FROM node:16
+FROM node:20
+
+RUN apt-get update && apt-get install -y 
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+COPY package*.json .
+
 COPY . .
-RUN npm run build
+
+RUN npm install
+
 EXPOSE 3000
-CMD ["npx", "serve", "-s", "dist", "-l", "3000"]
+
+CMD ["npm", "start"]
