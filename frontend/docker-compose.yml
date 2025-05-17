@@ -4,27 +4,26 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "3001:3001"
     environment:
       - MONGO_URI=mongodb://root:example@mongodb:27017/mydatabase?authSource=admin
-    networks:
-      - mongo_network
     depends_on:
       - mongodb
+    networks:
+      - react
     restart: unless-stopped
 
-  frontend:
-    container_name: fintrack-frontend
+  react-app:
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile
-    volumes:
-      - frontend-dist:/app/
+    ports:
+      - "3000:3000"
     depends_on:
-      - backend
+      - mongodb
     networks:
-      - mongo_network
-    restart: no
+      - react
+    restart: unless-stopped
 
   mongodb:
     image: mongo:6
@@ -38,30 +37,31 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: mydatabase
     networks:
-      - mongo_network
+      - react
     restart: unless-stopped
 
   caddy:
-    image: caddy:alpine
+    image: caddy:2
     container_name: caddy
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - frontend-dist:/usr/share/caddy
     ports:
       - "80:80"
       - "443:443"
-    networks:
-      - mongo_network
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - .:/usr/share/caddy
     depends_on:
-      - frontend
-      - backend
+      - react-app
+      - mongodb
+    networks:
+      - react
     restart: unless-stopped
 
 networks:
-  mongo_network:
-    driver: bridge
+  react:
 
 volumes:
   mongo-data:
-  frontend-dist:
-    name: frontend-dist
+  caddy_data:
+  caddy_config:
