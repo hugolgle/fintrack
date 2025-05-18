@@ -1,0 +1,90 @@
+{
+  "categoryRecette": [
+    {
+      "name": "Salaire",
+      "color": "hsl(var(--chart-1))"
+    },
+    {
+      "name": "Remboursement",
+      "color": "hsl(var(--chart-2))"
+    },
+    {
+      "name": "Virement reçu",
+      "color": "hsl(var(--chart-3))"
+    },
+    {
+      "name": "Chèque reçu",
+      "color": "hsl(var(--chart-4))"
+    },
+    {
+      "name": "Dépôt d'argent",
+      "color": "hsl(var(--chart-5))"
+    },
+    {
+      "name": "Autre",
+      "color": "hsl(var(--chart-6))"
+    }
+  ],
+  "categoryDepense": [
+    {
+      "name": "Bar/Boite",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-1))"
+    },
+    {
+      "name": "Resto",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-2))"
+    },
+    {
+      "name": "Santé",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-3))"
+    },
+    {
+      "name": "Activité",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-4))"
+    },
+    {
+      "name": "Véhicule",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-5))"
+    },
+    {
+      "name": "Coiffeur",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-6))"
+    },
+    {
+      "name": "Shopping",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-7))"
+    },
+    {
+      "name": "Alimentation",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-8))"
+    },
+    {
+      "name": "Abonnement",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-9))"
+    },
+    {
+      "name": "Divers",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-10))"
+    },
+    {
+      "name": "Achat",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-11))"
+    },
+    {
+      "name": "Voyage",
+      "category": "Loisir",
+      "color": "hsl(var(--chart-12))"
+    }
+  ]
+}

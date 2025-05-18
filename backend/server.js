@@ -3,7 +3,7 @@ const connectDB = require("./config/db");
 const cors = require("cors");
 const path = require("path");
 
-const port = 5001;
+const port = 8000;
 const dotenv = require("dotenv").config();
 
 connectDB();
