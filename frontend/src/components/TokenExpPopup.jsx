@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useState, useEffect } from "react";
-import { logoutUser } from "../service/user.service";
+import { logoutUser } from "../Service/User.service";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

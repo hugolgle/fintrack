@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
-import { editUser } from "../../service/user.service";
+import { editUser } from "../../Service/User.service";
 import { getUserIdFromToken } from "../../utils/users";
 import ButtonLoading from "../../components/Button/ButtonLoading";
 

@@ -8,7 +8,7 @@ import { useLocation } from "react-router";
 import { useParams } from "react-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { FormEditInvestment } from "../../pages/Investment/FormEditInvestment";
+import { FormEditInvestment } from "../../Pages/Investment/FormEditInvestment.jsx";
 import { useNavigate } from "react-router";
 
 import {
@@ -21,7 +21,7 @@ import { EllipsisVertical, MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react";
 
-import { deleteTransaction } from "../../service/investment.service.jsx";
+import { deleteTransaction } from "../../Service/Investment.service.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";

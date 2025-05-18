@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const API_URL = "http://localhost:5001/epargns";
+const API_URL = `${import.meta.env.VITE_API_URL}epargns`;
 
 export const fetchAccounts = async () => {
   const token = sessionStorage.getItem("token");

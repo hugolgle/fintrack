@@ -1,12 +1,14 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = `${import.meta.env.VITE_API_URL}investments`;
+
 export const fetchInvestments = async () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
 
-  return await axios.get(`http://localhost:5001/investments/user/${userId}`, {
+  return await axios.get(`${API_URL}/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -16,7 +18,7 @@ export const fetchInvestments = async () => {
 export const fetchInvestmentById = async (id) => {
   const token = sessionStorage.getItem("token");
 
-  return await axios.get(`http://localhost:5001/investments/${id}`, {
+  return await axios.get(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -42,7 +44,7 @@ export const addInvestment = async (investmentData) => {
     },
   };
 
-  return await axios.post(`http://localhost:5001/investments`, newInvestment, {
+  return await axios.post(`${API_URL}`, newInvestment, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -63,7 +65,7 @@ export const addTransaction = async (investmentId, transactionData) => {
   };
 
   return await axios.post(
-    `http://localhost:5001/investments/${investmentId}/transaction`,
+    `${API_URL}/${investmentId}/transaction`,
     newTransaction,
     {
       headers: {
@@ -83,15 +85,11 @@ export const editInvestments = async (editData) => {
     type,
   };
 
-  return await axios.put(
-    `http://localhost:5001/investments/${id}`,
-    updatedInvestment,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.put(`${API_URL}/${id}`, updatedInvestment, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const editInvestmentsTransaction = async (editData, idInvestment) => {
@@ -104,7 +102,7 @@ export const editInvestmentsTransaction = async (editData, idInvestment) => {
   };
 
   return await axios.put(
-    `http://localhost:5001/investments/${idInvestment}/transaction/${id}`,
+    `${API_URL}/${idInvestment}/transaction/${id}`,
     updatedTransaction,
     {
       headers: {
@@ -118,7 +116,7 @@ export const deleteTransaction = async (id) => {
   const token = sessionStorage.getItem("token");
 
   return await axios.delete(
-    `http://localhost:5001/investments/${id.idInvest}/transaction/${id.itemId}`,
+    `${API_URL}/${id.idInvest}/transaction/${id.itemId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

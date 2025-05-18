@@ -5,8 +5,8 @@ import "animate.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "./Context/ThemeContext";
 import TokenExpirationPopup from "./components/TokenExpPopup";
+import { ThemeProvider } from "./Context/ThemeContext.jsx";
 
 const queryClient = new QueryClient();
 

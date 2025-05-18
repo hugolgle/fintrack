@@ -5,7 +5,7 @@ import { ROUTES } from "../../components/Routes";
 import { Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAccounts } from "../../service/Epargn.service";
+import { fetchAccounts } from "../../Service/Epargn.service";
 import { HttpStatusCode } from "axios";
 import { toast } from "sonner";
 import Loader from "../../components/Loader/Loader";
@@ -13,7 +13,7 @@ import { fetchInvestments } from "../../Service/Investment.service";
 import { HandCoins } from "lucide-react";
 import { Landmark } from "lucide-react";
 import { AxeIcon } from "lucide-react";
-import { fetchAssets } from "../../service/Heritage.service";
+import { fetchAssets } from "../../Service/Heritage.service";
 
 export default function Heritage() {
   const navigate = useNavigate();

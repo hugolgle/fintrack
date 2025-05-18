@@ -20,7 +20,7 @@ import Tableau from "../../components/Table/Table.jsx";
 import {
   deleteTransactions,
   fetchTransactions,
-} from "../../service/transaction.service.jsx";
+} from "../../Service/Transaction.service.jsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loader from "../../components/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";

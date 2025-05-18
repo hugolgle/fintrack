@@ -1,12 +1,14 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = `${import.meta.env.VITE_API_URL}transactions`;
+
 export const fetchTransactions = async () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
 
-  return await axios.get(`http://localhost:5001/transactions/user/${userId}`, {
+  return await axios.get(`${API_URL}/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -19,7 +21,7 @@ export const fetchTransactionById = async (id) => {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
-  return await axios.get(`http://localhost:5001/transactions/${id}`, {
+  return await axios.get(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -46,15 +48,11 @@ export const addTransaction = async (transactionData) => {
     group,
   };
 
-  return await axios.post(
-    `http://localhost:5001/transactions`,
-    newTransaction,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.post(`${API_URL}`, newTransaction, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const editTransactions = async (editData) => {
@@ -77,15 +75,11 @@ export const editTransactions = async (editData) => {
     group,
   };
 
-  return await axios.put(
-    `http://localhost:5001/transactions/${id}`,
-    updatedTransaction,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.put(`${API_URL}/${id}`, updatedTransaction, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const deleteTransactions = async (id) => {
@@ -94,7 +88,7 @@ export const deleteTransactions = async (id) => {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
-  return await axios.delete(`http://localhost:5001/transactions/${id}`, {
+  return await axios.delete(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -115,13 +109,9 @@ export const addRefund = async (transactionId, refundData) => {
     date,
   };
 
-  return await axios.post(
-    `http://localhost:5001/transactions/${transactionId}/refund`,
-    newRefund,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.post(`${API_URL}/${transactionId}/refund`, newRefund, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

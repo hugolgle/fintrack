@@ -1,5 +1,5 @@
 import { Dot } from "lucide-react";
-import "./legend.css";
+import "./Legend.css";
 import { Separator } from "@/components/ui/separator";
 
 export const renderCustomLegend = (props) => {

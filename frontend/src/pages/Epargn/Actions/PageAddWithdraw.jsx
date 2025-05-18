@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import {
   fetchAccounts,
   withdrawAccount,
-} from "../../../service/Epargn.service";
+} from "../../../Service/Epargn.service";
 import {
   Select,
   SelectContent,

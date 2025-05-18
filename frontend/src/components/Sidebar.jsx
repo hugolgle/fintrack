@@ -17,22 +17,16 @@ import {
   WalletCards,
 } from "lucide-react";
 import { toast } from "sonner";
-<<<<<<<< HEAD:frontend/src/components/Sidebar.jsx
 import { DropdownProfil } from "../Pages/Profile/DropDownProfile.jsx";
 import { getUserIdFromToken } from "../utils/users.js";
-import { getCurrentUser, logoutUser } from "../Service/User.service.jsx";
-========
-import { DropdownProfil } from "../pages/Profile/DropDownProfile.jsx";
-import { getUserIdFromToken } from "../utils/users";
-import { getCurrentUser, logoutUser } from "../service/user.service";
->>>>>>>> origin/vps:frontend/src/composant/Sidebar.jsx
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { ROUTES } from "./Routes.jsx";
 import { Landmark } from "lucide-react";
 import { Swords } from "lucide-react";
-import Loader from "./loader/loader.jsx";
 import { Coins } from "lucide-react";
+import { getCurrentUser, logoutUser } from "../Service/User.service.jsx";
+import Loader from "./Loader/Loader.jsx";
 
 function Sidebar() {
   const userId = getUserIdFromToken();

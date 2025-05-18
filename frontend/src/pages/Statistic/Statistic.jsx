@@ -5,9 +5,9 @@ import {
   aggregateTransactions,
   getTransactionsByType,
 } from "../../utils/operations";
-import { fetchTransactions } from "../../service/transaction.service";
-import { fetchInvestments } from "../../service/investment.service";
-import { getCurrentUser } from "../../service/user.service";
+import { fetchTransactions } from "../../Service/Transaction.service";
+import { fetchInvestments } from "../../Service/Investment.service";
+import { getCurrentUser } from "../../Service/User.service";
 import { getUserIdFromToken } from "../../utils/users";
 import { currentDate, months } from "../../utils/other";
 import { HttpStatusCode } from "axios";
@@ -23,13 +23,8 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-<<<<<<< HEAD:src/pages/Statistic/Statistic.jsx
 import { RadialChart } from "../../components/Charts/RadialChart";
 import { renderCustomLegend } from "../../components/Legend";
-=======
-import { RadialChart } from "../../composant/Charts/radialChart";
-import { renderCustomLegend } from "../../composant/legend";
->>>>>>> origin/vps:frontend/src/pages/Statistic/Statistic.jsx
 import {
   categoryDepense,
   categoryRecette,

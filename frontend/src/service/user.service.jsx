@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${process.env.API_URL}/user`;
+const API_URL = `${import.meta.env.VITE_API_URL}user`;
 
 export const loginUser = async (credentials) => {
   const response = await axios.post(`${API_URL}/login`, credentials);
@@ -27,7 +27,7 @@ export const getCurrentUser = async (userId) => {
 export const addUser = async (userData) => {
   try {
     const response = await axios.post(
-      "http://localhost:5001/user/add",
+      "http://localhost:8000/user/add",
       userData,
       {
         headers: {

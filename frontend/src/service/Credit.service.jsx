@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const API_URL = "http://localhost:5001/credits";
+const API_URL = `${import.meta.env.VITE_API_URL}credits`;
 
 // Récupérer tous les crédits d’un utilisateur
 export const fetchCredits = async () => {

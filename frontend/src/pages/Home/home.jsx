@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader/Loader";
 import { ROUTES } from "../../components/Routes.jsx";
 import { getUserIdFromToken } from "../../utils/users";
-import { getCurrentUser } from "../../service/user.service";
+import { getCurrentUser } from "../../Service/User.service";
 import { useIsAuthenticated } from "../../utils/users";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";

@@ -7,7 +7,7 @@ import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../components/Routes.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { addUser } from "../../service/user.service";
+import { addUser } from "../../Service/User.service";
 import { useMutation } from "@tanstack/react-query";
 import ButtonLoading from "../../components/Button/ButtonLoading.jsx";
 import AppleIcon from "../../../public/apple-icon.svg";

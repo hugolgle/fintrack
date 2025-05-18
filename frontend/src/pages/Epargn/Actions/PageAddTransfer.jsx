@@ -5,7 +5,7 @@ import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { addTransfer, fetchAccounts } from "../../../service/Epargn.service";
+import { addTransfer, fetchAccounts } from "../../../Service/Epargn.service";
 import { useState } from "react";
 import { useEffect } from "react";
 import {

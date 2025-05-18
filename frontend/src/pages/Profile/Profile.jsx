@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Header from "../../components/Header.jsx";
 import { Loader } from "lucide-react";
 import { getUserIdFromToken } from "../../utils/users.js";
-import { getCurrentUser } from "../../service/user.service.jsx";
+import { getCurrentUser } from "../../Service/User.service.jsx";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Profile() {

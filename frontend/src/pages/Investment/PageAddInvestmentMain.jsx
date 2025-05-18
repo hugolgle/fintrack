@@ -31,7 +31,7 @@ import {
   addInvestment,
   addTransaction,
   fetchInvestments,
-} from "../../service/investment.service.jsx";
+} from "../../Service/Investment.service.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as yup from "yup";

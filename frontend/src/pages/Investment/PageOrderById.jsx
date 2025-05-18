@@ -21,7 +21,7 @@ import { EllipsisVertical, MoreHorizontal } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react";
 
-import { deleteTransaction } from "../../service/investment.service.jsx";
+import { deleteTransaction } from "../../Service/Investment.service.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";

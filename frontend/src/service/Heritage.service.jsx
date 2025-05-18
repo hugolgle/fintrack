@@ -1,12 +1,14 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = `${import.meta.env.VITE_API_URL}heritage`;
+
 export const fetchAssets = async () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
 
-  return await axios.get(`http://localhost:5001/heritage/user/${userId}`, {
+  return await axios.get(`${API_URL}/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -19,7 +21,7 @@ export const fetchAssetById = async (id) => {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
-  return await axios.get(`http://localhost:5001/heritage/${id}`, {
+  return await axios.get(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -50,7 +52,7 @@ export const addAsset = async (assetData) => {
     estimatePrice,
   };
 
-  return await axios.post(`http://localhost:5001/heritage`, newAsset, {
+  return await axios.post(`${API_URL}`, newAsset, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -82,7 +84,7 @@ export const editAsset = async (assetData) => {
     estimatePrice,
   };
 
-  return await axios.put(`http://localhost:5001/heritage/${id}`, updatedAsset, {
+  return await axios.put(`${API_URL}/${id}`, updatedAsset, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -95,7 +97,7 @@ export const deleteAsset = async (id) => {
     throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
   }
 
-  return await axios.delete(`http://localhost:5001/heritage/${id}`, {
+  return await axios.delete(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

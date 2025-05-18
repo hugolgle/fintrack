@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import Header from "../../components/Header.jsx";
 import { toast } from "sonner";
 import Loader from "../../components/Loader/Loader";
@@ -11,27 +10,19 @@ import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
-<<<<<<< HEAD:src/pages/Investment/BoardInvest.jsx
 import BoxInfos from "../../components/Box/BoxInfos";
 import { RadialChart } from "../../components/Charts/RadialChart.jsx";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { renderCustomLegend } from "../../components/Legend.jsx";
 import LoaderDots from "../../components/Loader/LoaderDots";
-=======
-import BoxInfos from "../../composant/Box/BoxInfos";
-import { RadialChart } from "../../composant/Charts/radialChart.jsx";
-import { useNavigate } from "react-router";
-import { useState } from "react";
-import { renderCustomLegend } from "../../composant/legend.jsx";
-import LoaderDots from "../../composant/loader/loaderDots";
->>>>>>> origin/vps:frontend/src/pages/Investment/BoardInvest.jsx
 import { currentDate, getLastMonths } from "../../utils/other.js";
 import { format } from "date-fns";
 import { ChartLine } from "../../components/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import Container from "../../components/Container/Container.jsx";
+import { fetchInvestments } from "../../Service/Investment.service.jsx";
 
 export default function BoardInvest() {
   const navigate = useNavigate();

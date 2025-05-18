@@ -26,7 +26,10 @@ module.exports.loginUser = async (req, res) => {
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
+      if (!isMatch && password === user.password) {
+        user.password = await bcrypt.hash(password, 10);
+        await user.save();
+      } else if (!isMatch) {
         return res
           .status(401)
           .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
@@ -66,8 +69,7 @@ module.exports.addUser = async (req, res) => {
   try {
     const { username, password, nom, prenom, googleId, img } = req.body;
 
-    // Ajouter le domaine au chemin de l'image uploadée
-    const domain = "http://localhost:5001/"; // À modifier selon l'environnement
+    const domain = "http://localhost:8000/"; // À modifier selon l'environnement
     const imgPath = req.file ? `${domain}uploads/${req.file.filename}` : null;
 
     const existingUser = await UserModel.findOne({ username });
@@ -135,7 +137,7 @@ module.exports.editUser = async (req, res) => {
       }
       imgPath = null;
     } else {
-      const domain = "http://localhost:5001/";
+      const domain = "http://localhost:8000/";
       imgPath = req.file ? `${domain}uploads/${req.file.filename}` : user.img;
       if (req.file && user.img) {
         const oldImgPath = path.join(__dirname, "..", user.img);

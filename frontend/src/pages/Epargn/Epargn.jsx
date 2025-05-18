@@ -2,7 +2,7 @@ import Header from "../../components/Header";
 import { useNavigate } from "react-router";
 import BoxInfos from "../../components/Box/BoxInfos";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAccounts } from "../../service/Epargn.service";
+import { fetchAccounts } from "../../Service/Epargn.service";
 import { HttpStatusCode } from "axios";
 import Loader from "../../components/Loader/Loader";
 import { Wallet } from "lucide-react";

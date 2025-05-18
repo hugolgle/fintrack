@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../components/Routes.jsx";
 import { useMutation } from "@tanstack/react-query";
-import { addUser, loginUser } from "../../service/user.service.jsx";
+import { addUser, loginUser } from "../../Service/User.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { HttpStatusCode } from "axios";

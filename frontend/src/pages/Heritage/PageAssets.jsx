@@ -22,7 +22,7 @@ import { useState } from "react";
 import { ROUTES } from "../../components/Routes.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
-import { deleteAsset, fetchAssets } from "../../service/Heritage.service.jsx";
+import { deleteAsset, fetchAssets } from "../../Service/Heritage.service.jsx";
 import { FormEditAsset } from "./FormEditAsset.jsx";
 
 export default function PageAssets() {
