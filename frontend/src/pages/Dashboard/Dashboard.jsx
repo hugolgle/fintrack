@@ -495,6 +495,7 @@ export default function Dashboard() {
                     <TabsList>
                       <TabsTrigger value={6}>6 mois</TabsTrigger>
                       <TabsTrigger value={12}>1 an</TabsTrigger>
+                      <TabsTrigger value={24}>2 ans</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
@@ -582,7 +583,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {dataCredit
-                    .filter((cre) => cre.isActive === true)
+                    ?.filter((cre) => cre.isActive === true)
                     ?.map((credit, index) => {
                       const typeInfo =
                         typeCreditList.find((t) => t.key === credit.type) || {};
@@ -615,7 +616,9 @@ export default function Dashboard() {
                               {formatCurrency.format(credit.balance)}
                             </p>
                             <p className="text-[10px] text-muted-foreground italic">
-                              {formatCurrency.format(credit.monthlyPayment)}
+                              {formatCurrency.format(
+                                credit.monthlyPayment + credit.insurance
+                              )}
                             </p>
                           </div>
                         </div>

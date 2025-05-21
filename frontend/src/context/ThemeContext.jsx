@@ -1,8 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const initialState = {
   theme: "system",
   setTheme: () => null,
+  backgroundColor: "#ffffff39",
+  setBackgroundColor: () => null,
 };
 
 const ThemeContext = createContext(initialState);
@@ -14,8 +16,13 @@ export function ThemeProvider({
   ...props
 }) {
   const [theme, setTheme] = useState(
-    () => localStorage.getItem(storageKey) || defaultTheme
+    () => localStorage?.getItem(storageKey) || defaultTheme
   );
+
+  const [backgroundColor, setBackgroundColorState] = useState(
+    () => localStorage?.getItem("colorBackground") || "#ffffff39"
+  );
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -38,12 +45,26 @@ export function ThemeProvider({
     }
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--colorBackground",
+      backgroundColor
+    );
+  }, [backgroundColor]);
+
+  const setBackgroundColor = (color) => {
+    localStorage.setItem("colorBackground", color);
+    setBackgroundColorState(color);
+  };
+
   const value = {
     theme,
     setTheme: (newTheme) => {
       localStorage.setItem(storageKey, newTheme);
       setTheme(newTheme);
     },
+    backgroundColor,
+    setBackgroundColor,
   };
 
   return (

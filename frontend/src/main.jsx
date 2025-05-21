@@ -10,6 +10,11 @@ import { ThemeProvider } from "./Context/ThemeContext.jsx";
 
 const queryClient = new QueryClient();
 
+const color = localStorage.getItem("colorBackground");
+if (color) {
+  document.documentElement.style.setProperty("--colorBackground", color);
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

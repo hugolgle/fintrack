@@ -18,26 +18,32 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { de, fr } from "date-fns/locale";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ButtonLoading from "../../components/Button/ButtonLoading";
 import { addCredit, addPayment } from "../../Service/Credit.service";
 
-const validationSchema = yup.object().shape({
-  amount: yup
-    .number()
-    .positive("Le montant doit être positif")
-    .required("Le montant est requis"),
-  date: yup.date(),
-});
-
 export function FormPayment({ credit, refetch, editMode }) {
+  const validationSchema = yup.object().shape({
+    amount: yup
+      .number()
+      .positive("Le montant doit être positif")
+      .required("Le montant est requis"),
+    ...(credit.interestRate > 0 && {
+      depreciation: yup
+        .number()
+        .positive("Le montant doit être positif")
+        .required("Le montant est requis"),
+    }),
+    date: yup.date(),
+  });
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
   const initialValues = {
     amount: null,
+    depreciation: null,
     date: new Date(),
   };
 
@@ -48,6 +54,8 @@ export function FormPayment({ credit, refetch, editMode }) {
     onSubmit: (values) => {
       const finalValues = {
         ...values,
+        depreciation:
+          (credit.interestRate > 0 ? values.depreciation : values.amount) || 0,
       };
       mutationAdd.mutate(finalValues);
     },
@@ -93,6 +101,24 @@ export function FormPayment({ credit, refetch, editMode }) {
           <p className="text-[10px] text-red-500 -mt-4 ml-2">
             {formik.errors.amount}
           </p>
+        )}
+
+        {credit.interestRate > 0 && (
+          <>
+            <Input
+              id="depreciation"
+              name="depreciation"
+              type="number"
+              step="0.01"
+              placeholder="Montant de l'amortissement"
+              {...formik.getFieldProps("depreciation")}
+            />
+            {formik.touched.depreciation && formik.errors.depreciation && (
+              <p className="text-[10px] text-red-500 -mt-4 ml-2">
+                {formik.errors.depreciation}
+              </p>
+            )}{" "}
+          </>
         )}
 
         <Popover modal open={open} onOpenChange={setOpen}>

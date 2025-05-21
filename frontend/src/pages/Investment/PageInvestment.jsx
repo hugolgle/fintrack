@@ -2,7 +2,7 @@ import Tableau from "../../components/Table/Table";
 import Header from "../../components/Header.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
-import Loader from "../../components/Loader/Loader";
+import Loader from "../../components/Loader/Loader.jsx";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
 import { useParams } from "react-router";

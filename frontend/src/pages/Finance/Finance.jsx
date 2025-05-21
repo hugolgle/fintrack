@@ -458,6 +458,7 @@ export default function BoardTransactions() {
                       <TabsList>
                         <TabsTrigger value={6}>6 mois</TabsTrigger>
                         <TabsTrigger value={12}>1 an</TabsTrigger>
+                        <TabsTrigger value={24}>2 ans</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>

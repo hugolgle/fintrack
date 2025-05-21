@@ -7,7 +7,7 @@ import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../components/Routes.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { addUser } from "../../Service/User.service";
+import { addUser } from "../../Service/User.service.jsx";
 import { useMutation } from "@tanstack/react-query";
 import ButtonLoading from "../../components/Button/ButtonLoading.jsx";
 import AppleIcon from "../../../public/apple-icon.svg";
@@ -37,6 +37,10 @@ export default function SignUp() {
       )
       .required("Confirmation du mot de passe requise"),
     nom: yup.string().required("Nom requis"),
+    phone: yup.number().required("Téléphone requis"),
+    address: yup.string().required("Adresse requise"),
+    city: yup.string().required("Ville requise"),
+    zipcode: yup.number().required("Code postal requis"),
     prenom: yup.string().required("Prénom requis"),
     img: yup.mixed().nullable().optional(),
   });
@@ -48,6 +52,10 @@ export default function SignUp() {
       confirmPassword: "",
       nom: "",
       prenom: "",
+      address: "",
+      phone: "",
+      city: "",
+      zipcode: "",
       img: null,
     },
     validationSchema,
@@ -58,6 +66,10 @@ export default function SignUp() {
       formData.append("password", values.password);
       formData.append("nom", values.nom);
       formData.append("prenom", values.prenom);
+      formData.append("address", values.address);
+      formData.append("phone", values.phone);
+      formData.append("city", values.city);
+      formData.append("zipcode", values.zipcode);
       if (image) {
         formData.append("img", image);
       }
@@ -87,6 +99,7 @@ export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithGoogle();
+      console.log(result);
       const nameParts = result.displayName.split(" ");
       const prenom = nameParts[0] || "";
       const nom = nameParts.slice(1).join(" ") || "";
@@ -181,19 +194,79 @@ export default function SignUp() {
                 )}
               </div>
             </div>
-
+            <div className="flex gap-4 w-full">
+              <div className="flex flex-col gap-5 w-full">
+                <Input
+                  className="border-none bg-background w-full"
+                  id="username"
+                  placeholder="E-mail"
+                  autoComplete="new-email"
+                  {...formik.getFieldProps("username")}
+                />
+                {formik.touched.username && formik.errors.username && (
+                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                    {formik.errors.username}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-5 w-full">
+                <Input
+                  className="border-none bg-background w-full"
+                  id="phone"
+                  placeholder="Téléphone"
+                  type="tel"
+                  maxLength={10}
+                  autoComplete="new-phone"
+                  {...formik.getFieldProps("phone")}
+                />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                    {formik.errors.phone}
+                  </p>
+                )}
+              </div>
+            </div>
             <Input
-              className="border-none bg-background w-full"
-              id="username"
-              placeholder="E-mail"
-              autoComplete="new-email"
-              {...formik.getFieldProps("username")}
+              placeholder="Adresse"
+              id="address"
+              className="border-none bg-background w-full relative"
+              {...formik.getFieldProps("address")}
             />
-            {formik.touched.username && formik.errors.username && (
+
+            {formik.touched.address && formik.errors.address && (
               <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
-                {formik.errors.username}
+                {formik.errors.address}
               </p>
             )}
+            <div className="flex gap-4 w-full">
+              <div className="flex flex-col gap-5 w-full">
+                <Input
+                  className="border-none bg-background w-full"
+                  id="city"
+                  placeholder="Ville"
+                  {...formik.getFieldProps("city")}
+                />
+                {formik.touched.city && formik.errors.city && (
+                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                    {formik.errors.city}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-5 w-full">
+                <Input
+                  className="border-none bg-background w-full"
+                  id="zipcode"
+                  placeholder="Code postal"
+                  type="number"
+                  {...formik.getFieldProps("zipcode")}
+                />
+                {formik.touched.zipcode && formik.errors.zipcode && (
+                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                    {formik.errors.zipcode}
+                  </p>
+                )}
+              </div>
+            </div>
 
             <div className="relative w-full" ref={passwordRef}>
               <Input
