@@ -9,7 +9,6 @@ import TokenExpirationPopup from "./components/TokenExpPopup";
 import { ThemeProvider } from "./Context/ThemeContext.jsx";
 
 const queryClient = new QueryClient();
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

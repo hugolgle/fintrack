@@ -322,7 +322,7 @@ export default function PageTransaction({ type }) {
   const formatData = (row) => {
     return [
       <div className="flex gap-2 items-center">
-        {` ${row.title}`}
+        {row.title}
         {row.tag.map((t, index) => (
           <Badge
             key={index}
@@ -333,15 +333,22 @@ export default function PageTransaction({ type }) {
           </Badge>
         ))}
       </div>,
-      row.category,
+      <Badge
+        className="group w-fit relative flex items-center animate-pop-up gap-2"
+        variant="outline"
+      >
+        {row.category}
+      </Badge>,
       format(row.date, "PP", { locale: fr }),
       row.refunds.length > 0 ? (
         <div className="flex gap-2 items-center">
           {formatCurrency.format(row.amount)}
           <TicketSlash strokeWidth={1} color="grey" />
         </div>
+      ) : row.type === TYPES.INCOME ? (
+        <p className="text-green-500">+{formatCurrency.format(row.amount)}</p>
       ) : (
-        formatCurrency.format(row.amount)
+        <p className="text-red-500">{formatCurrency.format(row.amount)}</p>
       ),
     ];
   };

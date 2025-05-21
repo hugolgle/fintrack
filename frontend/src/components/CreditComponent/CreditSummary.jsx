@@ -8,6 +8,14 @@ export function CreditSummary({ credit }) {
   const monthly = Number(credit?.monthlyPayment) || 0;
   const rate = Number(credit?.interestRate) || 0;
   const duration = Number(credit?.duration) || 0;
+  const insurance = Number(credit?.insurance) || 0;
+  const amountPayed =
+    Number(
+      credit?.transactions?.reduce(
+        (acc, transaction) => acc + (Number(transaction.amount) || 0),
+        0
+      )
+    ) || 0;
 
   // Progression remboursement
   const progressPercentage =
@@ -38,6 +46,7 @@ export function CreditSummary({ credit }) {
   let monthlyCalc = 0;
   let totalPayments = 0;
   let interestCost = 0;
+  let totalCost = 0;
 
   if (amount > 0 && duration > 0) {
     if (rate > 0) {
@@ -48,8 +57,12 @@ export function CreditSummary({ credit }) {
       monthlyCalc = amount / duration;
     }
 
+    if (insurance > 0) {
+      monthlyCalc += insurance;
+    }
     totalPayments = monthlyCalc * duration;
-    interestCost = totalPayments - amount;
+    interestCost = totalPayments - amount - insurance * duration;
+    totalCost = interestCost + insurance * duration;
   }
 
   return (
@@ -75,6 +88,14 @@ export function CreditSummary({ credit }) {
           </div>
           <div>
             <h3 className="text-sm font-medium text-muted-foreground">
+              Montant payé actuellement
+            </h3>
+            <p className="text-2xl font-thin">
+              {formatCurrency.format(amountPayed)}
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground">
               Taux d'intérêt
             </h3>
             <p className="text-2xl font-thin">{rate}%</p>
@@ -87,7 +108,7 @@ export function CreditSummary({ credit }) {
               Mensualité
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(monthly)}
+              {formatCurrency.format(monthly + insurance)}
             </p>
           </div>
           <div>
@@ -104,6 +125,14 @@ export function CreditSummary({ credit }) {
             </h3>
             <p className="text-2xl font-thin">{monthsRemaining}</p>
           </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Assurances
+            </h3>
+            <p className="text-2xl font-thin">
+              {formatCurrency.format(insurance)} / mois
+            </p>
+          </div>
         </div>
       </div>
 
@@ -116,6 +145,19 @@ export function CreditSummary({ credit }) {
       </div>
 
       <div className="mt-8 flex justify-evenly gap-6">
+        {insurance > 0 && (
+          <>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Coût total des assurances
+              </h3>
+              <p className="text-xl font-thin mt-1">
+                {formatCurrency.format(insurance * duration)}
+              </p>
+            </div>
+            <Separator orientation="vertical" className="bg-muted h-auto" />
+          </>
+        )}
         <div className="p-4">
           <h3 className="text-sm font-medium text-muted-foreground">
             Coût total des intérêts
@@ -130,7 +172,7 @@ export function CreditSummary({ credit }) {
             Coût total du crédit
           </h3>
           <p className="text-xl font-thin mt-1">
-            {formatCurrency.format(totalPayments)}
+            {formatCurrency.format(totalCost)}
           </p>
         </div>
       </div>

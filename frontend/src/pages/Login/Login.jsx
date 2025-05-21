@@ -74,12 +74,6 @@ export default function Login() {
     },
   });
 
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate(ROUTES.HOME);
-  //   }
-  // }, [isAuthenticated, navigate]);
-
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -156,6 +150,7 @@ export default function Login() {
               text="Connexion"
               disabled={mutation.isPending}
               isPending={mutation.isPending}
+              widht="w-fit"
             />
           </form>
           <div className="flex items-center gap-2 mb-4">

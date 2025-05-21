@@ -75,7 +75,7 @@ export default function Credit() {
   if (isLoading) return <Loader />;
 
   return (
-    <section className="w-full">
+    <main>
       <div className="flex flex-col">
         <Header
           title="Crédit"
@@ -149,6 +149,6 @@ export default function Credit() {
           </div>
         </div>
       </div>
-    </section>
+    </main>
   );
 }

@@ -1,32 +1,46 @@
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../components/Header.jsx";
 import { toast } from "sonner";
-import Loader from "../../components/Loader/Loader";
+import Loader from "../../components/Loader/Loader.jsx";
 import { ROUTES } from "../../components/Routes.jsx";
 import { HttpStatusCode } from "axios";
-import { Pickaxe } from "lucide-react";
+import { EllipsisVertical, Eye, Pickaxe, Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { BookA } from "lucide-react";
 import BoxInfos from "../../components/Box/BoxInfos";
-import { RadialChart } from "../../components/Charts/RadialChart.jsx";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { renderCustomLegend } from "../../components/Legend.jsx";
-import LoaderDots from "../../components/Loader/LoaderDots";
+import LoaderDots from "../../components/Loader/LoaderDots.jsx";
 import { currentDate, getLastMonths } from "../../utils/other.js";
 import { format } from "date-fns";
 import { ChartLine } from "../../components/Charts/ChartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import Container from "../../components/Container/Container.jsx";
+import { Input } from "@/components/ui/input";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Tableau from "../../components/Table/Table.jsx";
+import { fr } from "date-fns/locale";
 
 export default function BoardInvest() {
   const navigate = useNavigate();
   const [selectNbMonth, setSelectNbMonth] = useState(6);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    performSearch(event.target.value);
+  };
   const {
     isLoading,
     data: dataInvests,
@@ -88,62 +102,15 @@ export default function BoardInvest() {
     return acc;
   }, {});
 
-  const titleSums = dataInvests.reduce((acc, investment) => {
-    const name = investment.name;
-    const amountBuy = investment.amountBuy || 0;
-
-    if (acc[name]) {
-      acc[name].amount += amountBuy;
-    } else {
-      acc[name] = {
-        name: name,
-        amount: amountBuy,
-      };
-    }
-    return acc;
-  }, {});
-
   const chartDataByType = Object.values(categorySums).map((category, key) => {
     const pourcentage = (category.amount / totalAmountBuy) * 100;
     return {
       name: category.category,
       amount: category.amount,
       pourcentage: pourcentage,
-      fill: `hsl(var(--chart-${key}))`,
+      fill: `hsl(var(--chart-${key + 1}))`,
     };
   });
-
-  const chartConfigByType = Object.values(categorySums).reduce(
-    (config, category, key) => {
-      config[category.category] = {
-        label: category.category,
-        color: `hsl(var(--chart-${key}))`,
-      };
-      return config;
-    },
-    {}
-  );
-
-  const chartDataByName = Object.values(titleSums).map((title, key) => {
-    const pourcentage = (title.amount / totalAmountBuy) * 100;
-    return {
-      name: title.name,
-      amount: title.amount,
-      pourcentage: pourcentage,
-      fill: `hsl(var(--chart-${key}))`,
-    };
-  });
-
-  const chartConfigByName = Object.values(titleSums).reduce(
-    (config, title, key) => {
-      config[title.name] = {
-        label: title.name,
-        color: `hsl(var(--chart-${key}))`,
-      };
-      return config;
-    },
-    {}
-  );
 
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
@@ -231,6 +198,99 @@ export default function BoardInvest() {
   );
 
   const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
+  const formatData = (row) => {
+    return [
+      row.type,
+      row.name,
+      format(row?.date, "PP", { locale: fr }),
+      formatCurrency.format(row.amount),
+      `${row.allocation.toFixed(1)} %`,
+    ];
+  };
+
+  const displayData = dataInvests.map(
+    ({ _id, name, type, symbol, amountBuy, transaction, createdAt }) => {
+      return {
+        _id: transaction._id,
+        idInvest: _id,
+        type,
+        symbol,
+        name,
+        date: transaction[0]?.date,
+        amount: amountBuy,
+        allocation: (amountBuy / totalAmountBuy) * 100,
+        createdAt,
+      };
+    }
+  );
+
+  const columns = [
+    { id: 1, name: "Type", key: "type" },
+    { id: 2, name: "Nom", key: "name" },
+    { id: 3, name: "Date", key: "date" },
+    { id: 4, name: "Montant", key: "amount" },
+    { id: 5, name: "Allocation", key: "allocation" },
+  ];
+
+  const action = (item) => {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <EllipsisVertical className="cursor-pointer" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="left">
+          <DropdownMenuItem
+            onClick={() => {
+              navigate(ROUTES.INVESTMENT_BY_ID.replace(":id", item.idInvest));
+            }}
+            onSelect={(e) => e.preventDefault()}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            Voir
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
+  const avatar = (item) => {
+    const category = item.type === "Crypto" ? "crypto" : "symbol";
+    return (
+      <Avatar key="avatar" className="size-6">
+        <AvatarImage
+          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
+        />
+      </Avatar>
+    );
+  };
+  const performSearch = (term) => {
+    const filteredData = displayData.filter((item) => {
+      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
+      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
+      const isSaleMatches = item.isSale
+        ?.toLowerCase()
+        .includes(term.toLowerCase());
+      const symbolMatches = item.symbol
+        ?.toLowerCase()
+        .includes(term.toLowerCase());
+      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
+      const amountMatches = item.amount
+        .toString()
+        .toLowerCase()
+        .includes(term.toLowerCase());
+
+      return (
+        nameMatches ||
+        typeMatches ||
+        dateMatches ||
+        amountMatches ||
+        symbolMatches ||
+        isSaleMatches
+      );
+    });
+    setSearchResults(filteredData);
+  };
+  const data = searchTerm ? searchResults : displayData;
 
   return (
     <section className="w-full">
@@ -275,42 +335,8 @@ export default function BoardInvest() {
             />
           </div>
           <div className="flex gap-4">
-            <div className="w-2/4">
-              <Container>
-                <h2 className=" text-left">Position</h2>
-
-                {!isFetching ? (
-                  <RadialChart
-                    chartData={chartDataByType}
-                    chartConfig={chartConfigByType}
-                    total={amountBuy}
-                    inner={40}
-                    outer={55}
-                    sideLegend="right"
-                    height={140}
-                    legend={renderCustomLegend}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}
-                {!isFetching ? (
-                  <RadialChart
-                    chartData={chartDataByName}
-                    chartConfig={chartConfigByName}
-                    total={amountBuy}
-                    inner={40}
-                    outer={55}
-                    height={140}
-                    legend={renderCustomLegend}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}
-              </Container>
-            </div>
-
             <Container>
-              <h2 className=" text-left">Graphique</h2>
+              <h2 className="text-left">Graphique</h2>
               {!isFetching ? (
                 <ChartLine
                   data={dataGraph}
@@ -353,44 +379,83 @@ export default function BoardInvest() {
                   <TabsList>
                     <TabsTrigger value={6}>6 mois</TabsTrigger>
                     <TabsTrigger value={12}>1 an</TabsTrigger>
+                    <TabsTrigger value={24}>2 ans</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
             </Container>
-            <div className="w-2/5">
+            <div className="w-2/5 flex flex-col gap-4">
               <Container>
-                <h2 className="mb-4 text-left">Dernières opérations</h2>
-                <table className="h-full">
-                  <tbody className="w-full h-full gap-2 flex flex-col">
-                    {simplifiedData
-                      .sort((a, b) => new Date(b.date) - new Date(a.date))
-                      .slice(0, 6)
-                      .map((operation, index) => (
-                        <tr
-                          key={index}
-                          className="justify-between h-full flex flex-row items-center text-xs"
-                        >
-                          <td className="flex flex-row space-x-4 w-4/5">
-                            <span>
-                              {format(new Date(operation.date), "dd/MM")}
-                            </span>
-                            <span className="truncate max-w-40">
-                              {operation.name}
-                            </span>
-                          </td>
-
-                          <td className="w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-md bg-colorInvest text-blue-900 dark:bg-colorInvest dark:text-blue-900">
-                            <span>
-                              {formatCurrency.format(operation?.amount)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                <h2 className="mb-4 text-left">Statistiques</h2>
+                <div className="h-full flex flex-col gap-2">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm">Rendement annualisé</p>
+                    <p className="text-xs">+12,5%</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm">Volatilité</p>
+                    <p className="text-xs">14.2%</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm">Ratio de Sharpe</p>
+                    <p className="text-xs">1.8</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm">Drawdown max</p>
+                    <p className="text-xs">-8.3%</p>
+                  </div>
+                </div>
+              </Container>
+              <Container>
+                <h2 className="mb-4 text-left">Répartition</h2>
+                <div className="flex flex-col w-full gap-2">
+                  {chartDataByType.map((item, index) => (
+                    <div className="flex flex-col gap-2 w-full">
+                      <div className="w-full flex justify-between items-end">
+                        <p className="text-sm">{item.name}</p>
+                        <p className="text-xs">
+                          {item.pourcentage.toFixed(0)}%
+                        </p>
+                      </div>
+                      <div className="w-full h-1 bg-primary/20 rounded">
+                        <div
+                          className="h-full rounded"
+                          style={{
+                            width: `${item.pourcentage}%`,
+                            backgroundColor: item.fill,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </Container>
             </div>
           </div>
+          <Container>
+            <div className="flex justify-between mb-4">
+              <h2 className="text-left">Mes investissements</h2>
+              <div className="relative">
+                <Input
+                  className="pl-8"
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Rechercher"
+                />
+                <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+            <Tableau
+              formatData={formatData}
+              data={data}
+              columns={columns}
+              type="investments"
+              isFetching={isFetching}
+              action={action}
+              firstItem={avatar}
+            />
+          </Container>
         </div>
       </div>
     </section>

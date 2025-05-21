@@ -8,6 +8,7 @@ export default function ButtonLoading({
   text,
   type,
   disabled,
+  widht = "w-full",
 }) {
   return (
     <Button
@@ -15,7 +16,7 @@ export default function ButtonLoading({
       variant={variant}
       disabled={disabled}
       onClick={() => onClick()}
-      className="animate-fade w-full"
+      className={`animate-fade ${widht}`}
     >
       {isPending ? (
         <LoaderCircle size={15} strokeWidth={1} className="ml-2 animate-spin" />

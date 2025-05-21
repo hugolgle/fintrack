@@ -24,6 +24,10 @@ import ButtonLoading from "../../components/Button/ButtonLoading";
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),
   nom: yup.string().required("Nom est requis"),
+  phone: yup.string().required("Téléphone est requis"),
+  address: yup.string().required("Adresse est requise"),
+  zipcode: yup.string().required("Code postal est requis"),
+  city: yup.string().required("Ville est requise"),
   username: yup.string().email("Email invalide").required("Email est requis"),
 });
 
@@ -53,6 +57,10 @@ export function SheetEditProfile({ refetch, dataProfil }) {
       prenom: dataProfil?.prenom || "",
       nom: dataProfil?.nom || "",
       username: dataProfil?.username || "",
+      phone: dataProfil?.phone || "",
+      address: dataProfil?.address || "",
+      zipcode: dataProfil?.zipcode || "",
+      city: dataProfil?.city || "",
       file: dataProfil?.img || null,
     },
     validationSchema,
@@ -61,6 +69,10 @@ export function SheetEditProfile({ refetch, dataProfil }) {
       formData.append("username", values.username);
       formData.append("nom", values.nom);
       formData.append("prenom", values.prenom);
+      formData.append("phone", values.phone);
+      formData.append("address", values.address);
+      formData.append("zipcode", values.zipcode);
+      formData.append("city", values.city);
       if (!isImageDeleted && values.file) {
         formData.append("img", values.file);
       }
@@ -98,6 +110,10 @@ export function SheetEditProfile({ refetch, dataProfil }) {
     dataProfil?.prenom,
     dataProfil?.nom,
     dataProfil?.username,
+    dataProfil?.phone,
+    dataProfil?.address,
+    dataProfil?.zipcode,
+    dataProfil?.city,
     dataProfil?.img || null,
   ];
 
@@ -105,6 +121,10 @@ export function SheetEditProfile({ refetch, dataProfil }) {
     formik.values.prenom,
     formik.values.nom,
     formik.values.username,
+    formik.values.phone,
+    formik.values.address,
+    formik.values.zipcode,
+    formik.values.city,
     formik.values.file,
   ];
 
@@ -115,8 +135,12 @@ export function SheetEditProfile({ refetch, dataProfil }) {
   return (
     <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
       <SheetTrigger asChild>
-        <Button className="mt-4 text-xs" onClick={() => setIsSheetOpen(true)}>
-          Modifier
+        <Button
+          variant="outline"
+          onClick={() => setIsSheetOpen(true)}
+          className="w-fit"
+        >
+          Modifier mes informations
         </Button>
       </SheetTrigger>
       <SheetContent>
@@ -165,6 +189,78 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="phone" className="text-right">
+              Téléphone
+            </Label>
+            <Input
+              id="phone"
+              name="phone"
+              {...formik.getFieldProps("phone")}
+              className="col-span-3"
+              required
+              disabled={isGoogleAccount}
+            />
+            {formik.touched.phone && formik.errors.phone && (
+              <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
+                {formik.errors.phone}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="address" className="text-right">
+              Adresse
+            </Label>
+            <Input
+              id="address"
+              name="address"
+              {...formik.getFieldProps("address")}
+              className="col-span-3"
+              required
+              disabled={isGoogleAccount}
+            />
+            {formik.touched.address && formik.errors.address && (
+              <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
+                {formik.errors.address}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="zipcode" className="text-right">
+              Code postal
+            </Label>
+            <Input
+              id="zipcode"
+              name="zipcode"
+              {...formik.getFieldProps("zipcode")}
+              className="col-span-3"
+              required
+              disabled={isGoogleAccount}
+            />
+            {formik.touched.zipcode && formik.errors.zipcode && (
+              <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
+                {formik.errors.zipcode}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="city" className="text-right">
+              Ville
+            </Label>
+            <Input
+              id="city"
+              name="city"
+              {...formik.getFieldProps("city")}
+              className="col-span-3"
+              required
+              disabled={isGoogleAccount}
+            />
+            {formik.touched.city && formik.errors.city && (
+              <p className="text-xs text-red-500 mt-1 col-span-4 text-right">
+                {formik.errors.city}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
               E-mail
             </Label>
@@ -183,6 +279,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               </p>
             )}
           </div>
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="file" className="text-right">
               Photo de profil

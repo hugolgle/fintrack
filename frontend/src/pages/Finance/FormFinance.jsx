@@ -9,6 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Command } from "cmdk";
+import {
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Select,
   SelectContent,
@@ -76,6 +82,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
   const [tags, setTags] = useState(transaction?.tag ?? []);
   const [tagInput, setTagInput] = useState("");
   const [open, setOpen] = useState(false);
+  const [openTag, setOpenTag] = useState(false);
 
   const { data: dataTransactions } = useQuery({
     queryKey: ["fetchTransactions"],
@@ -221,6 +228,16 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
   const handleRemoveTag = (index) => {
     setTags((prevTags) => prevTags.filter((_, i) => i !== index));
   };
+
+  const filteredSuggestions = tagsSuggestions.filter(
+    (s) => s.toLowerCase().includes(tagInput.toLowerCase()) && !tags.includes(s)
+  );
+
+  const customSuggestions = [
+    ...filteredSuggestions,
+    // si la saisie n'est pas vide et n'est pas déjà un tag, propose-la
+    ...(tagInput.trim() !== "" && !tags.includes(tagInput) ? [tagInput] : []),
+  ];
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -386,61 +403,71 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
           </p>
         )}
 
-        <div className="flex gap-2">
-          <Input
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-            placeholder="Ajouter un tag"
-          />
-          <Button type="button" variant="secondary" onClick={handleAddTag}>
-            <Plus strokeWidth={1} />
-          </Button>
-        </div>
-
-        <ul className=" flex items-center gap-2">
-          {tagInput && (
-            <ul className=" flex items-center gap-2">
-              {tagsSuggestions
-                .filter(
-                  (suggestion) =>
-                    suggestion.toLowerCase().includes(tagInput.toLowerCase()) &&
-                    !tags.includes(suggestion)
-                )
-                .map((suggestion, index) => (
-                  <Badge
-                    key={index}
-                    className="relative flex items-center animate-pop-up gap-2"
-                    variant="secondary"
-                  >
-                    {suggestion}
-                    <Plus
-                      className="absolute bg-green-500 rounded-full p-[3px] right-0 top-0 transform translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                      onClick={() => handleSelectTag(suggestion)}
-                      size={16}
+        <div className="w-full">
+          <Command className="overflow-visible">
+            <div className="rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+              <div className="flex flex-wrap gap-1">
+                {tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="select-none">
+                    {tag}
+                    <X
+                      className="size-3 text-muted-foreground hover:text-foreground ml-2 cursor-pointer"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleRemoveTag(tags.indexOf(tag))}
                     />
                   </Badge>
                 ))}
-            </ul>
-          )}
-        </ul>
-
-        <ul className="flex flex-wrap gap-2">
-          {tags.map((tag, index) => (
-            <Badge
-              key={index}
-              className="group relative flex items-center animate-pop-up gap-2"
-              variant="outline"
-            >
-              {tag}
-              <X
-                className="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition-all cursor-pointer"
-                onClick={() => handleRemoveTag(index)}
-                size={12}
-              />
-            </Badge>
-          ))}
-        </ul>
+                <Command.Input
+                  value={tagInput}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && tagInput.trim()) {
+                      handleAddTag();
+                      e.preventDefault();
+                    }
+                    if (
+                      e.key === "Backspace" &&
+                      tagInput === "" &&
+                      tags.length
+                    ) {
+                      handleRemoveTag(tags.length - 1);
+                    }
+                  }}
+                  onValueChange={setTagInput}
+                  onBlur={() => setOpenTag(false)}
+                  onFocus={() => setOpenTag(true)}
+                  placeholder="Ajouter un tag..."
+                  className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+            </div>
+            <div className="relative mt-2">
+              <CommandList>
+                {openTag && customSuggestions.length > 0 && (
+                  <div className="absolute top-0 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none">
+                    <CommandGroup>
+                      {customSuggestions.map((s) => (
+                        <CommandItem
+                          key={s}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onSelect={() => {
+                            handleSelectTag(s);
+                            setTagInput("");
+                          }}
+                          className="cursor-pointer"
+                        >
+                          {filteredSuggestions.includes(s)
+                            ? s
+                            : `Créer « ${s} »`}
+                        </CommandItem>
+                      ))}
+            
+                    </CommandGroup>
+                  </div>
+                )}
+              </CommandList>
+            </div>
+          </Command>
+        </div>
       </div>
       <DialogFooter className="sm:justify-between">
         <ButtonLoading

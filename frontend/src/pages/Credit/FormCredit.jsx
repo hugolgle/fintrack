@@ -51,6 +51,7 @@ const validationSchema = yup.object().shape({
     .number()
     .positive("Le montant doit être positif")
     .required("Le montant est requis"),
+  insurance: yup.number().positive("Le montant doit être positif").nullable(),
   interestRate: yup.number().required("Le taux d'intérêt est requis"),
 });
 
@@ -63,7 +64,8 @@ export function FormCredit({ refetch, editMode, credit }) {
     type: credit?.type ?? "",
     monthlyPayment: credit?.monthlyPayment ?? null,
     amount: credit?.amount ?? null,
-    interestRate: credit?.interestRate ?? 0,
+    insurance: credit?.insurance ?? null,
+    interestRate: credit?.interestRate ?? null,
     startDate: credit?.startDate ?? new Date(),
     duration: credit?.duration ?? null,
   };
@@ -84,6 +86,9 @@ export function FormCredit({ refetch, editMode, credit }) {
 
       const finalValues = {
         ...values,
+        insurance: values.insurance ?? 0,
+        monthlyPayment: values.monthlyPayment ?? 0,
+        duration: values.duration ?? 0,
         ...(editMode && { id: credit?._id }),
         startDate: utcMidnightDate,
       };
@@ -260,6 +265,20 @@ export function FormCredit({ refetch, editMode, credit }) {
         {formik.touched.monthlyPayment && formik.errors.monthlyPayment && (
           <p className="text-[10px] text-red-500 -mt-4 ml-2">
             {formik.errors.monthlyPayment}
+          </p>
+        )}
+
+        <Input
+          id="insurance"
+          name="insurance"
+          type="number"
+          step="0.01"
+          placeholder="Montant de l'assurance par mois"
+          {...formik.getFieldProps("insurance")}
+        />
+        {formik.touched.insurance && formik.errors.insurance && (
+          <p className="text-[10px] text-red-500 -mt-4 ml-2">
+            {formik.errors.insurance}
           </p>
         )}
         {/* Date de début */}

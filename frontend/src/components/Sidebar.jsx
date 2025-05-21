@@ -10,6 +10,7 @@ import {
 import {
   BarChart,
   CreditCard,
+  Group,
   HandCoins,
   LayoutDashboard,
   Power,
@@ -28,7 +29,7 @@ import { Coins } from "lucide-react";
 import { getCurrentUser, logoutUser } from "../Service/User.service.jsx";
 import Loader from "./Loader/Loader.jsx";
 
-function Sidebar() {
+function Sidebar({ btnOpen, isOpen }) {
   const userId = getUserIdFromToken();
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -70,53 +71,67 @@ function Sidebar() {
   const menu = [
     {
       id: 1,
+      group: "first",
       name: "Tableau de bord",
       link: ROUTES.DASHBOARD,
       icon: <LayoutDashboard />,
     },
     {
       id: 2,
+      group: "second",
       name: "Finances",
       link: ROUTES.FINANCE,
       icon: <Coins />,
     },
     {
       id: 4,
+      group: "second",
       name: "Investissements",
       link: ROUTES.INVESTMENT,
       icon: <HandCoins />,
     },
     {
       id: 5,
+      group: "third",
       name: "Épargne",
       link: ROUTES.EPARGN,
       icon: <Landmark />,
     },
     {
       id: 6,
+      group: "third",
       name: "Patrimoine",
       link: ROUTES.HERITAGE,
       icon: <Swords />,
     },
     {
       id: 7,
+      group: "third",
       name: "Crédits",
       link: ROUTES.CREDIT,
       icon: <CreditCard />,
     },
     {
       id: 8,
+      group: "last",
       name: "Statistiques",
       link: ROUTES.STATISTICS,
       icon: <BarChart />,
     },
   ];
 
+  const groupOrder = ["first", "second", "third", "last"];
+  const menuByGroup = menu.reduce((acc, item) => {
+    if (!acc[item.group]) acc[item.group] = [];
+    acc[item.group].push(item);
+    return acc;
+  }, {});
+
   return (
-    <div className="flex flex-col justify-between overflow-hidden rounded-md relative items-center h-full p-4 bg-secondary/40">
+    <div className="flex flex-col justify-between rounded-md relative items-center h-full p-4 bg-secondary/40">
       <Link
         to={ROUTES.HOME}
-        className="cursor-pointer text-2xl group text-center w-auto overflow-hidden"
+        className="flex items-end cursor-pointer gap-6 text-2xl group text-center w-auto overflow-hidden"
       >
         <img
           src="/public/logoFinTrack.png"
@@ -124,62 +139,84 @@ function Sidebar() {
           alt="logo"
         />
       </Link>
-
-      <div className="flex flex-col justify-between gap-1">
-        {menu.map(({ id, name, link, icon }) => (
-          <Tooltip key={id} delayDuration={false}>
-            <TooltipTrigger asChild>
-              <Link
-                to={link}
-                className={`my-1 p-3 rounded-md overflow-hidden transition-all ${
-                  activeLink.startsWith(link)
-                    ? "bg-primary text-primary-foreground"
-                    : ""
-                }`}
-              >
-                {icon}
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">{name}</TooltipContent>
-          </Tooltip>
-        ))}
-      </div>
-
-      <div className="flex flex-col">
-        {isAuthenticated ? (
-          <DropdownProfil
-            btnOpen={
-              <Avatar className="w-12 h-12 cursor-pointer hover:scale-95 transition-all">
-                {dataUser?.img ? (
-                  <img
-                    src={dataUser.img}
-                    alt="User Avatar"
-                    className="object-cover w-full h-full rounded-full"
-                    referrerPolicy="no-referrer"
-                  />
+      {btnOpen}
+      <div
+        className={`flex flex-col justify-between ${!isOpen && "items-center"} gap-1 w-full`}
+      >
+        {groupOrder.map((groupKey, gi) =>
+          menuByGroup[groupKey] ? (
+            <div key={groupKey} className={gi > 0 ? "mt-1" : ""}>
+              {menuByGroup[groupKey].map(({ id, name, link, icon }) =>
+                !isOpen ? (
+                  <Tooltip key={id} delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={link}
+                        className={`flex items-center size-12 text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
+                          activeLink.startsWith(link)
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        {icon}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{name}</TooltipContent>
+                  </Tooltip>
                 ) : (
-                  <AvatarFallback className="bg-secondary">
-                    {initialName}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-            }
-            handleLogout={handleLogout}
-          />
-        ) : (
-          <Link
-            to={ROUTES.LOGIN}
-            className={`my-1 p-3 font-thin text-muted-foreground hover:text-black dark:hover:text-white overflow-hidden transition-all ${
-              activeLink.startsWith(ROUTES.LOGIN) ||
-              activeLink.startsWith(ROUTES.SIGNUP)
-                ? "text-black dark:text-white"
-                : ""
-            }`}
-          >
-            <Power />
-          </Link>
+                  <Link
+                    key={id}
+                    to={link}
+                    className={`flex items-center text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
+                      activeLink.startsWith(link)
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    {icon}
+                    <span className="text-sm">{name}</span>
+                  </Link>
+                )
+              )}
+            </div>
+          ) : null
         )}
       </div>
+
+      <DropdownProfil
+        btnOpen={
+          <div
+            className={`flex items-center ${!isOpen && "justify-center"} gap-4 transition-all cursor-pointer w-full ${isOpen && "p-2 rounded-lg hover:bg-muted"}`}
+          >
+            <Avatar className="size-10 cursor-pointer hover:scale-95 transition-all">
+              {dataUser?.img ? (
+                <img
+                  src={dataUser.img}
+                  alt="User Avatar"
+                  className="object-cover w-full h-full rounded-full"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <AvatarFallback className="bg-secondary">
+                  {initialName}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            {isOpen && (
+              <div className="flex flex-col text-sm text-left truncate">
+                <p className="font-bold">
+                  {dataUser?.prenom} {dataUser?.nom}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {dataUser?.username}
+                </p>
+              </div>
+            )}
+          </div>
+        }
+        dataUser={dataUser}
+        handleLogout={handleLogout}
+      />
     </div>
   );
 }

@@ -84,7 +84,7 @@ export default function Tableau({
       {theData && theData.length > 0 ? (
         <Table className="w-full flex flex-col px-1 animate-fade relative">
           <TableHeader className="flex w-full items-center">
-            <TableRow className="w-full flex h-7 italic">
+            <TableRow className="w-full flex h-7">
               {multiselect && (
                 <TableHead>
                   <Checkbox
@@ -173,7 +173,7 @@ export default function Tableau({
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-1 text-xs right-4 ring-ring animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
+      <div className="fixed bottom-4 ring-ring text-left text-xs right-4 animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />

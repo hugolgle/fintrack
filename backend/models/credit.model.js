@@ -11,11 +11,12 @@ const creditSchema = new mongoose.Schema({
   startDate: { type: Date, required: true, default: new Date() },
   duration: { type: Number, required: false, default: 0 }, // Durée de remboursement en mois
   isActive: { type: Boolean, required: true, default: true }, // Statut du credit (actif, remboursé, etc.)
+  insurance: { type: Number, required: false, default: 0.0 }, // Montant assurance
   transactions: [
-    // Historique des transactions
     new mongoose.Schema(
       {
         amount: { type: Number, required: true },
+        depreciation: { type: Number, required: true },
         date: { type: Date, required: true, default: new Date() },
         remainingAmount: { type: Number, required: true },
       },

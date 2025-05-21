@@ -7,7 +7,7 @@ import { HttpStatusCode } from "axios";
 import { format } from "date-fns";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
 import Header from "../../components/Header.jsx";
-import Loader from "../../components/Loader/Loader";
+import Loader from "../../components/Loader/Loader.jsx";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -20,10 +20,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, MoreHorizontal } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { Eye } from "lucide-react";
 import { ROUTES } from "../../components/Routes.jsx";
-import { calculTotalAmount } from "../../utils/calcul.js";
 
 export function PageOrder() {
   const {

@@ -13,11 +13,18 @@ const userSchema = mongoose.Schema(
     },
     nom: {
       type: String,
-      required: true,
+      required: false,
     },
     prenom: {
       type: String,
       required: true,
+    },
+    phone: { type: String, required: false },
+    address: { type: String, required: false },
+    zipcode: { type: String, required: false },
+    city: {
+      type: String,
+      required: false,
     },
     img: {
       type: String,

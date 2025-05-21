@@ -7,7 +7,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
-  --colorBackground: #1013cd27;
+  --colorBackground: #ffffff39;
 }
 
 body {
@@ -70,6 +70,10 @@ input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px #fff inset; /* Arrière-plan personnalisé */
   box-shadow: 0 0 0px 1000px #fff inset;
   -webkit-text-fill-color: #000; /* Couleur du texte */
+}
+
+[data-state="fill"] {
+  background-color: var(--progress-color);
 }
 
 /* Section spécifique à Tailwind et à votre thème personnalisé */

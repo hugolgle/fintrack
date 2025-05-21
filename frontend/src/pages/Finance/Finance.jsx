@@ -211,20 +211,24 @@ export default function BoardTransactions() {
   const totalExpense = calculTotalAmount(revenuePieChartMonth);
 
   const currentDateBis = new Date();
-  const lastMonthDate = new Date(
-    currentDateBis.setMonth(currentDateBis.getMonth() - 1)
+  const lastMonth = new Date(
+    currentDateBis.getFullYear(),
+    currentDateBis.getMonth() - 1,
+    1
   );
 
   const startOfLastMonth = new Date(
-    lastMonthDate.getFullYear(),
-    lastMonthDate.getMonth(),
+    lastMonth.getFullYear(),
+    lastMonth.getMonth(),
     1
   );
+
   const endOfLastMonth = new Date(
-    lastMonthDate.getFullYear(),
-    lastMonthDate.getMonth() + 1,
+    lastMonth.getFullYear(),
+    lastMonth.getMonth() + 1,
     0
   );
+
   const mySubscription = dataTransactions
     ?.filter(
       (data) =>
@@ -458,6 +462,7 @@ export default function BoardTransactions() {
                       <TabsList>
                         <TabsTrigger value={6}>6 mois</TabsTrigger>
                         <TabsTrigger value={12}>1 an</TabsTrigger>
+                        <TabsTrigger value={24}>2 ans</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>

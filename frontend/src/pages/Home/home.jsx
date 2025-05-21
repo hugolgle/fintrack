@@ -1,11 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import Loader from "../../components/Loader/Loader";
+import Loader from "../../components/Loader/Loader.jsx";
 import { ROUTES } from "../../components/Routes.jsx";
-import { getUserIdFromToken } from "../../utils/users";
-import { getCurrentUser } from "../../Service/User.service";
-import { useIsAuthenticated } from "../../utils/users";
-import { Link, useNavigate } from "react-router-dom";
+import { getUserIdFromToken } from "../../utils/users.js";
+import { getCurrentUser } from "../../Service/User.service.jsx";
+import { useIsAuthenticated } from "../../utils/users.js";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const ButtonGradient = ({ className, ...props }) => (
+  <Button
+    className={cn(
+      "bg-gradient-to-r from-blue-500 to-indigo-500 text-primary-foreground hover:shadow-lg shadow-indigo-400 dark:shadow-indigo-700 dark:text-foreground hover:to-blue-500 transition",
+      className
+    )}
+    {...props}
+  />
+);
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,35 +31,26 @@ export default function Home() {
 
   return (
     <section className="w-full h-screen">
-      <div className="flex flex-col justify-center animate__animated animate__zoomIn animate__faster items-center h-full gap-10 animate-fade">
+      <div className="flex flex-col justify-center  items-center h-full gap-10 animate-fade">
         <img
           src="/public/logoFinTrack.png"
-          className="size-16 mx-auto"
+          className="size-16 mx-auto animate__animated animate__zoomIn animate__faster"
           alt="logo"
         />
         <div>
-          <h1 className="font-light text-5xl">
+          <h1 className="font-light text-5xl animate-fade">
             Bienvenue <span className="font-bold">{dataUser?.prenom}</span> sur
           </h1>
-          <p className="text-5xl mt-3 font-logo font-thin">FinTrack</p>
+          <p className="text-5xl mt-3 font-logo font-thin animate-fade">
+            FinTrack
+          </p>
         </div>
-        {isAuthenticated ? (
-          <Button
-            variant="outline"
-            className="bg-transparent"
-            onClick={() => navigate(ROUTES.DASHBOARD)}
-          >
-            C'est parti !
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            className="bg-transparent"
-            onClick={() => navigate(ROUTES.LOGIN)}
-          >
-            Connectez-vous !
-          </Button>
-        )}
+        <ButtonGradient
+          onClick={() => navigate(ROUTES.DASHBOARD)}
+          className="scale-125 animate-fade"
+        >
+          Let's go !
+        </ButtonGradient>
       </div>
     </section>
   );

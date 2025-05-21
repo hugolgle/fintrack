@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User, Moon, Sun, SunMoon } from "lucide-react";
+import { LogOut, User, Moon, Sun, SunMoon, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import { useState } from "react";
 import { useTheme } from "../../Context/ThemeContext.jsx";
 import { ROUTES } from "../../components/Routes.jsx";
 
-export function DropdownProfil({ btnOpen, handleLogout }) {
+export function DropdownProfil({ btnOpen, handleLogout, dataUser }) {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -28,6 +28,11 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
   const handleProfileClick = () => {
     setOpen(false);
     navigate(ROUTES.PROFILE);
+  };
+
+  const handleSettingsClick = () => {
+    setOpen(false);
+    navigate(ROUTES.SETTINGS);
   };
 
   const handleThemeChange = (value) => {
@@ -39,7 +44,7 @@ export function DropdownProfil({ btnOpen, handleLogout }) {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{btnOpen}</DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="mb-4">
-        <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+        <DropdownMenuLabel>{dataUser.username}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"

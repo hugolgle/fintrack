@@ -24,6 +24,9 @@ export function PaymentHistory({ credit, mutationDelete }) {
                 Montant
               </TableHead>
               <TableHead className="w-full px-10 text-center">
+                Amortissement
+              </TableHead>
+              <TableHead className="w-full px-10 text-center">
                 Restant dû
               </TableHead>
               <TableHead className="w-full px-10 text-center">Statut</TableHead>
@@ -42,6 +45,9 @@ export function PaymentHistory({ credit, mutationDelete }) {
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
                     {formatCurrency.format(payment.amount)}
+                  </TableCell>
+                  <TableCell className="w-full px-10 truncate">
+                    {formatCurrency.format(payment.depreciation)}
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
                     {formatCurrency.format(payment.remainingAmount)}

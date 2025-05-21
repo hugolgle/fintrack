@@ -45,7 +45,7 @@ exports.updateCredit = async (req, res) => {
     const newBalance =
       req.body.amount -
       credit.transactions.reduce(
-        (acc, transaction) => acc + transaction.amount,
+        (acc, transaction) => acc + transaction.depreciation,
         0
       );
 
@@ -81,13 +81,13 @@ exports.deleteCredit = async (req, res) => {
 // Ajouter un paiement sur un crédit
 exports.addPayment = async (req, res) => {
   try {
-    const { amount, date } = req.body;
+    const { amount, date, depreciation } = req.body;
     const credit = await CreditModel.findById(req.params.id);
     if (!credit) return res.status(404).json({ message: "Not found" });
 
-    credit.balance -= amount;
+    credit.balance -= depreciation;
     remainingAmount = credit.balance;
-    credit.transactions.push({ amount, date, remainingAmount });
+    credit.transactions.push({ amount, date, depreciation, remainingAmount });
     await credit.save();
 
     res.json({ message: "Paiement ajouté !", credit });
@@ -132,7 +132,7 @@ exports.deletePayment = async (req, res) => {
     const removedPayment = credit.transactions.splice(paymentIndex, 1);
 
     // Recalculer le solde du crédit
-    credit.balance += removedPayment[0].amount;
+    credit.balance += removedPayment[0].depreciation;
 
     await credit.save();
 

@@ -7,12 +7,7 @@ import {
 } from "../../utils/operations.js";
 import { calculTotalAmount, calculTotalByMonth } from "../../utils/calcul.js";
 import { formatCurrency } from "../../utils/fonctionnel.js";
-import {
-  currentDate,
-  currentDateMonthYear,
-  getLastMonths,
-  months,
-} from "../../utils/other.js";
+import { currentDate, getLastMonths, months } from "../../utils/other.js";
 import typeCreditList from "../../../public/typeCredit.json";
 import { fetchTransactions } from "../../Service/Transaction.service.jsx";
 import { fetchInvestments } from "../../Service/Investment.service.jsx";
@@ -50,8 +45,7 @@ import { fetchCredits } from "../../Service/Credit.service.jsx";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { month: currentMonth, year: currentYear } = currentDate();
-  const currentMonthYear = currentDateMonthYear;
-
+  const currentMonthYear = `${currentYear}${currentMonth}`;
   const {
     isLoading: loadingTransacs,
     data: dataTransacs,
@@ -360,17 +354,6 @@ export default function Dashboard() {
   const chevronGraphIsVisible = lastMonthGraph.code < currentMonthYear;
 
   if (loadingTransacs || loadingAccounts || loadingInvests) return <Loader />;
-  const tags = getTagsOfTransactions(dataTransacs);
-
-  const cumulativeAmountsByTag = dataTransacs?.reduce((acc, transaction) => {
-    if (Array.isArray(transaction.tag)) {
-      transaction.tag.forEach((tag) => {
-        if (!acc[tag]) acc[tag] = 0;
-        acc[tag] += transaction.amount;
-      });
-    }
-    return acc;
-  }, {});
 
   return (
     <section className="w-full">
@@ -495,6 +478,7 @@ export default function Dashboard() {
                     <TabsList>
                       <TabsTrigger value={6}>6 mois</TabsTrigger>
                       <TabsTrigger value={12}>1 an</TabsTrigger>
+                      <TabsTrigger value={24}>2 ans</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
@@ -582,7 +566,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {dataCredit
-                    .filter((cre) => cre.isActive === true)
+                    ?.filter((cre) => cre.isActive === true)
                     ?.map((credit, index) => {
                       const typeInfo =
                         typeCreditList.find((t) => t.key === credit.type) || {};
@@ -615,7 +599,9 @@ export default function Dashboard() {
                               {formatCurrency.format(credit.balance)}
                             </p>
                             <p className="text-[10px] text-muted-foreground italic">
-                              {formatCurrency.format(credit.monthlyPayment)}
+                              {formatCurrency.format(
+                                credit.monthlyPayment + credit.insurance
+                              )}
                             </p>
                           </div>
                         </div>

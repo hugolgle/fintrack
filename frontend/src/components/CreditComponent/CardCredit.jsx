@@ -57,6 +57,7 @@ export function CreditCardComponent({ credit, isActive, onClick, refetch }) {
   const amount = Number(credit.amount) || 0;
   const balance = Number(credit.balance) || 0;
   const monthly = Number(credit.monthlyPayment) || 0;
+  const insurance = Number(credit.insurance) || 0;
 
   // Calcul de la progression
   const progress = amount > 0 ? ((amount - balance) / amount) * 100 : 0;
@@ -156,7 +157,9 @@ export function CreditCardComponent({ credit, isActive, onClick, refetch }) {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Mensualité</p>
-            <p className="font-thin">{formatCurrency.format(monthly)}</p>
+            <p className="font-thin">
+              {formatCurrency.format(monthly + insurance)}
+            </p>
           </div>
         </div>
 
