@@ -1,30 +1,26 @@
+# docker-compose.yml
+
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - MONGO_URI=mongodb://root:example@mongodb:27017/mydatabase?authSource=admin
+  frontend:
+    image: ghcr.io/hugolgle/fintrack-frontend:latest
+    container_name: fintrack-frontend
     networks:
       - mongo_network
+      - caddy_net
+    restart: unless-stopped
+
+  backend:
+    container_name: fintrack-backend
+    image: ghcr.io/hugolgle/fintrack-backend:latest
+    environment:
+      - MONGO_URI=mongodb://root:example@mongodb:27017/mydatabase?authSource=admin
+      - JWT_SECRET=bR9!zT@4wV#qLm2^sP$eX1%jUo8&kNzA
+    networks:
+      - mongo_network
+      - caddy_net
     depends_on:
       - mongodb
     restart: unless-stopped
-
-  frontend:
-    container_name: fintrack-frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - frontend-dist:/app/
-    depends_on:
-      - backend
-    networks:
-      - mongo_network
-    restart: no
 
   mongodb:
     image: mongo:6
@@ -41,27 +37,11 @@ services:
       - mongo_network
     restart: unless-stopped
 
-  caddy:
-    image: caddy:alpine
-    container_name: caddy
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - frontend-dist:/usr/share/caddy
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - mongo_network
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-
 networks:
   mongo_network:
     driver: bridge
+  caddy_net:
+    external: true
 
 volumes:
   mongo-data:
-  frontend-dist:
-    name: frontend-dist
