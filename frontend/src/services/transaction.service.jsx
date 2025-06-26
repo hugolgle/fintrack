@@ -9,9 +9,7 @@ export const fetchTransactions = async () => {
   const userId = decodedToken.id;
 
   return await axios.get(`${API_URL}/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -22,9 +20,7 @@ export const fetchTransactionById = async (id) => {
   }
 
   return await axios.get(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -49,9 +45,7 @@ export const addTransaction = async (transactionData) => {
   };
 
   return await axios.post(`${API_URL}`, newTransaction, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -76,9 +70,7 @@ export const editTransactions = async (editData) => {
   };
 
   return await axios.put(`${API_URL}/${id}`, updatedTransaction, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -89,9 +81,7 @@ export const deleteTransactions = async (id) => {
   }
 
   return await axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -110,8 +100,6 @@ export const addRefund = async (transactionId, refundData) => {
   };
 
   return await axios.post(`${API_URL}/${transactionId}/refund`, newRefund, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
