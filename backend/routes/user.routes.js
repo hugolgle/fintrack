@@ -30,6 +30,6 @@ router.post("/add", upload.single("img"), addUser);
 
 router.put("/edit/:id", auth, upload.single("img"), editUser);
 router.delete("/delete/:id", auth, deleteUser);
-router.get("/current/:id", auth, getCurrentUser);
+router.get("/current", auth, getCurrentUser);
 
 module.exports = router;

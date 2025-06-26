@@ -9,9 +9,7 @@ export const fetchInvestments = async () => {
   const userId = decodedToken.id;
 
   return await axios.get(`${API_URL}/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -19,9 +17,7 @@ export const fetchInvestmentById = async (id) => {
   const token = sessionStorage.getItem("token");
 
   return await axios.get(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -45,9 +41,7 @@ export const addInvestment = async (investmentData) => {
   };
 
   return await axios.post(`${API_URL}`, newInvestment, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -86,9 +80,7 @@ export const editInvestments = async (editData) => {
   };
 
   return await axios.put(`${API_URL}/${id}`, updatedInvestment, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 

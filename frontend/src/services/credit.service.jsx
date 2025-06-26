@@ -9,9 +9,7 @@ export const fetchCredits = async () => {
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
   return await axios.get(`${API_URL}/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -38,9 +36,7 @@ export const addCredit = async (creditData) => {
   };
 
   return await axios.post(`${API_URL}`, newCreditData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -76,9 +72,7 @@ export const editCredit = async (creditData) => {
 export const deleteCredit = async (id) => {
   const token = sessionStorage.getItem("token");
   return await axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -86,9 +80,7 @@ export const deleteCredit = async (id) => {
 export const addPayment = async (id, paymentData) => {
   const token = sessionStorage.getItem("token");
   return await axios.post(`${API_URL}/${id}/payment`, paymentData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -108,8 +100,6 @@ export const updateStatus = async (id, status) => {
 export const deletePayment = async (creditId, paymentId) => {
   const token = sessionStorage.getItem("token");
   return await axios.delete(`${API_URL}/${creditId}/payment/${paymentId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };

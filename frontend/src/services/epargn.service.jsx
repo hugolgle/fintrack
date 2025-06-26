@@ -8,18 +8,14 @@ export const fetchAccounts = async () => {
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
   return await axios.get(`${API_URL}/accounts/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
 export const fetchAccount = async (id) => {
   const token = sessionStorage.getItem("token");
   return await axios.get(`${API_URL}/accounts/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -34,9 +30,7 @@ export const addAccount = async (accountData) => {
   };
 
   return await axios.post(`${API_URL}/accounts`, newAccountData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -70,9 +64,7 @@ export const editAccount = async (accountData) => {
 export const addTransfer = async (transferData) => {
   const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/transfers`, transferData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return response.data;
 };
@@ -84,9 +76,7 @@ export const calculateInterests = async () => {
 export const depositAccount = async (depositData) => {
   const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/deposit`, depositData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return response.data;
 };
@@ -94,9 +84,7 @@ export const depositAccount = async (depositData) => {
 export const withdrawAccount = async (withdrawData) => {
   const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/withdraw`, withdrawData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return response.data;
 };
