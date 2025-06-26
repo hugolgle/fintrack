@@ -99,7 +99,6 @@ export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithGoogle();
-      console.log(result);
       const nameParts = result.displayName.split(" ");
       const prenom = nameParts[0] || "";
       const nom = nameParts.slice(1).join(" ") || "";

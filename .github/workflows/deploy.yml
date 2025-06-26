@@ -26,6 +26,7 @@ jobs:
           echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ./frontend/.env
           echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> ./frontend/.env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./frontend/.env
+          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> ./frontend/.env
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5

@@ -35,7 +35,6 @@ module.exports.loginUser = async (req, res) => {
           .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
       }
     }
-    console.log("le user:", user);
     // Génération du token d'authentification
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -47,7 +46,6 @@ module.exports.loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.log("erreur cdans le catch:", error);
     return res
       .status(500)
       .json({ message: "Erreur lors de la connexion", error });
