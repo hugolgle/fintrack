@@ -3,6 +3,7 @@ const connectDB = require("./config/db");
 const cors = require("cors");
 const path = require("path");
 const auth = require("./middleware/auth");
+const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv").config();
 const port = 8000;
 connectDB();
@@ -14,8 +15,9 @@ const corsOptions = {
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
 };
-
 app.use(cors(corsOptions));
+
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -40,6 +40,13 @@ module.exports.loginUser = async (req, res) => {
       expiresIn: "1h",
     });
 
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 jour
+    });
+
     return res.status(200).json({
       message: "Vous êtes connecté !",
       user,
@@ -213,9 +220,7 @@ module.exports.deleteUser = async (req, res) => {
 
 module.exports.getCurrentUser = async (req, res) => {
   try {
-    const userId = req.params.id;
-
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(req.userId);
 
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
