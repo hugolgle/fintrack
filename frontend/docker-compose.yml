@@ -1,25 +1,29 @@
-# docker-compose.yml
-
+# ./frontend/docker-compose.yml
 services:
-  frontend:
-    image: ghcr.io/hugolgle/fintrack-frontend:latest
-    container_name: fintrack-frontend
-    networks:
-      - mongo_network
-      - caddy_net
-    restart: unless-stopped
-
   backend:
-    container_name: fintrack-backend
-    image: ghcr.io/hugolgle/fintrack-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
     environment:
       - MONGO_URI=mongodb://root:example@mongodb:27017/mydatabase?authSource=admin
-      - JWT_SECRET=bR9!zT@4wV#qLm2^sP$eX1%jUo8&kNzA
-    networks:
-      - mongo_network
-      - caddy_net
     depends_on:
       - mongodb
+    networks:
+      - react
+    restart: unless-stopped
+
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - react
     restart: unless-stopped
 
   mongodb:
@@ -34,14 +38,13 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: mydatabase
     networks:
-      - mongo_network
+      - react
     restart: unless-stopped
 
 networks:
-  mongo_network:
-    driver: bridge
-  caddy_net:
-    external: true
+  react:
 
 volumes:
   mongo-data:
+  caddy_data:
+  caddy_config:

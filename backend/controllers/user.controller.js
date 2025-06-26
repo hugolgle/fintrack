@@ -26,13 +26,16 @@ module.exports.loginUser = async (req, res) => {
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
+      if (!isMatch && password === user.password) {
+        user.password = await bcrypt.hash(password, 10);
+        await user.save();
+      } else if (!isMatch) {
         return res
           .status(401)
           .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
       }
     }
-
+    console.log("le user:", user);
     // Génération du token d'authentification
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -44,6 +47,7 @@ module.exports.loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.log("erreur cdans le catch:", error);
     return res
       .status(500)
       .json({ message: "Erreur lors de la connexion", error });
@@ -64,11 +68,22 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.addUser = async (req, res) => {
   try {
-    const { username, password, nom, prenom, googleId, img } = req.body;
+    const {
+      username,
+      password,
+      nom,
+      prenom,
+      googleId,
+      img,
+      phone,
+      zipcode,
+      address,
+      city,
+    } = req.body;
 
-    // Ajouter le domaine au chemin de l'image uploadée
-    const domain = "http://localhost:5001/"; // À modifier selon l'environnement
-    const imgPath = req.file ? `${domain}uploads/${req.file.filename}` : null;
+    const API_URL = process.env.VITE_API_URL;
+
+    const imgPath = req.file ? `${API_URL}/uploads/${req.file.filename}` : null;
 
     const existingUser = await UserModel.findOne({ username });
 
@@ -82,6 +97,10 @@ module.exports.addUser = async (req, res) => {
       password: googleId ? null : await bcrypt.hash(password, 10), // Pas de mot de passe si connexion Google
       nom,
       prenom,
+      phone,
+      address,
+      zipcode,
+      city,
       img: imgPath ?? img,
       googleId: googleId || null, // Enregistre l'ID Google
     });
@@ -91,6 +110,8 @@ module.exports.addUser = async (req, res) => {
       message: "Inscription réussie ! Vous pouvez maintenant vous connecter.",
     });
   } catch (error) {
+    console.error("Erreur lors de l'ajout :", error);
+
     return res
       .status(500)
       .json({ message: "Erreur lors de l'ajout de l'utilisateur", error });
@@ -98,6 +119,7 @@ module.exports.addUser = async (req, res) => {
 };
 
 module.exports.editUser = async (req, res) => {
+  const API_URL = process.env.VITE_API_URL;
   try {
     const user = await UserModel.findById(req.params.id);
     if (!user) {
@@ -135,8 +157,7 @@ module.exports.editUser = async (req, res) => {
       }
       imgPath = null;
     } else {
-      const domain = "http://localhost:5001/";
-      imgPath = req.file ? `${domain}uploads/${req.file.filename}` : user.img;
+      imgPath = req.file ? `${API_URL}/uploads/${req.file.filename}` : user.img;
       if (req.file && user.img) {
         const oldImgPath = path.join(__dirname, "..", user.img);
         if (fs.existsSync(oldImgPath)) {
@@ -149,6 +170,10 @@ module.exports.editUser = async (req, res) => {
     user.nom = req.body.nom || user.nom;
     user.prenom = req.body.prenom || user.prenom;
     user.img = imgPath || user.img;
+    user.phone = req.body.phone || user.phone;
+    user.address = req.body.address || user.address;
+    user.zipcode = req.body.zipcode || user.zipcode;
+    user.city = req.body.city || user.city;
     await user.save();
 
     return res.status(200).json({ message: "Profil mis à jour avec succès" });

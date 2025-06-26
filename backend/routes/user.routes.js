@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const router = express.Router();
 
-router.get("/", getUsers);
+router.get("/", auth, getUsers);
 router.post("/login", loginUser);
 router.post("/add", upload.single("img"), addUser);
 
