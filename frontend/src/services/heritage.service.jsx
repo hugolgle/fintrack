@@ -9,9 +9,7 @@ export const fetchAssets = async () => {
   const userId = decodedToken.id;
 
   return await axios.get(`${API_URL}/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -22,9 +20,7 @@ export const fetchAssetById = async (id) => {
   }
 
   return await axios.get(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -53,9 +49,7 @@ export const addAsset = async (assetData) => {
   };
 
   return await axios.post(`${API_URL}`, newAsset, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -85,9 +79,7 @@ export const editAsset = async (assetData) => {
   };
 
   return await axios.put(`${API_URL}/${id}`, updatedAsset, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };
 
@@ -98,8 +90,6 @@ export const deleteAsset = async (id) => {
   }
 
   return await axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
 };

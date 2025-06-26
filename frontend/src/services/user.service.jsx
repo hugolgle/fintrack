@@ -3,33 +3,25 @@ import axios from "axios";
 const API_URL = `${import.meta.env.VITE_API_URL}/user`;
 
 export const loginUser = async (credentials) => {
-  const response = await axios.post(`${API_URL}/login`, credentials);
+  const response = await axios.post(`${API_URL}/login`, credentials, {
+    withCredentials: true,
+  });
   return response.data;
 };
 
 export const logoutUser = async () => {};
 
-export const getCurrentUser = async (userId) => {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
-
-  const response = await axios.get(`${API_URL}/current/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export const getCurrentUser = async () => {
+  const response = await axios.get("http://localhost:8000/user/current", {
+    withCredentials: true,
   });
-
   return response.data;
 };
 
 export const addUser = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/add`, userData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -52,8 +44,8 @@ export const editUser = async (userId, userData) => {
     const response = await axios.put(`${API_URL}/edit/${userId}`, userData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
       },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -74,9 +66,7 @@ export const deleteUser = async (userId) => {
   }
 
   const response = await axios.delete(`${API_URL}/delete/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return response.data;
 };
