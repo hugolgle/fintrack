@@ -33,7 +33,7 @@ export default function Home() {
     <section className="w-full h-screen">
       <div className="flex flex-col justify-center  items-center h-full gap-10 animate-fade">
         <img
-          src="/public/logoFinTrack.png"
+          src="../../public/logoFinTrack.png"
           className="size-16 mx-auto animate__animated animate__zoomIn animate__faster"
           alt="logo"
         />
