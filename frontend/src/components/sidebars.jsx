@@ -137,7 +137,7 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
           className="flex items-end cursor-pointer gap-6 text-2xl group text-center w-auto overflow-hidden"
         >
           <img
-            src="/public/logoFinTrack.png"
+            src="/logoFinTrack.png"
             className="size-10  hover:scale-95 transition-all"
             alt="logo"
           />
@@ -210,7 +210,7 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
         className="flex items-end cursor-pointer gap-6 text-2xl group text-center w-auto overflow-hidden"
       >
         <img
-          src="/public/logoFinTrack.png"
+          src="/logoFinTrack.png"
           className="size-10  hover:scale-95 transition-all"
           alt="logo"
         />
