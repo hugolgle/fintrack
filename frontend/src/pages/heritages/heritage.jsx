@@ -97,7 +97,7 @@ export default function Heritage() {
         btnAdd={ROUTES.ADD_ASSET}
       />
       <div className="flex flex-col gap-4 animate-fade">
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <BoxInfos
             onClick={() => navigate(ROUTES.EPARGN)}
             title="Épargne"

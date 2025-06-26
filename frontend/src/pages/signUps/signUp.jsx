@@ -99,7 +99,6 @@ export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithGoogle();
-      console.log(result);
       const nameParts = result.displayName.split(" ");
       const prenom = nameParts[0] || "";
       const nom = nameParts.slice(1).join(" ") || "";
@@ -153,20 +152,27 @@ export default function SignUp() {
   }, [passwordRef]);
 
   return (
-    <section className="w-full flex h-screen gap-4">
+    <section className="w-full flex h-screen gap-4 flex-col-reverse lg:flex-row">
       <div
-        className={`relative flex flex-col w-2/5 justify-center h-full p-4 rounded-r-[3em] bg-secondary/70 ring-1 ring-border animate__animated animate__fadeInLeft ${animate && "animate__fadeOutLeft"}`}
+        className={`relative flex flex-col w-full lg:w-2/5 justify-center h-full p-4 lg:rounded-r-[3em] bg-secondary/70 ring-1 ring-border animate__animated animate__fadeInLeft ${
+          animate && "animate__fadeOutLeft"
+        }`}
       >
         <p className="font-logo absolute top-4 right-4">FinTrack.</p>
-        <div className="flex flex-col justify-center items-center px-14">
-          <h1 className="text-4xl mb-10 mr-auto font-logo">Bienvenue !</h1>
-          <h2 className="text-xl font-thin mr-auto">Inscrivez-vous</h2>
+        <div className="flex flex-col justify-center items-center px-4 md:px-14">
+          <h1 className="text-3xl sm:text-4xl mb-10 mr-auto font-logo">
+            Bienvenue !
+          </h1>
+          <h2 className="text-lg sm:text-xl font-thin mr-auto">
+            Inscrivez-vous
+          </h2>
           <form
             onSubmit={formik.handleSubmit}
             className="flex flex-col justify-center items-center gap-5 py-6 animate-fade w-full"
             encType="multipart/form-data"
           >
-            <div className="flex gap-4 w-full">
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              {/* Prénom / Nom */}
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
@@ -175,7 +181,7 @@ export default function SignUp() {
                   {...formik.getFieldProps("prenom")}
                 />
                 {formik.touched.prenom && formik.errors.prenom && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.prenom}
                   </p>
                 )}
@@ -183,28 +189,30 @@ export default function SignUp() {
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
-                  id="nom"
                   placeholder="Nom"
+                  id="nom"
                   {...formik.getFieldProps("nom")}
                 />
                 {formik.touched.nom && formik.errors.nom && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.nom}
                   </p>
                 )}
               </div>
             </div>
-            <div className="flex gap-4 w-full">
+
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              {/* Email / Tel */}
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
-                  id="username"
                   placeholder="E-mail"
+                  id="username"
                   autoComplete="new-email"
                   {...formik.getFieldProps("username")}
                 />
                 {formik.touched.username && formik.errors.username && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.username}
                   </p>
                 )}
@@ -212,42 +220,44 @@ export default function SignUp() {
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
-                  id="phone"
                   placeholder="Téléphone"
-                  type="tel"
+                  id="phone"
                   maxLength={10}
                   autoComplete="new-phone"
+                  type="tel"
                   {...formik.getFieldProps("phone")}
                 />
                 {formik.touched.phone && formik.errors.phone && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.phone}
                   </p>
                 )}
               </div>
             </div>
+
             <Input
+              className="border-none bg-background w-full"
               placeholder="Adresse"
               id="address"
-              className="border-none bg-background w-full relative"
               {...formik.getFieldProps("address")}
             />
-
             {formik.touched.address && formik.errors.address && (
-              <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+              <p className="text-[10px] text-red-500 -mt-4 ml-2">
                 {formik.errors.address}
               </p>
             )}
-            <div className="flex gap-4 w-full">
+
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              {/* Ville / Code postal */}
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
-                  id="city"
                   placeholder="Ville"
+                  id="city"
                   {...formik.getFieldProps("city")}
                 />
                 {formik.touched.city && formik.errors.city && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.city}
                   </p>
                 )}
@@ -255,26 +265,27 @@ export default function SignUp() {
               <div className="flex flex-col gap-5 w-full">
                 <Input
                   className="border-none bg-background w-full"
-                  id="zipcode"
                   placeholder="Code postal"
                   type="number"
+                  id="zipcode"
                   {...formik.getFieldProps("zipcode")}
                 />
                 {formik.touched.zipcode && formik.errors.zipcode && (
-                  <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  <p className="text-[10px] text-red-500 -mt-4 ml-2">
                     {formik.errors.zipcode}
                   </p>
                 )}
               </div>
             </div>
 
+            {/* Password */}
             <div className="relative w-full" ref={passwordRef}>
               <Input
                 className="border-none bg-background w-full"
                 id="password"
-                autoComplete="new-password"
-                placeholder="Mot de passe"
                 type={!showPassword ? "password" : ""}
+                placeholder="Mot de passe"
+                autoComplete="new-password"
                 {...formik.getFieldProps("password")}
               />
               <div
@@ -289,17 +300,18 @@ export default function SignUp() {
               </div>
             </div>
             {formik.touched.password && formik.errors.password && (
-              <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+              <p className="text-[10px] text-red-500 -mt-4 ml-2">
                 {formik.errors.password}
               </p>
             )}
 
-            <div className="relative w-full" ref={passwordRef}>
+            {/* Confirm Password */}
+            <div className="relative w-full">
               <Input
-                placeholder="Confirmer votre mot de passe"
                 className="border-none bg-background w-full"
                 id="confirmPassword"
                 type={!showConfirmPassword ? "password" : ""}
+                placeholder="Confirmer votre mot de passe"
                 {...formik.getFieldProps("confirmPassword")}
               />
               <div
@@ -315,11 +327,12 @@ export default function SignUp() {
             </div>
             {formik.touched.confirmPassword &&
               formik.errors.confirmPassword && (
-                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                <p className="text-[10px] text-red-500 -mt-4 ml-2">
                   {formik.errors.confirmPassword}
                 </p>
               )}
 
+            {/* Image */}
             <Input
               className="border-none bg-background w-full"
               type="file"
@@ -328,7 +341,7 @@ export default function SignUp() {
               onChange={handleImageChange}
             />
             {formik.touched.img && formik.errors.img && (
-              <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+              <p className="text-[10px] text-red-500 -mt-4 ml-2">
                 {formik.errors.img}
               </p>
             )}
@@ -346,13 +359,14 @@ export default function SignUp() {
               isPending={addUserMutation.isPending}
             />
           </form>
-          <div className="flex items-center gap-2 mb-4">
+
+          <div className="flex items-center gap-2 mb-4 w-full">
             <hr className="flex-grow border-border h-[1px]" />
             <p className="text-gray-400 text-xs">Ou</p>
             <hr className="flex-grow border-border h-[1px]" />
           </div>
 
-          <div className="flex gap-4 p-4">
+          <div className="flex gap-4 p-4 w-full">
             <div
               onClick={handleGoogleSignIn}
               className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-md hover:bg-muted/75 transition-all"

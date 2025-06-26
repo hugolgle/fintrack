@@ -156,7 +156,6 @@ export default function PageAddInvestmentMain() {
       return response;
     },
     onSuccess: (response) => {
-      console.log(response);
       toast.success(response?.data?.message);
     },
     onError: (error) => {

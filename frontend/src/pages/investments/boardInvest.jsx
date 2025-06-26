@@ -320,7 +320,7 @@ export default function BoardInvest() {
           isFetching={isFetching}
         />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
-          <div className=" flex gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <BoxInfos
               title="Investissements en cours"
               value={amountBuy}
@@ -353,7 +353,7 @@ export default function BoardInvest() {
               type="investment"
             />
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <Container>
               <h2 className="text-left">Graphique</h2>
               {!isFetching ? (
@@ -403,7 +403,7 @@ export default function BoardInvest() {
                 </Tabs>
               </div>
             </Container>
-            <div className="w-2/5 flex flex-col gap-4">
+            <div className="lg:w-2/5 flex flex-col gap-4">
               <Container>
                 <h2 className="mb-4 text-left">Statistiques</h2>
                 <div className="h-full flex flex-col gap-2">

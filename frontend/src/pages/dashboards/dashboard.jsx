@@ -363,7 +363,7 @@ export default function Dashboard() {
         modalAdd={<FormTransac refetch={refetch} />}
       />
       <div className="flex flex-col gap-4 animate-fade">
-        <div className="flex gap-4 w-full">
+        <div className="flex flex-col lg:flex-row gap-4 w-full">
           <BoxInfos
             onClick={() =>
               navigate(
@@ -420,8 +420,8 @@ export default function Dashboard() {
             isAmount
           />
         </div>
-        <div className="flex flex-row gap-4 h-full">
-          <div className="flex flex-col w-4/5 gap-4">
+        <div className="flex flex-col lg:flex-row gap-4 h-full">
+          <div className="flex flex-col lg:w-4/5 gap-4">
             <Container>
               <h2 className="text-left">Graphique</h2>
               {!isFetchingTransacs && !isFetchingInvests ? (
@@ -450,7 +450,7 @@ export default function Dashboard() {
               ) : (
                 <LoaderDots />
               )}
-              <div className="flex flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
+              <div className="flex flex-col lg:flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
                 <div className="w-1/12">
                   <ChevronLeft
                     size={25}
@@ -484,7 +484,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </Container>
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
               <Container>
                 <h2 className="text-left">Répartition finance</h2>
                 {!isFetchingTransacs && !isFetchingInvests ? (
@@ -611,7 +611,7 @@ export default function Dashboard() {
               </Container>
             </div>
           </div>
-          <div className="w-1/5 flex flex-col gap-4">
+          <div className="lg:w-1/5 flex flex-col gap-4">
             <Container>
               <div className="flex justify-between w-full mb-4">
                 <h2 className="text-nowrap">Dernieres transactions</h2>
