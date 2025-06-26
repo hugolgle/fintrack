@@ -12,7 +12,8 @@ export const loginUser = async (credentials) => {
 export const logoutUser = async () => {};
 
 export const getCurrentUser = async () => {
-  const response = await axios.get("http://localhost:8000/user/current", {
+
+  const response = await axios.get(`${API_URL}/current`, {
     withCredentials: true,
   });
   return response.data;
