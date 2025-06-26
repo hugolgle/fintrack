@@ -389,130 +389,140 @@ export default function Statistic() {
             )}
           </div>
         </Container>
-        <div className="flex gap-4 animate-fade">
-          <div className="flex flex-col items-center gap-4 w-2/3">
-            <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-8" />
+        <div className="flex flex-col lg:flex-row gap-4 animate-fade">
+          <div className="flex flex-col items-center gap-4 w-full max-w-4xl px-4 md:w-2/3">
+            <div className="flex-col md:flex-row gap-2 md:gap-4 w-full text-center md:text-right hidden lg:flex">
+              <Container custom="!w-8 self-center md:self-auto" />
               <Container custom="!p-2">
-                <h1 className="text-center italic text-xs">Moyenne/Mois</h1>
-              </Container>
-              <Container custom="!p-2">
-                <h1 className="text-center italic text-xs">Par mois</h1>
+                <h1 className="italic text-xs">Moyenne/Mois</h1>
               </Container>
               <Container custom="!p-2">
-                <h1 className="text-center italic text-xs">Par an</h1>
+                <h1 className="italic text-xs">Par mois</h1>
+              </Container>
+              <Container custom="!p-2">
+                <h1 className="italic text-xs">Par an</h1>
               </Container>
             </div>
-            <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-8 !justify-center items-center">
-                <h1 className="text-center italic text-xs -rotate-90">
-                  Revenu
-                </h1>
-              </Container>
-              <BoxStat
-                title="Revenu par Mois"
-                type={TYPES.INCOME}
-                selectedYear={selectedYear}
-                amount={moyenneRecetteMois}
-              />
-              <BoxStat
-                title="Revenu"
-                type={TYPES.INCOME}
-                months={months}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-                amount={recetteMonth}
-              />
-              <BoxStat
-                title="Revenu totale"
-                type={TYPES.INCOME}
-                selectedYear={selectedYear}
-                amount={recetteYear}
-              />
-            </div>
-            <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-8 !justify-center items-center">
-                <h1 className="text-center italic text-xs -rotate-90">
-                  Dépense
-                </h1>
-              </Container>
-              <BoxStat
-                title="Dépense par Mois"
-                type={TYPES.EXPENSE}
-                selectedYear={selectedYear}
-                amount={moyenneDepenseMois}
-              />
-              <BoxStat
-                title="Dépense"
-                type={TYPES.EXPENSE}
-                months={months}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-                amount={depenseMonth}
-              />
-              <BoxStat
-                title="Dépense totale"
-                type={TYPES.EXPENSE}
-                selectedYear={selectedYear}
-                amount={depenseYear}
-              />
-            </div>
-            <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-8 !justify-center items-center">
-                <h1 className="text-center italic text-xs -rotate-90">
-                  Économie
-                </h1>
-              </Container>
-              <BoxStat
-                title="Économie par Mois"
-                type="State"
-                selectedYear={selectedYear}
-                amount={moyenneEconomie}
-              />
-              <BoxStat
-                type="State"
-                title={economieMonth < 0 ? "Déficit" : "Économie"}
-                selectedYear={selectedYear}
-                amount={economieMonth}
-                months={months}
-                selectedMonth={selectedMonth}
-              />
-              <BoxStat
-                title="Économie totale"
-                type="State"
-                selectedYear={selectedYear}
-                amount={economieTotale}
-              />
-            </div>
-            <div className="flex flex-row gap-4 w-full text-right">
-              <Container custom="!w-8 !justify-center items-center">
-                <h1 className="text-center italic text-xs -rotate-90">
-                  Investissement
-                </h1>
-              </Container>
-              <BoxStat
-                title="Investissement par Mois"
-                type="State"
-                selectedYear={selectedYear}
-                amount={amountInvestisAverage}
-              />
-              <BoxStat
-                type="State"
-                title="Investissement"
-                selectedYear={selectedYear}
-                amount={amountInvestisMonth}
-                months={months}
-                selectedMonth={selectedMonth}
-              />
-              <BoxStat
-                title="Investissement totale"
-                type="State"
-                selectedYear={selectedYear}
-                amount={amountInvestisYear}
-              />
-            </div>
+
+            {[
+              {
+                label: "Revenu",
+                data: [
+                  {
+                    title: "Revenu par Mois",
+                    type: TYPES.INCOME,
+                    amount: moyenneRecetteMois,
+                  },
+                  {
+                    title: "Revenu",
+                    type: TYPES.INCOME,
+                    amount: recetteMonth,
+                    months,
+                    selectedMonth,
+                    selectedYear,
+                  },
+                  {
+                    title: "Revenu totale",
+                    type: TYPES.INCOME,
+                    amount: recetteYear,
+                  },
+                ],
+              },
+              {
+                label: "Dépense",
+                data: [
+                  {
+                    title: "Dépense par Mois",
+                    type: TYPES.EXPENSE,
+                    amount: moyenneDepenseMois,
+                  },
+                  {
+                    title: "Dépense",
+                    type: TYPES.EXPENSE,
+                    amount: depenseMonth,
+                    months,
+                    selectedMonth,
+                    selectedYear,
+                  },
+                  {
+                    title: "Dépense totale",
+                    type: TYPES.EXPENSE,
+                    amount: depenseYear,
+                  },
+                ],
+              },
+              {
+                label: "Économie",
+                data: [
+                  {
+                    title: "Économie par Mois",
+                    type: "State",
+                    amount: moyenneEconomie,
+                  },
+                  {
+                    title: economieMonth < 0 ? "Déficit" : "Économie",
+                    type: "State",
+                    amount: economieMonth,
+                    months,
+                    selectedMonth,
+                    selectedYear,
+                  },
+                  {
+                    title: "Économie totale",
+                    type: "State",
+                    amount: economieTotale,
+                  },
+                ],
+              },
+              {
+                label: "Investissement",
+                data: [
+                  {
+                    title: "Investissement par Mois",
+                    type: "State",
+                    amount: amountInvestisAverage,
+                  },
+                  {
+                    title: "Investissement",
+                    type: "State",
+                    amount: amountInvestisMonth,
+                    months,
+                    selectedMonth,
+                    selectedYear,
+                  },
+                  {
+                    title: "Investissement totale",
+                    type: "State",
+                    amount: amountInvestisYear,
+                  },
+                ],
+              },
+            ].map(({ label, data }) => (
+              <div
+                key={label}
+                className="flex flex-col md:flex-row gap-2 md:gap-4 w-full text-center md:text-right"
+              >
+                <Container custom="lg:!w-8 !justify-center items-center self-center md:self-auto">
+                  <h1 className="italic text-xs -rotate-0 md:-rotate-90">
+                    {label}
+                  </h1>
+                </Container>
+                {data.map((item, i) => (
+                  <BoxStat
+                    key={i}
+                    title={item.title}
+                    type={item.type}
+                    selectedYear={selectedYear}
+                    amount={item.amount}
+                    months={item.months}
+                    selectedMonth={item.selectedMonth}
+                  />
+                ))}
+              </div>
+            ))}
           </div>
-          <div className="w-1/3">
+
+          <div className="lg:w-1/3">
             <Container>
               <h2 className="text-left mb-4">Résumé</h2>
               <div className="flex flex-col gap-4">

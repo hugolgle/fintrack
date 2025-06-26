@@ -146,7 +146,7 @@ export default function Epargn() {
     <section className="w-full">
       <Header title="Épargne" btnAdd="add" btnAction isFetching={isFetching} />
       <div className="flex flex-col gap-4 animate-fade">
-        <div className="flex w-full gap-4">
+        <div className="flex flex-col lg:flex-row w-full gap-4">
           {Array.isArray(accounts) &&
             accounts.map((account) => (
               <BoxInfos
@@ -162,8 +162,8 @@ export default function Epargn() {
               />
             ))}
         </div>
-        <div className="w-full flex gap-4">
-          <div className="w-2/3">
+        <div className="w-full flex flex-col lg:flex-row gap-4">
+          <div className="lg:w-2/3">
             <Container>
               <div className="flex justify-between w-full cursor-pointer items-center">
                 <h2 className="text-left">Transactions</h2>
@@ -241,7 +241,7 @@ export default function Epargn() {
             </Container>
           </div>
 
-          <div className="w-1/3">
+          <div className="lg:w-1/3">
             <Container>
               <h2 className="text-left">Répartitions</h2>
               {!isFetching ? (

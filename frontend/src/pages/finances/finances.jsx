@@ -329,7 +329,7 @@ export default function BoardTransactions() {
           isFetching={isFetching}
         />
         <div className="flex flex-col gap-4 w-full animate-fade">
-          <div className="flex gap-4 w-full">
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
             <BoxInfos
               onClick={() =>
                 navigate(
@@ -417,8 +417,8 @@ export default function BoardTransactions() {
               type="revenue"
             />
           </div>
-          <div className="flex gap-4">
-            <div className="flex flex-col gap-4 w-4/5">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col gap-4 lg:w-4/5">
               <div className="flex flex-col gap-4">
                 <Container>
                   <h2 className="text-left">Graphique</h2>
@@ -569,7 +569,7 @@ export default function BoardTransactions() {
                 </Container>
               </div>
             </div>
-            <div className="w-1/5 flex flex-col gap-4">
+            <div className="lg:w-1/5 flex flex-col gap-4">
               <Container>
                 <h2 className="text-left mb-4">Dernières transactions</h2>
                 <div className="h-full">

@@ -10,12 +10,14 @@ import {
 import {
   BarChart,
   CreditCard,
+  Cross,
   Group,
   HandCoins,
   LayoutDashboard,
   Power,
   ReceiptCent,
   WalletCards,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DropdownProfil } from "../pages/profiles/dropDownProfile.jsx";
@@ -29,7 +31,7 @@ import { Coins } from "lucide-react";
 import { getCurrentUser, logoutUser } from "../services/user.service.jsx";
 import Loader from "./loaders/loader.jsx";
 
-function Sidebar({ btnOpen, isOpen }) {
+function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
   const userId = getUserIdFromToken();
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -126,6 +128,80 @@ function Sidebar({ btnOpen, isOpen }) {
     acc[item.group].push(item);
     return acc;
   }, {});
+
+  if (responsive) {
+    return (
+      <div className="fixed inset-0 bg-secondary p-6 z-50 flex flex-col justify-between animate__animated animate-fade-up animate__faster">
+        <Link
+          to={ROUTES.HOME}
+          className="flex items-end cursor-pointer gap-6 text-2xl group text-center w-auto overflow-hidden"
+        >
+          <img
+            src="/public/logoFinTrack.png"
+            className="size-10  hover:scale-95 transition-all"
+            alt="logo"
+          />
+        </Link>
+        <X
+          size={20}
+          className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition-all lg:hidden"
+          onClick={() => setShowResponsiveMenu(false)}
+        />
+        {btnOpen}
+
+        <div className="flex flex-col gap-4 mt-10">
+          {menu.map(({ id, name, link, icon }) => (
+            <Link
+              key={id}
+              to={link}
+              className={`flex items-center gap-4 p-4 rounded-md text-lg ${
+                activeLink.startsWith(link)
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+            >
+              {icon}
+              <span>{name}</span>
+            </Link>
+          ))}
+        </div>
+
+        <DropdownProfil
+          btnOpen={
+            <div className="flex items-center gap-4 cursor-pointer">
+              <Avatar
+                className="size-10 cursor-pointer hover:scale-95 transition-all"
+                side="right"
+              >
+                {dataUser?.img ? (
+                  <img
+                    src={dataUser.img}
+                    alt="User Avatar"
+                    className="object-cover w-full h-full rounded-full"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <AvatarFallback className="bg-secondary">
+                    {initialName}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div className="flex flex-col text-sm text-left truncate">
+                <p className="font-bold">
+                  {dataUser?.prenom} {dataUser?.nom}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {dataUser?.username}
+                </p>
+              </div>
+            </div>
+          }
+          dataUser={dataUser}
+          handleLogout={handleLogout}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col justify-between rounded-md relative items-center h-full p-4 bg-secondary/40">

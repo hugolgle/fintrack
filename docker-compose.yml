@@ -15,6 +15,7 @@ services:
     environment:
       - MONGO_URI=mongodb://root:example@mongodb:27017/mydatabase?authSource=admin
       - JWT_SECRET=bR9!zT@4wV#qLm2^sP$eX1%jUo8&kNzA
+      - CLIENT_URL=https://fintrack.hugolge.fr
     networks:
       - mongo_network
       - caddy_net
