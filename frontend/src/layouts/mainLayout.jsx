@@ -10,7 +10,7 @@ export function MainLayout() {
   return (
     <section className="flex h-screen w-full bg-primary-background">
       <div
-        className={`sidebar animate__animated animate__fadeInLeft h-full transition-all duration-300 ease-in-out ${isOpen ? " w-[18%]" : " w-[6%]"}  py-4 pl-4 fixed z-10`}
+        className={`sidebar hidden animate__animated animate__fadeInLeft h-full transition-all duration-300 ease-in-out ${isOpen ? "w-[18%]" : " w-[6%]"} py-4 pl-4 lg:block lg:fixed z-10`}
       >
         <Sidebar
           btnOpen={
@@ -30,7 +30,7 @@ export function MainLayout() {
       </div>
 
       <div
-        className={`ml-auto transition-all duration-300 ease-in-out ${isOpen ? "w-[82%]" : "w-[94%]"} h-full p-4`}
+        className={`ml-auto transition-all duration-300 ease-in-out ${isOpen ? "w-[82%]" : "w-screen lg:w-[94%]"} h-full p-4`}
       >
         <Outlet />
         <p className="fixed top-0 right-0 mr-1 text-[10px] text-muted-foreground italic">

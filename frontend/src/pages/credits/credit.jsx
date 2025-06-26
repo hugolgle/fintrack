@@ -84,7 +84,7 @@ export default function Credit() {
         />
 
         <div className="flex flex-col gap-4 w-full animate-fade">
-          <div className="flex w-full gap-4">
+          <div className="flex flex-col lg:flex-row w-full gap-4">
             {credits.length > 0 && (
               <>
                 <BoxInfos
@@ -113,8 +113,8 @@ export default function Credit() {
           </div>
 
           {/* Liste des crédits */}
-          <div className="flex gap-4 w-full">
-            <div className="w-1/3 flex flex-col gap-4">
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
+            <div className="lg:w-1/3 flex flex-col gap-4">
               {credits &&
                 credits.map((credit) => (
                   <CreditCardComponent

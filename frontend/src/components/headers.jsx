@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -9,7 +9,7 @@ import {
 import PopoverFilter from "./popoverFilters.jsx";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useLocation } from "react-router";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Cross, Menu } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CirclePlus } from "lucide-react";
@@ -20,6 +20,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { ROUTES } from "./route.jsx";
+import Sidebar from "./sidebars.jsx";
 
 function Header({
   title,
@@ -37,6 +38,11 @@ function Header({
   modalAdd,
 }) {
   const location = useLocation();
+  const [showResponsiveMenu, setShowResponsiveMenu] = useState(false);
+
+  const toggleMenu = () => {
+    setShowResponsiveMenu(!showResponsiveMenu);
+  };
 
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const canReturn = pathSegments.length >= 2;
@@ -59,6 +65,26 @@ function Header({
               onClick={handleGoBack}
             />
           )}
+
+          <Menu
+            size={20}
+            className="cursor-pointer hover:scale-110 transition-all lg:hidden"
+            onClick={toggleMenu}
+          />
+          {showResponsiveMenu && (
+            <>
+              {/* Overlay cliquable pour fermer le menu */}
+
+
+
+              {/* Sidebar responsive full screen */}
+              <Sidebar
+                responsive
+                setShowResponsiveMenu={setShowResponsiveMenu}
+              />
+            </>
+          )}
+
           {btnAdd && (
             <Link
               className="cursor-pointer hover:scale-110 transition-all"

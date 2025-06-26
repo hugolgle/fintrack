@@ -92,19 +92,25 @@ export default function Login() {
   }, [passwordRef]);
 
   return (
-    <section className="w-full flex h-screen justify-end gap-4">
+    <section className="w-full flex h-screen justify-center lg:justify-end gap-4">
       <div
-        className={`relative flex flex-col w-2/5 justify-center h-full p-4 rounded-l-[3em] bg-secondary/70 ring-1 ring-border animate__animated animate__fadeInRight ${animate && "animate__fadeOutRight"}`}
+        className={`relative flex flex-col w-full lg:w-2/5 justify-center h-full p-6 lg:p-4 rounded-none lg:rounded-l-[3em] bg-secondary/70 ring-1 ring-border animate__animated animate__fadeInRight ${
+          animate && "animate__fadeOutRight"
+        }`}
       >
         <p className="font-logo absolute top-4 right-4">FinTrack.</p>
-        <div className="flex flex-col justify-center items-center px-14">
-          <h1 className="text-4xl mb-10 mr-auto font-logo">
+
+        <div className="flex flex-col justify-center items-center px-4 sm:px-10 lg:px-14">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 lg:mb-10 mr-auto font-logo">
             Content de te revoir !
           </h1>
-          <h2 className="text-xl font-thin mr-auto">Connectez-vous</h2>
+          <h2 className="text-lg sm:text-xl font-thin mr-auto">
+            Connectez-vous
+          </h2>
+
           <form
             onSubmit={formik.handleSubmit}
-            className="flex flex-col justify-center items-center gap-5 py-6 animate-fade w-full"
+            className="flex flex-col justify-center items-center gap-4 sm:gap-5 py-6 animate-fade w-full"
           >
             <Input
               id="username"
@@ -119,6 +125,7 @@ export default function Login() {
                 {formik.errors.username}
               </p>
             )}
+
             <div className="relative w-full" ref={passwordRef}>
               <Input
                 id="password"
@@ -140,11 +147,13 @@ export default function Login() {
                 )}
               </div>
             </div>
+
             {formik.touched.password && formik.errors.password && (
               <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
                 {formik.errors.password}
               </p>
             )}
+
             <ButtonLoading
               type="submit"
               text="Connexion"
@@ -153,11 +162,12 @@ export default function Login() {
               widht="w-fit"
             />
           </form>
+
           <div className="flex items-center gap-2 mb-4">
             <p className="text-gray-400 text-xs">Ou</p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
             <div
               onClick={handleGoogleSignIn}
               className="bg-muted cursor-pointer justify-center flex items-center gap-2 px-4 py-2 w-full rounded-md hover:bg-muted/75 transition-all"
@@ -174,7 +184,8 @@ export default function Login() {
               </span>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center mt-5 gap-2">
+
+          <div className="flex flex-col justify-center items-center mt-5 gap-2 text-center">
             <p className="text-xs">
               Nouveau sur FinTrack ?{" "}
               <span
