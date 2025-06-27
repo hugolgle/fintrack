@@ -14,14 +14,13 @@ export const logoutUser = async () => {
 };
 
 export const getCurrentUser = async () => {
-
   const response = await axios.get(`${API_URL}/current`, {
     withCredentials: true,
   });
   return response.data;
 };
 
-export const addUser = async (userData) => {
+export const signUpUser = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/add`, userData, {
       withCredentials: true,
@@ -58,8 +57,8 @@ export const editUser = async (userId, userData) => {
   }
 };
 
-export const deleteUser = async (userId) => {
-  const response = await axios.delete(`${API_URL}/delete/${userId}`, {
+export const deleteAccount = async () => {
+  const response = await axios.delete(`${API_URL}/delete`, {
     withCredentials: true,
   });
   return response.data;

@@ -17,7 +17,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef(null);
   const [animate, setAnimate] = useState();
-  const { login } = useAuth();
+  const { login, isPending } = useAuth();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -142,8 +142,8 @@ export default function Login() {
             <ButtonLoading
               type="submit"
               text="Connexion"
-              // disabled={mutation.isPending}
-              // isPending={mutation.isPending}
+              disabled={isPending}
+              isPending={isPending}
             />
           </form>
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   getCurrentUser,
   loginUser,
@@ -21,29 +21,29 @@ export const AuthProvider = ({ children }) => {
     onError: () => setUser(null),
   });
 
-  const login = async (credentials) => {
-    try {
-      const response = await loginUser(credentials);
-      setUser(response.user);
-      queryClient.setQueryData(["currentUser"], response);
-      toast.success(response.message || "Connexion réussie !");
-      return true;
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Échec de la connexion.");
-      throw err;
-    }
-  };
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      setUser(data.user);
+      queryClient.setQueryData(["currentUser"], data);
+      toast.success(data.message);
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Échec de la connexion.");
+    },
+  });
 
-  const logout = async () => {
-    try {
-      await logoutUser();
+  const logoutMutation = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
       queryClient.removeQueries(["currentUser"]);
       setUser(null);
       toast.success("Vous vous êtes déconnecté !");
-    } catch (error) {
+    },
+    onError: () => {
       toast.error("Erreur lors de la déconnexion.");
-    }
-  };
+    },
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -65,8 +65,9 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         isFetching,
         isError,
-        login,
-        logout,
+        login: loginMutation.mutateAsync,
+        logout: logoutMutation.mutateAsync,
+        isPending: loginMutation.isPending,
         refetch,
       }}
     >

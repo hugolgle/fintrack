@@ -3,9 +3,9 @@ const multer = require("multer");
 const path = require("path");
 const {
   loginUser,
-  addUser,
+  signUpUser,
   editUser,
-  deleteUser,
+  deleteAccount,
   getCurrentUser,
   logoutUser,
 } = require("../controllers/user.controller");
@@ -26,10 +26,10 @@ const router = express.Router();
 
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
-router.post("/add", upload.single("img"), addUser);
+router.post("/add", upload.single("img"), signUpUser);
 
 router.put("/edit/:id", auth, upload.single("img"), editUser);
-router.delete("/delete/:id", auth, deleteUser);
+router.delete("/delete", auth, deleteAccount);
 router.get("/current", auth, getCurrentUser);
 
 module.exports = router;

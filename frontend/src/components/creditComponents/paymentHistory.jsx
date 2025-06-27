@@ -34,7 +34,7 @@ export function PaymentHistory({ credit, mutationDelete }) {
           </TableHeader>
           <TableBody className="flex flex-col overflow-hidden justify-center items-center w-full">
             {payments
-              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              ?.sort((a, b) => new Date(b.date) - new Date(a.date))
               .map((payment, index) => (
                 <TableRow
                   key={index}

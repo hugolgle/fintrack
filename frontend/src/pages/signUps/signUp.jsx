@@ -7,12 +7,12 @@ import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../components/route.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { addUser } from "../../services/user.service.jsx";
+import { signUpUser } from "../../services/user.service.jsx";
 import { useMutation } from "@tanstack/react-query";
 import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
-import AppleIcon from "../../../public/apple-icon.svg";
 import GoogleIcon from "../../../public/google-icon.svg";
 import { signInWithGoogle } from "../../config/firebase.js";
+import { useAuth } from "../../context/authContext.jsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ export default function SignUp() {
   const [animate, setAnimate] = useState();
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const passwordRef = useRef(null);
+  const { login } = useAuth();
 
   const validationSchema = yup.object().shape({
     username: yup.string().email("Email invalide").required("Email requis"),
@@ -44,6 +45,16 @@ export default function SignUp() {
     prenom: yup.string().required("Prénom requis"),
     img: yup.mixed().nullable().optional(),
   });
+
+  const handleAutoLogin = async (values) => {
+    try {
+      await login(values);
+      setAnimate(true);
+      setTimeout(() => navigate(ROUTES.HOME), 2000);
+    } catch (error) {
+      toast.error("Échec de connexion");
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -74,18 +85,19 @@ export default function SignUp() {
         formData.append("img", image);
       }
 
-      addUserMutation.mutate(formData);
+      signUpMutation.mutate(formData, {
+        onSuccess: () => handleAutoLogin(values),
+      });
     },
   });
 
-  const addUserMutation = useMutation({
-    mutationFn: addUser,
+  const signUpMutation = useMutation({
+    mutationFn: signUpUser,
     onSuccess: (response) => {
       toast.success(response.message);
       formik.resetForm();
       setImage(null);
       setImagePreview(null);
-      setTimeout(() => navigate(ROUTES.LOGIN), 1000);
     },
     onError: (error) => {
       if (error) {
@@ -110,7 +122,7 @@ export default function SignUp() {
         img: result.photoURL,
         googleId: result.uid,
       };
-      addUserMutation.mutate(userData);
+      signUpMutation.mutate(userData);
     } catch (error) {
       toast.error("Erreur d'authentification");
     }
@@ -171,7 +183,7 @@ export default function SignUp() {
             className="flex flex-col justify-center items-center gap-5 py-6 animate-fade w-full"
             encType="multipart/form-data"
           >
-            <div className="flex flex-col md:flex-row gap-4 w-full">
+            <div className="flex flex-row gap-4 w-full">
               {/* Prénom / Nom */}
               <div className="flex flex-col gap-5 w-full">
                 <Input
@@ -247,7 +259,7 @@ export default function SignUp() {
               </p>
             )}
 
-            <div className="flex flex-col md:flex-row gap-4 w-full">
+            <div className="flex flex-row gap-4 w-full">
               {/* Ville / Code postal */}
               <div className="flex flex-col gap-5 w-full">
                 <Input
@@ -355,8 +367,8 @@ export default function SignUp() {
             <ButtonLoading
               type="submit"
               text="Inscription"
-              disabled={addUserMutation.isPending}
-              isPending={addUserMutation.isPending}
+              disabled={signUpMutation.isPending}
+              isPending={signUpMutation.isPending}
             />
           </form>
 
