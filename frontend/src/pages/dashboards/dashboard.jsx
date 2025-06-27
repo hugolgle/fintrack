@@ -286,7 +286,7 @@ export default function Dashboard() {
         ...item,
         pourcentage: total > 0 ? (item.amount / total) * 100 : 0,
       }))
-      .filter((item) => item.pourcentage > 0); // <-- on enlève les slices à 0
+      .filter((item) => item.pourcentage > 0);
   }, [dFix, dLoisir, mInvest, epargne, total]);
 
   const chartConfigRadial = {

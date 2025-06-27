@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getInitials, useIsAuthenticated } from "../utils/users.js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,56 +19,30 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { toast } from "sonner";
 import { DropdownProfil } from "../pages/profiles/dropDownProfile.jsx";
-import { getUserIdFromToken } from "../utils/users.js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom/dist/umd/react-router-dom.development";
 import { ROUTES } from "./route.jsx";
 import { Landmark } from "lucide-react";
 import { Swords } from "lucide-react";
 import { Coins } from "lucide-react";
-import { getCurrentUser, logoutUser } from "../services/user.service.jsx";
 import Loader from "./loaders/loader.jsx";
+import { useAuth } from "../context/authContext.jsx";
 
 function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
-  const userId = getUserIdFromToken();
-  const queryClient = useQueryClient();
+  const { user: dataUser, logout } = useAuth();
   const location = useLocation();
-  const [activeLink, setActiveLink] = useState(location.pathname);
-  const { isAuthenticated } = useIsAuthenticated();
   const navigate = useNavigate();
-  const { mutate } = useMutation({
-    mutationFn: logoutUser,
-    onSuccess: () => {
-      sessionStorage.removeItem("token");
-      queryClient.clear();
-      navigate(ROUTES.LOGIN);
-      toast.success("Vous vous êtes déconnecté !");
-    },
-    onError: (error) => {
-      toast.error(error);
-    },
-  });
-
-  const handleLogout = () => {
-    mutate();
-  };
+  const [activeLink, setActiveLink] = useState(location.pathname);
 
   useEffect(() => {
     setActiveLink(location.pathname);
   }, [location]);
 
-  const { data: dataUser, isLoading: isLoadingUser } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getCurrentUser(userId),
-    enabled: !!userId,
-  });
-  if (isLoadingUser) {
-    return <Loader />;
-  }
-
   const initialName = getInitials(dataUser?.prenom, dataUser?.nom);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate(ROUTES.LOGIN);
+  };
 
   const menu = [
     {

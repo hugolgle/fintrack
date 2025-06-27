@@ -9,7 +9,7 @@ const {
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/user/:idUser", auth, getAssets);
+router.get("/user", auth, getAssets);
 
 router.get("/:id", auth, getAsset);
 

@@ -82,12 +82,12 @@ export default function BoardInvest() {
 
   if (isLoading) return <Loader />;
 
-  const totalAmountBuy = dataInvests.reduce(
+  const totalAmountBuy = dataInvests?.reduce(
     (total, item) => total + (item.amountBuy || 0),
     0
   );
 
-  const categorySums = dataInvests.reduce((acc, investment) => {
+  const categorySums = dataInvests?.reduce((acc, investment) => {
     const type = investment.type;
     const amountBuy = investment.amountBuy || 0;
 
@@ -102,15 +102,17 @@ export default function BoardInvest() {
     return acc;
   }, {});
 
-  const chartDataByType = Object.values(categorySums).map((category, key) => {
-    const pourcentage = (category.amount / totalAmountBuy) * 100;
-    return {
-      name: category.category,
-      amount: category.amount,
-      pourcentage: pourcentage,
-      fill: `hsl(var(--chart-${key + 1}))`,
-    };
-  });
+  const chartDataByType = Object.values(categorySums ?? {}).map(
+    (category, key) => {
+      const pourcentage = (category.amount / totalAmountBuy) * 100;
+      return {
+        name: category.category,
+        amount: category.amount,
+        pourcentage,
+        fill: `hsl(var(--chart-${key + 1}))`,
+      };
+    }
+  );
 
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 

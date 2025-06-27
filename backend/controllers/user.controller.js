@@ -43,8 +43,8 @@ module.exports.loginUser = async (req, res) => {
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000, // 1 jour
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -56,18 +56,6 @@ module.exports.loginUser = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Erreur lors de la connexion", error });
-  }
-};
-
-module.exports.getUsers = async (req, res) => {
-  try {
-    const users = await UserModel.find();
-    return res.status(200).json(users);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Erreur lors de la récupération des utilisateurs",
-      error,
-    });
   }
 };
 
@@ -96,10 +84,9 @@ module.exports.addUser = async (req, res) => {
       return res.status(400).json({ message: "Cet utilisateur existe déjà !" });
     }
 
-    // Si l'utilisateur vient de Google, on ne hash pas de mot de passe
     const newUser = await UserModel.create({
       username,
-      password: googleId ? null : await bcrypt.hash(password, 10), // Pas de mot de passe si connexion Google
+      password: googleId ? null : await bcrypt.hash(password, 10),
       nom,
       prenom,
       phone,
@@ -231,6 +218,22 @@ module.exports.getCurrentUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la récupération de l'utilisateur",
+      error,
+    });
+  }
+};
+
+module.exports.logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
+    });
+    return res.status(200).json({ message: "Déconnexion réussie" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la déconnexion",
       error,
     });
   }

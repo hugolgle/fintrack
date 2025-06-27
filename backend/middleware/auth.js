@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 const auth = (req, res, next) => {
-  const token = req.cookies.auth_token;
+  const token = req.cookies?.auth_token;
+
   if (!token) {
-    return res.status(403).json({ message: "Aucun token fourni." });
+    return res.status(401).json({ message: "Aucun token fourni." });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {

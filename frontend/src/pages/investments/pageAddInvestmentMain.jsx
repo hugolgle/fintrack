@@ -35,8 +35,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { getUserIdFromToken } from "../../utils/users.js";
-import { getCurrentUser } from "../../services/user.service.jsx";
 import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
 import { HttpStatusCode } from "axios";
 import { useState } from "react";
@@ -47,6 +45,7 @@ import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loader from "../../components/loaders/loader.jsx";
 import { alphaSort } from "../../utils/other.js";
+import { useAuth } from "../../context/authContext.jsx";
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -78,7 +77,6 @@ const validationSchema = yup.object().shape({
 });
 
 export default function PageAddInvestmentMain() {
-  const userId = getUserIdFromToken();
   const [open, setOpen] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openCalendarBis, setOpenCalendarBis] = useState(false);
@@ -86,15 +84,7 @@ export default function PageAddInvestmentMain() {
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
   const [idInvest, setIdInvest] = useState("");
 
-  const {
-    isLoading: isisLoadingUser,
-    data: dataUser,
-    isFetching: isFetchingUser,
-  } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getCurrentUser(userId),
-    enabled: !!userId,
-  });
+  const { user: dataUser } = useAuth();
 
   const {
     isLoading: isLoadingInvestments,

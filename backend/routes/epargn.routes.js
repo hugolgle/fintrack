@@ -12,7 +12,7 @@ const {
 } = require("../controllers/epargn.controller");
 const router = express.Router();
 
-router.get("/accounts/user/:idUser", auth, getAccounts);
+router.get("/accounts/user", auth, getAccounts);
 router.get("/accounts/:id", auth, getAccount);
 router.put("/accounts/:id", auth, editAccount);
 router.post("/accounts", auth, addAccount);

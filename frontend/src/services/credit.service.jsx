@@ -1,64 +1,36 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/credits`;
 
 // Récupérer tous les crédits d’un utilisateur
 export const fetchCredits = async () => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-  return await axios.get(`${API_URL}/user/${userId}`, {
+  return await axios.get(`${API_URL}/user`, {
     withCredentials: true,
   });
 };
 
 // Récupérer un crédit spécifique
 export const fetchCredit = async (id) => {
-  const token = sessionStorage.getItem("token");
   return await axios.get(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      cor,
-    },
+    withCredentials: true,
   });
 };
 
 // Créer un crédit
 export const addCredit = async (creditData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
-  const newCreditData = {
-    user: userId,
-    ...creditData,
-  };
-
-  return await axios.post(`${API_URL}`, newCreditData, {
+  return await axios.post(`${API_URL}`, creditData, {
     withCredentials: true,
   });
 };
 
 // Mettre à jour un crédit
 export const editCredit = async (creditData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
-  const updatedCreditData = {
-    user: userId,
-    ...creditData,
-  };
-
   try {
     const response = await axios.put(
       `${API_URL}/${creditData.id}`,
-      updatedCreditData,
+      creditData,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -70,7 +42,6 @@ export const editCredit = async (creditData) => {
 
 // Supprimer un crédit
 export const deleteCredit = async (id) => {
-  const token = sessionStorage.getItem("token");
   return await axios.delete(`${API_URL}/${id}`, {
     withCredentials: true,
   });
@@ -78,27 +49,22 @@ export const deleteCredit = async (id) => {
 
 // Ajouter un paiement sur un crédit
 export const addPayment = async (id, paymentData) => {
-  const token = sessionStorage.getItem("token");
   return await axios.post(`${API_URL}/${id}/payment`, paymentData, {
     withCredentials: true,
   });
 };
 
 export const updateStatus = async (id, status) => {
-  const token = sessionStorage.getItem("token");
   return await axios.patch(
     `${API_URL}/${id}`,
     { status },
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withCredentials: true,
     }
   );
 };
 
 export const deletePayment = async (creditId, paymentId) => {
-  const token = sessionStorage.getItem("token");
   return await axios.delete(`${API_URL}/${creditId}/payment/${paymentId}`, {
     withCredentials: true,
   });

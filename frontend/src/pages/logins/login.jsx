@@ -1,46 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useIsAuthenticated } from "../../utils/users.js";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { EyeOff, Eye } from "lucide-react";
 import { ROUTES } from "../../components/route.jsx";
-import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "../../services/user.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { HttpStatusCode } from "axios";
 import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
 import AppleIcon from "../../../public/apple-icon.svg";
 import GoogleIcon from "../../../public/google-icon.svg";
 import { signInWithGoogle } from "../../config/firebase.js";
-import imageNature from "../../../public/ricardo-diaz-IP9tCoGqaok-unsplash.jpg";
+import { useAuth } from "../../context/authContext.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef(null);
   const [animate, setAnimate] = useState();
-
-  const mutation = useMutation({
-    mutationFn: loginUser,
-    onSuccess: (response) => {
-      sessionStorage.setItem("token", response.token);
-      toast.success(response.message);
-      setAnimate(true);
-      setTimeout(() => navigate(ROUTES.HOME), 1000);
-    },
-    onError: (error) => {
-      if (
-        error.response &&
-        error.response.status === HttpStatusCode.Unauthorized
-      ) {
-        toast.warning(error.response.data.message);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    },
-  });
+  const { login } = useAuth();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -51,7 +28,9 @@ export default function Login() {
         googleId: result.uid,
       };
 
-      mutation.mutate(loginData);
+      await login(loginData);
+      setAnimate(true);
+      setTimeout(() => navigate(ROUTES.HOME), 1000);
     } catch (error) {
       console.error("Erreur d'authentification :", error);
     }
@@ -69,8 +48,14 @@ export default function Login() {
     },
     validationSchema,
     validateOnMount: true,
-    onSubmit: (values) => {
-      mutation.mutate(values);
+    onSubmit: async (values) => {
+      try {
+        await login(values);
+        setAnimate(true);
+        setTimeout(() => navigate(ROUTES.HOME), 1000);
+      } catch (error) {
+        toast.error("Échec de connexion", error);
+      }
     },
   });
 
@@ -157,9 +142,8 @@ export default function Login() {
             <ButtonLoading
               type="submit"
               text="Connexion"
-              disabled={mutation.isPending}
-              isPending={mutation.isPending}
-              widht="w-fit"
+              // disabled={mutation.isPending}
+              // isPending={mutation.isPending}
             />
           </form>
 

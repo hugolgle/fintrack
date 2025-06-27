@@ -1,19 +1,15 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Header from "../../components/headers.jsx";
 import { Award, Download, Loader, MessageSquare } from "lucide-react";
-import { getUserIdFromToken } from "../../utils/users.js";
-import { getCurrentUser, logoutUser } from "../../services/user.service.jsx";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getInitials } from "../../utils/users.js";
 
 import { useState } from "react";
 
 import { LogOutIcon, SettingsIcon, ShieldIcon, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Container from "../../components/containers/container.jsx";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
 import { ROUTES } from "../../components/route.jsx";
 import TabProfil from "./tabs/tabProfil.jsx";
 import TabSettings from "./tabs/tabSettings.jsx";
@@ -21,41 +17,20 @@ import TabSecurity from "./tabs/tabSecurity.jsx";
 import TabSupport from "./tabs/tabSupport.jsx";
 import TabExportation from "./tabs/tabExportation.jsx";
 import TabAccount from "./tabs/tabAccount.jsx";
+import { useAuth } from "../../context/authContext.jsx";
 
 export default function Profile() {
-  const userId = getUserIdFromToken();
-  const queryClient = useQueryClient();
-
-  const {
-    isLoading,
-    data: dataUser,
-    isFetching,
-    refetch,
-  } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getCurrentUser(userId),
-    enabled: !!userId,
-  });
+  const [activeTab, setActiveTab] = useState("profil");
+  const { user: dataUser, logout, isLoading, isFetching, refetch } = useAuth();
 
   const navigate = useNavigate();
-  const { mutate } = useMutation({
-    mutationFn: logoutUser,
-    onSuccess: () => {
-      sessionStorage.removeItem("token");
-      queryClient.clear();
-      navigate(ROUTES.LOGIN);
-      toast.success("Vous vous êtes déconnecté !");
-    },
-    onError: (error) => {
-      toast.error(error);
-    },
-  });
 
-  const handleLogout = () => {
-    mutate();
+  const handleLogout = async () => {
+    await logout();
+    navigate(ROUTES.LOGIN);
   };
 
-  const [activeTab, setActiveTab] = useState("profil");
+  const initialName = getInitials(dataUser?.prenom, dataUser?.nom);
 
   if (isLoading) return <Loader />;
 
@@ -63,7 +38,6 @@ export default function Profile() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header title="Profil" isFetching={isFetching} />
-
         <main>
           <div className="grid gap-4 md:grid-cols-[1fr_3fr] animate-fade">
             <Container custom="h-fit">

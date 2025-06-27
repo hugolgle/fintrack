@@ -44,7 +44,7 @@ export function DropdownProfil({ btnOpen, handleLogout, dataUser }) {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{btnOpen}</DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="mb-4">
-        <DropdownMenuLabel>{dataUser.username}</DropdownMenuLabel>
+        <DropdownMenuLabel>{dataUser?.username}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"

@@ -1,35 +1,23 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/investments`;
 
 export const fetchInvestments = async () => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
-  return await axios.get(`${API_URL}/user/${userId}`, {
+  return await axios.get(`${API_URL}/user`, {
     withCredentials: true,
   });
 };
 
 export const fetchInvestmentById = async (id) => {
-  const token = sessionStorage.getItem("token");
-
   return await axios.get(`${API_URL}/${id}`, {
     withCredentials: true,
   });
 };
 
 export const addInvestment = async (investmentData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
   const { name, symbol, type, transaction } = investmentData;
 
   const newInvestment = {
-    user: userId,
     name,
     type,
     symbol,
@@ -46,13 +34,8 @@ export const addInvestment = async (investmentData) => {
 };
 
 export const addTransaction = async (investmentId, transactionData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
   const { amount, date, action } = transactionData;
   const newTransaction = {
-    user: userId,
     amount,
     date,
     isSale: action,
@@ -62,15 +45,12 @@ export const addTransaction = async (investmentId, transactionData) => {
     `${API_URL}/${investmentId}/transaction`,
     newTransaction,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withCredentials: true,
     }
   );
 };
 
 export const editInvestments = async (editData) => {
-  const token = sessionStorage.getItem("token");
   const { id, name, symbol, type } = editData;
 
   const updatedInvestment = {
@@ -85,7 +65,6 @@ export const editInvestments = async (editData) => {
 };
 
 export const editInvestmentsTransaction = async (editData, idInvestment) => {
-  const token = sessionStorage.getItem("token");
   const { id, date, amount } = editData;
 
   const updatedTransaction = {
@@ -97,22 +76,16 @@ export const editInvestmentsTransaction = async (editData, idInvestment) => {
     `${API_URL}/${idInvestment}/transaction/${id}`,
     updatedTransaction,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withCredentials: true,
     }
   );
 };
 
 export const deleteTransaction = async (id) => {
-  const token = sessionStorage.getItem("token");
-
   return await axios.delete(
     `${API_URL}/${id.idInvest}/transaction/${id.itemId}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withCredentials: true,
     }
   );
 };

@@ -2,12 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const {
-  getUsers,
   loginUser,
   addUser,
   editUser,
   deleteUser,
   getCurrentUser,
+  logoutUser,
 } = require("../controllers/user.controller");
 const auth = require("../middleware/auth");
 
@@ -24,8 +24,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const router = express.Router();
 
-router.get("/", auth, getUsers);
 router.post("/login", loginUser);
+router.post("/logout", logoutUser);
 router.post("/add", upload.single("img"), addUser);
 
 router.put("/edit/:id", auth, upload.single("img"), editUser);
