@@ -11,7 +11,7 @@ const {
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/user/:idUser", auth, getInvestments);
+router.get("/user", auth, getInvestments);
 
 router.get("/:id", auth, getInvestment);
 

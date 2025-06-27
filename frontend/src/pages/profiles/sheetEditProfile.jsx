@@ -18,8 +18,8 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { editUser } from "../../services/user.service";
-import { getUserIdFromToken } from "../../utils/users";
 import ButtonLoading from "../../components/buttons/buttonLoading";
+import { useAuth } from "../../context/authContext";
 
 const validationSchema = yup.object({
   prenom: yup.string().required("Prénom est requis"),
@@ -32,7 +32,7 @@ const validationSchema = yup.object({
 });
 
 export function SheetEditProfile({ refetch, dataProfil }) {
-  const userId = getUserIdFromToken();
+  const { data: dataUser } = useAuth();
   const isGoogleAccount = !!dataProfil?.googleId;
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -41,7 +41,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
   const [hiddenImg, setHiddenImg] = useState(false);
 
   const { mutate: editUserMutate, isPending } = useMutation({
-    mutationFn: (userData) => editUser(userId, userData),
+    mutationFn: (userData) => editUser(dataUser.id, userData),
     onSuccess: (response) => {
       refetch();
       setIsSheetOpen(false);
@@ -340,7 +340,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             !hiddenImg && (
               <Avatar className="w-48 h-48">
                 <img
-                  src={dataProfil.img}
+                  src={dataProfil?.img}
                   alt="User Avatar"
                   className="object-cover w-full h-full"
                   referrerPolicy="no-referrer"

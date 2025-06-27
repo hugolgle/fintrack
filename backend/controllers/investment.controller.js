@@ -2,10 +2,9 @@ const InvestmentModel = require("../models/investment.model");
 
 module.exports.addInvestment = async (req, res) => {
   try {
-    const { name, type, symbol, transaction, user } = req.body;
+    const { name, type, symbol, transaction } = req.body;
 
     if (
-      !user ||
       !name ||
       !type ||
       !transaction?.amount ||
@@ -17,14 +16,17 @@ module.exports.addInvestment = async (req, res) => {
       });
     }
 
-    const existingAsset = await InvestmentModel.findOne({ name, user });
+    const existingAsset = await InvestmentModel.findOne({
+      name,
+      user: req.userId,
+    });
 
     if (existingAsset) {
       return res.status(400).json({ message: "Cet actif existe déjà !" });
     }
 
     const investment = new InvestmentModel({
-      user,
+      user: req.userId,
       name,
       type,
       symbol: symbol.toUpperCase(),
@@ -65,9 +67,12 @@ module.exports.addInvestment = async (req, res) => {
 module.exports.addTransaction = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, date, isSale, user } = req.body;
+    const { amount, date, isSale } = req.body;
 
-    const investment = await InvestmentModel.findOne({ _id: id, user });
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
 
     if (!investment) {
       return res
@@ -106,7 +111,7 @@ module.exports.addTransaction = async (req, res) => {
 module.exports.getInvestments = async (req, res) => {
   try {
     const investments = await InvestmentModel.find({
-      user: req.params.idUser,
+      user: req.userId,
     });
     return res.status(200).json(investments);
   } catch (error) {

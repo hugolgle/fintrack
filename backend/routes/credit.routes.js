@@ -13,7 +13,7 @@ const {
 } = require("../controllers/credit.controller");
 
 router.post("/", auth, createCredit);
-router.get("/user/:idUser", auth, getCredits);
+router.get("/user", auth, getCredits);
 router.get("/:id", auth, getCredit);
 router.put("/:id", auth, updateCredit);
 router.patch("/:id", auth, toggleCreditStatus);

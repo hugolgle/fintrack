@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/loaders/loader.jsx";
 import { ROUTES } from "../../components/route.jsx";
-import { getUserIdFromToken } from "../../utils/users.js";
-import { getCurrentUser } from "../../services/user.service.jsx";
-import { useIsAuthenticated } from "../../utils/users.js";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "../../context/authContext.jsx";
 
 const ButtonGradient = ({ className, ...props }) => (
   <Button
@@ -20,14 +18,8 @@ const ButtonGradient = ({ className, ...props }) => (
 
 export default function Home() {
   const navigate = useNavigate();
-  const userId = getUserIdFromToken();
-  const { isAuthenticated, isLoading: isLoadingAuth } = useIsAuthenticated();
-  const { data: dataUser, isLoading } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getCurrentUser(userId),
-    enabled: !!userId,
-  });
-  if (isLoadingAuth || isLoading) return <Loader />;
+  const { user: dataUser, isLoading } = useAuth();
+  if (isLoading) return <Loader />;
 
   return (
     <section className="w-full h-screen">

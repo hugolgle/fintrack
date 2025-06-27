@@ -17,11 +17,9 @@ export function CreditSummary({ credit }) {
       )
     ) || 0;
 
-  // Progression remboursement
   const progressPercentage =
     amount > 0 ? ((amount - remaining) / amount) * 100 : 0;
 
-  // Dates
   const start = credit?.startDate ? new Date(credit?.startDate) : null;
   const end =
     start && duration

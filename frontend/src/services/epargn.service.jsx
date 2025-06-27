@@ -1,57 +1,32 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/epargns`;
 
 export const fetchAccounts = async () => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-  return await axios.get(`${API_URL}/accounts/user/${userId}`, {
+  return await axios.get(`${API_URL}/accounts/user`, {
     withCredentials: true,
   });
 };
 
 export const fetchAccount = async (id) => {
-  const token = sessionStorage.getItem("token");
   return await axios.get(`${API_URL}/accounts/${id}`, {
     withCredentials: true,
   });
 };
 
 export const addAccount = async (accountData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
-  const newAccountData = {
-    user: userId,
-    ...accountData,
-  };
-
-  return await axios.post(`${API_URL}/accounts`, newAccountData, {
+  return await axios.post(`${API_URL}/accounts`, accountData, {
     withCredentials: true,
   });
 };
 
 export const editAccount = async (accountData) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
-
-  const newAccountData = {
-    user: userId,
-    ...accountData,
-  };
-
   try {
     const response = await axios.put(
       `${API_URL}/accounts/${accountData.id}`,
-      newAccountData,
+      accountData,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -62,7 +37,6 @@ export const editAccount = async (accountData) => {
 };
 
 export const addTransfer = async (transferData) => {
-  const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/transfers`, transferData, {
     withCredentials: true,
   });
@@ -74,7 +48,6 @@ export const calculateInterests = async () => {
 };
 
 export const depositAccount = async (depositData) => {
-  const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/deposit`, depositData, {
     withCredentials: true,
   });
@@ -82,7 +55,6 @@ export const depositAccount = async (depositData) => {
 };
 
 export const withdrawAccount = async (withdrawData) => {
-  const token = sessionStorage.getItem("token");
   const response = await axios.post(`${API_URL}/withdraw`, withdrawData, {
     withCredentials: true,
   });

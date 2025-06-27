@@ -150,7 +150,6 @@ export function FormCredit({ refetch, editMode, credit }) {
         mensualité = principal / months;
       }
 
-      // Arrondi à 2 décimales pour garantir une précision exacte
       if (!isNaN(mensualité) && isFinite(mensualité)) {
         formik.setFieldValue(
           "monthlyPayment",

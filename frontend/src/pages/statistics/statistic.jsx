@@ -7,8 +7,6 @@ import {
 } from "../../utils/operations";
 import { fetchTransactions } from "../../services/transaction.service";
 import { fetchInvestments } from "../../services/investment.service";
-import { getCurrentUser } from "../../services/user.service";
-import { getUserIdFromToken } from "../../utils/users";
 import { currentDate, months } from "../../utils/other";
 import { HttpStatusCode } from "axios";
 import BoxStat from "../../components/boxs/boxStat";
@@ -32,16 +30,11 @@ import {
 import { toast } from "sonner";
 import { TYPES } from "../../staticDatas/staticData";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { useAuth } from "../../context/authContext";
 
 export default function Statistic() {
-  const userId = getUserIdFromToken();
+  const { user: dataUser } = useAuth();
   const { month: currentMonth, year: currentYear } = currentDate();
-
-  const { data: dataUser } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getCurrentUser(userId),
-    enabled: !!userId,
-  });
 
   const {
     isLoading,

@@ -3,7 +3,6 @@ const HeritageModel = require("../models/heritage.model");
 module.exports.addAsset = async (req, res) => {
   try {
     if (
-      !req.body.user ||
       !req.body.category ||
       !req.body.name ||
       !req.body.acquisitionDate ||
@@ -16,7 +15,7 @@ module.exports.addAsset = async (req, res) => {
     }
 
     const asset = await HeritageModel.create({
-      user: req.body.user,
+      user: req.userId,
       category: req.body.category,
       name: req.body.name,
       acquisitionDate: req.body.acquisitionDate,
@@ -35,7 +34,7 @@ module.exports.addAsset = async (req, res) => {
 
 module.exports.getAssets = async (req, res) => {
   try {
-    const assets = await HeritageModel.find({ user: req.params.idUser });
+    const assets = await HeritageModel.find({ user: req.userId });
     return res.status(200).json(assets);
   } catch (error) {
     return res.status(500).json({

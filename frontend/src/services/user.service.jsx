@@ -9,7 +9,9 @@ export const loginUser = async (credentials) => {
   return response.data;
 };
 
-export const logoutUser = async () => {};
+export const logoutUser = async () => {
+  return await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+};
 
 export const getCurrentUser = async () => {
 
@@ -37,10 +39,6 @@ export const addUser = async (userData) => {
 };
 
 export const editUser = async (userId, userData) => {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
   try {
     const response = await axios.put(`${API_URL}/edit/${userId}`, userData, {
       headers: {
@@ -61,11 +59,6 @@ export const editUser = async (userId, userData) => {
 };
 
 export const deleteUser = async (userId) => {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token JWT manquant. L'utilisateur n'est pas authentifié.");
-  }
-
   const response = await axios.delete(`${API_URL}/delete/${userId}`, {
     withCredentials: true,
   });

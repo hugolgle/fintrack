@@ -3,7 +3,6 @@ const OperationModel = require("../models/transaction.model");
 module.exports.addTransaction = async (req, res) => {
   try {
     if (
-      !req.body.user ||
       !req.body.date ||
       !req.body.amount ||
       !req.body.title ||
@@ -26,7 +25,7 @@ module.exports.addTransaction = async (req, res) => {
     }
 
     const transaction = await OperationModel.create({
-      user: req.body.user,
+      user: req.userId,
       type: req.body.type,
       category: req.body.category,
       title: req.body.title,
@@ -46,7 +45,7 @@ module.exports.addTransaction = async (req, res) => {
 
 module.exports.getTransactions = async (req, res) => {
   try {
-    const transactions = await OperationModel.find({ user: req.params.idUser });
+    const transactions = await OperationModel.find({ user: req.userId });
     return res.status(200).json(transactions);
   } catch (error) {
     return res.status(500).json({

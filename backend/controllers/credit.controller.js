@@ -5,6 +5,7 @@ exports.createCredit = async (req, res) => {
   try {
     const data = {
       ...req.body,
+      user: req.userId,
       balance: req.body.amount, // balance = montant total au départ
     };
     const credit = new CreditModel(data);
@@ -18,7 +19,7 @@ exports.createCredit = async (req, res) => {
 // Récupérer tous les crédits d’un utilisateur
 exports.getCredits = async (req, res) => {
   try {
-    const credits = await CreditModel.find({ user: req.params.idUser });
+    const credits = await CreditModel.find({ user: req.userId });
     res.json(credits);
   } catch (error) {
     res.status(500).json({ message: error.message, error });

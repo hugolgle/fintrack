@@ -4,16 +4,16 @@ const mongoose = require("mongoose");
 
 module.exports.addAccount = async (req, res) => {
   try {
-    const { user, name, balance, interestRate, maxBalance } = req.body;
+    const { name, balance, interestRate, maxBalance } = req.body;
 
-    if (!user || !name || balance === undefined || interestRate === undefined) {
+    if (!name || balance === undefined || interestRate === undefined) {
       return res.status(400).json({
         message: "Veuillez fournir toutes les informations nécessaires",
       });
     }
 
     const account = await EpargnModel.create({
-      user,
+      user: req.userId,
       name,
       balance,
       interestRate,
@@ -77,7 +77,7 @@ module.exports.editAccount = async (req, res) => {
 module.exports.getAccounts = async (req, res) => {
   try {
     const accounts = await EpargnModel.find({
-      user: req.params.idUser,
+      user: req.userId,
     });
     return res.status(200).json(accounts);
   } catch (error) {
