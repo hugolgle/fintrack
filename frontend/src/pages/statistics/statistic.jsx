@@ -260,16 +260,16 @@ export default function Statistic() {
     <section className="w-full">
       <Header title="Statistiques" isFetching={isFetching} />
       <div className="flex flex-col w-full gap-4">
-        <div className="flex flex-row gap-2">
-          <Carousel className="max-w-xs overflow-hidden">
-            <CarouselContent className="flex gap-2 px-4 snap-x snap-mandatory">
+        <div className="flex flex-col  md:flex-row gap-2">
+          <Carousel className="md:max-w-xs overflow-hidden">
+            <CarouselContent className="flex gap-2 snap-x snap-mandatory">
               {years.map((year, i) => (
                 <CarouselItem
                   key={i}
                   className={`pl-0 ${years.length > 1 && "basis-1/2"}`}
                 >
                   <Button
-                    variant={selectedYear === year ? "secondary" : "none"}
+                    variant={selectedYear === year ? "default" : "secondary"}
                     onClick={() => setSelectedYear(year)}
                     className="w-full"
                   >
@@ -281,16 +281,16 @@ export default function Statistic() {
           </Carousel>
           <Separator
             orientation="vertical"
-            className="h-7 my-auto bg-secondary"
+            className="h-7 my-auto bg-secondary hidden md:block"
           />
-          <div className="flex w-full gap-2">
+          <div className="flex flex-wrap w-full gap-2">
             {monthsList.map((m, i) => (
               <Button
                 key={i}
                 variant={
                   selectedMonth === String(m).padStart(2, "0")
-                    ? "secondary"
-                    : "none"
+                    ? "default"
+                    : "secondary"
                 }
                 className="w-full max-w-fit animate-fade"
                 onClick={() => setSelectedMonth(String(m).padStart(2, "0"))}
@@ -300,7 +300,7 @@ export default function Statistic() {
             ))}
           </div>
         </div>
-        <Container custom="!flex-row">
+        <Container custom="flex flex-col gap-4 lg:gap-0 lg:flex-row">
           <div className="flex flex-col w-full">
             <p className="italic font-thin text-xs text-left">
               Revenus de {selectedYear}
@@ -320,7 +320,11 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary mr-4"
+            className="h-32 my-auto bg-secondary mr-4 hidden lg:block"
+          />
+          <Separator
+            orientation="horizontal"
+            className="mx-auto bg-secondary lg:hidden block"
           />
           <div className="flex flex-col w-full">
             <p className="italic font-thin text-xs text-left">
@@ -341,7 +345,11 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary mr-4"
+            className="h-32 my-auto bg-secondary mr-4 hidden lg:block"
+          />
+          <Separator
+            orientation="horizontal"
+            className="mx-auto bg-secondary lg:hidden block"
           />
           <div className="flex flex-col w-full">
             <p className="italic font-thin text-xs text-left">
@@ -362,7 +370,11 @@ export default function Statistic() {
           </div>
           <Separator
             orientation="vertical"
-            className="h-32 my-auto bg-secondary mr-4"
+            className="h-32 my-auto bg-secondary mr-4 hidden lg:block"
+          />
+          <Separator
+            orientation="horizontal"
+            className="mx-auto bg-secondary lg:hidden block"
           />
           <div className="flex flex-col w-full">
             <p className="italic font-thin text-xs text-left">
@@ -383,17 +395,17 @@ export default function Statistic() {
           </div>
         </Container>
         <div className="flex flex-col lg:flex-row gap-4 animate-fade">
-          <div className="flex flex-col items-center gap-4 w-full max-w-4xl px-4 md:w-2/3">
+          <div className="flex flex-col items-center gap-4 w-full max-w-4xl md:w-2/3">
             <div className="flex-col md:flex-row gap-2 md:gap-4 w-full text-center md:text-right hidden lg:flex">
               <Container custom="!w-8 self-center md:self-auto" />
               <Container custom="!p-2">
-                <h1 className="italic text-xs">Moyenne/Mois</h1>
+                <h1 className="italic text-xs text-center">Moyenne/Mois</h1>
               </Container>
               <Container custom="!p-2">
-                <h1 className="italic text-xs">Par mois</h1>
+                <h1 className="italic text-xs text-center">Par mois</h1>
               </Container>
               <Container custom="!p-2">
-                <h1 className="italic text-xs">Par an</h1>
+                <h1 className="italic text-xs text-center">Par an</h1>
               </Container>
             </div>
 
