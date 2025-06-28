@@ -5,7 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAccounts } from "../../services/epargn.service";
 import { HttpStatusCode } from "axios";
 import Loader from "../../components/loaders/loader";
-import { Wallet } from "lucide-react";
+import {
+  ChevronLeft,
+  CirclePlus,
+  Euro,
+  PiggyBank,
+  Plus,
+  Wallet,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ChevronRight } from "lucide-react";
 import { RadialChart } from "../../components/chartss/radialChart";
@@ -15,14 +22,24 @@ import { ROUTES } from "../../components/route";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { renderCustomLegend } from "../../components/legends";
 import Container from "../../components/containers/container";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { FormAddAccount } from "./formAddAccount";
+import { ChartLine } from "../../components/chartss/chartLine";
+import { months } from "../../utils/other";
+import { useEffect, useState } from "react";
+import SkeletonDashboard from "../../components/skeletonBoard";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export default function Epargn() {
   const navigate = useNavigate();
-
+  const { isVisible } = useAmountVisibility();
   const {
     isLoading,
     data: accounts,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
@@ -36,7 +53,7 @@ export default function Epargn() {
     refetchOnMount: true,
   });
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   const groupedTransactions = accounts.reduce((acc, account) => {
     const accountTransactions = account.transactions.map((transaction) => ({
@@ -138,32 +155,190 @@ export default function Epargn() {
       transaction.accountName ?? transaction.fromAccount,
       transaction.toAccount ?? "-",
       new Date(transaction.date).toLocaleDateString(),
-      formatCurrency.format(transaction.amount),
+      isVisible ? formatCurrency.format(transaction.amount) : "••••",
     ];
   };
 
+  const data = accounts.flatMap((account) => account.monthlyStatements);
+
+  // Grouper les montants par mois/année
+  const grouped = data.reduce((acc, item) => {
+    const dateObj = new Date(item.date);
+    const year = dateObj.getFullYear();
+    const monthIndex = dateObj.getMonth(); // 0 = janvier
+    const key = `${year}-${monthIndex}`;
+
+    if (!acc[key]) {
+      acc[key] = {
+        month: months[monthIndex],
+        year,
+        amount: 0,
+      };
+    }
+
+    acc[key].amount += item.balance;
+
+    return acc;
+  }, {});
+
+  // Convertir en tableau trié
+  const sorted = Object.values(grouped).sort((a, b) => {
+    const dateA = new Date(a.year, months.indexOf(a.month));
+    const dateB = new Date(b.year, months.indexOf(b.month));
+    return dateA - dateB;
+  });
+
+  // Ne garder que les 12 derniers mois
+  const dataGraph = sorted.slice(-12);
+
+  const firstValue = dataGraph[0]?.amount || 0;
+  const lastValue = dataGraph[dataGraph.length - 1]?.amount || 0;
+  const growth = lastValue - firstValue;
+  const growthPercentage = firstValue !== 0 ? (growth / firstValue) * 100 : 0;
+
   return (
     <section className="w-full">
-      <Header title="Épargne" btnAdd="add" btnAction isFetching={isFetching} />
+      <Header
+        title="Mon Épargne"
+        subtitle="Gérez vos comptes d'épargne et suivez vos transactions"
+        isFetching={isFetching}
+        navigation={
+          <Dialog modal>
+            <DialogTrigger>
+              <Button>
+                <Plus />
+                <p className="hidden md:block">Créer un compte</p>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <FormAddAccount refetch={refetch} />
+            </DialogContent>
+          </Dialog>
+        }
+      />
       <div className="flex flex-col gap-4 animate-fade">
         <div className="flex flex-col lg:flex-row w-full gap-4">
-          {Array.isArray(accounts) &&
-            accounts.map((account) => (
-              <BoxInfos
-                key={account._id}
-                onClick={() =>
-                  navigate(ROUTES.ACCOUNT_BY_ID.replace(":id", account._id))
-                }
-                title={account.name}
-                value={account.balance}
-                plafond={account.maxBalance}
-                isAmount
-                icon={<Wallet size={15} color="grey" />}
-              />
-            ))}
+          <BoxInfos
+            title="Épargne totale"
+            value={totalAmount}
+            isAmount
+            icon={<PiggyBank size={15} color="grey" />}
+          />
+          <BoxInfos
+            title="Croissance annuelle"
+            value={
+              growthPercentage > 0
+                ? `+${growthPercentage.toFixed(2)} %`
+                : `${growthPercentage.toFixed(2)} %`
+            }
+            icon={<PiggyBank size={15} color="grey" />}
+          />
         </div>
         <div className="w-full flex flex-col lg:flex-row gap-4">
-          <div className="lg:w-2/3">
+          <div className="lg:w-2/3 flex flex-col gap-4">
+            <Container>
+              <h2 className="text-left">Évolution de l'épargne</h2>
+              <p className="text-left text-sm text-muted-foreground">
+                Progression de votre épargne sur les 12 derniers mois
+              </p>
+
+              <ChartLine
+                data={dataGraph}
+                defaultConfig={{
+                  amount: {
+                    label: "Montant",
+                    color: "hsl(var(--chart-12))",
+                    visible: true,
+                  },
+                  text: {
+                    color: "hsl(var(--foreground))",
+                  },
+                }}
+                maxValue={Math.max(...dataGraph.map((item) => item.amount))}
+              />
+            </Container>
+            <Container>
+              <div className="mb-4">
+                <h2 className="text-left">Mes comptes d'épargne</h2>
+                <p className="text-left text-sm text-muted-foreground">
+                  Vue d'ensemble de vos différents produits d'épargne
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {accounts.length > 0 ? (
+                  accounts.map((account) => {
+                    const percent = account.maxBalance
+                      ? (account.balance * 100) / account.maxBalance
+                      : 0;
+
+                    return (
+                      <div
+                        key={account._id}
+                        className="flex flex-col justify-between items-center p-4 gap-2 ring-1 ring-secondary rounded-md cursor-pointer hover:bg-secondary transition-all"
+                        onClick={() =>
+                          navigate(
+                            ROUTES.ACCOUNT_BY_ID.replace(":id", account._id)
+                          )
+                        }
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 bg-muted-foreground rounded-full flex items-center justify-center">
+                              <Wallet className="h-5 w-5" />
+                            </div>
+                            <p className="font-semibold">{account.name}</p>
+                          </div>
+                          <div>
+                            <p className="text-lg font-bold">
+                              {isVisible
+                                ? formatCurrency.format(account.balance)
+                                : "••••"}
+                            </p>
+                            <p className="text-sm text-muted-foreground text-right">
+                              Taux: {account.interestRate}%
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="relative flex gap-2 items-center w-full">
+                          <Progress
+                            value={percent > 100 ? 100 : percent}
+                            className="w-full h-[2px]"
+                          />
+                          <p className="text-muted-foreground italic text-[10px] text-nowrap">
+                            {percent.toFixed(2)} %
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-center text-muted-foreground">
+                    Aucun compte d'épargne trouvé.
+                  </p>
+                )}
+              </div>
+            </Container>
+          </div>
+
+          <div className="lg:w-1/3 flex flex-col gap-4">
+            <Container>
+              <h2 className="text-left">Répartitions</h2>
+              {totalAmount !== "0.00" ? (
+                <RadialChart
+                  chartData={transformedData}
+                  chartConfig={chartConfig}
+                  total={totalAmount}
+                  fontSizeTotal={8}
+                  inner={60}
+                  outer={80}
+                  legend={renderCustomLegend}
+                />
+              ) : (
+                <p className="h-[225px] ">Aucune donnée</p>
+              )}
+            </Container>
             <Container>
               <div className="flex justify-between w-full cursor-pointer items-center">
                 <h2 className="text-left">Transactions</h2>
@@ -228,39 +403,18 @@ export default function Epargn() {
                               : ""
                           }`}
                         >
-                          {transaction?.type === "transfer"
-                            ? formatCurrency.format(
-                                Math.abs(transaction.amount)
-                              )
-                            : formatCurrency.format(transaction.amount)}
+                          {isVisible
+                            ? transaction?.type === "transfer"
+                              ? formatCurrency.format(
+                                  Math.abs(transaction.amount)
+                                )
+                              : formatCurrency.format(transaction.amount)
+                            : "••••"}
                         </span>
                       </p>
                     </div>
                   ))}
               </div>
-            </Container>
-          </div>
-
-          <div className="lg:w-1/3">
-            <Container>
-              <h2 className="text-left">Répartitions</h2>
-              {!isFetching ? (
-                totalAmount !== "0.00" ? (
-                  <RadialChart
-                    chartData={transformedData}
-                    chartConfig={chartConfig}
-                    total={totalAmount}
-                    fontSizeTotal={8}
-                    inner={60}
-                    outer={80}
-                    legend={renderCustomLegend}
-                  />
-                ) : (
-                  <p className="h-[225px] ">Aucune donnée</p>
-                )
-              ) : (
-                <LoaderDots />
-              )}
             </Container>
           </div>
         </div>

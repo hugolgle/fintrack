@@ -5,7 +5,6 @@ const TransactionModel = require("../models/transaction.model");
 const InvestissementModel = require("../models/investment.model");
 const CreditModel = require("../models/credit.model");
 const EpargneModel = require("../models/epargn.model");
-const HeritageModel = require("../models/heritage.model");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 
@@ -201,7 +200,6 @@ module.exports.deleteAccount = async (req, res) => {
       InvestissementModel.deleteMany({ user: req.userId }),
       CreditModel.deleteMany({ user: req.userId }),
       EpargneModel.deleteMany({ user: req.userId }),
-      HeritageModel.deleteMany({ user: req.userId }),
     ]);
 
     await user.deleteOne({ _id: req.userId });

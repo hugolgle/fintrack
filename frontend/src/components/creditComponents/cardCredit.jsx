@@ -18,10 +18,11 @@ import { toast } from "sonner";
 import { FormPayment } from "../../pages/credits/formPayment";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { FormCredit } from "../../pages/credits/formCredit";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export function CreditCardComponent({ credit, isActive, onClick, refetch }) {
   const queryClient = useQueryClient();
-
+  const { isVisible } = useAmountVisibility();
   const mutationDelete = useMutation({
     mutationFn: async (itemId) => {
       return await deleteCredit(itemId);
@@ -153,12 +154,14 @@ export function CreditCardComponent({ credit, isActive, onClick, refetch }) {
         <div className="grid grid-cols-2 gap-2 mb-3">
           <div>
             <p className="text-xs text-muted-foreground">Restant dû</p>
-            <p className="font-thin">{formatCurrency.format(balance)}</p>
+            <p className="font-thin">
+              {isVisible ? formatCurrency.format(balance) : "••••"}
+            </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Mensualité</p>
             <p className="font-thin">
-              {formatCurrency.format(monthly + insurance)}
+              {isVisible ? formatCurrency.format(monthly + insurance) : "••••"}
             </p>
           </div>
         </div>

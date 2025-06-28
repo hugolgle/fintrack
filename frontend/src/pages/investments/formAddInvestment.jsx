@@ -8,6 +8,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
@@ -18,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import Header from "../../components/headers.jsx";
 import { addTransaction } from "../../services/investment.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -28,12 +32,15 @@ import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
 import { useState } from "react";
 
 const validationSchema = yup.object().shape({
-  action: yup.string().required("L'action est requise"),
-  date: yup.date().required("Le nom est requis"),
+  action: yup
+    .string()
+    .oneOf(["buy", "sell", "dividend"])
+    .required("L'action est requise"),
+  date: yup.date().required("La date est requise"),
   amount: yup.number().positive().required("Le montant est requis"),
 });
 
-export default function PageAddInvestment() {
+export default function FormAddInvestment({ refetch }) {
   const { id } = useParams();
 
   const [open, setOpen] = useState(false);
@@ -45,6 +52,7 @@ export default function PageAddInvestment() {
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
+      refetch();
     },
     onError: (error) => {
       toast.error(error?.data?.message);
@@ -61,7 +69,7 @@ export default function PageAddInvestment() {
     validateOnMount: true,
     onSubmit: async (values) => {
       const postData = {
-        action: values.action === "true",
+        action: values.action,
         amount: values.amount,
         date: values.date.toLocaleDateString("fr-CA"),
       };
@@ -72,12 +80,14 @@ export default function PageAddInvestment() {
   });
 
   return (
-    <section className="h-full">
-      <Header title="Ajouter une opération" btnReturn />
-      <form
-        onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
-      >
+    <form onSubmit={formik.handleSubmit}>
+      <DialogHeader>
+        <DialogTitle>Ajouter un investissement</DialogTitle>
+        <DialogDescription>
+          Ajouter les informations du nouveau investissement.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
         <Select
           name="action"
           value={formik.values.action}
@@ -88,10 +98,12 @@ export default function PageAddInvestment() {
             <SelectValue placeholder="Sélectionnez une action" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="true">Vendre</SelectItem>
-            <SelectItem value="false">Acheter</SelectItem>
+            <SelectItem value="buy">Acheter</SelectItem>
+            <SelectItem value="sell">Vendre</SelectItem>
+            <SelectItem value="dividend">Dividende</SelectItem>
           </SelectContent>
         </Select>
+
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="input">
@@ -134,14 +146,14 @@ export default function PageAddInvestment() {
             {formik.errors.amount}
           </p>
         )}
+      </div>
 
-        <ButtonLoading
-          variant="secondary"
-          text="Soumettre"
-          disabled={addTransactionInvestmentMutation.isPending}
-          isPending={addTransactionInvestmentMutation.isPending}
-        />
-      </form>
-    </section>
+      <ButtonLoading
+        variant="secondary"
+        text="Soumettre"
+        disabled={addTransactionInvestmentMutation.isPending}
+        isPending={addTransactionInvestmentMutation.isPending}
+      />
+    </form>
   );
 }

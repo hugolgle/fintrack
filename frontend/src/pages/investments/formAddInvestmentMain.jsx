@@ -4,7 +4,11 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import Header from "../../components/headers.jsx";
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import {
@@ -67,7 +71,11 @@ const validationSchema = yup.object().shape({
     otherwise: (schema) => schema.notRequired(),
   }),
 
-  action: yup.boolean().required("L'action est requise"),
+  action: yup
+    .string()
+    .oneOf(["true", "false"], "Action invalide")
+    .required("L'action est requise"),
+
   amount: yup
     .number()
     .required("Le montant est requis")
@@ -76,7 +84,7 @@ const validationSchema = yup.object().shape({
   date: yup.date().required("La date est requise"),
 });
 
-export default function PageAddInvestmentMain() {
+export default function FormAddInvestmentMain({ refetch }) {
   const [open, setOpen] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openCalendarBis, setOpenCalendarBis] = useState(false);
@@ -84,18 +92,10 @@ export default function PageAddInvestmentMain() {
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
   const [idInvest, setIdInvest] = useState("");
 
-  const {
-    user: dataUser,
-    isLoading: isLoadingUser,
-    isFetching: isFetchingUser,
-  } = useAuth();
+  const { user: dataUser } = useAuth();
 
-  const {
-    isLoading: isLoadingInvestments,
-    data: dataInvests,
-    isFetching: isFetchingInvestments,
-  } = useQuery({
-    queryKey: ["fetchInvestments"],
+  const { isLoading: isLoadingInvestments, data: dataInvests } = useQuery({
+    queryKey: ["fetchInvestmentsModal"],
     queryFn: async () => {
       const response = await fetchInvestments();
       if (response?.status !== HttpStatusCode.Ok) {
@@ -126,13 +126,13 @@ export default function PageAddInvestmentMain() {
               type: values.type,
               symbol: values.symbol,
               transaction: {
-                action: values.action === "true",
+                action: values.action === "true" ? "sell" : "buy",
                 amount: values.amount,
                 date: values.date.toISOString(),
               },
             }
           : {
-              action: values.action === "true",
+              action: values.action === "true" ? "sell" : "buy",
               amount: values.amount,
               date: values.date.toLocaleDateString("fr-CA"),
             };
@@ -151,6 +151,7 @@ export default function PageAddInvestmentMain() {
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
+      refetch();
     },
     onError: (error) => {
       toast.error(error?.data?.message || "Une erreur est survenue.");
@@ -164,25 +165,22 @@ export default function PageAddInvestmentMain() {
     },
     onSuccess: (response) => {
       toast.success(response?.data?.message);
+      refetch();
     },
     onError: (error) => {
       toast.error(error?.data?.message);
     },
   });
 
-  if (isLoadingUser || isLoadingInvestments) return <Loader />;
-
   return (
-    <section className="h-full">
-      <Header
-        title="Ajouter un investissement"
-        isFetching={isFetchingInvestments || isFetchingUser}
-        btnReturn
-      />
-      <form
-        onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
-      >
+    <form onSubmit={formik.handleSubmit}>
+      <DialogHeader>
+        <DialogTitle>Ajouter un investissement</DialogTitle>
+        <DialogDescription>
+          Ajouter les informations du nouveau investissment.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="transaction">Transaction</TabsTrigger>
@@ -400,20 +398,19 @@ export default function PageAddInvestmentMain() {
             </div>
           </TabsContent>
         </Tabs>
-
-        <ButtonLoading
-          variant="secondary"
-          text="Soumettre"
-          isPending={
-            addInvestmentMutation.isPending ||
-            addTransactionInvestmentMutation.isPending
-          }
-          disabled={
-            addInvestmentMutation.isPending ||
-            addTransactionInvestmentMutation.isPending
-          }
-        />
-      </form>
-    </section>
+      </div>
+      <ButtonLoading
+        variant="secondary"
+        text="Soumettre"
+        isPending={
+          addInvestmentMutation.isPending ||
+          addTransactionInvestmentMutation.isPending
+        }
+        disabled={
+          addInvestmentMutation.isPending ||
+          addTransactionInvestmentMutation.isPending
+        }
+      />
+    </form>
   );
 }

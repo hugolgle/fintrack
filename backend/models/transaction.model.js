@@ -56,6 +56,10 @@ const transactionSchema = new Schema(
       type: [String],
       required: false,
     },
+    creditId: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );

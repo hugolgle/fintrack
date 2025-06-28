@@ -37,7 +37,7 @@ export default function Profile() {
   return (
     <section className="w-full">
       <div className="flex flex-col">
-        <Header title="Profil" isFetching={isFetching} />
+        <Header title="Mon Profil" isFetching={isFetching} />
         <main>
           <div className="grid gap-4 md:grid-cols-[1fr_3fr] animate-fade">
             <Container custom="h-fit">

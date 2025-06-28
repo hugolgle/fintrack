@@ -5,44 +5,38 @@ import { fetchInvestments } from "../../services/investment.service.jsx";
 import Loader from "../../components/loaders/loader.jsx";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
+import { Button } from "@/components/ui/button";
 import { useParams } from "react-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FormEditInvestment } from "./formEditInvestment.jsx";
 import { useNavigate } from "react-router";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, MoreHorizontal } from "lucide-react";
+import { EllipsisVertical, Plus } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react";
-
 import { deleteTransaction } from "../../services/investment.service.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Eye } from "lucide-react";
-import { useState } from "react";
 import { ROUTES } from "../../components/route.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { toast } from "sonner";
+import FormAddInvestmentMain from "./formAddInvestmentMain.jsx";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function PageInvestment() {
+  const { isVisible } = useAmountVisibility();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const queryClient = useQueryClient();
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
-  };
 
   const {
     isLoading,
@@ -101,27 +95,23 @@ export default function PageInvestment() {
   const normalizedData = processTransactions(dataInvestments || []);
   const dataAll = normalizedData;
   const dataSold = normalizedData.filter(
-    (item) => item.transaction.isSale === true
+    (item) => item.transaction.type === "sell"
   );
+
   const dataInProgress = normalizedData.filter(
-    (item) => item.transaction.isSale === false
+    (item) => item.transaction.type === "buy"
   );
 
   let investissements = [];
-  let routeBtnAdd = "";
 
   if (location.pathname === ROUTES.INVESTMENT_ALL) {
     investissements = dataAll;
-    routeBtnAdd = ROUTES.ADD_ORDER;
   } else if (location.pathname === ROUTES.INVESTMENT_SOLD) {
     investissements = dataSold;
-    routeBtnAdd = ROUTES.ADD_ORDER;
   } else if (location.pathname === ROUTES.INVESTMENT_IN_PROGRESS) {
     investissements = dataInProgress;
-    routeBtnAdd = ROUTES.ADD_ORDER;
   } else {
     investissements = [];
-    routeBtnAdd = "add";
   }
 
   const columns = [
@@ -129,11 +119,12 @@ export default function PageInvestment() {
     { id: 4, name: "Nom", key: "name" },
     { id: 5, name: "Date", key: "date" },
     { id: 6, name: "Montant", key: "amount" },
-    { id: 7, name: "Action", key: "isSale" },
+    { id: 7, name: "Action", key: "type" },
   ];
 
-  const displayData = investissements.map(
-    ({ _id, name, type, symbol, transaction, createdAt }) => {
+  const displayData = investissements
+    .filter((t) => t.transaction.type !== "dividend")
+    .map(({ _id, name, type, symbol, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
@@ -142,34 +133,18 @@ export default function PageInvestment() {
         name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
-        isSale: transaction.isSale,
+        action: transaction.type,
         createdAt,
       };
-    }
-  );
-
-  const performSearch = (term) => {
-    const filteredData = displayData.filter((item) => {
-      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
-      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
-      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
-      const amountMatches = item.amount
-        .toString()
-        .toLowerCase()
-        .includes(term.toLowerCase());
-
-      return nameMatches || typeMatches || dateMatches || amountMatches;
     });
-    setSearchResults(filteredData);
-  };
 
-  const data = searchTerm ? searchResults : displayData;
+  const data = displayData;
 
   const title =
     location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
       ? "Investissement en cours"
       : location.pathname === ROUTES.INVESTMENT_ALL
-        ? "Tous les investissements"
+        ? "Tous mes investissements"
         : location.pathname === ROUTES.INVESTMENT_SOLD
           ? "Investissements vendu"
           : "Investissement";
@@ -179,8 +154,12 @@ export default function PageInvestment() {
       row.type,
       row.name,
       format(row.date, "PP", { locale: fr }),
-      formatCurrency.format(row.amount),
-      row.isSale ? "Vente" : "Achat",
+      isVisible ? formatCurrency.format(row.amount) : "••••",
+      row.action === "sell"
+        ? "Vente"
+        : row.action === "buy"
+          ? "Achat"
+          : "Dividende",
     ];
   };
 
@@ -251,9 +230,22 @@ export default function PageInvestment() {
       <section className="w-full relative">
         <Header
           title={title}
-          btnSearch={{ handleSearchChange, searchTerm }}
           btnReturn
-          btnAdd={routeBtnAdd}
+          navigation={
+            <>
+              <Dialog modal>
+                <DialogTrigger>
+                  <Button>
+                    <Plus />
+                    <p className="hidden md:block">Nouveau investissement</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormAddInvestmentMain refetch={refetch} />
+                </DialogContent>
+              </Dialog>
+            </>
+          }
           isFetching={isFetching}
         />
 
@@ -266,6 +258,11 @@ export default function PageInvestment() {
           action={action}
           firstItem={avatar}
           multiselect
+          fieldsFilter={[
+            { key: "type", fieldName: "Type" },
+            { key: "action", fieldName: "Action" },
+          ]}
+          dateFilter
         />
       </section>
     </>

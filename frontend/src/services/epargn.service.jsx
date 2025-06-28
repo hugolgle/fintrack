@@ -43,8 +43,11 @@ export const addTransfer = async (transferData) => {
   return response.data;
 };
 
-export const calculateInterests = async () => {
-  return await axios.post(`${API_URL}/accounts/calculate-interest`);
+export const interestAccount = async (interestData) => {
+  const response = await axios.post(`${API_URL}/interest`, interestData, {
+    withCredentials: true,
+  });
+  return response.data;
 };
 
 export const depositAccount = async (depositData) => {

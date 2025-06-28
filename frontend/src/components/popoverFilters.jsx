@@ -1,106 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-function PopoverFilter({
-  categories,
-  titles,
-  clearFilters,
-  handleCheckboxChange,
-  selectedTitles,
-  selectedCategorys,
-  selectedTags,
-  tags,
-}) {
+function PopoverFilter({ data = [], fields = [] }) {
+  const [selectedFilters, setSelectedFilters] = useState({});
+
+  // Extraire les valeurs uniques pour chaque champ à filtrer
+  const getUniqueValues = (field) => {
+    const values = data.map((item) => item[field]);
+    return [...new Set(values.flat())].filter(Boolean);
+  };
+
+  const handleCheckboxChange = (field, value, checked) => {
+    const updated = { ...selectedFilters };
+    if (!updated[field]) updated[field] = [];
+
+    if (checked) {
+      updated[field].push(value);
+    } else {
+      updated[field] = updated[field].filter((v) => v !== value);
+    }
+
+    setSelectedFilters(updated);
+  };
+
+  const clearFilters = () => {
+    setSelectedFilters({});
+  };
+
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <p className="text-center font-thin italic text-sm">
-          Filtrer par catégorie :
-        </p>
-        <div className="grid grid-cols-2 text-xs gap-y-[2px]">
-          {Array.isArray(categories) &&
-            categories.map(({ index, name }) => (
+    <div className="flex flex-col gap-3">
+      {fields.map((field) => (
+        <div key={field}>
+          <p className="text-center font-thin italic text-sm capitalize">
+            Filtrer par {field} :
+          </p>
+          <div className="grid grid-cols-2 text-xs gap-y-[2px]">
+            {getUniqueValues(field).map((value, index) => (
               <div key={index} className="flex gap-2">
                 <Checkbox
-                  id={name}
-                  name="category"
-                  value={name}
-                  checked={selectedCategorys.includes(name)}
+                  id={`${field}-${value}`}
+                  checked={selectedFilters[field]?.includes(value) || false}
                   onCheckedChange={(checked) =>
-                    handleCheckboxChange(
-                      { target: { value: name, checked } },
-                      "category"
-                    )
+                    handleCheckboxChange(field, value, checked)
                   }
                   className="cursor-pointer"
                 />
-                <label htmlFor={name} className="cursor-pointer">
-                  {name}
+                <label htmlFor={`${field}-${value}`} className="cursor-pointer">
+                  {value}
                 </label>
               </div>
             ))}
+          </div>
         </div>
+      ))}
 
-        <p className="text-center font-thin italic text-sm">
-          Filtrer par titre :
-        </p>
-        <div className="grid grid-cols-2 text-xs gap-y-[2px]">
-          {Array.isArray(titles) &&
-            titles.map((title, index) => (
-              <div key={index} className="flex gap-2">
-                <Checkbox
-                  id={title}
-                  name="title"
-                  value={title}
-                  checked={selectedTitles.includes(title)}
-                  onCheckedChange={(checked) =>
-                    handleCheckboxChange(
-                      { target: { value: title, checked } },
-                      "title"
-                    )
-                  }
-                  className="cursor-pointer"
-                />
-                <label htmlFor={title} className="cursor-pointer">
-                  {title}
-                </label>
-              </div>
-            ))}
-        </div>
-
-        <p className="text-center font-thin italic text-sm">
-          Filtrer par tags :
-        </p>
-        <div className="grid grid-cols-2 text-xs gap-y-[2px]">
-          {Array.isArray(tags) &&
-            tags.map((tag, index) => (
-              <div key={index} className="flex gap-2">
-                <Checkbox
-                  id={tag}
-                  name="tag"
-                  value={tag}
-                  checked={selectedTags.includes(tag)}
-                  onCheckedChange={(checked) =>
-                    handleCheckboxChange(
-                      { target: { value: tag, checked } },
-                      "tag"
-                    )
-                  }
-                  className="cursor-pointer"
-                />
-                <label htmlFor={tag} className="cursor-pointer">
-                  {tag}
-                </label>
-              </div>
-            ))}
-        </div>
-
-        <Button variant="outline" onClick={clearFilters} className="mt-2">
-          Réinitialiser les filtres
-        </Button>
-      </div>
-    </>
+      <Button variant="outline" onClick={clearFilters}>
+        Réinitialiser les filtres
+      </Button>
+    </div>
   );
 }
 

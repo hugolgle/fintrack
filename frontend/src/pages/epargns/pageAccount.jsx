@@ -4,21 +4,23 @@ import Header from "../../components/headers";
 import { fetchAccount, fetchAccounts } from "../../services/epargn.service";
 import { useQuery } from "@tanstack/react-query";
 import { HttpStatusCode } from "axios";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Plus } from "lucide-react";
 import { currentDate, months } from "../../utils/other";
 import LoaderDots from "../../components/loaders/loaderDots";
 import { ChartLine } from "../../components/chartss/chartLine";
 import { Pencil } from "lucide-react";
 import ModalTable from "./modal/modalTable";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ROUTES } from "../../components/route";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { FormEditAccount } from "./formEditAccount";
 import Container from "../../components/containers/container";
+import FormAction from "./action";
+import { Button } from "@/components/ui/button";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export default function PageAccount() {
   const { id } = useParams();
-
+  const { isVisible } = useAmountVisibility();
   const {
     isLoading,
     data: account,
@@ -109,7 +111,7 @@ export default function PageAccount() {
           ? getAccountName(transaction.toAccount)
           : "-",
       new Date(transaction.date).toLocaleDateString(),
-      `${transaction.amount > 0 ? "+" : ""}${formatCurrency.format(transaction.amount)}`,
+      `${transaction.amount > 0 ? "+" : ""}${isVisible ? formatCurrency.format(transaction.amount) : "••••"}`,
     ];
   };
 
@@ -118,31 +120,41 @@ export default function PageAccount() {
       <Header
         title={account?.name}
         btnReturn
-        btnAdd={ROUTES.ACTION_EPARGN}
+        navigation={
+          <Dialog modal>
+            <DialogTrigger>
+              <Button>
+                <Plus />
+                <p className="hidden md:block">Nouveau versement</p>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <FormAction refetch={refetch} accountId={id} />
+            </DialogContent>
+          </Dialog>
+        }
         isFetching={isFetching}
       />
-      <div className="flex w-full gap-4 animate-fade">
-        <div className="w-4/5">
+      <div className="flex flex-col md:flex-row w-full gap-4 animate-fade">
+        <div className="md:w-4/5">
           <Container>
             <h2 className=" text-left">Graphique</h2>
-            {!isFetching ? (
-              <ChartLine
-                data={dataGraph}
-                defaultConfig={{
-                  amount: {
-                    label: "Montant",
-                    color: "hsl(var(--chart-12))",
-                    visible: true,
-                  },
-                  text: {
-                    color: "hsl(var(--foreground))",
-                  },
-                }}
-                maxValue={Math.max(...dataGraph.map((item) => item.amount))}
-              />
-            ) : (
-              <LoaderDots />
-            )}
+
+            <ChartLine
+              data={dataGraph}
+              defaultConfig={{
+                amount: {
+                  label: "Montant",
+                  color: "hsl(var(--chart-12))",
+                  visible: true,
+                },
+                text: {
+                  color: "hsl(var(--foreground))",
+                },
+              }}
+              maxValue={Math.max(...dataGraph.map((item) => item.amount))}
+            />
+
             <div className="flex flex-row gap-4 w-fit mx-auto items-center justify-between">
               <ChevronLeft
                 size={25}
@@ -159,7 +171,7 @@ export default function PageAccount() {
           </Container>
         </div>
 
-        <div className="flex flex-col gap-4 w-1/5">
+        <div className="flex flex-col gap-4 md:w-1/5">
           <Container>
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className="text-left">Transactions</h2>
@@ -229,9 +241,11 @@ export default function PageAccount() {
                               : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
                           }`}
                         >
-                          {transaction?.amount > 0
-                            ? `+${formatCurrency.format(transaction.amount)}`
-                            : formatCurrency.format(transaction.amount)}
+                          {isVisible
+                            ? transaction?.amount > 0
+                              ? `+${formatCurrency.format(transaction.amount)}`
+                              : formatCurrency.format(transaction.amount)
+                            : "••••"}
                         </p>
                       </div>
                     );
@@ -262,14 +276,20 @@ export default function PageAccount() {
               <div className="flex justify-between">
                 <span className="text-xs">Solde</span>
                 <span className="italic text-xs">
-                  {!isLoading ? formatCurrency.format(account?.balance) : "-"}
+                  {!isLoading
+                    ? isVisible
+                      ? formatCurrency.format(account?.balance)
+                      : "••••"
+                    : "-"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs">Plafond</span>
                 <span className="italic text-xs">
                   {!isLoading
-                    ? formatCurrency.format(account?.maxBalance)
+                    ? isVisible
+                      ? formatCurrency.format(account?.maxBalance)
+                      : "••••"
                     : "-"}
                 </span>
               </div>
@@ -289,7 +309,7 @@ export default function PageAccount() {
                 <span className="text-xs">Intérets cumulé</span>
                 <span className="italic text-xs">
                   {!isLoading
-                    ? `≈ ${formatCurrency.format(account?.amountInterest)}`
+                    ? `≈ ${isVisible ? formatCurrency.format(account?.amountInterest) : "••••"}`
                     : "-"}
                 </span>
               </div>

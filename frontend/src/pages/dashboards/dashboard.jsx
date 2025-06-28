@@ -1,10 +1,15 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { getLastOperations } from "../../utils/operations.js";
+import { Button } from "@/components/ui/button";
 import {
-  getLastOperations,
-  getTagsOfTransactions,
-} from "../../utils/operations.js";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { calculTotalAmount, calculTotalByMonth } from "../../utils/calcul.js";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { currentDate, getLastMonths, months } from "../../utils/other.js";
@@ -12,14 +17,8 @@ import typeCreditList from "../../../public/typeCredit.json";
 import { fetchTransactions } from "../../services/transaction.service.jsx";
 import { fetchInvestments } from "../../services/investment.service.jsx";
 import { fetchAccounts } from "../../services/epargn.service.jsx";
-import { fetchAssets } from "../../services/heritage.service.jsx";
 import Header from "../../components/headers.jsx";
-import Loader from "../../components/loaders/loader.jsx";
-import LoaderDots from "../../components/loaders/loaderDots.jsx";
 import BoxInfos from "../../components/boxs/boxInfos.jsx";
-import { ChartLine } from "../../components/chartss/chartLine.jsx";
-import { RadialChart } from "../../components/chartss/radialChart.jsx";
-import { renderCustomLegend } from "../../components/legends.jsx";
 import Container from "../../components/containers/container.jsx";
 import {
   ChevronLeft,
@@ -28,10 +27,8 @@ import {
   WalletCards,
   Landmark,
   HandCoins,
-  Swords,
 } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router";
 import { ROUTES } from "../../components/route.jsx";
 import { categoryDepense } from "../../../public/categories.json";
@@ -41,9 +38,15 @@ import { toast } from "sonner";
 import { TYPES } from "../../staticDatas/staticData.js";
 import { FormTransac } from "../finances/formFinance.jsx";
 import { fetchCredits } from "../../services/credit.service.jsx";
+import FormAddInvestmentMain from "../investments/formAddInvestmentMain.jsx";
+import { useAuth } from "../../context/authContext.jsx";
+import SkeletonBoard from "../../components/skeletonBoard.jsx";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function Dashboard() {
+  const { isVisible } = useAmountVisibility();
   const navigate = useNavigate();
+  const { user: dataUser } = useAuth();
   const { month: currentMonth, year: currentYear } = currentDate();
   const currentMonthYear = `${currentYear}${currentMonth}`;
   const {
@@ -97,26 +100,20 @@ export default function Dashboard() {
     },
     refetchOnMount: true,
   });
-  const { data: dataAssets } = useQuery({
-    queryKey: ["fetchAssets"],
-    queryFn: async () => {
-      const res = await fetchAssets();
-      if (res?.status !== HttpStatusCode.Ok)
-        toast.warn(res?.response?.data?.message || "Erreur");
-      return res.data;
-    },
-    refetchOnMount: true,
-  });
 
   const dataTransacsInvest = useMemo(
     () =>
       dataInvests?.flatMap((inv) =>
-        inv.transaction.map((trans) => ({
-          _id: trans._id,
-          title: inv.name,
-          amount: trans.amount,
-          date: trans.date,
-        }))
+        inv.transaction
+          .filter((trans) => {
+            return trans.type !== "dividend";
+          })
+          .map((trans) => ({
+            _id: trans._id,
+            title: inv.name,
+            amount: Math.abs(trans.amount),
+            date: trans.date,
+          }))
       ) || [],
     [dataInvests]
   );
@@ -128,7 +125,7 @@ export default function Dashboard() {
     () => calculTotalByMonth(dataTransacs, TYPES.EXPENSE, currentMonthYear),
     [dataTransacs, currentMonthYear]
   );
-  const investCurrentMonth = useMemo(
+  const amountInvest = useMemo(
     () => calculTotalAmount(dataTransacsInvest),
     [dataTransacsInvest]
   );
@@ -160,207 +157,90 @@ export default function Dashboard() {
     [dataTransacsInvest]
   );
 
-  const [month, setMonth] = useState(currentMonthYear);
-  const [graphMonth, setGraphMonth] = useState(currentMonthYear);
-  const [selectNbMonth, setSelectNbMonth] = useState(12);
-  const updateMonth = (dateStr, incr) => {
-    let y = parseInt(dateStr.slice(0, 4), 10);
-    let m = parseInt(dateStr.slice(4), 10) + incr;
-    if (m === 0) {
-      m = 12;
-      y--;
-    }
-    if (m === 13) {
-      m = 1;
-      y++;
-    }
-    return `${y}${String(m).padStart(2, "0")}`;
-  };
-  const clickLastMonth = () => setMonth(updateMonth(month, -1));
-  const clickNextMonth = () => setMonth(updateMonth(month, 1));
-  const clickLastMonthGraph = () => setGraphMonth(updateMonth(graphMonth, -1));
-  const clickNextMonthGraph = () => setGraphMonth(updateMonth(graphMonth, 1));
-
-  const categoriesDf = useMemo(
-    () =>
-      categoryDepense.filter((c) => c.category === "Fixe").map((c) => c.name),
-    []
-  );
-  const categoriesLoisir = useMemo(
-    () =>
-      categoryDepense.filter((c) => c.category === "Loisir").map((c) => c.name),
-    []
-  );
-  const dataDf = useMemo(
-    () => calculTotalByMonth(dataTransacs, TYPES.EXPENSE, month, categoriesDf),
-    [dataTransacs, month, categoriesDf]
-  );
-  const dataLoisir = useMemo(
-    () =>
-      calculTotalByMonth(dataTransacs, TYPES.EXPENSE, month, categoriesLoisir),
-    [dataTransacs, month, categoriesLoisir]
-  );
-  const total = useMemo(
-    () => calculTotalByMonth(dataTransacs, TYPES.INCOME, month),
-    [dataTransacs, month]
-  );
-  const montantInvest = useMemo(
-    () =>
-      dataTransacsInvest
-        .filter((inv) => {
-          const d = new Date(inv.date);
-          return (
-            d.getFullYear() === parseInt(month.slice(0, 4), 10) &&
-            d.getMonth() + 1 === parseInt(month.slice(4), 10)
-          );
-        })
-        .reduce((sum, inv) => sum + inv.amount, 0),
-    [dataTransacsInvest, month]
-  );
-
-  const monthsGraph = useMemo(
-    () => getLastMonths(graphMonth, selectNbMonth),
-    [graphMonth, selectNbMonth]
-  );
-  const dataGraph = useMemo(
-    () =>
-      monthsGraph.map(({ code, month: m, year }) => {
-        const amountExpense = Math.abs(
-          calculTotalByMonth(dataTransacs, TYPES.EXPENSE, code)
-        );
-        const amountRevenue = Math.abs(
-          calculTotalByMonth(dataTransacs, TYPES.INCOME, code)
-        );
-        const montantInvests = Math.abs(
-          dataTransacsInvest
-            .filter((inv) => {
-              const d = new Date(inv.date);
-              return (
-                d.getFullYear() === parseInt(code.slice(0, 4), 10) &&
-                d.getMonth() + 1 === parseInt(code.slice(4), 10)
-              );
-            })
-            .reduce((sum, inv) => sum + inv.amount, 0)
-        );
-        return {
-          month: m,
-          year,
-          amountExpense,
-          amountRevenue,
-          montantInvest: montantInvests,
-        };
-      }),
-    [monthsGraph, dataTransacs, dataTransacsInvest]
-  );
-  const maxValue = useMemo(
-    () =>
-      Math.max(
-        ...dataGraph.map((item) =>
-          Math.max(item.amountExpense, item.amountRevenue, item.montantInvest)
-        )
-      ),
-    [dataGraph]
-  );
-
-  const dFix = Math.abs(dataDf);
-  const dLoisir = Math.abs(dataLoisir);
-  const mInvest = montantInvest;
-  const epargne = useMemo(
-    () => Math.max(total - (dFix + dLoisir + mInvest), 0),
-    [total, dFix, dLoisir, mInvest]
-  );
-  const chartDataRadial = useMemo(() => {
-    const raw = [
-      {
-        name: "Dépenses fixes",
-        amount: dFix,
-        fill: "var(--color-depensesFixes)",
-      },
-      { name: "Loisir", amount: dLoisir, fill: "var(--color-loisir)" },
-      { name: "Investissements", amount: mInvest, fill: "var(--color-invest)" },
-      { name: "Épargne", amount: epargne, fill: "var(--color-epargne)" },
-    ];
-
-    return raw
-      .map((item) => ({
-        ...item,
-        pourcentage: total > 0 ? (item.amount / total) * 100 : 0,
-      }))
-      .filter((item) => item.pourcentage > 0);
-  }, [dFix, dLoisir, mInvest, epargne, total]);
-
-  const chartConfigRadial = {
-    depensesFixes: {
-      label: "Dépenses fixes",
-      color: "hsl(var(--graph-expensesFix))",
-    },
-    loisir: { label: "Loisir", color: "hsl(var(--graph-loisir))" },
-    invest: { label: "Investissements", color: "hsl(var(--graph-invest))" },
-    epargne: { label: "Épargne", color: "hsl(var(--graph-epargn))" },
-  };
-  const convertDate = (date) => {
-    const y = Math.floor(date / 100);
-    const m = date % 100;
-    return `${months[m - 1]} ${y}`;
-  };
-
   const amountEpargn = useMemo(
     () => (dataAccounts || []).reduce((sum, acc) => sum + acc.balance, 0),
     [dataAccounts]
   );
-  const amountAssets = useMemo(
-    () => (dataAssets || []).reduce((sum, a) => sum + a.estimatePrice, 0),
-    [dataAssets]
-  );
-  const amountInvestAll = useMemo(
-    () =>
-      Array.isArray(dataInvests)
-        ? dataInvests.reduce((sum, inv) => sum + (inv.amountBuy || 0), 0)
-        : 0,
-    [dataInvests]
-  );
-  const amountHeritage = amountInvestAll + amountEpargn + amountAssets;
 
-  const dataHeritage = useMemo(
-    () => [
-      { name: "Épargne", amount: amountEpargn },
-      { name: "Investissement", amount: amountInvestAll },
-      { name: "Bien", amount: amountAssets },
-    ],
-    [amountEpargn, amountInvestAll, amountAssets]
-  );
-  const transformedDataAccount = useMemo(
-    () =>
-      dataHeritage.map((item, i) => ({
-        name: item.name,
-        amount: item.amount,
-        pourcentage: (item.amount / amountHeritage) * 100,
-        fill: `hsl(var(--chart-${i + 2}))`,
-      })),
-    [dataHeritage, amountHeritage]
-  );
-  const chartConfigAccount = useMemo(
-    () =>
-      dataHeritage.reduce((config, { name }, i) => {
-        config[name] = { label: name, color: `hsl(var(--chart-${i + 1}))` };
-        return config;
-      }, {}),
-    [dataHeritage]
-  );
-  const firstMonthGraph = monthsGraph[0];
-  const lastMonthGraph = monthsGraph[monthsGraph.length - 1];
-  const theMonthGraph = `${firstMonthGraph.month} ${firstMonthGraph.year} - ${lastMonthGraph.month} ${lastMonthGraph.year}`;
-  const chevronIsVisible = month < currentMonthYear;
-  const chevronGraphIsVisible = lastMonthGraph.code < currentMonthYear;
+  const percentInvest = (amountInvest * 100) / (amountInvest + amountEpargn);
+  const percentEpargn = (amountEpargn * 100) / (amountInvest + amountEpargn);
 
-  if (loadingTransacs || loadingAccounts || loadingInvests) return <Loader />;
+  if (loadingTransacs || loadingAccounts || loadingInvests)
+    return <SkeletonBoard />;
 
   return (
     <section className="w-full">
       <Header
         title="Tableau de bord"
-        isFetching={false}
-        modalAdd={<FormTransac refetch={refetch} />}
+        subtitle={`Bienvenue sur votre tableau de bord, ${dataUser?.prenom || "utilisateur"} !`}
+        isFetching={isFetchingInvests || isFetchingTransacs}
+        navigation={
+          <div className="flex items-center gap-2 ">
+            <Dialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Button className="bg-colorRevenue hover:bg-colorRevenue/90 size-9 active:scale-90 transition-all">
+                      <Icons.Plus
+                        size={20}
+                        className="cursor-pointer transition-all"
+                      />
+                    </Button>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Nouvelle recette</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <DialogContent>
+                <FormTransac refetch={refetch} type={TYPES.INCOME} />
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Button className="bg-colorExpense hover:bg-colorExpense/90 size-9 active:scale-90 transition-all">
+                      <Icons.Plus
+                        size={20}
+                        className="cursor-pointer transition-all"
+                      />
+                    </Button>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Nouvelle dépense</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <DialogContent>
+                <FormTransac refetch={refetch} type={TYPES.EXPENSE} />
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Button className="bg-colorInvest hover:bg-colorInvest/90 size-9 active:scale-90 transition-all">
+                      <Icons.Plus
+                        size={20}
+                        className="cursor-pointer transition-all"
+                      />
+                    </Button>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Nouveau investissement</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <DialogContent>
+                <FormAddInvestmentMain refetch={refetch} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        }
       />
       <div className="flex flex-col gap-4 animate-fade">
         <div className="flex flex-col lg:flex-row gap-4 w-full">
@@ -374,7 +254,7 @@ export default function Dashboard() {
               )
             }
             type="revenue"
-            title="Revenu"
+            title="Revenus Mensuels"
             icon={<CircleDollarSign size={15} color="grey" />}
             value={amountRevenuesMonth}
             valueLast={amountRevenuesLastMonth || null}
@@ -390,7 +270,7 @@ export default function Dashboard() {
               )
             }
             type="depense"
-            title="Dépense"
+            title="Dépenses Mensuelles"
             icon={<WalletCards size={15} color="grey" />}
             value={amountExpensesMonth}
             valueLast={amountExpensesLastMonth || null}
@@ -401,7 +281,7 @@ export default function Dashboard() {
             type="investment"
             title="Investissement"
             icon={<HandCoins size={15} color="grey" />}
-            value={investCurrentMonth}
+            value={amountInvest}
             isAmount
           />
           <BoxInfos
@@ -412,144 +292,91 @@ export default function Dashboard() {
             value={amountEpargn}
             isAmount
           />
-          <BoxInfos
-            onClick={() => navigate(ROUTES.HERITAGE)}
-            title="Patrimoine"
-            icon={<Swords size={15} color="grey" />}
-            value={amountHeritage}
-            isAmount
-          />
         </div>
         <div className="flex flex-col lg:flex-row gap-4 h-full">
           <div className="flex flex-col lg:w-4/5 gap-4">
-            <Container>
-              <h2 className="text-left">Graphique</h2>
-              {!isFetchingTransacs && !isFetchingInvests ? (
-                <ChartLine
-                  data={dataGraph}
-                  defaultConfig={{
-                    amountRevenue: {
-                      label: "Revenu",
-                      color: "hsl(var(--graph-revenue))",
-                      visible: true,
-                    },
-                    amountExpense: {
-                      label: "Dépense",
-                      color: "hsl(var(--graph-expense))",
-                      visible: true,
-                    },
-                    montantInvest: {
-                      label: "Investissements",
-                      color: "hsl(var(--graph-invest))",
-                      visible: true,
-                    },
-                    text: { color: "hsl(var(--foreground))" },
-                  }}
-                  maxValue={maxValue}
-                />
-              ) : (
-                <LoaderDots />
-              )}
-              <div className="flex flex-col lg:flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
-                <div className="w-1/12">
-                  <ChevronLeft
-                    size={25}
-                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    onClick={clickLastMonthGraph}
-                  />
-                </div>
-                <p className="font-thin text-sm italic">{theMonthGraph}</p>
-                <div className="w-1/12">
-                  {chevronGraphIsVisible && (
-                    <ChevronRight
-                      size={25}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickNextMonthGraph}
-                    />
-                  )}
-                </div>
-
-                <div className="absolute top-0 right-0 m-2">
-                  <Tabs
-                    name="selectNbMonth"
-                    value={selectNbMonth}
-                    onValueChange={(v) => setSelectNbMonth(Number(v))}
-                  >
-                    <TabsList>
-                      <TabsTrigger value={6}>6 mois</TabsTrigger>
-                      <TabsTrigger value={12}>1 an</TabsTrigger>
-                      <TabsTrigger value={24}>2 ans</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-              </div>
-            </Container>
             <div className="flex flex-col lg:flex-row gap-4">
               <Container>
-                <h2 className="text-left">Répartition finance</h2>
-                {!isFetchingTransacs && !isFetchingInvests ? (
-                  <RadialChart
-                    chartData={chartDataRadial}
-                    chartConfig={chartConfigRadial}
-                    total={total}
-                    legend={renderCustomLegend}
-                    inner={40}
-                    outer={55}
-                    height={150}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}
-                <div className="flex flex-row justify-between w-3/4 max-w-[200px] mx-auto">
-                  <div className="w-1/12">
-                    <ChevronLeft
-                      size={25}
-                      onClick={clickLastMonth}
-                      className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    />
-                  </div>
-                  <p className="font-thin text-sm italic">
-                    {convertDate(month)}
+                <div className="mb-4">
+                  <h2 className="text-left">Répartition du Patrimoine</h2>
+                  <p className="text-left text-sm text-muted-foreground">
+                    Distribution de vos actifs financiers
                   </p>
-                  <div className="w-1/12">
-                    {chevronIsVisible && (
-                      <ChevronRight
-                        size={25}
-                        onClick={clickNextMonth}
-                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      />
-                    )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <p>Épargne</p>
+                      <p>
+                        {isVisible
+                          ? formatCurrency.format(amountEpargn)
+                          : "••••"}
+                      </p>
+                    </div>
+
+                    <Progress value={percentEpargn} />
+                    <p className="text-left text-sm text-muted-foreground">
+                      {percentEpargn.toFixed(0)} % du patrimoine total
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <p>Investissement</p>
+                      <p>
+                        {isVisible
+                          ? formatCurrency.format(amountInvest)
+                          : "••••"}
+                      </p>
+                    </div>
+                    <Progress value={percentInvest} />
+                    <p className="text-left text-sm text-muted-foreground">
+                      {percentInvest.toFixed(0)} % du patrimoine total
+                    </p>
                   </div>
                 </div>
               </Container>
-              <Container custom="h-fit">
-                <div className="flex justify-between w-full gap-4">
-                  <h2 className="text-left">Répartition patrimoine</h2>
-                  <p
-                    className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
-                    onClick={() => navigate(ROUTES.HERITAGE)}
-                  >
-                    Voir tout
-                    <ChevronRight
-                      size={12}
-                      className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
-                    />
+              <Container>
+                <div className="mb-4">
+                  <h2 className="text-left">Répartition du Patrimoine</h2>
+                  <p className="text-left text-sm text-muted-foreground">
+                    Distribution de vos actifs financiers
                   </p>
                 </div>
-                {!isFetchingTransacs ? ( // a revoir
-                  <RadialChart
-                    chartData={transformedDataAccount}
-                    chartConfig={chartConfigAccount}
-                    total={amountHeritage}
-                    legend={renderCustomLegend}
-                    inner={40}
-                    outer={55}
-                    height={150}
-                  />
-                ) : (
-                  <LoaderDots />
-                )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <p>Épargne</p>
+                      <p>
+                        {isVisible
+                          ? formatCurrency.format(amountEpargn)
+                          : "••••"}
+                      </p>
+                    </div>
+
+                    <Progress value={percentEpargn} />
+                    <p className="text-left text-sm text-muted-foreground">
+                      {percentEpargn.toFixed(0)} % du patrimoine total
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <p>Investissement</p>
+                      <p>
+                        {isVisible
+                          ? formatCurrency.format(amountInvest)
+                          : "••••"}
+                      </p>
+                    </div>
+                    <Progress value={percentInvest} />
+                    <p className="text-left text-sm text-muted-foreground">
+                      {percentInvest.toFixed(0)} % du patrimoine total
+                    </p>
+                  </div>
+                </div>
               </Container>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-4">
               <Container custom="h-fit">
                 <div className="flex justify-between w-full gap-4 mb-4">
                   <h2 className="text-left">Mes crédits</h2>
@@ -596,12 +423,17 @@ export default function Dashboard() {
                           </div>
                           <div className="text-right">
                             <p className="text-xs italic">
-                              {formatCurrency.format(credit.balance)}
+                              {isVisible
+                                ? formatCurrency.format(credit.balance)
+                                : "••••"}
                             </p>
                             <p className="text-[10px] text-muted-foreground italic">
-                              {formatCurrency.format(
-                                credit.monthlyPayment + credit.insurance
-                              )}
+                              {isVisible
+                                ? formatCurrency.format(
+                                    credit.monthlyPayment + credit.insurance
+                                  )
+                                : "••••"}{" "}
+                              par mois
                             </p>
                           </div>
                         </div>
@@ -614,7 +446,7 @@ export default function Dashboard() {
           <div className="lg:w-1/5 flex flex-col gap-4">
             <Container>
               <div className="flex justify-between w-full mb-4">
-                <h2 className="text-nowrap">Dernieres transactions</h2>
+                <h2 className="text-nowrap">Dernières transactions</h2>
                 <p
                   className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
                   onClick={() => navigate(ROUTES.TRANSACTIONS)}
@@ -645,7 +477,7 @@ export default function Dashboard() {
                             "bg-colorRevenue text-green-900"
                       }`}
                     >
-                      {formatCurrency.format(op.amount)}
+                      {isVisible ? formatCurrency.format(op.amount) : "••••"}
                     </p>
                   </div>
                 ))}
@@ -677,7 +509,7 @@ export default function Dashboard() {
                       <span className="truncate">{inv.title}</span>
                     </div>
                     <p className="text-[10px] italic">
-                      {formatCurrency.format(inv.amount)}
+                      {isVisible ? formatCurrency.format(inv.amount) : "••••"}
                     </p>
                   </div>
                 ))}
@@ -719,7 +551,9 @@ export default function Dashboard() {
                           <p className="text-xs">{item?.name}</p>
                         </div>
                         <p className="text-[10px] italic text-right">
-                          {formatCurrency.format(item.amountBuy)}
+                          {isVisible
+                            ? formatCurrency.format(item.amountBuy)
+                            : "••••"}
                         </p>
                       </div>
                     );

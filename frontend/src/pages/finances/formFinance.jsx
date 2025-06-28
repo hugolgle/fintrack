@@ -256,7 +256,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
           name="type"
           value={formik.values.type}
           onValueChange={(value) => formik.setFieldValue("type", value)}
-          disabled={editMode}
+          disabled={editMode || type}
         >
           <SelectTrigger>
             <SelectValue placeholder="Entrez le type" />
@@ -468,7 +468,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
           </Command>
         </div>
       </div>
-      <DialogFooter className="sm:justify-between">
+      <DialogFooter className="sm:justify-between flex-row">
         <ButtonLoading
           type="submit"
           text={editMode ? "Modifier" : "Ajouter"}

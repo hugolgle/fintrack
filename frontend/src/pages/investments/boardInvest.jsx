@@ -1,10 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import Header from "../../components/headers.jsx";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import Loader from "../../components/loaders/loader.jsx";
 import { ROUTES } from "../../components/route.jsx";
 import { HttpStatusCode } from "axios";
-import { EllipsisVertical, Eye, Pickaxe, Search } from "lucide-react";
+import {
+  ArrowUp,
+  EllipsisVertical,
+  Eye,
+  Pickaxe,
+  Plus,
+  Search,
+} from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
 import { HandCoins } from "lucide-react";
@@ -16,12 +24,11 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import LoaderDots from "../../components/loaders/loaderDots.jsx";
 import { currentDate, getLastMonths } from "../../utils/other.js";
-import { format } from "date-fns";
 import { ChartLine } from "../../components/chartss/chartLine.jsx";
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import Container from "../../components/containers/container.jsx";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { fetchInvestments } from "../../services/investment.service.jsx";
 import {
   DropdownMenu,
@@ -30,21 +37,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Tableau from "../../components/tables/table.jsx";
-import { fr } from "date-fns/locale";
+import FormAddInvestmentMain from "./formAddInvestmentMain.jsx";
+import SkeletonDashboard from "../../components/skeletonBoard.jsx";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function BoardInvest() {
+  const { isVisible } = useAmountVisibility();
   const navigate = useNavigate();
   const [selectNbMonth, setSelectNbMonth] = useState(6);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
-  };
+
   const {
     isLoading,
     data: dataInvests,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
@@ -68,19 +74,30 @@ export default function BoardInvest() {
       }, 0)
     : 0;
 
-  const amountSale = Array.isArray(dataInvests)
-    ? dataInvests.reduce((total, item) => {
-        return total + (item.amountSale || 0);
-      }, 0)
-    : 0;
-
   const amountResult = Array.isArray(dataInvests)
+    ? dataInvests
+        .filter(
+          (item) =>
+            Array.isArray(item.transaction) &&
+            item.transaction.some((t) => t.type === "sell")
+        )
+        .reduce((total, item) => {
+          const sale = item.amountSale || 0;
+          const buy = item.amountBuy || 0;
+          return total + (sale + buy);
+        }, 0)
+    : 0;
+
+  const amountDividend = Array.isArray(dataInvests)
     ? dataInvests.reduce((total, item) => {
-        return total + (item.amountResult || 0);
+        const sum = item.transaction
+          ?.filter((t) => t.type === "dividend")
+          .reduce((subTotal, t) => subTotal + (t.amount || 0), 0);
+        return total + sum;
       }, 0)
     : 0;
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   const totalAmountBuy = dataInvests?.reduce(
     (total, item) => total + (item.amountBuy || 0),
@@ -120,7 +137,7 @@ export default function BoardInvest() {
   const dataTransacInvest = dataInvests?.flatMap((investment) =>
     investment.transaction.map((trans) => ({
       title: investment.name,
-      amount: trans.amount,
+      amount: trans.type === "buy" && trans.amount,
       date: new Date(trans.date),
     }))
   );
@@ -190,28 +207,22 @@ export default function BoardInvest() {
     setGraphMonth(newDate);
   };
 
-  const simplifiedData = dataInvests.flatMap((item) =>
-    item.transaction.map((trans) => ({
-      name: item.name,
-      type: item.type,
-      amount: trans.amount || 0,
-      date: trans.date,
-    }))
-  );
-
   const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
   const formatData = (row) => {
     return [
       row.type,
       row.name,
-      formatCurrency.format(row.amount),
-      formatCurrency.format(row.amountSale),
-      row.transaction.some((transac) => transac.isSale === true)
-        ? formatCurrency.format(row.amountResult)
-        : "N/A",
-      row.transaction.some((transac) => transac.isSale)
-        ? `${((row.amountResult / row.amount) * 100).toFixed(2)}%`
-        : "0%",
+      isVisible ? formatCurrency.format(row.amount) : "••••",
+      isVisible ? formatCurrency.format(row.amountSale) : "••••",
+      isVisible ? formatCurrency.format(row.amountSale + row.amount) : "••••",
+      isVisible
+        ? formatCurrency.format(
+            row.transaction
+              .filter((t) => t.type === "dividend")
+              .reduce((total, t) => total + (t.amount || 0), 0)
+          )
+        : "••••",
+      `${(((row.amountSale + row.amount) / Math.abs(row.amount)) * 100).toFixed(2)}%`,
     ];
   };
 
@@ -223,7 +234,6 @@ export default function BoardInvest() {
       symbol,
       amountBuy,
       amountSale,
-      amountResult,
       transaction,
       createdAt,
     }) => {
@@ -237,7 +247,6 @@ export default function BoardInvest() {
         date: transaction[0]?.date,
         amount: amountBuy,
         amountSale,
-        amountResult,
         createdAt,
       };
     }
@@ -249,7 +258,8 @@ export default function BoardInvest() {
     { id: 3, name: "Montant acheté", key: "amount" },
     { id: 4, name: "Montant vendu", key: "amountSale" },
     { id: 5, name: "Résultats", key: "amountResult" },
-    { id: 6, name: "Rendement", key: "rend" },
+    { id: 6, name: "Dividende", key: "dividend" },
+    { id: 7, name: "Rendement", key: "rendement" },
   ];
 
   const action = (item) => {
@@ -283,67 +293,46 @@ export default function BoardInvest() {
       </Avatar>
     );
   };
-  const performSearch = (term) => {
-    const filteredData = displayData.filter((item) => {
-      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
-      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
-      const isSaleMatches = item.isSale
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const symbolMatches = item.symbol
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
-      const amountMatches = item.amount
-        .toString()
-        .toLowerCase()
-        .includes(term.toLowerCase());
 
-      return (
-        nameMatches ||
-        typeMatches ||
-        dateMatches ||
-        amountMatches ||
-        symbolMatches ||
-        isSaleMatches
-      );
-    });
-    setSearchResults(filteredData);
-  };
-
-  const data = searchTerm ? searchResults : displayData;
+  const data = displayData;
 
   return (
     <section className="w-full">
       <div className="flex flex-col">
         <Header
-          title="Investissement"
-          btnAdd={ROUTES.ADD_ORDER}
+          title="Mes Investissements"
+          subtitle="Gérez vos investissements"
           isFetching={isFetching}
+          navigation={
+            <>
+              <Dialog modal>
+                <DialogTrigger>
+                  <Button>
+                    <Plus />
+                    <p className="hidden md:block">Nouveau investissement</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormAddInvestmentMain refetch={refetch} />
+                </DialogContent>
+              </Dialog>
+            </>
+          }
         />
         <div className="flex flex-col w-full justify-center gap-4 animate-fade">
           <div className="flex flex-col lg:flex-row gap-4">
             <BoxInfos
-              title="Investissements en cours"
-              value={amountBuy}
+              title="Valeur totale"
+              value={Math.abs(amountBuy)}
               icon={<Pickaxe size={15} color="grey" />}
-              onClick={() => navigate(ROUTES.INVESTMENT_IN_PROGRESS)}
               isAmount
               type="investment"
             />
+
             <BoxInfos
-              title="Tous les investissements"
+              title="Gains/Pertes"
               value={amountResult}
-              icon={<HandCoins size={15} color="grey" />}
-              onClick={() => navigate(ROUTES.INVESTMENT_ALL)}
-              isAmount
-              type="investment"
-            />
-            <BoxInfos
-              title="Investissements vendus"
-              value={amountSale}
-              icon={<Shield size={15} color="grey" />}
-              onClick={() => navigate(ROUTES.INVESTMENT_SOLD)}
+              icon={<ArrowUp size={15} color="grey" />}
               isAmount
               type="investment"
             />
@@ -358,17 +347,13 @@ export default function BoardInvest() {
           <div className="flex flex-col lg:flex-row gap-4">
             <Container>
               <h2 className="text-left">Graphique</h2>
-              {!isFetching ? (
-                <ChartLine
-                  data={dataGraph}
-                  defaultConfig={defaultConfig}
-                  maxValue={maxValue}
-                />
-              ) : (
-                <LoaderDots />
-              )}
+              <ChartLine
+                data={dataGraph}
+                defaultConfig={defaultConfig}
+                maxValue={maxValue}
+              />
               <div
-                className={`flex flex-row w-3/4 mx-auto px-20 items-center justify-between bottom-2`}
+                className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}
               >
                 <div className="w-1/12">
                   <ChevronLeft
@@ -400,7 +385,6 @@ export default function BoardInvest() {
                   <TabsList>
                     <TabsTrigger value={6}>6 mois</TabsTrigger>
                     <TabsTrigger value={12}>1 an</TabsTrigger>
-                    <TabsTrigger value={24}>2 ans</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
@@ -410,27 +394,19 @@ export default function BoardInvest() {
                 <h2 className="mb-4 text-left">Statistiques</h2>
                 <div className="h-full flex flex-col gap-2">
                   <div className="flex justify-between items-center">
-                    <p className="text-sm">Rendement annualisé</p>
-                    <p className="text-xs">+12,5%</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Volatilité</p>
-                    <p className="text-xs">14.2%</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Ratio de Sharpe</p>
-                    <p className="text-xs">1.8</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Drawdown max</p>
-                    <p className="text-xs">-8.3%</p>
+                    <p className="text-sm">Dividende perçu</p>
+                    <p className="text-xs">
+                      {isVisible
+                        ? formatCurrency.format(amountDividend)
+                        : "••••"}
+                    </p>
                   </div>
                 </div>
               </Container>
               <Container>
                 <h2 className="mb-4 text-left">Répartition</h2>
                 <div className="flex flex-col w-full gap-2">
-                  {chartDataByType.map((item, index) => (
+                  {chartDataByType?.map((item, index) => (
                     <div className="flex flex-col gap-2 w-full">
                       <div className="w-full flex justify-between items-end">
                         <p className="text-sm">{item.name}</p>
@@ -456,16 +432,6 @@ export default function BoardInvest() {
           <Container>
             <div className="flex justify-between mb-4">
               <h2 className="text-left">Mes investissements</h2>
-              <div className="relative">
-                <Input
-                  className="pl-8"
-                  type="search"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  placeholder="Rechercher"
-                />
-                <Search className="absolute left-2 top-[19px] transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
             </div>
             <Tableau
               formatData={formatData}
@@ -475,6 +441,7 @@ export default function BoardInvest() {
               isFetching={isFetching}
               action={action}
               firstItem={avatar}
+              fieldsFilter={[{ key: "type", fieldName: "Type" }]}
             />
           </Container>
         </div>

@@ -24,7 +24,7 @@ export const addInvestment = async (investmentData) => {
     transaction: {
       amount: transaction.amount,
       date: transaction.date,
-      isSale: transaction.action === "true",
+      type: transaction.action, // "buy", "sell" ou "dividend"
     },
   };
 
@@ -38,7 +38,7 @@ export const addTransaction = async (investmentId, transactionData) => {
   const newTransaction = {
     amount,
     date,
-    isSale: action,
+    type: action, // "buy", "sell" ou "dividend"
   };
 
   return await axios.post(
@@ -65,11 +65,12 @@ export const editInvestments = async (editData) => {
 };
 
 export const editInvestmentsTransaction = async (editData, idInvestment) => {
-  const { id, date, amount } = editData;
+  const { id, date, amount, action } = editData;
 
   const updatedTransaction = {
     date,
     amount,
+    type: action, // "buy", "sell" ou "dividend"
   };
 
   return await axios.put(

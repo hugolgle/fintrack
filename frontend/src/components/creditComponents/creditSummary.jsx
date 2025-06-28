@@ -1,8 +1,10 @@
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export function CreditSummary({ credit }) {
+  const { isVisible } = useAmountVisibility();
   const amount = Number(credit?.amount) || 0;
   const remaining = Number(credit?.balance) || 0;
   const monthly = Number(credit?.monthlyPayment) || 0;
@@ -73,7 +75,7 @@ export function CreditSummary({ credit }) {
               Montant emprunté
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(amount)}
+              {isVisible ? formatCurrency.format(amount) : "••••"}
             </p>
           </div>
           <div>
@@ -81,7 +83,7 @@ export function CreditSummary({ credit }) {
               Restant à payer
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(remaining)}
+              {isVisible ? formatCurrency.format(remaining) : "••••"}
             </p>
           </div>
           <div>
@@ -89,7 +91,7 @@ export function CreditSummary({ credit }) {
               Montant payé actuellement
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(amountPayed)}
+              {isVisible ? formatCurrency.format(amountPayed) : "••••"}
             </p>
           </div>
           <div>
@@ -106,7 +108,7 @@ export function CreditSummary({ credit }) {
               Mensualité
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(monthly + insurance)}
+              {isVisible ? formatCurrency.format(monthly + insurance) : "••••"}
             </p>
           </div>
           <div>
@@ -128,7 +130,7 @@ export function CreditSummary({ credit }) {
               Assurances
             </h3>
             <p className="text-2xl font-thin">
-              {formatCurrency.format(insurance)} / mois
+              {isVisible ? formatCurrency.format(insurance) : "••••"} / mois
             </p>
           </div>
         </div>
@@ -150,7 +152,9 @@ export function CreditSummary({ credit }) {
                 Coût total des assurances
               </h3>
               <p className="text-xl font-thin mt-1">
-                {formatCurrency.format(insurance * duration)}
+                {isVisible
+                  ? formatCurrency.format(insurance * duration)
+                  : "••••"}
               </p>
             </div>
             <Separator orientation="vertical" className="bg-muted h-auto" />
@@ -161,7 +165,7 @@ export function CreditSummary({ credit }) {
             Coût total des intérêts
           </h3>
           <p className="text-xl font-thin mt-1">
-            {formatCurrency.format(interestCost)}
+            {isVisible ? formatCurrency.format(interestCost) : "••••"}
           </p>
         </div>
         <Separator orientation="vertical" className="bg-muted h-auto" />
@@ -170,7 +174,7 @@ export function CreditSummary({ credit }) {
             Coût total du crédit
           </h3>
           <p className="text-xl font-thin mt-1">
-            {formatCurrency.format(totalCost)}
+            {isVisible ? formatCurrency.format(totalCost) : "••••"}
           </p>
         </div>
       </div>

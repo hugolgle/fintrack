@@ -8,7 +8,7 @@ export const renderCustomLegend = (props) => {
     (a, b) => b.payload.pourcentage - a.payload.pourcentage
   );
   const payloadTopN = payloadSort.slice(0, topN);
-  console.log(payloadTopN);
+
   return (
     <ul className="flex flex-col justify-center w-40">
       {payloadTopN.map((entry, index) => (

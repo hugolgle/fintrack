@@ -10,6 +10,7 @@ import {
 
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "../../../utils/fonctionnel";
+import { useAmountVisibility } from "../../../context/AmountVisibilityContext";
 
 export default function ModalTable({
   btnOpen,
@@ -20,6 +21,7 @@ export default function ModalTable({
   description,
   initialAmount,
 }) {
+  const { isVisible } = useAmountVisibility();
   return (
     <Dialog>
       <DialogTrigger>{btnOpen}</DialogTrigger>
@@ -57,7 +59,9 @@ export default function ModalTable({
               <Separator className="w-full mx-auto bg-secondary" />
               <div className="text-xs flex justify-end gap-4 items-center py-2">
                 <p className="text-gray-400">Montant initial:</p>
-                <p>{formatCurrency.format(initialAmount)}</p>
+                <p>
+                  {isVisible ? formatCurrency.format(initialAmount) : "••••"}
+                </p>
               </div>
             </>
           )}

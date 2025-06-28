@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/table";
 import { CheckCircle2, Trash2 } from "lucide-react";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export function PaymentHistory({ credit, mutationDelete }) {
   const payments = credit?.transactions;
+  const { isVisible } = useAmountVisibility();
 
   return (
     <>
@@ -44,13 +46,17 @@ export function PaymentHistory({ credit, mutationDelete }) {
                     {new Date(payment.date).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
-                    {formatCurrency.format(payment.amount)}
+                    {isVisible ? formatCurrency.format(payment.amount) : "••••"}
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
-                    {formatCurrency.format(payment.depreciation)}
+                    {isVisible
+                      ? formatCurrency.format(payment.depreciation)
+                      : "••••"}
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
-                    {formatCurrency.format(payment.remainingAmount)}
+                    {isVisible
+                      ? formatCurrency.format(payment.remainingAmount)
+                      : "••••"}
                   </TableCell>
                   <TableCell className="w-full px-10 truncate">
                     <div className="flex items-center justify-center">

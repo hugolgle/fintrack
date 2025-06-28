@@ -100,7 +100,7 @@ module.exports.getAccount = async (req, res) => {
 
 module.exports.addTransfert = async (req, res) => {
   try {
-    const { fromAccountId, toAccountId, amount } = req.body;
+    const { accountId: fromAccountId, toAccountId, amount, date } = req.body;
 
     if (!fromAccountId || !toAccountId || amount <= 0) {
       return res.status(400).json({ message: "Informations incomplètes" });
@@ -124,15 +124,14 @@ module.exports.addTransfert = async (req, res) => {
         .json({ message: "Le montant dépasse le plafond autorisé" });
     }
 
-    const today = new Date();
     let debitDate, creditDate;
-
-    if (today.getDate() <= 15) {
-      debitDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      creditDate = new Date(today.getFullYear(), today.getMonth(), 16);
+    const jsDate = new Date(date); // conversion explicite
+    if (jsDate.getDate() <= 15) {
+      debitDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
+      creditDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
     } else {
-      debitDate = new Date(today.getFullYear(), today.getMonth(), 16);
-      creditDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      debitDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
+      creditDate = new Date(jsDate.getFullYear(), jsDate.getMonth() + 1, 1);
     }
 
     const transferId = new mongoose.Types.ObjectId();
@@ -170,7 +169,7 @@ module.exports.addTransfert = async (req, res) => {
 
 module.exports.depositAccount = async (req, res) => {
   try {
-    const { accountId, amount } = req.body;
+    const { accountId, amount, date } = req.body;
 
     if (!accountId || amount === undefined) {
       return res.status(400).json({ message: "Informations incomplètes" });
@@ -193,12 +192,13 @@ module.exports.depositAccount = async (req, res) => {
         .json({ message: "Le montant dépasse le plafond autorisé" });
     }
 
-    const today = new Date();
     let depositDate;
-    if (today.getDate() <= 15) {
-      depositDate = new Date(today.getFullYear(), today.getMonth(), 16);
+    const jsDate = new Date(date); // conversion explicite
+
+    if (jsDate.getDate() <= 15) {
+      depositDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
     } else {
-      depositDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      depositDate = new Date(jsDate.getFullYear(), jsDate.getMonth() + 1, 1);
     }
 
     account.balance = newBalance;
@@ -224,9 +224,9 @@ module.exports.depositAccount = async (req, res) => {
 
 module.exports.withdrawAccount = async (req, res) => {
   try {
-    const { accountId, amount } = req.body;
+    const { accountId, amount, date } = req.body;
 
-    if (!accountId || amount === undefined) {
+    if (!accountId || amount === undefined || date === undefined) {
       return res.status(400).json({ message: "Informations incomplètes" });
     }
 
@@ -248,12 +248,12 @@ module.exports.withdrawAccount = async (req, res) => {
         .json({ message: "Solde insuffisant pour effectuer ce retrait" });
     }
 
-    const today = new Date();
-    let withdrawalDate;
-    if (today.getDate() <= 15) {
-      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    let withdrawDate;
+    const jsDate = new Date(date); // conversion explicite
+    if (jsDate.getDate() <= 15) {
+      withdrawDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
     } else {
-      withdrawalDate = new Date(today.getFullYear(), today.getMonth(), 16);
+      withdrawDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
     }
 
     account.balance = newBalance;
@@ -261,7 +261,7 @@ module.exports.withdrawAccount = async (req, res) => {
     account.transactions.push({
       type: "withdraw",
       amount: -amount,
-      date: withdrawalDate,
+      date: withdrawDate,
     });
 
     await account.save();
@@ -328,6 +328,47 @@ module.exports.calculateInterest = async (req, res) => {
   }
 };
 
+module.exports.interestAccount = async (req, res) => {
+  try {
+    const { accountId, amount, date } = req.body;
+
+    if (!accountId || amount === undefined || date === undefined) {
+      return res.status(400).json({ message: "Informations incomplètes" });
+    }
+
+    if (amount <= 0) {
+      return res.status(400).json({ message: "Le montant doit être positif" });
+    }
+
+    const account = await EpargnModel.findById(accountId);
+
+    if (!account) {
+      return res.status(404).json({ message: "Compte non trouvé" });
+    }
+    const jsDate = new Date(date); // conversion explicite
+
+    const newBalance = account.balance + amount;
+    account.balance = newBalance;
+
+    account.transactions.push({
+      type: "interest",
+      amount,
+      date: jsDate,
+    });
+
+    await account.save();
+
+    return res
+      .status(200)
+      .json({ message: "Compte crédité avec succès", account });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors du dépôt du compte",
+      error,
+    });
+  }
+};
+
 const calculateYearlyInterest = async () => {
   const accounts = await EpargnModel.find();
 
@@ -347,24 +388,56 @@ const calculateYearlyInterest = async () => {
     }
   }
 };
+if (process.env.NODE_ENV === "production") {
+  cron.schedule("0 0 1 1 *", async () => {
+    await calculateYearlyInterest();
+  });
 
-cron.schedule("0 0 1 1 *", async () => {
-  await calculateYearlyInterest();
-});
+  cron.schedule("0 0 1,16 * *", () => {
+    calculateInterest();
+  });
 
-cron.schedule("0 0 1,16 * *", () => {
-  calculateInterest();
-});
+  cron.schedule("0 0 1 * *", async () => {
+    const accounts = await EpargnModel.find();
 
-cron.schedule("0 0 1 * *", async () => {
+    for (const account of accounts) {
+      account.monthlyStatements.push({
+        date: new Date(),
+        balance: account.balance,
+      });
+
+      await account.save();
+    }
+  });
+}
+
+const saveMonthlyStatements = async () => {
   const accounts = await EpargnModel.find();
 
   for (const account of accounts) {
-    account.monthlyStatements.push({
-      date: new Date(),
-      balance: account.balance,
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const alreadyExists = account.monthlyStatements.some((statement) => {
+      const date = new Date(statement.date);
+      return (
+        date.getMonth() === currentMonth && date.getFullYear() === currentYear
+      );
     });
 
-    await account.save();
+    if (!alreadyExists) {
+      account.monthlyStatements.push({
+        date: new Date(),
+        balance: account.balance,
+      });
+
+      await account.save();
+    }
   }
-});
+};
+
+if (process.env.NODE_ENV !== "production") {
+  (async () => {
+    await saveMonthlyStatements();
+  })();
+}

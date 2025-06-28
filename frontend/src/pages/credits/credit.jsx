@@ -1,4 +1,4 @@
-import { ArrowUpRight, DollarSign, Home, Wallet } from "lucide-react";
+import { ArrowUpRight, DollarSign, Home, Plus, Wallet } from "lucide-react";
 import Header from "../../components/headers";
 import BoxInfos from "../../components/boxs/boxInfos";
 import { CreditCardComponent } from "../../components/creditComponents/cardCredit";
@@ -13,6 +13,9 @@ import { HttpStatusCode } from "axios";
 import { toast } from "sonner";
 import Container from "../../components/containers/container";
 import Loader from "../../components/loaders/loader";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import SkeletonDashboard from "../../components/skeletonBoard";
 
 export default function Credit() {
   const queryClient = useQueryClient();
@@ -72,15 +75,28 @@ export default function Credit() {
     setActiveCredit(found ?? credits[0]);
   }, [credits]);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   return (
     <main>
       <div className="flex flex-col">
         <Header
-          title="Crédit"
-          modalAdd={<FormCredit refetch={refetch} />}
+          title="Mes Crédits"
+          subtitle="Gérez vos crédits et suivez vos paiements"
           isFetching={isFetching}
+          navigation={
+            <Dialog modal>
+              <DialogTrigger>
+                <Button>
+                  <Plus />
+                  <p className="hidden md:block">Nouveau crédit</p>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <FormCredit refetch={refetch} />
+              </DialogContent>
+            </Dialog>
+          }
         />
 
         <div className="flex flex-col gap-4 w-full animate-fade">
