@@ -84,7 +84,11 @@ export default function PageAddInvestmentMain() {
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
   const [idInvest, setIdInvest] = useState("");
 
-  const { user: dataUser } = useAuth();
+  const {
+    user: dataUser,
+    isLoading: isLoadingUser,
+    isFetching: isFetchingUser,
+  } = useAuth();
 
   const {
     isLoading: isLoadingInvestments,
@@ -166,7 +170,7 @@ export default function PageAddInvestmentMain() {
     },
   });
 
-  if (isisLoadingUser || isLoadingInvestments) return <Loader />;
+  if (isLoadingUser || isLoadingInvestments) return <Loader />;
 
   return (
     <section className="h-full">

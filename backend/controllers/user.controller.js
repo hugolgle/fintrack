@@ -1,6 +1,11 @@
 const bcrypt = require("bcrypt");
 const path = require("path");
 const UserModel = require("../models/user.model");
+const TransactionModel = require("../models/transaction.model");
+const InvestissementModel = require("../models/investment.model");
+const CreditModel = require("../models/credit.model");
+const EpargneModel = require("../models/epargn.model");
+const HeritageModel = require("../models/heritage.model");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 
@@ -59,7 +64,7 @@ module.exports.loginUser = async (req, res) => {
   }
 };
 
-module.exports.addUser = async (req, res) => {
+module.exports.signUpUser = async (req, res) => {
   try {
     const {
       username,
@@ -177,10 +182,9 @@ module.exports.editUser = async (req, res) => {
   }
 };
 
-module.exports.deleteUser = async (req, res) => {
+module.exports.deleteAccount = async (req, res) => {
   try {
-    const user = await UserModel.findById(req.params.id);
-
+    const user = await UserModel.findById(req.userId);
     if (!user) {
       return res.status(400).json({ message: "Cet utilisateur n'existe pas" });
     }
@@ -192,11 +196,17 @@ module.exports.deleteUser = async (req, res) => {
       }
     }
 
-    await user.deleteOne({ _id: req.params.id });
+    await Promise.all([
+      TransactionModel.deleteMany({ user: req.userId }),
+      InvestissementModel.deleteMany({ user: req.userId }),
+      CreditModel.deleteMany({ user: req.userId }),
+      EpargneModel.deleteMany({ user: req.userId }),
+      HeritageModel.deleteMany({ user: req.userId }),
+    ]);
 
-    return res
-      .status(200)
-      .json({ message: `Utilisateur supprimé avec succès: ${req.params.id}` });
+    await user.deleteOne({ _id: req.userId });
+
+    return res.status(200).json({ message: "Compte supprimé avec succès !" });
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la suppression de l'utilisateur",

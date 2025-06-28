@@ -3,6 +3,17 @@ import Container from "../../../components/containers/container.jsx";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 import {
   CardContent,
   CardDescription,
@@ -11,9 +22,40 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Trash } from "lucide-react";
+import { deleteAccount } from "../../../services/user.service.jsx";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
+import { ROUTES } from "../../../components/route.jsx";
 
 function TabAccount({ dataUser, refetch }) {
   const [checked, setChecked] = useState(false);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
+
+  const mutationDeleteAccount = useMutation({
+    mutationFn: async () => {
+      return await deleteAccount();
+    },
+    onSuccess: (response) => {
+      navigate(ROUTES.LOGIN);
+      queryClient.removeQueries(["currentUser"]);
+      toast.success(response?.message || "Compte supprimé avec succès !");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
+  const handleDelete = () => {
+    mutationDeleteAccount.mutate();
+    setOpen(false);
+    setConfirmationText("");
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <Container>
@@ -143,10 +185,66 @@ function TabAccount({ dataUser, refetch }) {
                 Je comprends que cette action est irréversible
               </Label>
             </div>
-            <Button variant="destructive" className="mt-4" disabled={!checked}>
-              <Trash className="mr-2 h-4 w-4" />
-              Supprimer définitivement mon compte
-            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="mt-4"
+                  disabled={!checked}
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Supprimer définitivement mon compte
+                </Button>
+              </DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirmer la suppression</DialogTitle>
+                  <DialogDescription>
+                    Es-tu sûr de vouloir supprimer ton compte ? Cette action est
+                    irréversible.
+                  </DialogDescription>
+                  <div className="mt-4 flex flex-col gap-y-2">
+                    <Label
+                      htmlFor="confirm-delete-secondary"
+                      className="text-xs text-red-600"
+                    >
+                      Saisissez "SUPPRIMER" pour confirmer :
+                    </Label>
+                    <Input
+                      id="confirm-delete-secondary"
+                      type="text"
+                      value={confirmationText}
+                      onChange={(e) =>
+                        setConfirmationText(e.target.value.toUpperCase())
+                      }
+                    />
+                  </div>
+                </DialogHeader>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setOpen(false);
+                      setConfirmationText("");
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={
+                      confirmationText === "" ||
+                      confirmationText !== "SUPPRIMER"
+                    }
+                  >
+                    Supprimer
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Container>
