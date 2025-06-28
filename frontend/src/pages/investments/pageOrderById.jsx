@@ -123,7 +123,7 @@ export default function PageOrderById() {
     { id: 2, name: "Nom", key: "name" },
     { id: 3, name: "Date", key: "date" },
     { id: 4, name: "Montant", key: "amount" },
-    { id: 5, name: "Action", key: "isSale" },
+    { id: 5, name: "Action", key: "type" },
   ];
 
   const displayData = investissements.map(
@@ -136,7 +136,7 @@ export default function PageOrderById() {
         name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
-        isSale: transaction.isSale,
+        action: transaction.type,
         createdAt,
       };
     }
@@ -173,7 +173,11 @@ export default function PageOrderById() {
       row.name,
       format(row.date, "PP", { locale: fr }),
       formatCurrency.format(row.amount),
-      row.isSale ? "Vente" : "Achat",
+      row.action === "sell"
+        ? "Vente"
+        : row.action === "buy"
+          ? "Achat"
+          : "Dividende",
     ];
   };
 

@@ -9,7 +9,7 @@ module.exports.addInvestment = async (req, res) => {
       !type ||
       !transaction?.amount ||
       !transaction?.date ||
-      transaction?.isSale === undefined
+      !transaction?.type
     ) {
       return res.status(400).json({
         message: "Veuillez fournir toutes les informations nécessaires",
@@ -34,21 +34,17 @@ module.exports.addInvestment = async (req, res) => {
         {
           amount: transaction.amount,
           date: transaction.date,
-          isSale: transaction.isSale,
+          type: transaction.type,
         },
       ],
       amountBuy: 0,
       amountSale: 0,
-      amountResult: 0,
     });
 
-    investment.transaction.forEach(({ amount, isSale }) => {
-      isSale
-        ? (investment.amountSale += amount)
-        : (investment.amountBuy += amount);
+    investment.transaction.forEach(({ amount, type }) => {
+      if (type === "sell") investment.amountSale += amount;
+      else if (type === "buy") investment.amountBuy += amount;
     });
-
-    investment.amountResult = investment.amountSale - investment.amountBuy;
 
     const updatedInvestment = await investment.save();
 
@@ -67,7 +63,7 @@ module.exports.addInvestment = async (req, res) => {
 module.exports.addTransaction = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, date, isSale } = req.body;
+    const { amount, date, type } = req.body;
 
     const investment = await InvestmentModel.findOne({
       _id: id,
@@ -79,20 +75,20 @@ module.exports.addTransaction = async (req, res) => {
         .status(400)
         .json({ message: "Cet investissement n'existe pas" });
     }
-
-    const newTransaction = { amount, date, isSale };
+    let newAmount = amount;
+    if (type === "buy") {
+      newAmount = -Math.abs(amount);
+    }
+    const newTransaction = { amount: newAmount, date, type };
     investment.transaction.push(newTransaction);
 
     investment.amountBuy = 0;
     investment.amountSale = 0;
 
-    investment.transaction.forEach(({ amount, isSale }) => {
-      isSale
-        ? (investment.amountSale += amount)
-        : (investment.amountBuy += amount);
+    investment.transaction.forEach(({ amount, type }) => {
+      if (type === "sell") investment.amountSale += amount;
+      else if (type === "buy") investment.amountBuy += amount;
     });
-
-    investment.amountResult = investment.amountSale - investment.amountBuy;
 
     const updatedInvestment = await investment.save();
 
@@ -162,9 +158,9 @@ module.exports.editInvestment = async (req, res) => {
     let amountBuy = 0;
     let amountSale = 0;
     investment.transaction.forEach((t) => {
-      if (t.isSale) {
+      if (t.type === "sell") {
         amountSale += t.amount;
-      } else {
+      } else if (t.type === "buy") {
         amountBuy += t.amount;
       }
     });
@@ -213,32 +209,26 @@ module.exports.editTransaction = async (req, res) => {
       (req.body.amount === undefined ||
         req.body.amount == transaction.amount) &&
       (req.body.date === undefined || req.body.date == transaction.date) &&
-      (req.body.isSale === undefined || req.body.isSale == transaction.isSale);
+      (req.body.type === undefined || req.body.type == transaction.type);
 
     if (isSame) {
       return res.status(400).json({ message: "Aucune modification détectée" });
     }
 
-    transaction.amount = req.body.amount || transaction.amount;
-    transaction.date = req.body.date || transaction.date;
-    transaction.isSale =
-      req.body.isSale !== undefined ? req.body.isSale : transaction.isSale;
+    transaction.amount =
+      req.body.type === "buy"
+        ? Math.abs(req.body.amount)
+        : req.body.amount ?? transaction.amount;
+    transaction.date = req.body.date ?? transaction.date;
+    transaction.type = req.body.type ?? transaction.type;
 
-    let amountBuy = 0;
-    let amountSale = 0;
-    investment.transaction.forEach((t) => {
-      if (t.isSale) {
-        amountSale += t.amount;
-      } else {
-        amountBuy += t.amount;
-      }
+    investment.amountBuy = 0;
+    investment.amountSale = 0;
+
+    investment.transaction.forEach(({ amount, type }) => {
+      if (type === "sell") investment.amountSale += amount;
+      else if (type === "buy") investment.amountBuy += amount;
     });
-
-    const amountResult = amountSale - amountBuy;
-
-    investment.amountBuy = amountBuy.toString();
-    investment.amountSale = amountSale.toString();
-    investment.amountResult = amountResult.toString();
 
     const updatedInvestment = await investment.save();
 
@@ -279,21 +269,13 @@ module.exports.deleteTransaction = async (req, res) => {
       return res.status(200).json({ message: "Transaction supprimée" });
     }
 
-    let amountBuy = 0;
-    let amountSale = 0;
-    investment.transaction.forEach((t) => {
-      if (t.isSale) {
-        amountSale += t.amount;
-      } else {
-        amountBuy += t.amount;
-      }
+    investment.amountBuy = 0;
+    investment.amountSale = 0;
+
+    investment.transaction.forEach(({ amount, type }) => {
+      if (type === "sell") investment.amountSale += amount;
+      else if (type === "buy") investment.amountBuy += amount;
     });
-
-    const amountResult = amountSale - amountBuy;
-
-    investment.amountBuy = amountBuy.toString();
-    investment.amountSale = amountSale.toString();
-    investment.amountResult = amountResult.toString();
 
     const updatedInvestment = await investment.save();
 

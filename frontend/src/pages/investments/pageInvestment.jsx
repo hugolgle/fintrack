@@ -101,10 +101,11 @@ export default function PageInvestment() {
   const normalizedData = processTransactions(dataInvestments || []);
   const dataAll = normalizedData;
   const dataSold = normalizedData.filter(
-    (item) => item.transaction.isSale === true
+    (item) => item.transaction.type === "sell"
   );
+
   const dataInProgress = normalizedData.filter(
-    (item) => item.transaction.isSale === false
+    (item) => item.transaction.type === "buy"
   );
 
   let investissements = [];
@@ -129,7 +130,7 @@ export default function PageInvestment() {
     { id: 4, name: "Nom", key: "name" },
     { id: 5, name: "Date", key: "date" },
     { id: 6, name: "Montant", key: "amount" },
-    { id: 7, name: "Action", key: "isSale" },
+    { id: 7, name: "Action", key: "type" },
   ];
 
   const displayData = investissements.map(
@@ -142,7 +143,7 @@ export default function PageInvestment() {
         name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
-        isSale: transaction.isSale,
+        action: transaction.type,
         createdAt,
       };
     }
@@ -180,7 +181,11 @@ export default function PageInvestment() {
       row.name,
       format(row.date, "PP", { locale: fr }),
       formatCurrency.format(row.amount),
-      row.isSale ? "Vente" : "Achat",
+      row.action === "sell"
+        ? "Vente"
+        : row.action === "buy"
+          ? "Achat"
+          : "Dividende",
     ];
   };
 

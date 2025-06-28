@@ -82,98 +82,103 @@ export default function Tableau({
   return (
     <>
       {theData && theData.length > 0 ? (
-        <Table className="w-full flex flex-col px-1 animate-fade relative">
-          <TableHeader className="flex w-full items-center">
-            <TableRow className="w-full flex h-7">
-              {multiselect && (
-                <TableHead>
-                  <Checkbox
-                    checked={selectAllRow}
-                    onCheckedChange={handleSelectAllRow}
-                    aria-label="Select all rows"
-                  />
-                </TableHead>
-              )}
-              {columns.map(({ name, key }) => (
-                <TableHead
-                  key={key}
-                  className="flex justify-center items-start w-full px-10 text-center"
-                >
-                  <div className="flex items-center gap-1">
-                    {name}
-                    <button
-                      onClick={() => handleSort(key)}
-                      aria-label={`Sort by ${name}`}
-                      className="transition-transform"
-                    >
-                      <ChevronUp
-                        size={16}
-                        className={`opacity-50 transition-all ${
-                          sortConfig.key === key &&
-                          sortConfig.direction === "desc"
-                            ? "rotate-180"
-                            : ""
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody className="flex flex-col overflow-hidden justify-center items-center w-full">
-            {sortedData.map((item) => {
-              const formattedRow = formatData(item);
-              return (
-                <TableRow
-                  key={item._id}
-                  className={`group w-full flex flex-row h-12 hover:bg-muted/50 items-center text-left animate-fade ${
-                    selectedRows[item._id] && "bg-muted/50"
-                  }`}
-                >
-                  {multiselect && (
-                    <TableCell>
-                      <Checkbox
-                        checked={!!selectedRows[item._id]}
-                        onCheckedChange={(checked) =>
-                          handleSelectRow(item._id, checked)
-                        }
-                        aria-label={`Select row ${item._id}`}
-                      />
-                    </TableCell>
-                  )}
+        <div className="w-full overflow-x-auto">
+          <Table className="min-w-[600px] flex flex-col px-1 animate-fade relative">
+            <TableHeader className="flex w-full items-center">
+              <TableRow className="w-full flex min-w-[600px] h-7">
+                {multiselect && (
+                  <TableHead>
+                    <Checkbox
+                      checked={selectAllRow}
+                      onCheckedChange={handleSelectAllRow}
+                      aria-label="Select all rows"
+                    />
+                  </TableHead>
+                )}
+                {columns.map(({ name, key }) => (
+                  <TableHead
+                    key={key}
+                    className="flex justify-center items-start w-full px-2 sm:px-4 md:px-10 text-center text-[10px] sm:text-xs"
+                  >
+                    <div className="flex items-center gap-1">
+                      {name}
+                      <button
+                        onClick={() => handleSort(key)}
+                        aria-label={`Sort by ${name}`}
+                        className="transition-transform"
+                      >
+                        <ChevronUp
+                          size={16}
+                          className={`opacity-50 transition-all ${
+                            sortConfig.key === key &&
+                            sortConfig.direction === "desc"
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody className="flex flex-col md:overflow-hidden justify-center items-center w-full">
+              {sortedData.map((item) => {
+                const formattedRow = formatData(item);
+                return (
+                  <TableRow
+                    key={item._id}
+                    className={`group w-full flex flex-row h-12 hover:bg-muted/50 items-center text-left animate-fade ${
+                      selectedRows[item._id] && "bg-muted/50"
+                    }`}
+                  >
+                    {multiselect && (
+                      <TableCell>
+                        <Checkbox
+                          checked={!!selectedRows[item._id]}
+                          onCheckedChange={(checked) =>
+                            handleSelectRow(item._id, checked)
+                          }
+                          aria-label={`Select row ${item._id}`}
+                        />
+                      </TableCell>
+                    )}
 
-                  {formattedRow.map((value, index) => (
-                    <TableCell key={index} className="w-full px-10 truncate">
-                      {value}
-                    </TableCell>
-                  ))}
+                    {formattedRow.map((value, index) => (
+                      <TableCell
+                        key={index}
+                        className="w-full px-2 sm:px-4 md:px-10 truncate text-[11px] sm:text-sm"
+                      >
+                        {value}
+                      </TableCell>
+                    ))}
 
-                  {action && (
-                    <TableCell className="absolute group-hover:opacity-100 opacity-0 transition-all right-0">
-                      {action(item)}
-                    </TableCell>
-                  )}
+                    {action && (
+                      <TableCell className="absolute group-hover:opacity-100 opacity-0 transition-all right-0">
+                        {action(item)}
+                      </TableCell>
+                    )}
 
-                  {firstItem && (
-                    <TableCell
-                      className={`absolute ${multiselect ? "left-8" : "left-0"}`}
-                    >
-                      {firstItem(item)}
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    {firstItem && (
+                      <TableCell
+                        className={`absolute ${multiselect ? "left-8" : "left-0"}`}
+                      >
+                        {firstItem(item)}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       ) : (
         <p className="animate-fade text-sm italic text-gray-400">
           Aucune opération n'a été trouvée !
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-ring text-left text-xs right-4 animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
+      <div className="fixed bottom-4 ring-ring text-left text-xs right-4 max-w-[90%] animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
         {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
           <>
             Total sélectionnés : <br />

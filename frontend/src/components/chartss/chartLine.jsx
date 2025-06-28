@@ -80,6 +80,8 @@ export function ChartLine({
     (_, i) => Math.ceil((maxValue * 1.1 * i) / 3 / 100) * 100
   );
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
   return (
     <CardContent>
       <ResponsiveContainer width={width} height={height}>
@@ -94,13 +96,15 @@ export function ChartLine({
             axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
           />
 
-          <YAxis
-            domain={yAxisDomain}
-            ticks={ticks}
-            tickFormatter={(value) => formatCurrency.format(value)}
-            tick={{ fontSize: 10, fill: chartConfig.text.color }}
-            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
-          />
+          {!isMobile && (
+            <YAxis
+              domain={yAxisDomain}
+              ticks={ticks}
+              tickFormatter={(value) => formatCurrency.format(value)}
+              tick={{ fontSize: 10, fill: chartConfig.text.color }}
+              axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
+            />
+          )}
 
           <Tooltip content={<CustomTooltip />} />
 

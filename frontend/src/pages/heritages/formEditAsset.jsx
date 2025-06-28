@@ -197,7 +197,7 @@ export function FormEditAsset({ asset, refetch }) {
         )}
       </div>
 
-      <DialogFooter className="sm:justify-between">
+      <DialogFooter className="sm:justify-between flex-row">
         <ButtonLoading
           type="submit"
           text="Modifier"

@@ -108,7 +108,7 @@ export default function Heritage() {
           <BoxInfos
             onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
             title="Investissements"
-            value={amountInvestAll}
+            value={Math.abs(amountInvestAll)}
             isAmount
             icon={<HandCoins size={15} color="grey" />}
           />

@@ -28,8 +28,11 @@ import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
 import { useState } from "react";
 
 const validationSchema = yup.object().shape({
-  action: yup.string().required("L'action est requise"),
-  date: yup.date().required("Le nom est requis"),
+  action: yup
+    .string()
+    .oneOf(["buy", "sell", "dividend"])
+    .required("L'action est requise"),
+  date: yup.date().required("La date est requise"),
   amount: yup.number().positive().required("Le montant est requis"),
 });
 
@@ -61,7 +64,7 @@ export default function PageAddInvestment() {
     validateOnMount: true,
     onSubmit: async (values) => {
       const postData = {
-        action: values.action === "true",
+        action: values.action,
         amount: values.amount,
         date: values.date.toLocaleDateString("fr-CA"),
       };
@@ -88,10 +91,12 @@ export default function PageAddInvestment() {
             <SelectValue placeholder="Sélectionnez une action" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="true">Vendre</SelectItem>
-            <SelectItem value="false">Acheter</SelectItem>
+            <SelectItem value="buy">Acheter</SelectItem>
+            <SelectItem value="sell">Vendre</SelectItem>
+            <SelectItem value="dividend">Dividende</SelectItem>
           </SelectContent>
         </Select>
+
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="input">

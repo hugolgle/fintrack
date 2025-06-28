@@ -431,7 +431,7 @@ export default function BoardTransactions() {
                   ) : (
                     <LoaderDots />
                   )}
-                  <div className="flex flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
+                  <div className="flex flex-row w-4/5 max-w-[500px] mx-auto md:px-20 items-center justify-between">
                     <div className="w-1/12">
                       <ChevronLeft
                         size={25}
@@ -462,14 +462,13 @@ export default function BoardTransactions() {
                       <TabsList>
                         <TabsTrigger value={6}>6 mois</TabsTrigger>
                         <TabsTrigger value={12}>1 an</TabsTrigger>
-                        <TabsTrigger value={24}>2 ans</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
                 </Container>
                 <Container>
                   <h2 className="text-left">Répartitions</h2>
-                  <div className="flex">
+                  <div className="flex flex-col md:flex-row">
                     <div className="flex flex-col w-full p-4">
                       <p className="italic font-thin text-left text-xs">
                         Dépense
@@ -494,7 +493,11 @@ export default function BoardTransactions() {
                     </div>
                     <Separator
                       orientation="vertical"
-                      className="h-32 my-auto bg-secondary"
+                      className="h-32 my-auto bg-secondary mr-4 hidden lg:block"
+                    />
+                    <Separator
+                      orientation="horizontal"
+                      className="mx-auto bg-secondary lg:hidden block"
                     />
                     <div className="flex flex-col w-full p-4">
                       <p className="italic font-thin text-left text-xs">
@@ -520,7 +523,11 @@ export default function BoardTransactions() {
                     </div>
                     <Separator
                       orientation="vertical"
-                      className="h-32 my-auto bg-secondary"
+                      className="h-32 my-auto bg-secondary mr-4 hidden lg:block"
+                    />
+                    <Separator
+                      orientation="horizontal"
+                      className="mx-auto bg-secondary lg:hidden block"
                     />
                     <div className="flex flex-col w-full p-4">
                       <p className="italic font-thin text-left text-xs">

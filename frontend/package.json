@@ -10,7 +10,7 @@
     "build": "vite build",
     "lint": "eslint ./src/**/*.js",
     "preview": "vite preview",
-    "start": "pnpm run dev & pnpm run server"
+    "start": "open -a 'Google Chrome' http://localhost:3000 & npm run dev & (cd ../backend && npm start)"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",

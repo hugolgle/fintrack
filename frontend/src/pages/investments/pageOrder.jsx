@@ -149,28 +149,27 @@ export function PageOrder() {
   );
 
   const performSearch = (term) => {
+    const lowerTerm = term.toLowerCase();
     const filteredData = displayData.filter((item) => {
-      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
-      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
-      const isSaleMatches = item.isSale
+      const nameMatches = item.name?.toLowerCase().includes(lowerTerm);
+      const typeMatches = item.type?.toLowerCase().includes(lowerTerm);
+      const transactionTypeMatches = item.transaction?.type
         ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const symbolMatches = item.symbol
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
+        .includes(lowerTerm);
+      const symbolMatches = item.symbol?.toLowerCase().includes(lowerTerm);
+      const dateMatches = item.date?.toLowerCase().includes(lowerTerm);
       const amountMatches = item.amount
-        .toString()
+        ?.toString()
         .toLowerCase()
-        .includes(term.toLowerCase());
+        .includes(lowerTerm);
 
       return (
         nameMatches ||
         typeMatches ||
+        transactionTypeMatches ||
         dateMatches ||
         amountMatches ||
-        symbolMatches ||
-        isSaleMatches
+        symbolMatches
       );
     });
     setSearchResults(filteredData);

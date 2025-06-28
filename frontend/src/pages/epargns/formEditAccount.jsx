@@ -112,7 +112,7 @@ export function FormEditAccount({ account, refetch }) {
         )}
       </div>
 
-      <DialogFooter className="sm:justify-between">
+      <DialogFooter className="sm:justify-between flex-row">
         <ButtonLoading
           type="submit"
           text="Modifier"

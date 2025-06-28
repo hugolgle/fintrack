@@ -67,7 +67,11 @@ const validationSchema = yup.object().shape({
     otherwise: (schema) => schema.notRequired(),
   }),
 
-  action: yup.boolean().required("L'action est requise"),
+  action: yup
+    .string()
+    .oneOf(["true", "false"], "Action invalide")
+    .required("L'action est requise"),
+
   amount: yup
     .number()
     .required("Le montant est requis")

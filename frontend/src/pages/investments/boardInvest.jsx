@@ -74,9 +74,14 @@ export default function BoardInvest() {
       }, 0)
     : 0;
 
-  const amountResult = Array.isArray(dataInvests)
+  const amountResult = amountBuy - amountSale;
+
+  const amountDividend = Array.isArray(dataInvests)
     ? dataInvests.reduce((total, item) => {
-        return total + (item.amountResult || 0);
+        const sum = item.transaction
+          ?.filter((t) => t.type === "dividend")
+          .reduce((subTotal, t) => subTotal + (t.amount || 0), 0);
+        return total + sum;
       }, 0)
     : 0;
 
@@ -190,15 +195,6 @@ export default function BoardInvest() {
     setGraphMonth(newDate);
   };
 
-  const simplifiedData = dataInvests.flatMap((item) =>
-    item.transaction.map((trans) => ({
-      name: item.name,
-      type: item.type,
-      amount: trans.amount || 0,
-      date: trans.date,
-    }))
-  );
-
   const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
   const formatData = (row) => {
     return [
@@ -206,12 +202,11 @@ export default function BoardInvest() {
       row.name,
       formatCurrency.format(row.amount),
       formatCurrency.format(row.amountSale),
-      row.transaction.some((transac) => transac.isSale === true)
-        ? formatCurrency.format(row.amountResult)
-        : "N/A",
-      row.transaction.some((transac) => transac.isSale)
-        ? `${((row.amountResult / row.amount) * 100).toFixed(2)}%`
-        : "0%",
+      formatCurrency.format(row.amountSale + row.amount),
+      formatCurrency.format(row.transaction
+        .filter((t) => t.type === "dividend")
+        .reduce((total, t) => total + (t.amount || 0), 0)),
+      `${(((row.amountSale + row.amount) / Math.abs(row.amount)) * 100).toFixed(2)}%`,
     ];
   };
 
@@ -223,7 +218,6 @@ export default function BoardInvest() {
       symbol,
       amountBuy,
       amountSale,
-      amountResult,
       transaction,
       createdAt,
     }) => {
@@ -237,7 +231,6 @@ export default function BoardInvest() {
         date: transaction[0]?.date,
         amount: amountBuy,
         amountSale,
-        amountResult,
         createdAt,
       };
     }
@@ -249,7 +242,8 @@ export default function BoardInvest() {
     { id: 3, name: "Montant acheté", key: "amount" },
     { id: 4, name: "Montant vendu", key: "amountSale" },
     { id: 5, name: "Résultats", key: "amountResult" },
-    { id: 6, name: "Rendement", key: "rend" },
+    { id: 6, name: "Dividende", key: "dividend" },
+    { id: 7, name: "Rendement", key: "rendement" },
   ];
 
   const action = (item) => {
@@ -284,28 +278,27 @@ export default function BoardInvest() {
     );
   };
   const performSearch = (term) => {
+    const lowerTerm = term.toLowerCase();
     const filteredData = displayData.filter((item) => {
-      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
-      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
-      const isSaleMatches = item.isSale
+      const nameMatches = item.name?.toLowerCase().includes(lowerTerm);
+      const typeMatches = item.type?.toLowerCase().includes(lowerTerm);
+      const transactionTypeMatches = item.transaction?.type
         ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const symbolMatches = item.symbol
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
+        .includes(lowerTerm);
+      const symbolMatches = item.symbol?.toLowerCase().includes(lowerTerm);
+      const dateMatches = item.date?.toLowerCase().includes(lowerTerm);
       const amountMatches = item.amount
-        .toString()
+        ?.toString()
         .toLowerCase()
-        .includes(term.toLowerCase());
+        .includes(lowerTerm);
 
       return (
         nameMatches ||
         typeMatches ||
+        transactionTypeMatches ||
         dateMatches ||
         amountMatches ||
-        symbolMatches ||
-        isSaleMatches
+        symbolMatches
       );
     });
     setSearchResults(filteredData);
@@ -368,7 +361,7 @@ export default function BoardInvest() {
                 <LoaderDots />
               )}
               <div
-                className={`flex flex-row w-3/4 mx-auto px-20 items-center justify-between bottom-2`}
+                className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}
               >
                 <div className="w-1/12">
                   <ChevronLeft
@@ -400,7 +393,6 @@ export default function BoardInvest() {
                   <TabsList>
                     <TabsTrigger value={6}>6 mois</TabsTrigger>
                     <TabsTrigger value={12}>1 an</TabsTrigger>
-                    <TabsTrigger value={24}>2 ans</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
@@ -410,20 +402,10 @@ export default function BoardInvest() {
                 <h2 className="mb-4 text-left">Statistiques</h2>
                 <div className="h-full flex flex-col gap-2">
                   <div className="flex justify-between items-center">
-                    <p className="text-sm">Rendement annualisé</p>
-                    <p className="text-xs">+12,5%</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Volatilité</p>
-                    <p className="text-xs">14.2%</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Ratio de Sharpe</p>
-                    <p className="text-xs">1.8</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Drawdown max</p>
-                    <p className="text-xs">-8.3%</p>
+                    <p className="text-sm">Dividende perçu</p>
+                    <p className="text-xs">
+                      {formatCurrency.format(amountDividend)}
+                    </p>
                   </div>
                 </div>
               </Container>

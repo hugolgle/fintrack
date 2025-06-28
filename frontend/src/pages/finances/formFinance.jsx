@@ -468,7 +468,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
           </Command>
         </div>
       </div>
-      <DialogFooter className="sm:justify-between">
+      <DialogFooter className="sm:justify-between flex-row">
         <ButtonLoading
           type="submit"
           text={editMode ? "Modifier" : "Ajouter"}
