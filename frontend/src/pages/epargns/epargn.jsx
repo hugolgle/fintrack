@@ -251,8 +251,8 @@ export default function Epargn() {
                     chartConfig={chartConfig}
                     total={totalAmount}
                     fontSizeTotal={8}
-                    inner={60}
-                    outer={80}
+                    inner={40}
+                    outer={60}
                     legend={renderCustomLegend}
                   />
                 ) : (

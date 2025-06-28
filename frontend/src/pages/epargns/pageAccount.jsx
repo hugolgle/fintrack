@@ -121,8 +121,8 @@ export default function PageAccount() {
         btnAdd={ROUTES.ACTION_EPARGN}
         isFetching={isFetching}
       />
-      <div className="flex w-full gap-4 animate-fade">
-        <div className="w-4/5">
+      <div className="flex flex-col md:flex-row w-full gap-4 animate-fade">
+        <div className="md:w-4/5">
           <Container>
             <h2 className=" text-left">Graphique</h2>
             {!isFetching ? (
@@ -159,7 +159,7 @@ export default function PageAccount() {
           </Container>
         </div>
 
-        <div className="flex flex-col gap-4 w-1/5">
+        <div className="flex flex-col gap-4 md:w-1/5">
           <Container>
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className="text-left">Transactions</h2>

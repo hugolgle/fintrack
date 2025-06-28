@@ -368,7 +368,7 @@ export default function BoardInvest() {
                 <LoaderDots />
               )}
               <div
-                className={`flex flex-row w-3/4 mx-auto px-20 items-center justify-between bottom-2`}
+                className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}
               >
                 <div className="w-1/12">
                   <ChevronLeft
@@ -400,7 +400,6 @@ export default function BoardInvest() {
                   <TabsList>
                     <TabsTrigger value={6}>6 mois</TabsTrigger>
                     <TabsTrigger value={12}>1 an</TabsTrigger>
-                    <TabsTrigger value={24}>2 ans</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>

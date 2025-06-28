@@ -450,7 +450,7 @@ export default function Dashboard() {
               ) : (
                 <LoaderDots />
               )}
-              <div className="flex flex-col lg:flex-row w-4/5 max-w-[500px] mx-auto px-20 items-center justify-between">
+              <div className="flex flex-row w-4/5 max-w-[500px] mx-auto md:px-20 items-center justify-between">
                 <div className="w-1/12">
                   <ChevronLeft
                     size={25}
@@ -478,7 +478,6 @@ export default function Dashboard() {
                     <TabsList>
                       <TabsTrigger value={6}>6 mois</TabsTrigger>
                       <TabsTrigger value={12}>1 an</TabsTrigger>
-                      <TabsTrigger value={24}>2 ans</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
