@@ -8,7 +8,7 @@ export const renderCustomLegend = (props) => {
     (a, b) => b.payload.pourcentage - a.payload.pourcentage
   );
   const payloadTopN = payloadSort.slice(0, topN);
-
+  console.log(payloadTopN);
   return (
     <ul className="flex flex-col justify-center w-40">
       {payloadTopN.map((entry, index) => (
@@ -17,7 +17,7 @@ export const renderCustomLegend = (props) => {
           <div className="flex items-center w-full">
             <Dot strokeWidth={10} color={entry.color} />
             <span className="text-[10px] gap-2 font-thin w-full flex items-center">
-              <span className="truncateCustom">{entry.value}</span>
+              <span className="truncateCustom">{entry.payload.name}</span>
             </span>
             <p className="text-[8px] text-nowrap">
               <span className="text-muted-foreground">
