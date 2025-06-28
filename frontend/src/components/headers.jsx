@@ -58,14 +58,6 @@ function Header({
       <div className="flex flex-col gap-2 items-start w-1/4 justify-start">
         {/* <BreadcrumbDemo /> */}
         <div className="flex gap-2">
-          {btnReturn && canReturn && (
-            <CircleArrowLeft
-              size={20}
-              className="cursor-pointer hover:scale-110 transition-all"
-              onClick={handleGoBack}
-            />
-          )}
-
           <Menu
             size={20}
             className="cursor-pointer hover:scale-110 transition-all lg:hidden"
@@ -75,14 +67,19 @@ function Header({
             <>
               {/* Overlay cliquable pour fermer le menu */}
 
-
-
               {/* Sidebar responsive full screen */}
               <Sidebar
                 responsive
                 setShowResponsiveMenu={setShowResponsiveMenu}
               />
             </>
+          )}
+          {btnReturn && canReturn && (
+            <CircleArrowLeft
+              size={20}
+              className="cursor-pointer hover:scale-110 transition-all"
+              onClick={handleGoBack}
+            />
           )}
 
           {btnAdd && (
@@ -148,7 +145,7 @@ function Header({
           {actionEdit}
         </div>
       </div>
-      <h1 className="text-4xl font-thin font-logo animate-fade w-2/4 truncate">
+      <h1 className="text-lg sm:text-xl md:text-3xl font-thin font-logo animate-fade w-2/4 truncate">
         {title}
       </h1>
       <div className="w-1/4 flex justify-end">
