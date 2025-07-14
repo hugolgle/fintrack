@@ -22,7 +22,7 @@ import { de, fr } from "date-fns/locale";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ButtonLoading from "../../components/buttons/buttonLoading";
-import { addCredit, addPayment } from "../../services/credit.service";
+import { addPayment } from "../../services/credit.service";
 
 export function FormPayment({ credit, refetch, editMode }) {
   const validationSchema = yup.object().shape({
