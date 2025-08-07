@@ -11,6 +11,7 @@ import {
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { Dot } from "lucide-react";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export function RadialChart({
   chartData,
@@ -23,6 +24,7 @@ export function RadialChart({
   sideLegend = "left",
   outer,
 }) {
+  const { isVisible } = useAmountVisibility();
   const CustomTooltipContent = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const { payload: data } = payload[0];
@@ -51,7 +53,9 @@ export function RadialChart({
                     </div>
                     <p className="italic font-black">
                       {key === "amount"
-                        ? formatCurrency.format(value)
+                        ? isVisible
+                          ? formatCurrency.format(value)
+                          : "••••"
                         : value.toFixed(0)}
                       {key !== "amount" && "%"}
                     </p>
@@ -114,7 +118,7 @@ export function RadialChart({
                           y={viewBox.cy}
                           className={`text-[${fontSizeTotal}px] italic font-thin fill-foreground`}
                         >
-                          {formatCurrency.format(total)}
+                          {isVisible ? formatCurrency.format(total) : "••••"}
                         </tspan>
                       </text>
                     );

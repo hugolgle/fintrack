@@ -33,6 +33,7 @@ module.exports.addTransaction = async (req, res) => {
       detail: req.body.detail || "",
       amount,
       tag: tags,
+      creditId: req.body.creditId || null,
     });
 
     return res.status(201).json({ message: "Transaction ajouté", transaction });

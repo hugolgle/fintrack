@@ -50,7 +50,7 @@ export default function SignUp() {
     try {
       await login(values);
       setAnimate(true);
-      setTimeout(() => navigate(ROUTES.HOME), 2000);
+      setTimeout(() => navigate(ROUTES.DASHBOARD), 2000);
     } catch (error) {
       toast.error("Échec de connexion");
     }

@@ -5,7 +5,14 @@ import * as yup from "yup";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { addAccount } from "../../services/epargn.service";
-import Header from "../../components/headers";
+import { Button } from "@/components/ui/button";
+import {
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ButtonLoading from "../../components/buttons/buttonLoading";
 
 const validationSchema = yup.object({
@@ -27,12 +34,13 @@ const validationSchema = yup.object({
     .required("Le plafond est requis"),
 });
 
-export default function PageAddAccount() {
+export function FormAddAccount({ refetch }) {
   const mutation = useMutation({
     mutationFn: addAccount,
     onSuccess: (response) => {
       toast.success(response?.data?.message);
       formik.resetForm();
+      refetch();
     },
     onError: (error) => {
       toast({
@@ -58,12 +66,14 @@ export default function PageAddAccount() {
   });
 
   return (
-    <section className="w-full">
-      <Header title="Ajouter un compte" btnReturn />
-      <form
-        onSubmit={formik.handleSubmit}
-        className="flex flex-col justify-center items-center mx-auto max-w-sm gap-5 py-10 animate-fade"
-      >
+    <form onSubmit={formik.handleSubmit}>
+      <DialogHeader>
+        <DialogTitle>Ajouter un compte</DialogTitle>
+        <DialogDescription>
+          Ajouter les informations du nouveau compte.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
         <Input
           type="text"
           id="name"
@@ -118,14 +128,21 @@ export default function PageAddAccount() {
             {formik.errors.maxBalance}
           </p>
         )}
+      </div>
+
+      <DialogFooter className="sm:justify-between flex-row">
         <ButtonLoading
-          variant="secondary"
           type="submit"
-          text="Soumettre"
-          disabled={mutation.isPending}
+          text="Ajouter"
           isPending={mutation.isPending}
+          disabled={mutation.isPending}
         />
-      </form>
-    </section>
+        <DialogClose>
+          <Button type="button" variant="outline">
+            Annuler
+          </Button>
+        </DialogClose>
+      </DialogFooter>
+    </form>
   );
 }

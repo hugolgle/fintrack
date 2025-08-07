@@ -1,10 +1,6 @@
-import { useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {
-  getTransactionsByType,
-  getTitleOfTransactionsByType,
-  getTagsOfTransactions,
-} from "../../utils/operations.js";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { getTransactionsByType } from "../../utils/operations.js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,18 +9,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { alphaSort, months, nameType } from "../../utils/other.js";
-import { categoryDepense } from "../../../public/categories.json";
+import { months, nameType } from "../../utils/other.js";
 import Header from "../../components/headers.jsx";
 import Tableau from "../../components/tables/table.jsx";
 import {
   deleteTransactions,
   fetchTransactions,
 } from "../../services/transaction.service.jsx";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loader from "../../components/loaders/loader.jsx";
 import { HttpStatusCode } from "axios";
-import { Dot, EllipsisVertical, MoreHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  Dot,
+  EllipsisVertical,
+} from "lucide-react";
 import { Pencil } from "lucide-react";
 import { FormTransac } from "./formFinance.jsx";
 import { Trash } from "lucide-react";
@@ -37,13 +45,12 @@ import { Plus } from "lucide-react";
 import ModalTable from "../epargns/modal/modalTable.jsx";
 import { toast } from "sonner";
 import { TYPES } from "../../staticDatas/staticData.js";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function PageTransaction({ type }) {
+  const { isVisible } = useAmountVisibility();
   const { year, month } = useParams();
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams({});
   const queryClient = useQueryClient();
   const dateSelected = year ? (month ? `${year}${month}` : year) : "all";
 
@@ -79,80 +86,7 @@ export default function PageTransaction({ type }) {
     },
   });
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
-  };
-
-  const categories = alphaSort(categoryDepense);
-
-  const [selectedCategorys, setSelectedCategorys] = useState(
-    searchParams.getAll("categories")
-  );
-  const [selectedTags, setSelectedTags] = useState(searchParams.getAll("tags"));
-  const [selectedTitles, setSelectedTitles] = useState(
-    searchParams.getAll("titles")
-  );
-
-  const titles = getTitleOfTransactionsByType(dataTransactions, type);
-
-  const handleCheckboxChange = (event, type) => {
-    const value = event.target.value;
-    const isChecked = event.target.checked;
-
-    let updatedArray;
-    if (type === "category") {
-      updatedArray = isChecked
-        ? [...selectedCategorys, value]
-        : selectedCategorys.filter((cat) => cat !== value);
-      setSelectedCategorys(updatedArray);
-    } else if (type === "title") {
-      updatedArray = isChecked
-        ? [...selectedTitles, value]
-        : selectedTitles.filter((title) => title !== value);
-      setSelectedTitles(updatedArray);
-    } else if (type === "tag") {
-      updatedArray = isChecked
-        ? [...selectedTags, value]
-        : selectedTags.filter((tag) => tag !== value);
-      setSelectedTags(updatedArray);
-    }
-
-    setSearchParams((prevParams) => {
-      const updatedParams = new URLSearchParams(prevParams);
-
-      if (updatedArray.length === 0 && type === "category") {
-        updatedParams.delete("categories");
-      } else if (updatedArray.length > 0 && type === "category") {
-        updatedParams.set("categories", updatedArray.join(","));
-      }
-
-      if (updatedArray.length === 0 && type === "title") {
-        updatedParams.delete("titles");
-      } else if (updatedArray.length > 0 && type === "title") {
-        updatedParams.set("titles", updatedArray.join(","));
-      }
-
-      if (updatedArray.length === 0 && type === "tag") {
-        updatedParams.delete("tags");
-      } else if (updatedArray.length > 0 && type === "tag") {
-        updatedParams.set("tags", updatedArray.join(","));
-      }
-
-      return updatedParams;
-    });
-  };
-
-  const check =
-    selectedCategorys.length + selectedTitles.length + selectedTags.length;
-
-  const dataTransacs = getTransactionsByType(
-    dataTransactions,
-    type,
-    selectedCategorys,
-    selectedTitles,
-    selectedTags
-  );
+  const dataTransacs = getTransactionsByType(dataTransactions, type);
 
   const dataTransacsByYear = dataTransacs?.filter((transaction) => {
     const transactionYear = transaction.date.slice(0, 4);
@@ -180,7 +114,6 @@ export default function PageTransaction({ type }) {
       category,
       detail,
       amount,
-      group,
       initialAmount,
       refunds,
       tag,
@@ -197,88 +130,22 @@ export default function PageTransaction({ type }) {
         refunds,
         tag,
         amount,
-        group,
         initialAmount,
         createdAt,
       };
     }
   );
 
-  const tags = getTagsOfTransactions(dataTransactions);
+  const handleChange = (value, typeDate) => {
+    const currentMonth = typeDate === "month" ? value : month;
+    const currentYear = typeDate === "year" ? value : year;
 
-  const performSearch = (term) => {
-    const filteredData = displayData.filter((item) => {
-      const titleMatches = item.title
-        .toLowerCase()
-        .includes(term.toLowerCase());
-
-      const typeMatches = item.type.toLowerCase().includes(term.toLowerCase());
-
-      const amountMatches = item.amount
-        .toString()
-        .toLowerCase()
-        .includes(term.toLowerCase());
-      const tagsMatches =
-        item.tag && Array.isArray(item.tag) && item.tag.length > 0
-          ? item.tag.some((tag) =>
-              tag.toLowerCase().includes(term.toLowerCase())
-            )
-          : false;
-
-      const dateMatches = item.date?.toString().includes(term.toLowerCase());
-
-      return (
-        titleMatches ||
-        typeMatches ||
-        amountMatches ||
-        dateMatches ||
-        tagsMatches
+    if (currentYear && !currentMonth) {
+      navigate(`/finance/transactions/${type.toLowerCase()}/${currentYear}`);
+    } else if (currentMonth && currentYear) {
+      navigate(
+        `/finance/transactions/${type.toLowerCase()}/${currentYear}/${currentMonth}`
       );
-    });
-
-    setSearchResults(filteredData);
-  };
-
-  const clearFilters = () => {
-    setSelectedCategorys([]);
-    setSelectedTitles([]);
-    setSelectedTags([]);
-    setSearchParams({});
-  };
-
-  const clickLastMonth = () => {
-    if (year) {
-      let yearNum = parseInt(year);
-      if (!month) {
-        navigate(`/finance/transactions/${type.toLowerCase()}/${yearNum - 1}`);
-      } else {
-        let monthNum = parseInt(month) - 1;
-        if (monthNum === 0) {
-          monthNum = 12;
-          yearNum -= 1;
-        }
-        const newMonth = monthNum.toString().padStart(2, "0");
-        const newDate = `${yearNum}/${newMonth}`;
-        navigate(`/finance/transactions/${type.toLowerCase()}/${newDate}`);
-      }
-    }
-  };
-
-  const clickNextMonth = () => {
-    if (year) {
-      let yearNum = parseInt(year);
-      if (!month) {
-        navigate(`/finance/transactions/${type.toLowerCase()}/${yearNum + 1}`);
-      } else {
-        let monthNum = parseInt(month) + 1;
-        if (monthNum > 12) {
-          monthNum = 1;
-          yearNum += 1;
-        }
-        const newMonth = monthNum.toString().padStart(2, "0");
-        const newDate = `${yearNum}/${newMonth}`;
-        navigate(`/finance/transactions/${type.toLowerCase()}/${newDate}`);
-      }
     }
   };
 
@@ -322,7 +189,12 @@ export default function PageTransaction({ type }) {
   const formatData = (row) => {
     return [
       <div className="flex flex-col lg:flex-row gap-2 items-center">
-        {row.title}
+        <div className="flex gap-2 items-center">
+          {row.title}
+          {row.category === "Crédit" && (
+            <CreditCard strokeWidth={1} color="grey" />
+          )}
+        </div>
         {row.tag.map((t, index) => (
           <Badge
             key={index}
@@ -342,13 +214,17 @@ export default function PageTransaction({ type }) {
       format(row.date, "PP", { locale: fr }),
       row.refunds.length > 0 ? (
         <div className="flex gap-2 items-center">
-          {formatCurrency.format(row.amount)}
+          {isVisible ? formatCurrency.format(row.amount) : "••••"}
           <TicketSlash strokeWidth={1} color="grey" />
         </div>
       ) : row.type === TYPES.INCOME ? (
-        <p className="text-green-500">+{formatCurrency.format(row.amount)}</p>
+        <p className="text-green-500">
+          +{isVisible ? formatCurrency.format(row.amount) : "••••"}
+        </p>
       ) : (
-        <p className="text-red-500">{formatCurrency.format(row.amount)}</p>
+        <p className="text-red-500">
+          {isVisible ? formatCurrency.format(row.amount) : "••••"}
+        </p>
       ),
     ];
   };
@@ -363,7 +239,7 @@ export default function PageTransaction({ type }) {
       return [
         row.title,
         format(row.date, "PP", { locale: fr }),
-        formatCurrency.format(row.amount),
+        isVisible ? formatCurrency.format(row.amount) : "••••",
       ];
     };
 
@@ -437,7 +313,7 @@ export default function PageTransaction({ type }) {
     );
   };
 
-  const data = searchTerm ? searchResults : displayData;
+  const data = displayData;
 
   if (isLoading) return <Loader />;
 
@@ -446,32 +322,87 @@ export default function PageTransaction({ type }) {
       <section className="w-full">
         <Header
           title={
+            type === "Expense"
+              ? "Mes Dépenses"
+              : type === "Revenue"
+                ? "Mes Revenus"
+                : "Mes Finances"
+          }
+          subtitle={
             !type
               ? "Toutes les transactions"
               : !year
                 ? `Toutes les ${nameType(type).toLowerCase()}s`
                 : year && !month
-                  ? `${nameType(type)}s de ${dateSelected}`
+                  ? `${nameType(type)}s de l'année ${dateSelected}`
                   : `${nameType(type)}s de ${convertDate(dateSelected)}`
           }
-          clickLastMonth={clickLastMonth}
-          clickNextMonth={clickNextMonth}
           isFetching={isFetching}
-          btnSearch={{ handleSearchChange, searchTerm }}
-          modalAdd={<FormTransac refetch={refetch} type={type} />}
+          navigation={
+            <div className="flex justify-end items-center gap-4">
+              <div className="flex gap-4 items-center">
+                {/* Mois */}
+                {month && year && (
+                  <Select
+                    onValueChange={(value) => handleChange(value, "month")}
+                    defaultValue={month || ""}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Mois" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => {
+                        const monthValue = String(i + 1).padStart(2, "0");
+                        const monthLabel = new Date(0, i).toLocaleString(
+                          "fr-FR",
+                          {
+                            month: "long",
+                          }
+                        );
+                        return (
+                          <SelectItem key={monthValue} value={monthValue}>
+                            {monthLabel}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                )}
+                {/* Année */}
+
+                {year && (
+                  <Select
+                    onValueChange={(value) => handleChange(value, "year")}
+                    defaultValue={year || ""}
+                  >
+                    <SelectTrigger className="w-[100px]">
+                      <SelectValue placeholder="Année" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[2023, 2024, 2025, 2026].map((y) => (
+                        <SelectItem key={y} value={y.toString()}>
+                          {y}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              <Dialog modal>
+                <DialogTrigger>
+                  <Button>
+                    <Plus />
+                    <p className="hidden md:block">Nouvelle transaction</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormTransac refetch={refetch} type={type} />
+                </DialogContent>
+              </Dialog>
+            </div>
+          }
           btnReturn
-          btnFilter={{
-            selectedTags,
-            selectedCategorys,
-            selectedTitles,
-            clearFilters,
-            handleCheckboxChange,
-            check,
-            tags,
-            categories,
-            titles,
-          }}
-          navigateDate={year}
         />
 
         <Tableau
@@ -482,6 +413,12 @@ export default function PageTransaction({ type }) {
           formatData={formatData}
           firstItem={pastilleType}
           multiselect
+          fieldsFilter={[
+            { key: "category", fieldName: "Catégorie" },
+            { key: "tag", fieldName: "Tag" },
+            { key: "title", fieldName: "Titre" },
+          ]}
+          dateFilter={!month && !year}
         />
       </section>
     </>

@@ -12,8 +12,6 @@ import { HttpStatusCode } from "axios";
 import BoxStat from "../../components/boxs/boxStat";
 import Header from "../../components/headers";
 import Container from "../../components/containers/container";
-import Loader from "../../components/loaders/loader";
-import LoaderDots from "../../components/loaders/loaderDots";
 import {
   Carousel,
   CarouselContent,
@@ -31,11 +29,13 @@ import { toast } from "sonner";
 import { TYPES } from "../../staticDatas/staticData";
 import { formatCurrency } from "../../utils/fonctionnel";
 import { useAuth } from "../../context/authContext";
+import SkeletonDashboard from "../../components/skeletonBoard";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export default function Statistic() {
   const { user: dataUser } = useAuth();
   const { month: currentMonth, year: currentYear } = currentDate();
-
+  const { isVisible } = useAmountVisibility();
   const {
     isLoading,
     data: dataTransactions,
@@ -116,7 +116,10 @@ export default function Statistic() {
     if (!dataInvests) return 0;
     return dataInvests.reduce((acc, d) => {
       const total = d.transaction
-        .filter((t) => t.date.slice(0, 4) === `${selectedYear}`)
+        .filter(
+          (t) =>
+            t.date.slice(0, 4) === `${selectedYear}` && t.type !== "dividend"
+        )
         .reduce((s, t) => s + (t.amount || 0), 0);
       return acc + total;
     }, 0);
@@ -127,7 +130,9 @@ export default function Statistic() {
     return dataInvests.reduce((acc, d) => {
       const total = d.transaction
         .filter(
-          (t) => t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}`
+          (t) =>
+            t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}` &&
+            t.type !== "dividend"
         )
         .reduce((s, t) => s + (t.amount || 0), 0);
       return acc + total;
@@ -254,24 +259,24 @@ export default function Statistic() {
 
   const isCurrentYear = selectedYear === currentYear;
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   return (
     <section className="w-full">
-      <Header title="Statistiques" isFetching={isFetching} />
+      <Header title="Mes Statistiques" isFetching={isFetching} />
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-col  md:flex-row gap-2">
-          <Carousel className="md:max-w-xs overflow-hidden">
-            <CarouselContent className="flex gap-2 snap-x snap-mandatory">
+          <Carousel className="md:max-w-xs overflow-hidden w-auto">
+            <CarouselContent className="flex gap-2 snap-x">
               {years.map((year, i) => (
                 <CarouselItem
                   key={i}
-                  className={`pl-0 ${years.length > 1 && "basis-1/2"}`}
+                  className={`${years.length > 1 && "basis-1/2"}`}
                 >
                   <Button
                     variant={selectedYear === year ? "default" : "secondary"}
                     onClick={() => setSelectedYear(year)}
-                    className="w-full"
+                    className="w-full active:scale-90 transition-all"
                   >
                     {year}
                   </Button>
@@ -292,7 +297,7 @@ export default function Statistic() {
                     ? "default"
                     : "secondary"
                 }
-                className="w-full max-w-fit animate-fade"
+                className="w-full max-w-fit animate-fade active:scale-90 transition-all"
                 onClick={() => setSelectedMonth(String(m).padStart(2, "0"))}
               >
                 {months[m - 1]}
@@ -305,18 +310,15 @@ export default function Statistic() {
             <p className="italic font-thin text-xs text-left">
               Revenus de {selectedYear}
             </p>
-            {!isFetching ? (
-              <RadialChart
-                chartData={transformedDataRevenueYear}
-                chartConfig={chartConfigRevenue}
-                legend={renderCustomLegend}
-                inner={30}
-                outer={45}
-                height={110}
-              />
-            ) : (
-              <LoaderDots size={180} />
-            )}
+
+            <RadialChart
+              chartData={transformedDataRevenueYear}
+              chartConfig={chartConfigRevenue}
+              legend={renderCustomLegend}
+              inner={30}
+              outer={45}
+              height={110}
+            />
           </div>
           <Separator
             orientation="vertical"
@@ -330,18 +332,14 @@ export default function Statistic() {
             <p className="italic font-thin text-xs text-left">
               Dépenses {selectedYear}
             </p>
-            {!isFetching ? (
-              <RadialChart
-                chartData={transformedDataExpenseYear}
-                chartConfig={chartConfigExpense}
-                legend={renderCustomLegend}
-                inner={30}
-                outer={45}
-                height={110}
-              />
-            ) : (
-              <LoaderDots />
-            )}
+            <RadialChart
+              chartData={transformedDataExpenseYear}
+              chartConfig={chartConfigExpense}
+              legend={renderCustomLegend}
+              inner={30}
+              outer={45}
+              height={110}
+            />
           </div>
           <Separator
             orientation="vertical"
@@ -355,18 +353,14 @@ export default function Statistic() {
             <p className="italic font-thin text-xs text-left">
               Revenus de {convertDate(selectedDate)}
             </p>
-            {!isFetching ? (
-              <RadialChart
-                chartData={transformedDataRevenueMonth}
-                chartConfig={chartConfigRevenue}
-                legend={renderCustomLegend}
-                inner={30}
-                outer={45}
-                height={110}
-              />
-            ) : (
-              <LoaderDots size={180} />
-            )}
+            <RadialChart
+              chartData={transformedDataRevenueMonth}
+              chartConfig={chartConfigRevenue}
+              legend={renderCustomLegend}
+              inner={30}
+              outer={45}
+              height={110}
+            />
           </div>
           <Separator
             orientation="vertical"
@@ -380,18 +374,14 @@ export default function Statistic() {
             <p className="italic font-thin text-xs text-left">
               Dépenses de {convertDate(selectedDate)}
             </p>
-            {!isFetching ? (
-              <RadialChart
-                chartData={transformedDataExpenseMonth}
-                chartConfig={chartConfigExpense}
-                legend={renderCustomLegend}
-                inner={30}
-                outer={45}
-                height={110}
-              />
-            ) : (
-              <LoaderDots />
-            )}
+            <RadialChart
+              chartData={transformedDataExpenseMonth}
+              chartConfig={chartConfigExpense}
+              legend={renderCustomLegend}
+              inner={30}
+              outer={45}
+              height={110}
+            />
           </div>
         </Container>
         <div className="flex flex-col lg:flex-row gap-4 animate-fade">
@@ -536,8 +526,14 @@ export default function Statistic() {
                     ? "Ce mois-ci"
                     : `En ${months[parseInt(selectedMonth) - 1]} ${selectedYear}`}
                   , vous avez perçu{" "}
-                  {formatCurrency.format(Math.abs(recetteMonth))}, et dépensé{" "}
-                  {formatCurrency.format(Math.abs(depenseMonth))},{" "}
+                  {isVisible
+                    ? formatCurrency.format(Math.abs(recetteMonth))
+                    : "••••"}
+                  , et dépensé{" "}
+                  {isVisible
+                    ? formatCurrency.format(Math.abs(depenseMonth))
+                    : "••••"}
+                  ,{" "}
                   {economieMonth < 0
                     ? "générant un déficit de"
                     : "ce qui vous a permis d’économiser"}{" "}
@@ -548,7 +544,9 @@ export default function Statistic() {
                         : "text-colorRevenue"
                     }
                   >
-                    {formatCurrency.format(Math.abs(economieMonth))}
+                    {isVisible
+                      ? formatCurrency.format(Math.abs(economieMonth))
+                      : "••••"}
                   </span>
                   {amountInvestisMonth !== 0 ? "." : ","}
                   {amountInvestisMonth !== 0 && (
@@ -557,7 +555,10 @@ export default function Statistic() {
                       {economieMonth < 0
                         ? "De plus, vous avez investi"
                         : "Vous avez aussi investi"}{" "}
-                      {formatCurrency.format(Math.abs(amountInvestisMonth))},
+                      {isVisible
+                        ? formatCurrency.format(Math.abs(amountInvestisMonth))
+                        : "••••"}
+                      ,
                     </>
                   )}{" "}
                   {rest < 0 && economieMonth < 0
@@ -570,14 +571,22 @@ export default function Statistic() {
                       rest < 0 ? "text-colorExpense" : "text-colorRevenue"
                     }
                   >
-                    {formatCurrency.format(Math.abs(rest))}
+                    {isVisible ? formatCurrency.format(Math.abs(rest)) : "••••"}
                   </span>
                   .
                 </p>
+
                 <p className="text-sm text-justify font-thin">
                   {isCurrentYear ? "Cette année" : `En ${selectedYear}`}, vous
-                  avez perçu {formatCurrency.format(Math.abs(recetteYear))}, et
-                  dépensé {formatCurrency.format(Math.abs(depenseYear))},{" "}
+                  avez perçu{" "}
+                  {isVisible
+                    ? formatCurrency.format(Math.abs(recetteYear))
+                    : "••••"}
+                  , et dépensé{" "}
+                  {isVisible
+                    ? formatCurrency.format(Math.abs(depenseYear))
+                    : "••••"}
+                  ,{" "}
                   {economieMonth < 0
                     ? "générant un déficit de "
                     : "ce qui vous a permis d’économiser "}
@@ -588,7 +597,9 @@ export default function Statistic() {
                         : "text-colorRevenue"
                     }
                   >
-                    {formatCurrency.format(Math.abs(economieTotale))}
+                    {isVisible
+                      ? formatCurrency.format(Math.abs(economieTotale))
+                      : "••••"}
                   </span>
                   {amountInvestisYear !== 0 ? "." : ","}
                   {amountInvestisYear !== 0 && (
@@ -597,7 +608,10 @@ export default function Statistic() {
                       {economieTotale < 0
                         ? "De plus, vous avez investi"
                         : "Vous avez aussi investi"}{" "}
-                      {formatCurrency.format(Math.abs(amountInvestisYear))},
+                      {isVisible
+                        ? formatCurrency.format(Math.abs(amountInvestisYear))
+                        : "••••"}
+                      ,
                     </>
                   )}{" "}
                   {restYear < 0 && economieTotale < 0
@@ -610,7 +624,9 @@ export default function Statistic() {
                       restYear < 0 ? "text-colorExpense" : "text-colorRevenue"
                     }
                   >
-                    {formatCurrency.format(Math.abs(restYear))}
+                    {isVisible
+                      ? formatCurrency.format(Math.abs(restYear))
+                      : "••••"}
                   </span>
                   .
                 </p>

@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { CardContent } from "@/components/ui/card";
 import { formatCurrency } from "../../utils/fonctionnel";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 
 export function ChartLine({
   data = [],
@@ -21,6 +22,7 @@ export function ChartLine({
   isAnimationActive = true,
 }) {
   const chartConfig = { ...defaultConfig, ...config };
+  const { isVisible } = useAmountVisibility();
 
   const CustomTooltip = ({ active = false, payload = [], label = "" }) => {
     if (active && payload && payload.length) {
@@ -46,7 +48,7 @@ export function ChartLine({
                   </p>
                 </div>
                 <p className="italic font-black">
-                  {formatCurrency.format(entry.value)}
+                  {isVisible ? formatCurrency.format(entry.value) : "••••"}
                 </p>
               </div>
             ))}
@@ -62,7 +64,7 @@ export function ChartLine({
                   className={`italic font-black ${economieMonth < 0 ? "text-red-500" : "text-green-500"}`}
                 >
                   {economieMonth > 0 ? "+" : ""}
-                  {formatCurrency.format(economieMonth)}
+                  {isVisible ? formatCurrency.format(economieMonth) : "••••"}
                 </p>
               </div>
             )}
@@ -100,7 +102,9 @@ export function ChartLine({
             <YAxis
               domain={yAxisDomain}
               ticks={ticks}
-              tickFormatter={(value) => formatCurrency.format(value)}
+              tickFormatter={(value) =>
+                isVisible ? formatCurrency.format(value) : "••••"
+              }
               tick={{ fontSize: 10, fill: chartConfig.text.color }}
               axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
             />

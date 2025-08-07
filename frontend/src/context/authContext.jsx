@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || "Échec de la connexion.");
+      toast.error(error.response?.data?.message);
     },
   });
 

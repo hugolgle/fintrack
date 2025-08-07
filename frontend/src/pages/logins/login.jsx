@@ -30,7 +30,7 @@ export default function Login() {
 
       await login(loginData);
       setAnimate(true);
-      setTimeout(() => navigate(ROUTES.HOME), 1000);
+      setTimeout(() => navigate(ROUTES.DASHBOARD), 1000);
     } catch (error) {
       console.error("Erreur d'authentification :", error);
     }
@@ -52,10 +52,8 @@ export default function Login() {
       try {
         await login(values);
         setAnimate(true);
-        setTimeout(() => navigate(ROUTES.HOME), 1000);
-      } catch (error) {
-        toast.error("Échec de connexion", error);
-      }
+        setTimeout(() => navigate(ROUTES.DASHBOARD), 1000);
+      } catch (err) {}
     },
   });
 

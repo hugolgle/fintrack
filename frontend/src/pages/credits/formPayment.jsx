@@ -18,11 +18,13 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { de, fr } from "date-fns/locale";
+import { fr } from "date-fns/locale";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ButtonLoading from "../../components/buttons/buttonLoading";
 import { addPayment } from "../../services/credit.service";
+import { addTransaction } from "../../services/transaction.service";
+import { TYPES } from "../../staticDatas/staticData";
 
 export function FormPayment({ credit, refetch, editMode }) {
   const validationSchema = yup.object().shape({
@@ -57,7 +59,16 @@ export function FormPayment({ credit, refetch, editMode }) {
         depreciation:
           (credit.interestRate > 0 ? values.depreciation : values.amount) || 0,
       };
+      const transacFinValues = {
+        title: `Paiement de crédit '${credit.name}'`,
+        category: "Crédit",
+        date: values.date,
+        amount: finalValues.amount,
+        type: TYPES.EXPENSE,
+        creditId: credit._id,
+      };
       mutationAdd.mutate(finalValues);
+      mutationAddTransactionFin.mutate(transacFinValues);
     },
   });
 
@@ -70,6 +81,19 @@ export function FormPayment({ credit, refetch, editMode }) {
       queryClient.invalidateQueries(["fetchCredits"]);
       refetch();
       formik.resetForm();
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+
+  const mutationAddTransactionFin = useMutation({
+    mutationFn: async (postData) => {
+      return await addTransaction(postData);
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      queryClient.invalidateQueries(["fetchTransactions"]);
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);

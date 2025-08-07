@@ -48,61 +48,41 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
   const menu = [
     {
       id: 1,
-      group: "first",
       name: "Tableau de bord",
       link: ROUTES.DASHBOARD,
       icon: <LayoutDashboard />,
     },
     {
       id: 2,
-      group: "second",
       name: "Finances",
       link: ROUTES.FINANCE,
       icon: <Coins />,
     },
     {
       id: 4,
-      group: "second",
       name: "Investissements",
       link: ROUTES.INVESTMENT,
       icon: <HandCoins />,
     },
     {
       id: 5,
-      group: "third",
       name: "Épargne",
       link: ROUTES.EPARGN,
       icon: <Landmark />,
     },
     {
-      id: 6,
-      group: "third",
-      name: "Patrimoine",
-      link: ROUTES.HERITAGE,
-      icon: <Swords />,
-    },
-    {
       id: 7,
-      group: "third",
       name: "Crédits",
       link: ROUTES.CREDIT,
       icon: <CreditCard />,
     },
     {
       id: 8,
-      group: "last",
       name: "Statistiques",
       link: ROUTES.STATISTICS,
       icon: <BarChart />,
     },
   ];
-
-  const groupOrder = ["first", "second", "third", "last"];
-  const menuByGroup = menu.reduce((acc, item) => {
-    if (!acc[item.group]) acc[item.group] = [];
-    acc[item.group].push(item);
-    return acc;
-  }, {});
 
   if (responsive) {
     return (
@@ -130,25 +110,19 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
         {btnOpen}
 
         <div className="flex flex-col gap-4 mt-10">
-          {groupOrder.map((groupKey, gi) =>
-            menuByGroup[groupKey] ? (
-              <div key={groupKey} className={gi > 0 ? "mt-1" : ""}>
-                {menuByGroup[groupKey].map(({ id, name, link, icon }) => (
-                  <Link
-                    key={id}
-                    to={link}
-                    className={`flex items-center gap-4 p-4 rounded-md text-lg ${
-                      activeLink.startsWith(link)
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                    }`}
-                  >
-                    {icon}
-                  </Link>
-                ))}
-              </div>
-            ) : null
-          )}
+          {menu.map(({ id, name, link, icon }) => (
+            <Link
+              key={id}
+              to={link}
+              className={`flex items-center gap-4 p-4 rounded-md text-lg ${
+                activeLink.startsWith(link)
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+            >
+              {icon}
+            </Link>
+          ))}
         </div>
 
         <DropdownProfil
@@ -188,7 +162,7 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
       >
         <img
           src="/logoFinTrack.png"
-          className="size-10  hover:scale-95 transition-all"
+          className="size-8"
           alt="logo"
         />
       </Link>
@@ -196,43 +170,37 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
       <div
         className={`flex flex-col justify-between ${!isOpen && "items-center"} gap-1 w-full`}
       >
-        {groupOrder.map((groupKey, gi) =>
-          menuByGroup[groupKey] ? (
-            <div key={groupKey} className={gi > 0 ? "mt-1" : ""}>
-              {menuByGroup[groupKey].map(({ id, name, link, icon }) =>
-                !isOpen ? (
-                  <Tooltip key={id} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={link}
-                        className={`flex items-center size-12 text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
-                          activeLink.startsWith(link)
-                            ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted"
-                        }`}
-                      >
-                        {icon}
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">{name}</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Link
-                    key={id}
-                    to={link}
-                    className={`flex items-center text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
-                      activeLink.startsWith(link)
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                    }`}
-                  >
-                    {icon}
-                    <span className="text-sm">{name}</span>
-                  </Link>
-                )
-              )}
-            </div>
-          ) : null
+        {menu.map(({ id, name, link, icon }) =>
+          !isOpen ? (
+            <Tooltip key={id} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Link
+                  to={link}
+                  className={`flex items-center size-12 text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
+                    activeLink.startsWith(link)
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  {icon}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">{name}</TooltipContent>
+            </Tooltip>
+          ) : (
+            <Link
+              key={id}
+              to={link}
+              className={`flex items-center text-nowrap gap-4 my-1 p-3 rounded-md transition-all ${
+                activeLink.startsWith(link)
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+            >
+              {icon}
+              <span className="text-sm">{name}</span>
+            </Link>
+          )
         )}
       </div>
 

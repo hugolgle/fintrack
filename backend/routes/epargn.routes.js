@@ -9,6 +9,7 @@ const {
   depositAccount,
   withdrawAccount,
   editAccount,
+  interestAccount,
 } = require("../controllers/epargn.controller");
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.post("/transfers", auth, addTransfert);
 router.post("/deposit", auth, depositAccount);
 router.post("/withdraw", auth, withdrawAccount);
 router.post("/accounts/calculate-interest", auth, calculateInterest);
+router.post("/interest", auth, interestAccount);
 
 module.exports = router;

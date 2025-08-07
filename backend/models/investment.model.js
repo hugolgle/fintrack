@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema(
   {
     amount: { type: Number, required: true },
     date: { type: String, required: true },
-    isSale: { type: Boolean, required: true },
+    type: { type: String, enum: ["buy", "sell", "dividend"], required: true },
   },
   { _id: true, timestamps: true }
 );
@@ -18,7 +18,6 @@ const investmentSchema = mongoose.Schema(
     transaction: [transactionSchema],
     amountBuy: { type: Number, required: true },
     amountSale: { type: Number, required: true },
-    amountResult: { type: Number, required: true },
   },
   { timestamps: true }
 );

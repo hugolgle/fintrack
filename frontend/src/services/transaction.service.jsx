@@ -15,7 +15,7 @@ export const fetchTransactionById = async (id) => {
 };
 
 export const addTransaction = async (transactionData) => {
-  const { title, category, date, detail, amount, type, tag, group } =
+  const { title, category, date, detail, amount, type, tag, creditId } =
     transactionData;
 
   const newTransaction = {
@@ -26,7 +26,7 @@ export const addTransaction = async (transactionData) => {
     amount,
     type,
     tag: tag || [],
-    group,
+    creditId,
   };
 
   return await axios.post(`${API_URL}`, newTransaction, {
@@ -35,7 +35,7 @@ export const addTransaction = async (transactionData) => {
 };
 
 export const editTransactions = async (editData) => {
-  const { id, title, category, date, detail, amount, type, tag, group } =
+  const { id, title, category, date, detail, amount, type, tag, creditId } =
     editData;
 
   const updatedTransaction = {
@@ -46,7 +46,7 @@ export const editTransactions = async (editData) => {
     amount,
     type,
     tag: tag || [],
-    group,
+    creditId,
   };
 
   return await axios.put(`${API_URL}/${id}`, updatedTransaction, {

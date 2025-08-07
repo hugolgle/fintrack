@@ -3,12 +3,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { HttpStatusCode } from "axios";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   calculTotalAmount,
   calculTotalByMonth,
   calculTotalByYear,
 } from "../../utils/calcul.js";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   currentDate,
   getLastMonths,
@@ -41,8 +43,11 @@ import { WalletCards } from "lucide-react";
 import Container from "../../components/containers/container.jsx";
 import { TYPES } from "../../staticDatas/staticData.js";
 import { FormTransac } from "./formFinance.jsx";
+import SkeletonDashboard from "../../components/skeletonBoard.jsx";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function BoardTransactions() {
+  const { isVisible } = useAmountVisibility();
   const { month, year } = currentDate();
   const currentYearMonth = `${year}${month}`;
   const [selectNbMonth, setSelectNbMonth] = useState(12);
@@ -67,7 +72,7 @@ export default function BoardTransactions() {
     },
     refetchOnMount: true,
   });
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   const lastMonthYear = updateMonth(currentYearMonth, -1);
 
@@ -324,9 +329,24 @@ export default function BoardTransactions() {
     <section className="w-full">
       <div className="flex flex-col">
         <Header
-          title="Finance"
-          modalAdd={<FormTransac refetch={refetch} />}
+          title="Mes Finances"
+          subtitle="Gérez vos finances et suivez vos transactions"
           isFetching={isFetching}
+          navigation={
+            <>
+              <Dialog modal>
+                <DialogTrigger>
+                  <Button>
+                    <Plus />
+                    <p className="hidden md:block">Nouvelle transaction</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormTransac refetch={refetch} />
+                </DialogContent>
+              </Dialog>
+            </>
+          }
         />
         <div className="flex flex-col gap-4 w-full animate-fade">
           <div className="flex flex-col lg:flex-row gap-4 w-full">
@@ -422,15 +442,12 @@ export default function BoardTransactions() {
               <div className="flex flex-col gap-4">
                 <Container>
                   <h2 className="text-left">Graphique</h2>
-                  {!isFetching ? (
-                    <ChartLine
-                      data={dataGraph}
-                      defaultConfig={defaultConfig}
-                      maxValue={maxValue}
-                    />
-                  ) : (
-                    <LoaderDots />
-                  )}
+                  <ChartLine
+                    data={dataGraph}
+                    defaultConfig={defaultConfig}
+                    maxValue={maxValue}
+                  />
+
                   <div className="flex flex-row w-4/5 max-w-[500px] mx-auto md:px-20 items-center justify-between">
                     <div className="w-1/12">
                       <ChevronLeft
@@ -473,22 +490,18 @@ export default function BoardTransactions() {
                       <p className="italic font-thin text-left text-xs">
                         Dépense
                       </p>
-                      {!isFetching ? (
-                        totalExpense !== "0.00" ? (
-                          <RadialChart
-                            chartData={transformedDataExpense}
-                            chartConfig={chartConfigExpense}
-                            total={totalExpense}
-                            legend={renderCustomLegend}
-                            inner={40}
-                            outer={55}
-                            height={120}
-                          />
-                        ) : (
-                          <p className="h-[225px]">Aucune donnée</p>
-                        )
+                      {totalExpense !== "0.00" ? (
+                        <RadialChart
+                          chartData={transformedDataExpense}
+                          chartConfig={chartConfigExpense}
+                          total={totalExpense}
+                          legend={renderCustomLegend}
+                          inner={40}
+                          outer={55}
+                          height={120}
+                        />
                       ) : (
-                        <LoaderDots />
+                        <p className="h-[225px]">Aucune donnée</p>
                       )}
                     </div>
                     <Separator
@@ -503,22 +516,18 @@ export default function BoardTransactions() {
                       <p className="italic font-thin text-left text-xs">
                         Revenue
                       </p>
-                      {!isFetching ? (
-                        totalRevenue !== "0.00" ? (
-                          <RadialChart
-                            chartData={transformedDataRevenue}
-                            chartConfig={chartConfigRevenue}
-                            total={totalRevenue}
-                            legend={renderCustomLegend}
-                            inner={40}
-                            outer={55}
-                            height={120}
-                          />
-                        ) : (
-                          <p className="h-[225px]">Aucune donnée</p>
-                        )
+                      {totalRevenue !== "0.00" ? (
+                        <RadialChart
+                          chartData={transformedDataRevenue}
+                          chartConfig={chartConfigRevenue}
+                          total={totalRevenue}
+                          legend={renderCustomLegend}
+                          inner={40}
+                          outer={55}
+                          height={120}
+                        />
                       ) : (
-                        <LoaderDots />
+                        <p className="h-[225px]">Aucune donnée</p>
                       )}
                     </div>
                     <Separator
@@ -533,22 +542,18 @@ export default function BoardTransactions() {
                       <p className="italic font-thin text-left text-xs">
                         50/30/20
                       </p>
-                      {!isFetching ? (
-                        totalPart !== "0.00" ? (
-                          <RadialChart
-                            chartData={chartDataPart}
-                            chartConfig={chartConfigPart}
-                            total={totalPart}
-                            legend={renderCustomLegend}
-                            inner={40}
-                            outer={55}
-                            height={120}
-                          />
-                        ) : (
-                          <p className="h-[225px]">Aucune donnée</p>
-                        )
+                      {totalPart !== "0.00" ? (
+                        <RadialChart
+                          chartData={chartDataPart}
+                          chartConfig={chartConfigPart}
+                          total={totalPart}
+                          legend={renderCustomLegend}
+                          inner={40}
+                          outer={55}
+                          height={120}
+                        />
                       ) : (
-                        <LoaderDots />
+                        <p className="h-[225px]">Aucune donnée</p>
                       )}
                     </div>
                   </div>
@@ -593,7 +598,11 @@ export default function BoardTransactions() {
                         <p
                           className={`w-fit px-2 py-[1px] text-[10px] italic text-nowrap rounded-md ${operation.type === TYPES.EXPENSE ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900" : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"}`}
                         >
-                          <span>{formatCurrency.format(operation.amount)}</span>
+                          <span>
+                            {isVisible
+                              ? formatCurrency.format(operation.amount)
+                              : "••••"}
+                          </span>
                         </p>
                       </div>
                     ))}
@@ -614,12 +623,19 @@ export default function BoardTransactions() {
                           <span className="truncate">{operation.title}</span>
                         </p>
                         <p className="text-[10px] italic text-nowrap">
-                          <span>{formatCurrency.format(operation.amount)}</span>
+                          <span>
+                            {isVisible
+                              ? formatCurrency.format(operation.amount)
+                              : "••••"}
+                          </span>
                         </p>
                       </div>
                     ))}
                     <p className="text-[12px] text-right italic font-black">
-                      = {formatCurrency.format(totalMySubscription)}
+                      ={" "}
+                      {isVisible
+                        ? formatCurrency.format(totalMySubscription)
+                        : "••••"}
                     </p>
                   </div>
                 </div>

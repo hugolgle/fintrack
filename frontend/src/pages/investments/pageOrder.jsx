@@ -23,8 +23,11 @@ import {
 import { EllipsisVertical } from "lucide-react";
 import { Eye } from "lucide-react";
 import { ROUTES } from "../../components/route.jsx";
+import SkeletonDashboard from "../../components/skeletonBoard.jsx";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export function PageOrder() {
+  const { isVisible } = useAmountVisibility();
   const {
     isLoading,
     data: dataInvestments,
@@ -46,12 +49,6 @@ export function PageOrder() {
 
   const handleSwitchMode = (checked) => {
     setMode(checked);
-  };
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    performSearch(event.target.value);
   };
 
   const orderData = dataInvestments?.sort((a, b) => {
@@ -83,14 +80,14 @@ export function PageOrder() {
     }
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SkeletonDashboard />;
 
   const formatData = (row) => {
     return [
       row.type,
       row.name,
       format(row?.date, "PP", { locale: fr }),
-      formatCurrency.format(row.amount),
+      isVisible ? formatCurrency.format(row.amount) : "••••",
     ];
   };
 
@@ -148,60 +145,30 @@ export function PageOrder() {
     }
   );
 
-  const performSearch = (term) => {
-    const filteredData = displayData.filter((item) => {
-      const nameMatches = item.name?.toLowerCase().includes(term.toLowerCase());
-      const typeMatches = item.type?.toLowerCase().includes(term.toLowerCase());
-      const isSaleMatches = item.isSale
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const symbolMatches = item.symbol
-        ?.toLowerCase()
-        .includes(term.toLowerCase());
-      const dateMatches = item.date?.toLowerCase().includes(term.toLowerCase());
-      const amountMatches = item.amount
-        .toString()
-        .toLowerCase()
-        .includes(term.toLowerCase());
-
-      return (
-        nameMatches ||
-        typeMatches ||
-        dateMatches ||
-        amountMatches ||
-        symbolMatches ||
-        isSaleMatches
-      );
-    });
-    setSearchResults(filteredData);
-  };
-
-  const data = searchTerm ? searchResults : displayData;
+  const data = displayData;
 
   return (
     <section className="w-full">
       <div className="flex flex-col">
         <Header
-          title="Mon portefeuille"
+          title="Mon Portefeuille"
           btnReturn
           isFetching={isFetching}
-          switchComponent={
+          navigation={
             <div className="flex items-center gap-2">
+              <Label htmlFor="new" className="text-xs italic">
+                Vue Tableau
+              </Label>
               <Switch
                 id="new"
                 checked={mode}
                 onCheckedChange={handleSwitchMode}
                 size={3}
               />
-              <Label htmlFor="new" className="text-xs italic">
-                Vue Tableau
-              </Label>
             </div>
           }
-          btnAdd={ROUTES.ADD_ORDER}
-          btnSearch={{ handleSearchChange, searchTerm }}
         />
-        <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
+        <div>
           {orderData?.length > 0 ? (
             <>
               {mode ? (
@@ -213,46 +180,54 @@ export function PageOrder() {
                   isFetching={isFetching}
                   action={action}
                   firstItem={avatar}
+                  fieldsFilter={[{ key: "type", fieldName: "Type" }]}
+                  dateFilter
                 />
               ) : (
-                data?.map(({ idInvest, name, type, date, symbol, amount }) => {
-                  const category = type === "Crypto" ? "crypto" : "symbol";
-                  const theDate = date ? new Date(date) : null;
-                  const color = getHoverClass(type);
+                <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
+                  {data?.map(
+                    ({ idInvest, name, type, date, symbol, amount }) => {
+                      const category = type === "Crypto" ? "crypto" : "symbol";
+                      const theDate = date ? new Date(date) : null;
+                      const color = getHoverClass(type);
 
-                  return (
-                    <Link
-                      key={idInvest}
-                      to={ROUTES.INVESTMENT_BY_ID.replace(":id", idInvest)}
-                      className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-md p-4 transition-all ring-[1px] hover:ring-opacity-75 ${color}`}
-                    >
-                      <div className="flex justify-between">
-                        <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
-                          {date
-                            ? format(theDate, "dd/MM/yyyy")
-                            : "Date non disponible"}
-                        </p>
+                      return (
+                        <Link
+                          key={idInvest}
+                          to={ROUTES.INVESTMENT_BY_ID.replace(":id", idInvest)}
+                          className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-md p-4 transition-all ring-[1px] hover:ring-opacity-75 ${color}`}
+                        >
+                          <div className="flex justify-between">
+                            <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">
+                              {date
+                                ? format(theDate, "dd/MM/yyyy")
+                                : "Date non disponible"}
+                            </p>
 
-                        <Avatar className="size-8 cursor-pointer transition-all">
-                          <AvatarImage
-                            src={`https://assets.parqet.com/logos/${category}/${symbol}`}
-                          />
-                          <AvatarFallback className="font-thin text-xs">
-                            {name.toUpperCase().substring(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
+                            <Avatar className="size-8 cursor-pointer transition-all">
+                              <AvatarImage
+                                src={`https://assets.parqet.com/logos/${category}/${symbol}`}
+                              />
+                              <AvatarFallback className="font-thin text-xs">
+                                {name.toUpperCase().substring(0, 2)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
 
-                      <p className="truncate text-sm">{name}</p>
-                      <div className="flex justify-between">
-                        <p className="text-sm italic">
-                          {formatCurrency.format(amount)}
-                        </p>
-                        <p className="text-sm italic">{type}</p>
-                      </div>
-                    </Link>
-                  );
-                })
+                          <p className="truncate text-sm">{name}</p>
+                          <div className="flex justify-between">
+                            <p className="text-sm italic">
+                              {isVisible
+                                ? formatCurrency.format(amount)
+                                : "••••"}
+                            </p>
+                            <p className="text-sm italic">{type}</p>
+                          </div>
+                        </Link>
+                      );
+                    }
+                  )}
+                </div>
               )}
             </>
           ) : (

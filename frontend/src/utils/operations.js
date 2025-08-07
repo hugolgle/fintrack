@@ -1,40 +1,16 @@
 import { subMonths, startOfMonth } from "date-fns";
-import { alphaSort, currentDate } from "./other";
+import { currentDate } from "./other";
 
 // -------------------------------- Transactions
 
-export function getTransactionsByType(
-  data,
-  type,
-  filterCategory,
-  filterTitle,
-  filterTag
-) {
+export function getTransactionsByType(data, type) {
   if (!Array.isArray(data)) {
     return [];
   }
 
-  let filteredTransactions = type
+  const filteredTransactions = type
     ? data?.filter((transaction) => transaction.type === type)
     : data;
-
-  if (filterCategory && filterCategory.length > 0) {
-    filteredTransactions = filteredTransactions.filter((transaction) =>
-      filterCategory.includes(transaction.category)
-    );
-  }
-
-  if (filterTitle && filterTitle.length > 0) {
-    filteredTransactions = filteredTransactions.filter((transaction) =>
-      filterTitle.includes(transaction.title)
-    );
-  }
-
-  if (filterTag && filterTag.length > 0) {
-    filteredTransactions = filteredTransactions.filter((transaction) =>
-      transaction.tag.some((tag) => filterTag.includes(tag))
-    );
-  }
 
   return filteredTransactions.sort((a, b) => {
     const dateSort = new Date(b.date).getTime() - new Date(a.date).getTime();

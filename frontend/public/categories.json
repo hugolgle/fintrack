@@ -95,6 +95,11 @@
       "name": "Loisir",
       "category": "Loisir",
       "color": "hsl(var(--chart-14))"
+    },
+    {
+      "name": "Crédit",
+      "category": "Fixe",
+      "color": "hsl(var(--chart-15))"
     }
   ]
 }

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { formatCurrency } from "../../utils/fonctionnel";
 import Container from "../containers/container";
+import { useAmountVisibility } from "../../context/AmountVisibilityContext";
 function BoxStat(props) {
   const [currentMontant, setCurrentMontant] = useState(0);
   const [previousMontant, setPreviousMontant] = useState(0);
+  const { isVisible } = useAmountVisibility();
 
   useEffect(() => {
     let startMontant = previousMontant;
@@ -36,7 +38,7 @@ function BoxStat(props) {
   return (
     <Container custom="gap-8 px-4 py-2">
       <p className="text-xl text-left italic">
-        {formatCurrency.format(currentMontant)}
+        {isVisible ? formatCurrency.format(currentMontant) : "••••"}
       </p>
 
       <p className="text-xs">

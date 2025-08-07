@@ -256,7 +256,7 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
           name="type"
           value={formik.values.type}
           onValueChange={(value) => formik.setFieldValue("type", value)}
-          disabled={editMode}
+          disabled={editMode || type}
         >
           <SelectTrigger>
             <SelectValue placeholder="Entrez le type" />
