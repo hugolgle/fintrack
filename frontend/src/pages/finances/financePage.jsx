@@ -339,15 +339,15 @@ export default function PageTransaction({ type }) {
           }
           isFetching={isFetching}
           navigation={
-            <div className="flex justify-end items-center gap-4">
-              <div className="flex gap-4 items-center">
+            <div className="flex justify-end items-start lg:items-center gap-4">
+              <div className="flex flex-col lg:flex-row gap-4 ">
                 {/* Mois */}
                 {month && year && (
                   <Select
                     onValueChange={(value) => handleChange(value, "month")}
                     defaultValue={month || ""}
                   >
-                    <SelectTrigger className="w-[140px]">
+                    <SelectTrigger className="lg:w-[140px]">
                       <SelectValue placeholder="Mois" />
                     </SelectTrigger>
                     <SelectContent>
@@ -375,7 +375,7 @@ export default function PageTransaction({ type }) {
                     onValueChange={(value) => handleChange(value, "year")}
                     defaultValue={year || ""}
                   >
-                    <SelectTrigger className="w-[100px]">
+                    <SelectTrigger className="lg:w-[100px]">
                       <SelectValue placeholder="Année" />
                     </SelectTrigger>
                     <SelectContent>
