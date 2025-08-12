@@ -6,6 +6,7 @@ import { fetchAccounts } from "../../services/epargn.service";
 import { HttpStatusCode } from "axios";
 import Loader from "../../components/loaders/loader";
 import {
+  ArrowBigLeft,
   ChevronLeft,
   CirclePlus,
   Euro,
@@ -227,9 +228,11 @@ export default function Epargn() {
           <BoxInfos
             title="Croissance annuelle"
             value={
-              growthPercentage > 0
-                ? `+${growthPercentage.toFixed(2)} %`
-                : `${growthPercentage.toFixed(2)} %`
+              growthPercentage > 0 ? (
+                <p className="text-green-500">{`+${growthPercentage.toFixed(0)} %`}</p>
+              ) : (
+                <p className="text-red-500">{`${growthPercentage.toFixed(0)} %`}</p>
+              )
             }
             icon={<PiggyBank size={15} color="grey" />}
           />
@@ -275,7 +278,7 @@ export default function Epargn() {
                     return (
                       <div
                         key={account._id}
-                        className="flex flex-col justify-between items-center p-4 gap-2 ring-1 ring-secondary rounded-md cursor-pointer hover:bg-secondary transition-all"
+                        className="flex flex-col justify-between items-center p-4 gap-2 ring-1 ring-secondary/20 hover:ring-secondary rounded-md cursor-pointer group transition-all"
                         onClick={() =>
                           navigate(
                             ROUTES.ACCOUNT_BY_ID.replace(":id", account._id)
@@ -288,6 +291,10 @@ export default function Epargn() {
                               <Wallet className="h-5 w-5" />
                             </div>
                             <p className="font-semibold">{account.name}</p>
+                            <ChevronRight
+                              size={14}
+                              className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                            />
                           </div>
                           <div>
                             <p className="text-lg font-bold">

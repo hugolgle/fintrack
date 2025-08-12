@@ -235,7 +235,6 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
 
   const customSuggestions = [
     ...filteredSuggestions,
-    // si la saisie n'est pas vide et n'est pas déjà un tag, propose-la
     ...(tagInput.trim() !== "" && !tags.includes(tagInput) ? [tagInput] : []),
   ];
 
@@ -243,12 +242,31 @@ export function FormTransac({ transaction, refetch, editMode, type }) {
     <form onSubmit={formik.handleSubmit}>
       <DialogHeader>
         <DialogTitle>
-          {editMode ? "Modifier la transaction" : "Ajouter une transaction"}
+          {editMode
+            ? type === TYPES.INCOME
+              ? "Modifier le revenu"
+              : type === TYPES.EXPENSE
+                ? "Modifier la dépense"
+                : "Modifier la transaction"
+            : type === TYPES.INCOME
+              ? "Ajouter un revenu"
+              : type === TYPES.EXPENSE
+                ? "Ajouter une dépense"
+                : "Ajouter une transaction"}
         </DialogTitle>
+
         <DialogDescription>
           {editMode
-            ? "Modifiez les informations de la transaction."
-            : "Remplissez les informations de la nouvelle transaction."}
+            ? type === TYPES.INCOME
+              ? "Modifiez les informations du revenu."
+              : type === TYPES.EXPENSE
+                ? "Modifiez les informations de la dépense."
+                : "Modifiez les informations de la transaction."
+            : type === TYPES.INCOME
+              ? "Remplissez les informations du revenu."
+              : type === TYPES.EXPENSE
+                ? "Remplissez les informations de la dépense."
+                : "Remplissez les informations de la transaction."}
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">

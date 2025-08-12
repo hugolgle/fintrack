@@ -400,7 +400,7 @@ export default function FormAddInvestmentMain({ refetch }) {
         </Tabs>
       </div>
       <ButtonLoading
-        variant="secondary"
+        type="submit"
         text="Soumettre"
         isPending={
           addInvestmentMutation.isPending ||

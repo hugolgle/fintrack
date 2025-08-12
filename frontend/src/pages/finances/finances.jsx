@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { HttpStatusCode } from "axios";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   calculTotalAmount,
@@ -30,7 +30,6 @@ import {
 } from "../../utils/operations.js";
 import { renderCustomLegend } from "../../components/legends.jsx";
 import { RadialChart } from "../../components/chartss/radialChart.jsx";
-import LoaderDots from "../../components/loaders/loaderDots.jsx";
 import { formatCurrency } from "../../utils/fonctionnel.js";
 import { Separator } from "@/components/ui/separator";
 import { ROUTES } from "../../components/route.jsx";
@@ -325,6 +324,30 @@ export default function BoardTransactions() {
     },
   };
 
+  const revenueByMonth = calculTotalByMonth(
+    dataTransactions,
+    TYPES.INCOME,
+    currentYearMonth
+  );
+
+  const expenseByMonth = calculTotalByMonth(
+    dataTransactions,
+    TYPES.EXPENSE,
+    currentYearMonth
+  );
+
+  const revenueLastMonth = calculTotalByMonth(
+    dataTransactions,
+    TYPES.INCOME,
+    lastMonthYear
+  );
+
+  const expenseLastMonth = calculTotalByMonth(
+    dataTransactions,
+    TYPES.EXPENSE,
+    lastMonthYear
+  );
+
   return (
     <section className="w-full">
       <div className="flex flex-col">
@@ -350,32 +373,7 @@ export default function BoardTransactions() {
         />
         <div className="flex flex-col gap-4 w-full animate-fade">
           <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <BoxInfos
-              onClick={() =>
-                navigate(
-                  ROUTES.EXPENSE_BY_MONTH.replace(":year", year).replace(
-                    ":month",
-                    month
-                  )
-                )
-              }
-              title="Dépense ce mois"
-              value={calculTotalByMonth(
-                dataTransactions,
-                TYPES.EXPENSE,
-                currentYearMonth
-              )}
-              valueLast={
-                calculTotalByMonth(
-                  dataTransactions,
-                  TYPES.EXPENSE,
-                  lastMonthYear
-                ) || null
-              }
-              icon={<WalletCards size={15} color="grey" />}
-              isAmount
-              type="depense"
-            />
+            {" "}
             <BoxInfos
               onClick={() =>
                 navigate(
@@ -386,55 +384,36 @@ export default function BoardTransactions() {
                 )
               }
               title="Revenu ce mois"
-              value={calculTotalByMonth(
-                dataTransactions,
-                TYPES.INCOME,
-                currentYearMonth
-              )}
-              valueLast={
-                calculTotalByMonth(
-                  dataTransactions,
-                  TYPES.INCOME,
-                  lastMonthYear
-                ) || null
-              }
+              value={revenueByMonth || null}
+              valueLast={revenueLastMonth || null}
               icon={<CircleDollarSign size={15} color="grey" />}
               isAmount
               type="revenue"
             />
             <BoxInfos
               onClick={() =>
-                navigate(ROUTES.EXPENSE_BY_YEAR.replace(":year", year))
+                navigate(
+                  ROUTES.EXPENSE_BY_MONTH.replace(":year", year).replace(
+                    ":month",
+                    month
+                  )
+                )
               }
-              title={`Dépense en ${year}`}
-              value={
-                calculTotalByYear(dataTransactions, TYPES.EXPENSE, year) || null
-              }
-              valueLast={
-                calculTotalByYear(dataTransactions, TYPES.EXPENSE, year - 1) ||
-                null
-              }
-              yearLast={year - 1}
+              title="Dépense ce mois"
+              value={expenseByMonth || null}
+              valueLast={expenseLastMonth || null}
               icon={<WalletCards size={15} color="grey" />}
               isAmount
               type="depense"
             />
             <BoxInfos
-              onClick={() =>
-                navigate(ROUTES.REVENUE_BY_YEAR.replace(":year", year))
-              }
-              title={`Revenu en ${year}`}
-              value={
-                calculTotalByYear(dataTransactions, TYPES.INCOME, year) || null
-              }
+              title="Solde"
+              value={revenueByMonth - Math.abs(expenseByMonth) || null}
               valueLast={
-                calculTotalByYear(dataTransactions, TYPES.INCOME, year - 1) ||
-                null
+                Math.abs(revenueLastMonth) - Math.abs(expenseLastMonth) || null
               }
-              yearLast={year - 1}
-              icon={<CircleDollarSign size={15} color="grey" />}
+              icon={<Wallet size={15} color="grey" />}
               isAmount
-              type="revenue"
             />
           </div>
           <div className="flex flex-col lg:flex-row gap-4">

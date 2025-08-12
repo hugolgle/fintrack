@@ -165,6 +165,8 @@ export default function Dashboard() {
   const percentInvest = (amountInvest * 100) / (amountInvest + amountEpargn);
   const percentEpargn = (amountEpargn * 100) / (amountInvest + amountEpargn);
 
+  const amountHeritage = amountEpargn + amountInvest;
+
   if (loadingTransacs || loadingAccounts || loadingInvests)
     return <SkeletonBoard />;
 
@@ -297,17 +299,25 @@ export default function Dashboard() {
           <div className="flex flex-col lg:w-4/5 gap-4">
             <div className="flex flex-col lg:flex-row gap-4">
               <Container>
-                <div className="mb-4">
-                  <h2 className="text-left">Répartition du Patrimoine</h2>
-                  <p className="text-left text-sm text-muted-foreground">
-                    Distribution de vos actifs financiers
+                <div className="flex justify-between mb-4">
+                  <div>
+                    <h2 className="text-left">Répartition du Patrimoine</h2>
+                    <p className="text-left text-sm text-muted-foreground">
+                      Distribution de vos actifs financiers
+                    </p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Montant du patrimoine :{" "}
+                    <span className="font-semibold">
+                      {formatCurrency.format(amountHeritage)}
+                    </span>
                   </p>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between">
                       <p>Épargne</p>
-                      <p>
+                      <p className=" font-semibold">
                         {isVisible
                           ? formatCurrency.format(amountEpargn)
                           : "••••"}
@@ -315,61 +325,28 @@ export default function Dashboard() {
                     </div>
 
                     <Progress value={percentEpargn} />
-                    <p className="text-left text-sm text-muted-foreground">
-                      {percentEpargn.toFixed(0)} % du patrimoine total
+                    <p className="text-left text-xs text-muted-foreground">
+                      <span className="font-semibold">
+                        {percentEpargn.toFixed(0)} %
+                      </span>{" "}
+                      du patrimoine total
                     </p>
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between">
                       <p>Investissement</p>
-                      <p>
+                      <p className=" font-semibold">
                         {isVisible
                           ? formatCurrency.format(amountInvest)
                           : "••••"}
                       </p>
                     </div>
                     <Progress value={percentInvest} />
-                    <p className="text-left text-sm text-muted-foreground">
-                      {percentInvest.toFixed(0)} % du patrimoine total
-                    </p>
-                  </div>
-                </div>
-              </Container>
-              <Container>
-                <div className="mb-4">
-                  <h2 className="text-left">Répartition du Patrimoine</h2>
-                  <p className="text-left text-sm text-muted-foreground">
-                    Distribution de vos actifs financiers
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between">
-                      <p>Épargne</p>
-                      <p>
-                        {isVisible
-                          ? formatCurrency.format(amountEpargn)
-                          : "••••"}
-                      </p>
-                    </div>
-
-                    <Progress value={percentEpargn} />
-                    <p className="text-left text-sm text-muted-foreground">
-                      {percentEpargn.toFixed(0)} % du patrimoine total
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between">
-                      <p>Investissement</p>
-                      <p>
-                        {isVisible
-                          ? formatCurrency.format(amountInvest)
-                          : "••••"}
-                      </p>
-                    </div>
-                    <Progress value={percentInvest} />
-                    <p className="text-left text-sm text-muted-foreground">
-                      {percentInvest.toFixed(0)} % du patrimoine total
+                    <p className="text-left text-xs text-muted-foreground">
+                      <span className="font-semibold">
+                        {percentInvest.toFixed(0)} %
+                      </span>{" "}
+                      du patrimoine total
                     </p>
                   </div>
                 </div>
