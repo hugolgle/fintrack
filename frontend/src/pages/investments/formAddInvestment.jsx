@@ -149,7 +149,7 @@ export default function FormAddInvestment({ refetch }) {
       </div>
 
       <ButtonLoading
-        variant="secondary"
+        type="submit"
         text="Soumettre"
         disabled={addTransactionInvestmentMutation.isPending}
         isPending={addTransactionInvestmentMutation.isPending}

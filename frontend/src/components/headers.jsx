@@ -39,7 +39,7 @@ function Header({ title, subtitle = "ㅤ", isFetching, navigation }) {
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"
-            className="aspect-square w-fit"
+            className="aspect-square w-fit active:scale-95 transition-all"
             onClick={() => toggleVisibility()}
           >
             {isVisible ? <Eye /> : <EyeClosed />}

@@ -15,7 +15,6 @@ function BoxInfos({
   isAmount,
   description,
   isPercent,
-  amountVisible,
 }) {
   let color = "ring-zinc-500";
   const { isVisible } = useAmountVisibility();
