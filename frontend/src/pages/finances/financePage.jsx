@@ -32,6 +32,7 @@ import {
   CreditCard,
   Dot,
   EllipsisVertical,
+  Group,
 } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { FormTransac } from "./formFinance.jsx";
@@ -46,6 +47,9 @@ import ModalTable from "../epargns/modal/modalTable.jsx";
 import { toast } from "sonner";
 import { TYPES } from "../../staticDatas/staticData.js";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
+import { FormAddTransactionToGroup } from "./formAddTransactionGroup.jsx";
+import { fetchGroupTransactions } from "../../services/groupTransaction.service.jsx";
+import { ROUTES } from "../../components/route.jsx";
 
 export default function PageTransaction({ type }) {
   const { isVisible } = useAmountVisibility();
@@ -71,6 +75,17 @@ export default function PageTransaction({ type }) {
     },
     refetchOnMount: true,
   });
+
+  const { data: dataGroupTransactions } = useQuery({
+    queryKey: ["fetchGroupTransactions"],
+    queryFn: async () => {
+      const response = await fetchGroupTransactions();
+      return response?.data || [];
+    },
+    refetchOnMount: true,
+  });
+
+  console.log(dataGroupTransactions);
 
   const mutationDeleteTransaction = useMutation({
     mutationFn: async (itemId) => {
@@ -243,6 +258,14 @@ export default function PageTransaction({ type }) {
       ];
     };
 
+    const findGroupByTransaction = (itemId) => {
+      return dataGroupTransactions?.find((g) =>
+        g.transactions.some((t) => t._id.toString() === itemId.toString())
+      );
+    };
+
+    const dataGroup = findGroupByTransaction(item._id);
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -261,6 +284,34 @@ export default function PageTransaction({ type }) {
                 <FormAddRefund transaction={item} refetch={refetch} />
               </DialogContent>
             </Dialog>
+          )}
+
+          {!dataGroup ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Group className="mr-2 h-4 w-4" />
+                  Assigner à un groupe
+                </DropdownMenuItem>
+              </DialogTrigger>
+              <DialogContent>
+                <FormAddTransactionToGroup
+                  transaction={item}
+                  refetch={refetch}
+                />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <DropdownMenuItem
+              onClick={() =>
+                navigate(
+                  ROUTES.GROUP_TRANSACTION_BY_ID.replace(":id", dataGroup._id)
+                )
+              }
+            >
+              <Group className="mr-2 h-4 w-4" />
+              {dataGroup.name}
+            </DropdownMenuItem>
           )}
 
           {item?.refunds && item?.refunds?.length > 0 && (

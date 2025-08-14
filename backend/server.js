@@ -28,6 +28,11 @@ app.use("/investments", auth, require("./routes/investment.routes"));
 app.use("/transactions", auth, require("./routes/transaction.routes"));
 app.use("/epargns", auth, require("./routes/epargn.routes"));
 app.use("/credits", auth, require("./routes/credit.routes"));
+app.use(
+  "/group-transactions",
+  auth,
+  require("./routes/groupTransaction.routes")
+);
 app.use("/user", require("./routes/user.routes"));
 
 app.listen(port, () => console.log("Le serveur a démarré au port " + port));

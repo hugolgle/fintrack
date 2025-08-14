@@ -109,9 +109,15 @@ export default function Tableau({
 
       if (!passesFilters) return false;
 
-      if (dateRange.from && dateRange.to) {
+      if (dateRange?.from || dateRange?.to) {
         const itemDate = new Date(item.date || item.createdAt);
-        return itemDate >= dateRange.from && itemDate <= dateRange.to;
+        if (dateRange.from && dateRange.to) {
+          return itemDate >= dateRange.from && itemDate <= dateRange.to;
+        } else if (dateRange.from) {
+          return itemDate.toDateString() === dateRange.from.toDateString();
+        } else if (dateRange.to) {
+          return itemDate.toDateString() === dateRange.to.toDateString();
+        }
       }
 
       return true;
@@ -119,7 +125,7 @@ export default function Tableau({
   };
 
   const sortedData = [...data]
-    .sort(
+    ?.sort(
       (a, b) =>
         new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
     )
@@ -175,9 +181,9 @@ export default function Tableau({
             <PopoverTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
                 <CalendarIcon size={16} />
-                {dateRange.from && dateRange.to
-                  ? `${format(dateRange.from, "dd MMM yyyy", { locale: fr })} - ${format(
-                      dateRange.to,
+                {dateRange?.from && dateRange?.to
+                  ? `${format(dateRange?.from, "dd MMM yyyy", { locale: fr })} - ${format(
+                      dateRange?.to,
                       "dd MMM yyyy",
                       { locale: fr }
                     )}`

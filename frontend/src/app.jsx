@@ -22,6 +22,8 @@ import { TYPES } from "./staticDatas/staticData.js";
 import Dashboard from "./pages/dashboards/dashboard.jsx";
 import { AuthLayout } from "./layouts/authLayout.jsx";
 import Credit from "./pages/credits/credit.jsx";
+import GroupTransactionByIdPage from "./pages/finances/groupTransactionPageById.jsx";
+import GroupTransactionPage from "./pages/finances/groupTransactionPage.jsx";
 
 export default function App() {
   const createPrivateRoute = (element) => <PrivateRoute element={element} />;
@@ -58,6 +60,14 @@ export default function App() {
     {
       path: ROUTES.REVENUE_BY_MONTH,
       component: <PageTransaction type={TYPES.INCOME} />,
+    },
+    {
+      path: ROUTES.GROUP_TRANSACTION,
+      component: <GroupTransactionPage />,
+    },
+    {
+      path: ROUTES.GROUP_TRANSACTION_BY_ID,
+      component: <GroupTransactionByIdPage />,
     },
   ];
 

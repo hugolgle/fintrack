@@ -44,6 +44,7 @@ import { TYPES } from "../../staticDatas/staticData.js";
 import { FormTransac } from "./formFinance.jsx";
 import SkeletonDashboard from "../../components/skeletonBoard.jsx";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
+import { fetchGroupTransactions } from "../../services/groupTransaction.service.jsx";
 
 export default function BoardTransactions() {
   const { isVisible } = useAmountVisibility();
@@ -71,6 +72,20 @@ export default function BoardTransactions() {
     },
     refetchOnMount: true,
   });
+
+  const { data: dataGroupTransactions } = useQuery({
+    queryKey: ["fetchGroupTransactions"],
+    queryFn: async () => {
+      const response = await fetchGroupTransactions();
+      if (response?.status !== HttpStatusCode.Ok) {
+        const message = response?.response?.data?.message || "Erreur";
+        toast.warn(message);
+      }
+      return response?.data;
+    },
+    refetchOnMount: true,
+  });
+
   if (isLoading) return <SkeletonDashboard />;
 
   const lastMonthYear = updateMonth(currentYearMonth, -1);
@@ -241,6 +256,7 @@ export default function BoardTransactions() {
         new Date(data.date) <= endOfLastMonth
     )
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+
   const totalMySubscription = mySubscription.reduce(
     (total, item) => total + (item.amount || 0),
     0
@@ -617,6 +633,45 @@ export default function BoardTransactions() {
                         : "••••"}
                     </p>
                   </div>
+                </div>
+              </Container>
+              <Container>
+                <div className="flex justify-between w-full mb-4">
+                  <h2 className="text-nowrap">Mes groupes</h2>
+                  <p
+                    className="flex items-center font-thin italic text-nowrap gap-1 group text-[10px] cursor-pointer transition-all"
+                    onClick={() => navigate(ROUTES.GROUP_TRANSACTION)}
+                  >
+                    Voir tout
+                    <ChevronRight
+                      size={12}
+                      className="translate-x-0 scale-0 group-hover:translate-x-[1px] group-hover:scale-100 transition-all"
+                    />
+                  </p>
+                </div>
+                <div className="w-full h-full gap-2 flex flex-col">
+                  {dataGroupTransactions?.map((group, index) => (
+                    <div
+                      key={index}
+                      className="justify-between h-full flex flex-row items-center text-xs"
+                    >
+                      <p className="flex flex-row space-x-4 w-4/5">
+                        <span className="truncate">{group.name}</span>
+                      </p>
+                      <p className="text-[10px] italic text-nowrap">
+                        <span>
+                          {isVisible
+                            ? formatCurrency.format(
+                                (group.transactions || []).reduce(
+                                  (sum, t) => sum + Number(t.amount || 0),
+                                  0
+                                )
+                              )
+                            : "••••"}
+                        </span>
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </Container>
             </div>

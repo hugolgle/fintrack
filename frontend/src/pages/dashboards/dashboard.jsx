@@ -42,6 +42,7 @@ import FormAddInvestmentMain from "../investments/formAddInvestmentMain.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import SkeletonBoard from "../../components/skeletonBoard.jsx";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
+import { fetchGroupTransactions } from "../../services/groupTransaction.service.jsx";
 
 export default function Dashboard() {
   const { isVisible } = useAmountVisibility();
@@ -298,7 +299,7 @@ export default function Dashboard() {
         <div className="flex flex-col lg:flex-row gap-4 h-full">
           <div className="flex flex-col lg:w-4/5 gap-4">
             <div className="flex flex-col lg:flex-row gap-4">
-              <Container>
+              <Container custom="!w-3/4">
                 <div className="flex justify-between mb-4">
                   <div>
                     <h2 className="text-left">Répartition du Patrimoine</h2>
@@ -306,7 +307,7 @@ export default function Dashboard() {
                       Distribution de vos actifs financiers
                     </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground text-right">
                     Montant du patrimoine :{" "}
                     <span className="font-semibold">
                       {formatCurrency.format(amountHeritage)}
@@ -351,10 +352,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Container>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-4">
-              <Container custom="h-fit">
+              <Container custom="h-fit !w-2/4">
                 <div className="flex justify-between w-full gap-4 mb-4">
                   <h2 className="text-left">Mes crédits</h2>
                   <p
@@ -419,6 +417,8 @@ export default function Dashboard() {
                 </div>
               </Container>
             </div>
+
+            <div className="flex flex-col lg:flex-row gap-4"></div>
           </div>
           <div className="lg:w-1/5 flex flex-col gap-4">
             <Container>

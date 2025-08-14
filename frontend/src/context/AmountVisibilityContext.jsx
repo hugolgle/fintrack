@@ -1,4 +1,3 @@
-// context/AmountVisibilityContext.jsx
 import { createContext, useContext, useState } from "react";
 
 const AmountVisibilityContext = createContext();

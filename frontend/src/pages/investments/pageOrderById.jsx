@@ -232,10 +232,7 @@ export default function PageOrderById() {
                         variant="secondary"
                         className="aspect-square w-fit active:scale-90 transition-all"
                       >
-                        <Pencil
-                          size={20}
-                          className="cursor-pointer hover:scale-110 transition-all"
-                        />
+                        <Pencil size={20} />
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
