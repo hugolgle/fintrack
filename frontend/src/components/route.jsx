@@ -3,6 +3,8 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   FINANCE: "/finance",
   TRANSACTIONS: "/finance/transactions",
+  GROUP_TRANSACTION: "/finance/group-transaction",
+  GROUP_TRANSACTION_BY_ID: "/finance/group-transaction/:id",
   EXPENSE: "/finance/transactions/expense",
   EXPENSE_BY_YEAR: "/finance/transactions/expense/:year",
   EXPENSE_BY_MONTH: "/finance/transactions/expense/:year/:month",

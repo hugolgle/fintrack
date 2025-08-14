@@ -51,16 +51,13 @@ export function CreditCardComponent({ credit, isActive, onClick, refetch }) {
     },
   });
 
-  // Récupération des données du type depuis le JSON
   const typeInfo = typeCreditList.find((t) => t.key === credit.type) || {};
   const IconComponent = Icons[typeInfo.icon] || Icons.CreditCard;
-  // Montants sécurisés
   const amount = Number(credit.amount) || 0;
   const balance = Number(credit.balance) || 0;
   const monthly = Number(credit.monthlyPayment) || 0;
   const insurance = Number(credit.insurance) || 0;
 
-  // Calcul de la progression
   const progress = amount > 0 ? ((amount - balance) / amount) * 100 : 0;
 
   return (

@@ -69,7 +69,7 @@ module.exports.editAccount = async (req, res) => {
     console.error("Erreur lors de la mise à jour du compte :", error);
     return res.status(500).json({
       message: "Erreur lors de la mise à jour du compte",
-      error: error.message, // renvoie uniquement le message d'erreur
+      error: error.message,
     });
   }
 };
@@ -125,7 +125,7 @@ module.exports.addTransfert = async (req, res) => {
     }
 
     let debitDate, creditDate;
-    const jsDate = new Date(date); // conversion explicite
+    const jsDate = new Date(date);
     if (jsDate.getDate() <= 15) {
       debitDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
       creditDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
@@ -193,7 +193,7 @@ module.exports.depositAccount = async (req, res) => {
     }
 
     let depositDate;
-    const jsDate = new Date(date); // conversion explicite
+    const jsDate = new Date(date);
 
     if (jsDate.getDate() <= 15) {
       depositDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 16);
@@ -249,7 +249,7 @@ module.exports.withdrawAccount = async (req, res) => {
     }
 
     let withdrawDate;
-    const jsDate = new Date(date); // conversion explicite
+    const jsDate = new Date(date);
     if (jsDate.getDate() <= 15) {
       withdrawDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
     } else {
@@ -345,7 +345,7 @@ module.exports.interestAccount = async (req, res) => {
     if (!account) {
       return res.status(404).json({ message: "Compte non trouvé" });
     }
-    const jsDate = new Date(date); // conversion explicite
+    const jsDate = new Date(date);
 
     const newBalance = account.balance + amount;
     account.balance = newBalance;

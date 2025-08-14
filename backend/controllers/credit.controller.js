@@ -1,12 +1,11 @@
 const CreditModel = require("../models/credit.model");
 
-// Créer un crédit
 exports.createCredit = async (req, res) => {
   try {
     const data = {
       ...req.body,
       user: req.userId,
-      balance: req.body.amount, // balance = montant total au départ
+      balance: req.body.amount,
     };
     const credit = new CreditModel(data);
     await credit.save();
@@ -16,7 +15,6 @@ exports.createCredit = async (req, res) => {
   }
 };
 
-// Récupérer tous les crédits d’un utilisateur
 exports.getCredits = async (req, res) => {
   try {
     const credits = await CreditModel.find({ user: req.userId });
@@ -26,7 +24,6 @@ exports.getCredits = async (req, res) => {
   }
 };
 
-// Récupérer un crédit
 exports.getCredit = async (req, res) => {
   try {
     const credit = await CreditModel.findById(req.params.id);
@@ -37,7 +34,6 @@ exports.getCredit = async (req, res) => {
   }
 };
 
-// Mettre à jour un crédit
 exports.updateCredit = async (req, res) => {
   try {
     const credit = await CreditModel.findById(req.params.id);
@@ -68,7 +64,6 @@ exports.updateCredit = async (req, res) => {
   }
 };
 
-// Supprimer un crédit
 exports.deleteCredit = async (req, res) => {
   try {
     const credit = await CreditModel.findByIdAndDelete(req.params.id);
@@ -79,7 +74,6 @@ exports.deleteCredit = async (req, res) => {
   }
 };
 
-// Ajouter un paiement sur un crédit
 exports.addPayment = async (req, res) => {
   try {
     const { amount, date, depreciation } = req.body;
@@ -97,7 +91,6 @@ exports.addPayment = async (req, res) => {
   }
 };
 
-// Activer / désactiver un crédit
 exports.toggleCreditStatus = async (req, res) => {
   try {
     const credit = await CreditModel.findById(req.params.id);
@@ -112,15 +105,13 @@ exports.toggleCreditStatus = async (req, res) => {
   }
 };
 
-// Supprimer une payment d'un crédit
 exports.deletePayment = async (req, res) => {
   try {
-    const { paymentId } = req.params; // ID de la payment à supprimer
+    const { paymentId } = req.params;
     const credit = await CreditModel.findById(req.params.id);
 
     if (!credit) return res.status(404).json({ message: "Crédit non trouvé" });
 
-    // Trouver l'index de la payment dans le tableau
     const paymentIndex = credit.transactions.findIndex(
       (payment) => payment._id.toString() === paymentId
     );
@@ -129,10 +120,8 @@ exports.deletePayment = async (req, res) => {
       return res.status(404).json({ message: "Paiement non trouvée" });
     }
 
-    // Supprimer la payment
     const removedPayment = credit.transactions.splice(paymentIndex, 1);
 
-    // Recalculer le solde du crédit
     credit.balance += removedPayment[0].depreciation;
 
     await credit.save();

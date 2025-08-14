@@ -42,7 +42,6 @@ export function CreditSummary({ credit }) {
     monthsRemaining = Math.max(monthsRemaining, 0);
   }
 
-  // Simulation si données valides
   let monthlyCalc = 0;
   let totalPayments = 0;
   let interestCost = 0;

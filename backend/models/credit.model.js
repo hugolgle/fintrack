@@ -2,16 +2,16 @@ const mongoose = require("mongoose");
 
 const creditSchema = new mongoose.Schema({
   user: { type: String, required: true },
-  name: { type: String, required: true }, // Nom du credit
-  type: { type: String, required: true }, // Type de credit
-  amount: { type: Number, required: true, default: 0.0 }, // Montant emprunté
-  monthlyPayment: { type: Number, required: false, default: 0.0 }, // Mensualité
-  balance: { type: Number, required: true, default: 0.0 }, // Montant restant a remboursé
-  interestRate: { type: Number, required: true, default: 0.0 }, // Interet
+  name: { type: String, required: true },
+  type: { type: String, required: true },
+  amount: { type: Number, required: true, default: 0.0 },
+  monthlyPayment: { type: Number, required: false, default: 0.0 },
+  balance: { type: Number, required: true, default: 0.0 },
+  interestRate: { type: Number, required: true, default: 0.0 },
   startDate: { type: Date, required: true, default: new Date() },
-  duration: { type: Number, required: false, default: 0 }, // Durée de remboursement en mois
-  isActive: { type: Boolean, required: true, default: true }, // Statut du credit (actif, remboursé, etc.)
-  insurance: { type: Number, required: false, default: 0.0 }, // Montant assurance
+  duration: { type: Number, required: false, default: 0 },
+  isActive: { type: Boolean, required: true, default: true },
+  insurance: { type: Number, required: false, default: 0.0 },
   transactions: [
     new mongoose.Schema(
       {

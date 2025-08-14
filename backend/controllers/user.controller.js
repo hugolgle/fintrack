@@ -17,10 +17,8 @@ module.exports.loginUser = async (req, res) => {
     let user;
 
     if (googleId) {
-      // Vérification de l'utilisateur par Google ID
       user = await UserModel.findOne({ googleId });
     } else {
-      // Vérification de l'utilisateur avec le mot de passe
       user = await UserModel.findOne({ username });
 
       if (!user) {
@@ -39,7 +37,7 @@ module.exports.loginUser = async (req, res) => {
           .json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
       }
     }
-    // Génération du token d'authentification
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
@@ -98,7 +96,7 @@ module.exports.signUpUser = async (req, res) => {
       zipcode,
       city,
       img: imgPath ?? img,
-      googleId: googleId || null, // Enregistre l'ID Google
+      googleId: googleId || null,
     });
 
     return res.status(201).json({

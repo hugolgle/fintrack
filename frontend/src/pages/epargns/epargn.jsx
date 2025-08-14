@@ -162,11 +162,10 @@ export default function Epargn() {
 
   const data = accounts.flatMap((account) => account.monthlyStatements);
 
-  // Grouper les montants par mois/année
   const grouped = data.reduce((acc, item) => {
     const dateObj = new Date(item.date);
     const year = dateObj.getFullYear();
-    const monthIndex = dateObj.getMonth(); // 0 = janvier
+    const monthIndex = dateObj.getMonth();
     const key = `${year}-${monthIndex}`;
 
     if (!acc[key]) {
@@ -182,14 +181,12 @@ export default function Epargn() {
     return acc;
   }, {});
 
-  // Convertir en tableau trié
   const sorted = Object.values(grouped).sort((a, b) => {
     const dateA = new Date(a.year, months.indexOf(a.month));
     const dateB = new Date(b.year, months.indexOf(b.month));
     return dateA - dateB;
   });
 
-  // Ne garder que les 12 derniers mois
   const dataGraph = sorted.slice(-12);
 
   const firstValue = dataGraph[0]?.amount || 0;
