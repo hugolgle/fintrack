@@ -9,7 +9,7 @@ import { useAuth } from "../../context/authContext.jsx";
 const ButtonGradient = ({ className, ...props }) => (
   <Button
     className={cn(
-      "bg-gradient-to-r from-blue-500 to-indigo-500 text-primary-foreground hover:shadow-lg shadow-indigo-400 dark:shadow-indigo-700 dark:text-foreground hover:to-blue-500 transition",
+      "bg-gradient-to-r from-blue-500 to-indigo-500 text-primary-foreground dark:text-foreground transition",
       className
     )}
     {...props}
@@ -39,7 +39,7 @@ export default function Home() {
         </div>
         <ButtonGradient
           onClick={() => navigate(ROUTES.DASHBOARD)}
-          className="scale-125 animate-fade"
+          className="hover:scale-125 transaition animate-fade"
         >
           Let's go !
         </ButtonGradient>

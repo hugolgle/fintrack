@@ -90,10 +90,6 @@ export default function App() {
   const publicRoutes = [
     { path: ROUTES.LOGIN, element: <Login /> },
     { path: ROUTES.SIGNUP, element: <SignUp /> },
-    {
-      path: ROUTES.SESSION_TIMED_OUT,
-      element: <h1>Session expirée. Veuillez vous reconnecter.</h1>,
-    },
     { path: "*", element: <PageError /> },
   ];
 

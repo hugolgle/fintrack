@@ -25,8 +25,7 @@ const validationSchema = yup.object().shape({
   maxBalance: yup
     .number()
     .typeError("Le plafond doit être un nombre")
-    .min(0, "Le plafond ne peut pas être négatif")
-    .required("Le plafond est requis"),
+    .min(0, "Le plafond ne peut pas être négatif"),
 });
 
 export function FormEditAccount({ account, refetch }) {

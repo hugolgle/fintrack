@@ -131,7 +131,16 @@ export function PageOrder() {
   };
 
   const displayData = dataInvestments.map(
-    ({ _id, name, type, symbol, amountBuy, transaction, createdAt }) => {
+    ({
+      _id,
+      name,
+      type,
+      symbol,
+      amountBuy,
+      amountSale,
+      transaction,
+      createdAt,
+    }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
@@ -139,7 +148,7 @@ export function PageOrder() {
         symbol,
         name,
         date: transaction[0]?.date,
-        amount: amountBuy,
+        amount: amountSale + amountBuy,
         createdAt,
       };
     }
@@ -195,7 +204,7 @@ export function PageOrder() {
                         <Link
                           key={idInvest}
                           to={ROUTES.INVESTMENT_BY_ID.replace(":id", idInvest)}
-                          className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-md p-4 transition-all ring-[1px] hover:ring-opacity-75 ${color}`}
+                          className={`w-52 h-32 flex animate-fade flex-col justify-between font-thin rounded-md p-4 transition-all ring-[1px] hover:ring-opacity-75 hover:scale-105 ${color}`}
                         >
                           <div className="flex justify-between">
                             <p className="text-right text-xs text-gray-700 dark:text-gray-300 italic">

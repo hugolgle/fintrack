@@ -91,6 +91,7 @@ export default function Dashboard() {
     isLoading: loadingInvests,
     data: dataInvests,
     isFetching: isFetchingInvests,
+    refetch: refetchInvests,
   } = useQuery({
     queryKey: ["fetchInvestments"],
     queryFn: async () => {
@@ -126,10 +127,30 @@ export default function Dashboard() {
     () => calculTotalByMonth(dataTransacs, TYPES.EXPENSE, currentMonthYear),
     [dataTransacs, currentMonthYear]
   );
-  const amountInvest = useMemo(
-    () => calculTotalAmount(dataTransacsInvest),
-    [dataTransacsInvest]
-  );
+
+  const amountResult = Array.isArray(dataInvests)
+    ? dataInvests
+        .filter(
+          (item) =>
+            Array.isArray(item.transaction) &&
+            item.transaction.some((t) => t.type === "sell")
+        )
+        .reduce((total, item) => {
+          const sale = item.amountSale || 0;
+          const buy = item.amountBuy || 0;
+          return total + (sale + buy);
+        }, 0)
+    : 0;
+  const amountBuy = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
+        const sale = item.amountSale || 0;
+        const buy = item.amountBuy || 0;
+        return total + (sale + buy);
+      }, 0)
+    : 0;
+
+  const amountInvest = amountBuy - amountResult;
+
   const { previousMonth, previousYear } = useMemo(() => {
     let m = currentMonth - 1,
       y = currentYear;
@@ -163,10 +184,12 @@ export default function Dashboard() {
     [dataAccounts]
   );
 
-  const percentInvest = (amountInvest * 100) / (amountInvest + amountEpargn);
-  const percentEpargn = (amountEpargn * 100) / (amountInvest + amountEpargn);
+  const percentInvest =
+    (Math.abs(amountInvest) * 100) / (Math.abs(amountInvest) + amountEpargn);
+  const percentEpargn =
+    (amountEpargn * 100) / (Math.abs(amountInvest) + amountEpargn);
 
-  const amountHeritage = amountEpargn + amountInvest;
+  const amountHeritage = amountEpargn + Math.abs(amountInvest);
 
   if (loadingTransacs || loadingAccounts || loadingInvests)
     return <SkeletonBoard />;
@@ -180,7 +203,7 @@ export default function Dashboard() {
         navigation={
           <div className="flex items-center gap-2 ">
             <Dialog>
-              <Tooltip>
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
                     <Button className="bg-colorRevenue hover:bg-colorRevenue/90 size-9 active:scale-90 transition-all">
@@ -201,7 +224,7 @@ export default function Dashboard() {
               </DialogContent>
             </Dialog>
             <Dialog>
-              <Tooltip>
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
                     <Button className="bg-colorExpense hover:bg-colorExpense/90 size-9 active:scale-90 transition-all">
@@ -222,7 +245,7 @@ export default function Dashboard() {
               </DialogContent>
             </Dialog>
             <Dialog>
-              <Tooltip>
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
                     <Button className="bg-colorInvest hover:bg-colorInvest/90 size-9 active:scale-90 transition-all">
@@ -239,7 +262,7 @@ export default function Dashboard() {
               </Tooltip>
 
               <DialogContent>
-                <FormAddInvestmentMain refetch={refetch} />
+                <FormAddInvestmentMain refetch={refetchInvests} />
               </DialogContent>
             </Dialog>
           </div>
@@ -284,7 +307,7 @@ export default function Dashboard() {
             type="investment"
             title="Investissement"
             icon={<HandCoins size={15} color="grey" />}
-            value={amountInvest}
+            value={Math.abs(amountInvest)}
             isAmount
           />
           <BoxInfos
@@ -338,7 +361,7 @@ export default function Dashboard() {
                       <p>Investissement</p>
                       <p className=" font-semibold">
                         {isVisible
-                          ? formatCurrency.format(amountInvest)
+                          ? formatCurrency.format(Math.abs(amountInvest))
                           : "••••"}
                       </p>
                     </div>

@@ -37,6 +37,7 @@ function Header({ title, subtitle = "ㅤ", isFetching, navigation }) {
       </div>
       <div className="flex flex-col gap-2 items-end justify-center w-auto">
         <div className="flex gap-2 justify-end">
+          {navigation}
           <Button
             variant="outline"
             className="aspect-square w-fit active:scale-95 transition-all"
@@ -44,7 +45,6 @@ function Header({ title, subtitle = "ㅤ", isFetching, navigation }) {
           >
             {isVisible ? <Eye /> : <EyeClosed />}
           </Button>
-          {navigation}
         </div>
       </div>
     </div>
