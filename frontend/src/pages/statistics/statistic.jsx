@@ -517,7 +517,7 @@ export default function Statistic() {
             ))}
           </div>
 
-          <div className="lg:w-1/3">
+          <div className="lg:w-1/2">
             <Container>
               <h2 className="text-left mb-4">Résumé</h2>
               <div className="flex flex-col gap-4">

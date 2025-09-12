@@ -269,24 +269,28 @@ module.exports.deleteTransaction = async (req, res) => {
 
     investment.transaction.splice(transactionIndex, 1);
 
-    if (investment.transaction.length === 0) {
-      await investment.deleteOne();
-      return res.status(200).json({ message: "Transaction supprimée" });
+    if (investment.transaction.length > 0) {
+      investment.amountBuy = 0;
+      investment.amountSale = 0;
+
+      investment.transaction.forEach(({ amount, type }) => {
+        if (type === "sell") investment.amountSale += amount;
+        else if (type === "buy") investment.amountBuy += amount;
+      });
+
+      await investment.save();
+
+      return res.status(200).json({
+        message: "Transaction supprimée avec succès",
+        updatedInvestment: investment,
+      });
     }
 
-    investment.amountBuy = 0;
-    investment.amountSale = 0;
-
-    investment.transaction.forEach(({ amount, type }) => {
-      if (type === "sell") investment.amountSale += amount;
-      else if (type === "buy") investment.amountBuy += amount;
-    });
-
-    const updatedInvestment = await investment.save();
-
+    // Ici : plus de transactions → on supprime l'investissement
+    await investment.deleteOne();
     return res.status(200).json({
-      message: "Transaction supprimée avec succès",
-      updatedInvestment,
+      message: "Investissement supprimé car il n'y a plus de transactions",
+      redirect: true,
     });
   } catch (error) {
     return res.status(500).json({

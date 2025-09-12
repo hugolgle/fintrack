@@ -44,7 +44,7 @@ import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 export default function BoardInvest() {
   const { isVisible } = useAmountVisibility();
   const navigate = useNavigate();
-  const [selectNbMonth, setSelectNbMonth] = useState(6);
+  const [selectNbMonth, setSelectNbMonth] = useState(12);
 
   const {
     isLoading,
@@ -68,12 +68,6 @@ export default function BoardInvest() {
   const currentYearMonth = `${currentYear}${currentMonth}`;
   const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
-  const amountBuy = Array.isArray(dataInvests)
-    ? dataInvests.reduce((total, item) => {
-        return total + (item.amountBuy || 0);
-      }, 0)
-    : 0;
-
   const amountResult = Array.isArray(dataInvests)
     ? dataInvests
         .filter(
@@ -86,6 +80,13 @@ export default function BoardInvest() {
           const buy = item.amountBuy || 0;
           return total + (sale + buy);
         }, 0)
+    : 0;
+  const amountBuy = Array.isArray(dataInvests)
+    ? dataInvests.reduce((total, item) => {
+        const sale = item.amountSale || 0;
+        const buy = item.amountBuy || 0;
+        return total + (sale + buy);
+      }, 0)
     : 0;
 
   const amountDividend = Array.isArray(dataInvests)
@@ -323,12 +324,11 @@ export default function BoardInvest() {
           <div className="flex flex-col lg:flex-row gap-4">
             <BoxInfos
               title="Valeur totale"
-              value={Math.abs(amountBuy)}
+              value={Math.abs(amountBuy - amountResult)}
               icon={<Pickaxe size={15} color="grey" />}
               isAmount
               type="investment"
             />
-
             <BoxInfos
               title="Gains/Pertes"
               value={amountResult}

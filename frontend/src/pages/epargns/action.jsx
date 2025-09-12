@@ -59,7 +59,7 @@ const validationSchema = yup.object({
 });
 
 export default function FormAction({ refetch, accountId }) {
-  const { isLoading, data: accounts } = useQuery({
+  const { data: accounts } = useQuery({
     queryKey: ["fetchAccounts"],
     queryFn: async () => {
       const response = await fetchAccounts();
@@ -159,9 +159,9 @@ export default function FormAction({ refetch, accountId }) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <DialogHeader>
-        <DialogTitle>Ajouter une transaction</DialogTitle>
+        <DialogTitle>Ajouter un versement</DialogTitle>
         <DialogDescription>
-          Remplissez les informations de la nouvelle transaction.
+          Remplissez les informations du nouveau versement.
         </DialogDescription>
       </DialogHeader>
 
@@ -206,7 +206,6 @@ export default function FormAction({ refetch, accountId }) {
           <p className="text-red-500 text-sm">{formik.errors.accountId}</p>
         )}
 
-        {/* Sélection du compte de destination pour un Virement */}
         {formik.values.action === "Virement" && (
           <Select
             value={formik.values.toAccountId}

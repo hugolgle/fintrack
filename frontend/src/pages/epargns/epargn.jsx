@@ -305,15 +305,17 @@ export default function Epargn() {
                           </div>
                         </div>
 
-                        <div className="relative flex gap-2 items-center w-full">
-                          <Progress
-                            value={percent > 100 ? 100 : percent}
-                            className="w-full h-[2px]"
-                          />
-                          <p className="text-muted-foreground italic text-[10px] text-nowrap">
-                            {percent.toFixed(2)} %
-                          </p>
-                        </div>
+                        {account.maxBalance && (
+                          <div className="relative flex gap-2 items-center w-full">
+                            <Progress
+                              value={percent > 100 ? 100 : percent}
+                              className="w-full h-[2px]"
+                            />
+                            <p className="text-muted-foreground italic text-[10px] text-nowrap">
+                              {percent.toFixed(2)} %
+                            </p>
+                          </div>
+                        )}
                       </div>
                     );
                   })
@@ -335,8 +337,8 @@ export default function Epargn() {
                   chartConfig={chartConfig}
                   total={totalAmount}
                   fontSizeTotal={8}
-                  inner={60}
-                  outer={80}
+                  inner={50}
+                  outer={90}
                   legend={renderCustomLegend}
                 />
               ) : (

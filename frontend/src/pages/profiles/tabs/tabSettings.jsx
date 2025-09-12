@@ -33,6 +33,16 @@ function TabSettings() {
     { name: "black", code: "#00000039" },
   ];
 
+  const colorClasses = {
+    red: "bg-red-500 text-red-500",
+    blue: "bg-blue-500 text-blue-500",
+    green: "bg-green-500 text-green-500",
+    yellow: "bg-yellow-500 text-yellow-500",
+    purple: "bg-purple-500 text-purple-500",
+    white: "bg-white border border-gray-300",
+    black: "bg-black border border-gray-300",
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <Container>
@@ -86,18 +96,19 @@ function TabSettings() {
             <div className="flex gap-2">
               {backgroundColors.map((color) => (
                 <CheckboxPrimitive.Root
+                  key={color.name}
                   checked={backgroundColor === color.code}
-                  className={`h-8 w-8 rounded-full ${
-                    color.name === "white" || color.name === "black"
-                      ? ""
-                      : `bg-${color.name}-500 text-${color.name}-500`
-                  }`}
-                  onClick={() => {
-                    setBackgroundColor(color.code);
-                  }}
+                  className={`h-8 w-8 rounded-full flex items-center justify-center ${colorClasses[color.name]}`}
+                  onCheckedChange={() => setBackgroundColor(color.code)}
                 >
-                  <CheckboxPrimitive.Indicator className="h-full w-full flex items-center justify-center">
-                    <CircleCheck className="h-5 w-5 fill-white stroke-current" />
+                  <CheckboxPrimitive.Indicator>
+                    <CircleCheck
+                      className={`h-5 w-5 ${
+                        color.name === "black" && "text-black"
+                      } ${
+                        color.name === "white" ? "fill-black text-white" : "fill-white"
+                      }`}
+                    />
                   </CheckboxPrimitive.Indicator>
                 </CheckboxPrimitive.Root>
               ))}

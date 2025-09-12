@@ -42,6 +42,7 @@ function GroupTransactionPage() {
     <section className="w-full">
       <Header
         title="Mes Groupes"
+        subtitle="Organisez vos transactions par projets, voyages ou catégories"
         isFetching={isFetching}
         navigation={
           <>

@@ -18,7 +18,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
-
+console.log(process.env.CLIENT_URL);
+console.log(process.env.MONGO_URI);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

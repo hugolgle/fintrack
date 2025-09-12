@@ -7,7 +7,7 @@ const epargnSchema = new mongoose.Schema({
   interestRate: { type: Number, required: true, default: 0.0 },
   lastInterestCalculation: { type: Date, required: true, default: new Date() },
   amountInterest: { type: Number, default: 0.0 },
-  maxBalance: { type: Number, required: true, default: 100000.0 },
+  maxBalance: { type: Number, required: false },
   transactions: [
     new mongoose.Schema(
       {

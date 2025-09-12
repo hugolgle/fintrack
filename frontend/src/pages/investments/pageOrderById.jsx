@@ -71,6 +71,9 @@ export default function PageOrderById() {
       toast.success(response?.data?.message);
       queryClient.invalidateQueries(["fetchInvestmentById", id]);
       refetch();
+      if (response?.data?.redirect) {
+        navigate(ROUTES.INVESTMENT);
+      }
     },
     onError: (error) => {
       toast.error(error?.data?.message);
@@ -225,7 +228,7 @@ export default function PageOrderById() {
                 </DialogContent>
               </Dialog>
               <Dialog>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <DialogTrigger asChild>
                       <Button
@@ -237,7 +240,7 @@ export default function PageOrderById() {
                     </DialogTrigger>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Modifier l'{dataTransactionsByInvestment.type}</p>
+                    <p>Modifier</p>
                   </TooltipContent>
                 </Tooltip>
 

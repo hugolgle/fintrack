@@ -299,7 +299,7 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               <Button
                 variant="outline"
                 onClick={() => {
-                  formik.resetForm(), setHiddenImg(false), setPreview(false);
+                  (formik.resetForm(), setHiddenImg(false), setPreview(false));
                 }}
               >
                 Annuler

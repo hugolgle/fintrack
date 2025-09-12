@@ -27,5 +27,4 @@ export const ROUTES = {
   PROFILE: "/profile",
   LOGIN: "/login",
   SIGNUP: "/signup",
-  SESSION_TIMED_OUT: "/session-timed-out",
 };

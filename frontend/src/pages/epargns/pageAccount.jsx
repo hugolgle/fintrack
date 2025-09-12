@@ -174,7 +174,7 @@ export default function PageAccount() {
         <div className="flex flex-col gap-4 md:w-1/5">
           <Container>
             <div className="flex w-full justify-between items-center mb-4">
-              <h2 className="text-left">Transactions</h2>
+              <h2 className="text-left">Versements</h2>
 
               <ModalTable
                 btnOpen={
@@ -194,8 +194,8 @@ export default function PageAccount() {
                     new Date(a.createdAt).getTime()
                 )}
                 getAccountName={getAccountName}
-                title="Transactions"
-                description="Liste des transactions."
+                title="Versements"
+                description="Liste des versements."
               />
             </div>
             {account?.transactions?.length > 0 ? (
@@ -253,7 +253,7 @@ export default function PageAccount() {
               </div>
             ) : (
               <p className="italic text-xs text-muted-foreground">
-                Aucune transactions trouvé !
+                Aucun versements trouvés !
               </p>
             )}
           </Container>
@@ -293,12 +293,14 @@ export default function PageAccount() {
                     : "-"}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs">Utilisation</span>
-                <span className="italic text-xs">
-                  {!isLoading ? fillPercentage.toFixed(2) : "-"} %
-                </span>
-              </div>
+              {account?.maxBalance && (
+                <div className="flex justify-between">
+                  <span className="text-xs">Utilisation</span>
+                  <span className="italic text-xs">
+                    {!isLoading ? fillPercentage.toFixed(2) : "-"} %
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-xs">Taux d'intérêts </span>
                 <span className="italic text-xs">
