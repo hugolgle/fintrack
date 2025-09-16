@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { EyeOff, Eye } from "lucide-react";
+import { EyeOff, Eye, Upload } from "lucide-react";
 import { ROUTES } from "../../components/route.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -13,10 +13,11 @@ import ButtonLoading from "../../components/buttons/buttonLoading.jsx";
 import GoogleIcon from "../../../public/google-icon.svg";
 import { signInWithGoogle } from "../../config/firebase.js";
 import { useAuth } from "../../context/authContext.jsx";
+import { Button } from "@/components/ui/button";
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [image, setImage] = useState(null);
+
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [animate, setAnimate] = useState();
@@ -43,7 +44,6 @@ export default function SignUp() {
     city: yup.string().required("Ville requise"),
     zipcode: yup.number().required("Code postal requis"),
     prenom: yup.string().required("Prénom requis"),
-    img: yup.mixed().nullable().optional(),
   });
 
   const handleAutoLogin = async (values) => {
@@ -81,9 +81,7 @@ export default function SignUp() {
       formData.append("phone", values.phone);
       formData.append("city", values.city);
       formData.append("zipcode", values.zipcode);
-      if (image) {
-        formData.append("img", image);
-      }
+      if (values.img) formData.append("imgProfile", values.img);
 
       signUpMutation.mutate(formData, {
         onSuccess: () => handleAutoLogin(values),
@@ -96,8 +94,8 @@ export default function SignUp() {
     onSuccess: (response) => {
       toast.success(response.message);
       formik.resetForm();
-      setImage(null);
       setImagePreview(null);
+      navigate(ROUTES.LOGIN);
     },
     onError: (error) => {
       if (error) {
@@ -125,20 +123,6 @@ export default function SignUp() {
       signUpMutation.mutate(userData);
     } catch (error) {
       toast.error("Erreur d'authentification");
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0] || null;
-    setImage(file);
-    formik.setFieldValue("img", file);
-
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-      return () => URL.revokeObjectURL(previewUrl);
-    } else {
-      setImagePreview(null);
     }
   };
 
@@ -344,17 +328,24 @@ export default function SignUp() {
                 </p>
               )}
 
-            {/* Image */}
-            <Input
-              className="border-none bg-background w-full"
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-            {formik.touched.img && formik.errors.img && (
+            <div className="flex flex-col w-full gap-2">
+              <Input
+                type="file"
+                id="image"
+                accept="image/*"
+                className="border-none bg-background w-full"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    formik.setFieldValue("img", e.target.files[0]);
+                    setImagePreview(URL.createObjectURL(e.target.files[0]));
+                  }
+                }}
+              />
+            </div>
+
+            {formik.touched.file && formik.errors.file && (
               <p className="text-[10px] text-red-500 -mt-4 ml-2">
-                {formik.errors.img}
+                {formik.errors.file}
               </p>
             )}
 

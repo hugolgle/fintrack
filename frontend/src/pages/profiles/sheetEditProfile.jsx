@@ -32,16 +32,12 @@ const validationSchema = yup.object({
 });
 
 export function SheetEditProfile({ refetch, dataProfil }) {
-  const { data: dataUser } = useAuth();
   const isGoogleAccount = !!dataProfil?.googleId;
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [preview, setPreview] = useState(null);
-  const [isImageDeleted, setIsImageDeleted] = useState(false);
-  const [hiddenImg, setHiddenImg] = useState(false);
 
   const { mutate: editUserMutate, isPending } = useMutation({
-    mutationFn: (userData) => editUser(dataUser.id, userData),
+    mutationFn: (userData) => editUser(dataProfil._id, userData),
     onSuccess: (response) => {
       refetch();
       setIsSheetOpen(false);
@@ -61,8 +57,8 @@ export function SheetEditProfile({ refetch, dataProfil }) {
       address: dataProfil?.address || "",
       zipcode: dataProfil?.zipcode || "",
       city: dataProfil?.city || "",
-      file: dataProfil?.img || null,
     },
+    enableReinitialize: true,
     validationSchema,
     onSubmit: (values) => {
       const formData = new FormData();
@@ -73,28 +69,9 @@ export function SheetEditProfile({ refetch, dataProfil }) {
       formData.append("address", values.address);
       formData.append("zipcode", values.zipcode);
       formData.append("city", values.city);
-      if (!isImageDeleted && values.file) {
-        formData.append("img", values.file);
-      }
       editUserMutate(formData);
     },
   });
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      formik.setFieldValue("file", file);
-      const fileURL = URL.createObjectURL(file);
-      setPreview(fileURL);
-      setIsImageDeleted(false);
-    }
-  };
-
-  const handleClickTrash = () => {
-    formik.setFieldValue("file", null);
-    setPreview(null);
-    setHiddenImg(true);
-  };
 
   const handleSheetOpenChange = (open) => {
     setIsSheetOpen(open);
@@ -279,21 +256,6 @@ export function SheetEditProfile({ refetch, dataProfil }) {
               </p>
             )}
           </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="file" className="text-right">
-              Photo de profil
-            </Label>
-            <Input
-              id="file"
-              name="file"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="col-span-3"
-              disabled={isGoogleAccount}
-            />
-          </div>
           <SheetFooter>
             {!isSaveDisabled && (
               <Button
@@ -320,35 +282,6 @@ export function SheetEditProfile({ refetch, dataProfil }) {
             compte google
           </p>
         )}
-        <div className="relative rounded-full group mx-auto mt-16 w-fit">
-          {dataProfil?.img && !hiddenImg && !isGoogleAccount && (
-            <Trash2
-              size={50}
-              strokeWidth={1}
-              className="absolute top-1/2 left-1/2 text-white opacity-0 group-hover:opacity-100 z-50 cursor-pointer transition-all hover:scale-110 transform -translate-x-1/2 -translate-y-1/2"
-              onClick={handleClickTrash}
-            />
-          )}
-          {preview ? (
-            <Avatar className="w-48 h-48">
-              <AvatarImage
-                className="object-cover animate-fade transition-all duration-300 group-hover:brightness-50"
-                src={preview}
-              />
-            </Avatar>
-          ) : (
-            !hiddenImg && (
-              <Avatar className="w-48 h-48">
-                <img
-                  src={dataProfil?.img}
-                  alt="User Avatar"
-                  className="object-cover w-full h-full"
-                  referrerPolicy="no-referrer"
-                />
-              </Avatar>
-            )
-          )}
-        </div>
       </SheetContent>
     </Sheet>
   );

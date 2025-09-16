@@ -11,20 +11,22 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
 
-  const { isLoading, isError, isFetching, refetch } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    isError,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
     retry: false,
-    onSuccess: (data) => setUser(data),
-    onError: () => setUser(null),
   });
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      setUser(data.user);
       queryClient.setQueryData(["currentUser"], data);
       toast.success(data.message);
     },
@@ -37,7 +39,6 @@ export const AuthProvider = ({ children }) => {
     mutationFn: logoutUser,
     onSuccess: () => {
       queryClient.removeQueries(["currentUser"]);
-      setUser(null);
       toast.success("Vous vous êtes déconnecté !");
     },
     onError: () => {
@@ -48,11 +49,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await getCurrentUser();
-        setUser(user);
-      } catch {
-        setUser(null);
-      }
+        await getCurrentUser();
+      } catch {}
     };
 
     fetchUser();

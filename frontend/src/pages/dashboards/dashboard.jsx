@@ -42,7 +42,6 @@ import FormAddInvestmentMain from "../investments/formAddInvestmentMain.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import SkeletonBoard from "../../components/skeletonBoard.jsx";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
-import { fetchGroupTransactions } from "../../services/groupTransaction.service.jsx";
 
 export default function Dashboard() {
   const { isVisible } = useAmountVisibility();

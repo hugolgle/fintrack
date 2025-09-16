@@ -45,7 +45,11 @@ export default function Profile() {
                 <Avatar className="size-16">
                   {dataUser?.img ? (
                     <img
-                      src={dataUser.img}
+                      src={
+                        !dataUser.googleId
+                          ? `${import.meta.env.VITE_API_URL}${dataUser.img}`
+                          : dataUser.img
+                      }
                       alt="User Avatar"
                       className="object-cover w-full h-full rounded-full"
                       referrerPolicy="no-referrer"
