@@ -333,7 +333,9 @@ export default function Dashboard() {
                   <p className="text-sm text-muted-foreground text-right">
                     Montant du patrimoine :{" "}
                     <span className="font-semibold">
-                      {formatCurrency.format(amountHeritage)}
+                      {isVisible
+                        ? formatCurrency.format(amountHeritage)
+                        : "••••"}
                     </span>
                   </p>
                 </div>
