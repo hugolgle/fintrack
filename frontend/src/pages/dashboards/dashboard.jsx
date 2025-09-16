@@ -319,9 +319,9 @@ export default function Dashboard() {
           />
         </div>
         <div className="flex flex-col lg:flex-row gap-4 h-full">
-          <div className="flex flex-col lg:w-4/5 gap-4">
+          <div className="flex flex-col w-full lg:w-4/5 gap-4">
             <div className="flex flex-col lg:flex-row gap-4">
-              <Container custom="!w-3/4">
+              <Container custom="lg:!w-3/4">
                 <div className="flex justify-between mb-4">
                   <div>
                     <h2 className="text-left">Répartition du Patrimoine</h2>
@@ -376,7 +376,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Container>
-              <Container custom="h-fit !w-2/4">
+              <Container custom="h-fit lg:!w-2/4">
                 <div className="flex justify-between w-full gap-4 mb-4">
                   <h2 className="text-left">Mes crédits</h2>
                   <p
@@ -442,7 +442,6 @@ export default function Dashboard() {
               </Container>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-4"></div>
           </div>
           <div className="lg:w-1/5 flex flex-col gap-4">
             <Container>
