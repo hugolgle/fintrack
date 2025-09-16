@@ -308,7 +308,7 @@ export default function BoardInvest() {
             <>
               <Dialog modal>
                 <DialogTrigger>
-                  {dataInvests?.length < 0 && (
+                  {dataInvests?.length !== 0 && (
                     <Button>
                       <Plus />
                       <p className="hidden md:block">Nouveau investissement</p>

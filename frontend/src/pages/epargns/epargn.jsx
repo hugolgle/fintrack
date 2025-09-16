@@ -203,7 +203,7 @@ export default function Epargn() {
         navigation={
           <Dialog modal>
             <DialogTrigger>
-              {accounts?.length < 0 && (
+              {accounts?.length !== 0 && (
                 <Button>
                   <Plus />
                   <p className="hidden md:block">Créer un compte</p>

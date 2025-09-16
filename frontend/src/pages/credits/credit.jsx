@@ -94,7 +94,7 @@ export default function Credit() {
           navigation={
             <Dialog modal>
               <DialogTrigger>
-                {credits?.length < 0 && (
+                {credits?.length !== 0 && (
                   <Button>
                     <Plus />
                     <p className="hidden md:block">Nouveau crédit</p>
