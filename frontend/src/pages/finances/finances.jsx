@@ -374,7 +374,7 @@ export default function BoardTransactions() {
           navigation={
             <Dialog modal>
               <DialogTrigger>
-                {dataTransactions?.length < 0 && (
+                {dataTransactions?.length !== 0 && (
                   <Button>
                     <Plus />
                     <p className="hidden md:block">Nouvelle transaction</p>
@@ -425,9 +425,12 @@ export default function BoardTransactions() {
               />
               <BoxInfos
                 title="Solde"
-                value={(revenueByMonth || null) - Math.abs(expenseByMonth || null)}
+                value={
+                  (revenueByMonth || null) - Math.abs(expenseByMonth || null)
+                }
                 valueLast={
-                  (revenueLastMonth || null) - Math.abs(expenseLastMonth || null)
+                  (revenueLastMonth || null) -
+                  Math.abs(expenseLastMonth || null)
                 }
                 icon={<Wallet size={15} color="grey" />}
                 isAmount
