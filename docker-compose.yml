@@ -23,6 +23,8 @@ services:
       - caddy_net
     depends_on:
       - mongodb
+    volumes:
+      - uploads_data:/app/uploads
     restart: unless-stopped
 
   mongodb:
@@ -48,3 +50,4 @@ networks:
 
 volumes:
   mongo-data:
+  uploads_data:

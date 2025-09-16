@@ -10,11 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getInitials } from "../../../utils/users.js";
-import { Input } from "@/components/ui/input";
 import parsePhoneNumberFromString from "libphonenumber-js";
-import { Upload } from "lucide-react";
 import { updateImg } from "../../../services/user.service.jsx";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 function TabProfil({ dataUser, refetch }) {
   const initialName = getInitials(dataUser?.prenom, dataUser?.nom);
@@ -39,7 +38,8 @@ function TabProfil({ dataUser, refetch }) {
     mutationFn: async ({ id, img }) => {
       return await updateImg(id, img);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      toast.success(response.message);
       refetch();
     },
     onError: (error) => {
@@ -62,6 +62,7 @@ function TabProfil({ dataUser, refetch }) {
 
   const handleDelete = () => {
     mutationUpdateImg.mutate({ id: dataUser._id, img: { img: "" } });
+    setSelectedImage(null);
   };
 
   return (
