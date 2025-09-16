@@ -308,10 +308,12 @@ export default function BoardInvest() {
             <>
               <Dialog modal>
                 <DialogTrigger>
-                  <Button>
-                    <Plus />
-                    <p className="hidden md:block">Nouveau investissement</p>
-                  </Button>
+                  {dataInvests?.length < 0 && (
+                    <Button>
+                      <Plus />
+                      <p className="hidden md:block">Nouveau investissement</p>
+                    </Button>
+                  )}
                 </DialogTrigger>
                 <DialogContent>
                   <FormAddInvestmentMain refetch={refetch} />
@@ -320,131 +322,154 @@ export default function BoardInvest() {
             </>
           }
         />
-        <div className="flex flex-col w-full justify-center gap-4 animate-fade">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <BoxInfos
-              title="Valeur totale"
-              value={Math.abs(amountBuy - amountResult)}
-              icon={<Pickaxe size={15} color="grey" />}
-              isAmount
-              type="investment"
-            />
-            <BoxInfos
-              title="Gains/Pertes"
-              value={amountResult}
-              icon={<ArrowUp size={15} color="grey" />}
-              isAmount
-              type="investment"
-            />
-            <BoxInfos
-              title="Mon portefeuille"
-              value={dataInvests.length}
-              icon={<BookA size={15} color="grey" />}
-              onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
-              type="investment"
-            />
-          </div>
-          <div className="flex flex-col lg:flex-row gap-4">
-            <Container>
-              <h2 className="text-left">Graphique</h2>
-              <ChartLine
-                data={dataGraph}
-                defaultConfig={defaultConfig}
-                maxValue={maxValue}
+        {dataInvests?.length > 0 ? (
+          <div className="flex flex-col w-full justify-center gap-4 animate-fade">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <BoxInfos
+                title="Valeur totale"
+                value={Math.abs(amountBuy - amountResult)}
+                icon={<Pickaxe size={15} color="grey" />}
+                isAmount
+                type="investment"
               />
-              <div
-                className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}
-              >
-                <div className="w-1/12">
-                  <ChevronLeft
-                    size={25}
-                    className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                    onClick={clickLastMonthGraph}
-                  />
-                </div>
-                <p className="font-thin text-sm w-10/12 italic">
-                  {theMonthGraph}
-                </p>
-                <div className="w-1/12">
-                  {chevronGraphIsVisible && (
-                    <ChevronRight
+              <BoxInfos
+                title="Gains/Pertes"
+                value={amountResult}
+                icon={<ArrowUp size={15} color="grey" />}
+                isAmount
+                type="investment"
+              />
+              <BoxInfos
+                title="Mon portefeuille"
+                value={dataInvests.length}
+                icon={<BookA size={15} color="grey" />}
+                onClick={() => navigate(ROUTES.INVESTMENT_ORDER)}
+                type="investment"
+              />
+            </div>
+            <div className="flex flex-col lg:flex-row gap-4">
+              <Container>
+                <h2 className="text-left">Graphique</h2>
+                <ChartLine
+                  data={dataGraph}
+                  defaultConfig={defaultConfig}
+                  maxValue={maxValue}
+                />
+                <div
+                  className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}
+                >
+                  <div className="w-1/12">
+                    <ChevronLeft
                       size={25}
                       className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
-                      onClick={clickNextMonthGraph}
+                      onClick={clickLastMonthGraph}
                     />
-                  )}
-                </div>
-              </div>
-              <div className="absolute top-0 right-0 m-2">
-                <Tabs
-                  name="selectNbMonth"
-                  value={selectNbMonth}
-                  onValueChange={(value) => setSelectNbMonth(Number(value))}
-                  className="w-full"
-                >
-                  <TabsList>
-                    <TabsTrigger value={6}>6 mois</TabsTrigger>
-                    <TabsTrigger value={12}>1 an</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-            </Container>
-            <div className="lg:w-2/5 flex flex-col gap-4">
-              <Container>
-                <h2 className="mb-4 text-left">Statistiques</h2>
-                <div className="h-full flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm">Dividende perçu</p>
-                    <p className="text-xs">
-                      {isVisible
-                        ? formatCurrency.format(amountDividend)
-                        : "••••"}
-                    </p>
+                  </div>
+                  <p className="font-thin text-sm w-10/12 italic">
+                    {theMonthGraph}
+                  </p>
+                  <div className="w-1/12">
+                    {chevronGraphIsVisible && (
+                      <ChevronRight
+                        size={25}
+                        className="hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black p-1 rounded-full cursor-pointer duration-300 transition-all"
+                        onClick={clickNextMonthGraph}
+                      />
+                    )}
                   </div>
                 </div>
-              </Container>
-              <Container>
-                <h2 className="mb-4 text-left">Répartition</h2>
-                <div className="flex flex-col w-full gap-2">
-                  {chartDataByType?.map((item, index) => (
-                    <div className="flex flex-col gap-2 w-full">
-                      <div className="w-full flex justify-between items-end">
-                        <p className="text-sm">{item.name}</p>
-                        <p className="text-xs">
-                          {item.pourcentage.toFixed(0)}%
-                        </p>
-                      </div>
-                      <div className="w-full h-1 bg-primary/20 rounded">
-                        <div
-                          className="h-full rounded"
-                          style={{
-                            width: `${item.pourcentage}%`,
-                            backgroundColor: item.fill,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <div className="absolute top-0 right-0 m-2">
+                  <Tabs
+                    name="selectNbMonth"
+                    value={selectNbMonth}
+                    onValueChange={(value) => setSelectNbMonth(Number(value))}
+                    className="w-full"
+                  >
+                    <TabsList>
+                      <TabsTrigger value={6}>6 mois</TabsTrigger>
+                      <TabsTrigger value={12}>1 an</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               </Container>
+              <div className="lg:w-2/5 flex flex-col gap-4">
+                <Container>
+                  <h2 className="mb-4 text-left">Statistiques</h2>
+                  <div className="h-full flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm">Dividende perçu</p>
+                      <p className="text-xs">
+                        {isVisible
+                          ? formatCurrency.format(amountDividend)
+                          : "••••"}
+                      </p>
+                    </div>
+                  </div>
+                </Container>
+                <Container>
+                  <h2 className="mb-4 text-left">Répartition</h2>
+                  <div className="flex flex-col w-full gap-2">
+                    {chartDataByType?.map((item, index) => (
+                      <div className="flex flex-col gap-2 w-full">
+                        <div className="w-full flex justify-between items-end">
+                          <p className="text-sm">{item.name}</p>
+                          <p className="text-xs">
+                            {item.pourcentage.toFixed(0)}%
+                          </p>
+                        </div>
+                        <div className="w-full h-1 bg-primary/20 rounded">
+                          <div
+                            className="h-full rounded"
+                            style={{
+                              width: `${item.pourcentage}%`,
+                              backgroundColor: item.fill,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Container>
+              </div>
             </div>
+            <Container>
+              <div className="flex justify-between mb-4">
+                <h2 className="text-left">Mes investissements</h2>
+              </div>
+              <Tableau
+                formatData={formatData}
+                data={data}
+                columns={columns}
+                type="investments"
+                isFetching={isFetching}
+                action={action}
+                firstItem={avatar}
+                fieldsFilter={[{ key: "type", fieldName: "Type" }]}
+              />
+            </Container>
           </div>
-          <Container>
-            <div className="flex justify-between mb-4">
-              <h2 className="text-left">Mes investissements</h2>
-            </div>
-            <Tableau
-              formatData={formatData}
-              data={data}
-              columns={columns}
-              type="investments"
-              isFetching={isFetching}
-              action={action}
-              firstItem={avatar}
-              fieldsFilter={[{ key: "type", fieldName: "Type" }]}
-            />
-          </Container>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl font-bold">
+              Aucun investissement enregistré
+            </h2>
+            <p className="text-muted-foreground">
+              Commencez par ajouter une nouveau investissement pour suivre vos
+              paiements et gérer vos finances.
+            </p>
+            <Dialog modal>
+              <DialogTrigger>
+                <Button>
+                  <Plus />
+                  <p className="hidden md:block">Nouveau investissement</p>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <FormAddInvestmentMain refetch={refetch} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
       </div>
     </section>
   );

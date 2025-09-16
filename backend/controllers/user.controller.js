@@ -76,9 +76,9 @@ module.exports.signUpUser = async (req, res) => {
       city,
     } = req.body;
 
-    const API_URL = process.env.VITE_API_URL;
-
-    const imgPath = req.file ? `${API_URL}/uploads/${req.file.filename}` : null;
+    if (req.files?.imgProfile) {
+      req.body.img = `/uploads/${req.files.imgProfile[0].filename}`;
+    }
 
     const existingUser = await UserModel.findOne({ username });
 
@@ -95,8 +95,9 @@ module.exports.signUpUser = async (req, res) => {
       address,
       zipcode,
       city,
-      img: imgPath ?? img,
-      googleId: googleId || null,
+      img:
+        req.body.img && req.body.img.trim() !== "" ? req.body.img : undefined,
+      ...(googleId ? { googleId } : {}),
     });
 
     return res.status(201).json({
@@ -113,7 +114,6 @@ module.exports.signUpUser = async (req, res) => {
 };
 
 module.exports.editUser = async (req, res) => {
-  const API_URL = process.env.VITE_API_URL;
   try {
     const user = await UserModel.findById(req.params.id);
     if (!user) {
@@ -143,27 +143,22 @@ module.exports.editUser = async (req, res) => {
       }
     }
 
-    let imgPath;
-    if (req.body.img === "null") {
-      const oldImgPath = path.join(__dirname, "..", user.img);
-      if (fs.existsSync(oldImgPath)) {
-        fs.unlinkSync(oldImgPath);
+    if (req.files?.imgProfile) {
+      if (user.img) {
+        const oldPath = path.join(__dirname, "..", user.img.replace(/^\//, ""));
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
       }
-      imgPath = null;
-    } else {
-      imgPath = req.file ? `${API_URL}/uploads/${req.file.filename}` : user.img;
-      if (req.file && user.img) {
-        const oldImgPath = path.join(__dirname, "..", user.img);
-        if (fs.existsSync(oldImgPath)) {
-          fs.unlinkSync(oldImgPath);
-        }
-      }
+      req.body.img = `/uploads/${req.files.imgProfile[0].filename}`;
+    }
+
+    if (req.body.img && req.body.img.trim() !== "") {
+      user.img = req.body.img;
     }
 
     user.username = req.body.username || user.username;
     user.nom = req.body.nom || user.nom;
     user.prenom = req.body.prenom || user.prenom;
-    user.img = imgPath || user.img;
+    if (req.body.img) user.img = req.body.img;
     user.phone = req.body.phone || user.phone;
     user.address = req.body.address || user.address;
     user.zipcode = req.body.zipcode || user.zipcode;
@@ -241,6 +236,42 @@ module.exports.logoutUser = async (req, res) => {
     return res.status(500).json({
       message: "Erreur lors de la déconnexion",
       error,
+    });
+  }
+};
+
+module.exports.updateImg = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    if (!user) {
+      return res.status(400).json({ message: "Cet utilisateur n'existe pas" });
+    }
+
+    if (req.body.img === "") {
+      if (user.img) {
+        const oldPath = path.join(__dirname, "..", user.img.replace(/^\//, ""));
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      user.img = null;
+      await user.save();
+      return res.status(200).json({ message: "Image supprimée avec succès" });
+    }
+
+    if (req.files?.imgProfile) {
+      if (user.img) {
+        const oldPath = path.join(__dirname, "..", user.img.replace(/^\//, ""));
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      user.img = `/uploads/${req.files.imgProfile[0].filename}`;
+      await user.save();
+      return res.status(200).json({ message: "Image mise à jour avec succès" });
+    }
+
+    return res.status(400).json({ message: "Aucune donnée fournie" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors de la mise à jour de l'image",
     });
   }
 };

@@ -24,6 +24,9 @@ export const signUpUser = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/add`, userData, {
       withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return response.data;
   } catch (error) {
@@ -62,4 +65,28 @@ export const deleteAccount = async () => {
     withCredentials: true,
   });
   return response.data;
+};
+
+export const updateImg = async (userId, imgData) => {
+  try {
+    const isFormData = imgData instanceof FormData;
+
+    const response = await axios.patch(`${API_URL}/edit/${userId}`, imgData, {
+      headers: {
+        "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.message ||
+          "Erreur lors de la mise à jour de l'image"
+      );
+    } else {
+      throw new Error("Erreur lors de la connexion au serveur.");
+    }
+  }
 };

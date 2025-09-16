@@ -85,8 +85,6 @@ export default function PageTransaction({ type }) {
     refetchOnMount: true,
   });
 
-  console.log(dataGroupTransactions);
-
   const mutationDeleteTransaction = useMutation({
     mutationFn: async (itemId) => {
       return await deleteTransactions(itemId);

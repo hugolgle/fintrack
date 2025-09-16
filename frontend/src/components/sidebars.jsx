@@ -134,7 +134,11 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
               >
                 {dataUser?.img ? (
                   <img
-                    src={dataUser.img}
+                    src={
+                      !dataUser.googleId
+                        ? `${import.meta.env.VITE_API_URL}${dataUser.img}`
+                        : dataUser.img
+                    }
                     alt="User Avatar"
                     className="object-cover w-full h-full rounded-full"
                     referrerPolicy="no-referrer"
@@ -160,11 +164,7 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
         to={ROUTES.HOME}
         className="flex items-end cursor-pointer gap-6 text-2xl group text-center w-auto overflow-hidden"
       >
-        <img
-          src="/logoFinTrack.png"
-          className="size-8"
-          alt="logo"
-        />
+        <img src="/logoFinTrack.png" className="size-8" alt="logo" />
       </Link>
       {btnOpen}
       <div
@@ -212,7 +212,11 @@ function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {
             <Avatar className="size-10 cursor-pointer hover:scale-95 transition-all">
               {dataUser?.img ? (
                 <img
-                  src={dataUser.img}
+                  src={
+                    !dataUser.googleId
+                      ? `${import.meta.env.VITE_API_URL}${dataUser.img}`
+                      : dataUser.img
+                  }
                   alt="User Avatar"
                   className="object-cover w-full h-full rounded-full"
                   referrerPolicy="no-referrer"
