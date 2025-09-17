@@ -205,11 +205,12 @@ export default function Dashboard() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
-                    <Button className="bg-colorRevenue hover:bg-colorRevenue/90 size-9 active:scale-90 transition-all">
-                      <Icons.Plus
-                        size={20}
-                        className="cursor-pointer transition-all"
-                      />
+                    <Button
+                      variant="outline"
+                      className="bg-colorRevenue hover:bg-colorRevenue/90 active:scale-90 transition-all"
+                      size={"icon"}
+                    >
+                      <Icons.Plus className="cursor-pointer transition-all" />
                     </Button>
                   </DialogTrigger>
                 </TooltipTrigger>
@@ -226,11 +227,12 @@ export default function Dashboard() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
-                    <Button className="bg-colorExpense hover:bg-colorExpense/90 size-9 active:scale-90 transition-all">
-                      <Icons.Plus
-                        size={20}
-                        className="cursor-pointer transition-all"
-                      />
+                    <Button
+                      variant="outline"
+                      className="bg-colorExpense hover:bg-colorExpense/90 active:scale-90 transition-all"
+                      size={"icon"}
+                    >
+                      <Icons.Plus className="cursor-pointer transition-all" />
                     </Button>
                   </DialogTrigger>
                 </TooltipTrigger>
@@ -247,11 +249,12 @@ export default function Dashboard() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
-                    <Button className="bg-colorInvest hover:bg-colorInvest/90 size-9 active:scale-90 transition-all">
-                      <Icons.Plus
-                        size={20}
-                        className="cursor-pointer transition-all"
-                      />
+                    <Button
+                      variant="outline"
+                      className="bg-colorInvest hover:bg-colorInvest/90 active:scale-90 transition-all"
+                      size={"icon"}
+                    >
+                      <Icons.Plus className="cursor-pointer transition-all" />
                     </Button>
                   </DialogTrigger>
                 </TooltipTrigger>
@@ -441,7 +444,6 @@ export default function Dashboard() {
                 </div>
               </Container>
             </div>
-
           </div>
           <div className="lg:w-1/5 flex flex-col gap-4">
             <Container>

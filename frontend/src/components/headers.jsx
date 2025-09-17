@@ -40,8 +40,9 @@ function Header({ title, subtitle = "ㅤ", isFetching, navigation }) {
           {navigation}
           <Button
             variant="outline"
-            className="aspect-square w-fit active:scale-95 transition-all"
+            className="active:scale-95 transition-all"
             onClick={() => toggleVisibility()}
+            size="icon"
           >
             {isVisible ? <Eye /> : <EyeClosed />}
           </Button>

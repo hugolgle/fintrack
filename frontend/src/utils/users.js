@@ -6,6 +6,7 @@ export const useIsAuthenticated = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
+    retry: false,
   });
 
   return {

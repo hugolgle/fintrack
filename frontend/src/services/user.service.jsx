@@ -14,10 +14,17 @@ export const logoutUser = async () => {
 };
 
 export const getCurrentUser = async () => {
-  const response = await axios.get(`${API_URL}/current`, {
-    withCredentials: true,
-  });
-  return response.data;
+  try {
+    const res = await axios.get(`${API_URL}/current`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      return null;
+    }
+    throw error;
+  }
 };
 
 export const signUpUser = async (userData) => {

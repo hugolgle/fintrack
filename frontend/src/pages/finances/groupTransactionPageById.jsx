@@ -316,7 +316,10 @@ function GroupTransactionByIdPage() {
             </Dialog>
             <Dialog modal>
               <DialogTrigger asChild>
-                <Button className="aspect-square w-fit active:scale-90 transition-all">
+                <Button
+                  className="active:scale-90 transition-all"
+                  size={"icon"}
+                >
                   <Pencil />
                 </Button>
               </DialogTrigger>
@@ -331,7 +334,8 @@ function GroupTransactionByIdPage() {
               <DialogTrigger asChild>
                 <Button
                   variant="destructive"
-                  className="aspect-square w-fit active:scale-90 transition-all"
+                  className="active:scale-90 transition-all"
+                  size={"icon"}
                 >
                   <Trash2 />
                 </Button>
