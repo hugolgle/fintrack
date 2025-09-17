@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getInitials, useIsAuthenticated } from "../utils/users.js";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "../utils/users.js";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -10,21 +10,14 @@ import {
 import {
   BarChart,
   CreditCard,
-  Cross,
-  Group,
   HandCoins,
   LayoutDashboard,
-  Power,
-  ReceiptCent,
-  WalletCards,
   X,
 } from "lucide-react";
 import { DropdownProfil } from "../pages/profiles/dropDownProfile.jsx";
 import { ROUTES } from "./route.jsx";
 import { Landmark } from "lucide-react";
-import { Swords } from "lucide-react";
 import { Coins } from "lucide-react";
-import Loader from "./loaders/loader.jsx";
 import { useAuth } from "../context/authContext.jsx";
 
 function Sidebar({ btnOpen, isOpen, responsive, setShowResponsiveMenu }) {

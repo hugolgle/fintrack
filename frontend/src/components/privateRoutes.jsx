@@ -1,13 +1,13 @@
 import { Navigate } from "react-router-dom";
-import { useIsAuthenticated } from "../utils/users.js";
 import { ROUTES } from "./route.jsx";
 import Loader from "./loaders/loader.jsx";
+import { useAuth } from "../context/authContext.jsx";
 
 const PrivateRoute = ({ element }) => {
-  const { isAuthenticated, isLoading } = useIsAuthenticated();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) return <Loader />;
-  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} />;
+  if (!user) return <Navigate to={ROUTES.LOGIN} />;
 
   return element;
 };
