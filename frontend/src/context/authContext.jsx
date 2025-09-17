@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   getCurrentUser,
@@ -27,18 +27,20 @@ export const AuthProvider = ({ children }) => {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      queryClient.setQueryData(["currentUser"], data);
+      queryClient.setQueryData(["currentUser"], data.user);
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message);
+      toast.error(
+        error.response?.data?.message || "Erreur lors de la connexion"
+      );
     },
   });
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
     onSuccess: () => {
-      queryClient.removeQueries(["currentUser"]);
+      queryClient.removeQueries({ queryKey: ["currentUser"] });
       toast.success("Vous vous êtes déconnecté !");
     },
     onError: () => {
@@ -46,20 +48,10 @@ export const AuthProvider = ({ children }) => {
     },
   });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        await getCurrentUser();
-      } catch {}
-    };
-
-    fetchUser();
-  }, []);
-
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         isLoading,
         isFetching,
         isError,
