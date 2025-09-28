@@ -117,8 +117,7 @@ export default function Statistic() {
     return dataInvests.reduce((acc, d) => {
       const total = d.transaction
         .filter(
-          (t) =>
-            t.date.slice(0, 4) === `${selectedYear}` && t.type !== "dividend"
+          (t) => t.date.slice(0, 4) === `${selectedYear}` && t.type === "buy"
         )
         .reduce((s, t) => s + (t.amount || 0), 0);
       return acc + total;
@@ -132,7 +131,7 @@ export default function Statistic() {
         .filter(
           (t) =>
             t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}` &&
-            t.type !== "dividend"
+            t.type === "buy"
         )
         .reduce((s, t) => s + (t.amount || 0), 0);
       return acc + total;
@@ -251,9 +250,9 @@ export default function Statistic() {
     return `${months[mois - 1]} ${annee}`;
   };
 
-  const rest = economieMonth - amountInvestisMonth;
+  const rest = economieMonth + amountInvestisMonth;
 
-  const restYear = economieTotale - amountInvestisYear;
+  const restYear = economieTotale + amountInvestisYear;
 
   const isCurrentDate = selectedDate === `${currentYear}${currentMonth}`;
 
@@ -587,7 +586,7 @@ export default function Statistic() {
                     ? formatCurrency.format(Math.abs(depenseYear))
                     : "••••"}
                   ,{" "}
-                  {economieMonth < 0
+                  {economieTotale < 0
                     ? "générant un déficit de "
                     : "ce qui vous a permis d’économiser "}
                   <span

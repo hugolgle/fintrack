@@ -135,11 +135,14 @@ export default function BoardInvest() {
   const monthsGraph = getLastMonths(graphMonth, selectNbMonth);
 
   const montantInvestByMonth = [];
+  const montantInvestSaleByMonth = [];
+  const montantInvestDividendByMonth = [];
   const dataTransacInvest = dataInvests?.flatMap((investment) =>
     investment.transaction.map((trans) => ({
       title: investment.name,
-      amount: trans.type === "buy" && trans.amount,
+      amount: trans.amount,
       date: new Date(trans.date),
+      type: trans.type,
     }))
   );
 
@@ -147,27 +150,59 @@ export default function BoardInvest() {
     const targetYear = parseInt(code.slice(0, 4));
     const targetMonth = parseInt(code.slice(4, 6));
 
-    const montantInvests = dataTransacInvest
+    const montantInvestsBuy = dataTransacInvest
       ?.filter(
-        ({ date }) =>
+        ({ date, type }) =>
           date.getFullYear() === targetYear &&
-          date.getMonth() + 1 === targetMonth
+          date.getMonth() + 1 === targetMonth &&
+          type === "buy"
+      )
+      .reduce((total, { amount }) => total + amount, 0);
+    const montantInvestsSell = dataTransacInvest
+      ?.filter(
+        ({ date, type }) =>
+          date.getFullYear() === targetYear &&
+          date.getMonth() + 1 === targetMonth &&
+          type === "sell"
+      )
+      .filter(({ type }) => type === "sell")
+      .reduce((total, { amount }) => total + amount, 0);
+    const montantInvestsDividend = dataTransacInvest
+      ?.filter(
+        ({ date, type }) =>
+          date.getFullYear() === targetYear &&
+          date.getMonth() + 1 === targetMonth &&
+          type === "dividend"
       )
       .reduce((total, { amount }) => total + amount, 0);
 
-    montantInvestByMonth.push(Math.abs(montantInvests));
+    montantInvestByMonth.push(Math.abs(montantInvestsBuy));
+    montantInvestSaleByMonth.push(Math.abs(montantInvestsSell));
+    montantInvestDividendByMonth.push(Math.abs(montantInvestsDividend));
   });
 
   const dataGraph = monthsGraph.map((monthData, index) => ({
     month: monthData.month,
     year: monthData.year,
-    amount: montantInvestByMonth[index],
+    amountBuy: montantInvestByMonth[index],
+    amountSale: montantInvestSaleByMonth[index],
+    amountDividend: montantInvestDividendByMonth[index],
   }));
 
   const defaultConfig = {
-    amount: {
-      label: "Investissements",
-      color: "hsl(var(--graph-invest))",
+    amountBuy: {
+      label: "Achats",
+      color: "hsl(var(--graph-buy))",
+      visible: true,
+    },
+    amountSale: {
+      label: "Ventes",
+      color: "hsl(var(--graph-sell))",
+      visible: true,
+    },
+    amountDividend: {
+      label: "Dividendes",
+      color: "hsl(var(--graph-dividend))",
       visible: true,
     },
     text: {
@@ -208,7 +243,9 @@ export default function BoardInvest() {
     setGraphMonth(newDate);
   };
 
-  const maxValue = Math.max(...dataGraph.map((item) => Math.max(item.amount)));
+  const maxValue = Math.max(
+    ...dataGraph.map((item) => Math.max(item.amountBuy, item.amountSale))
+  );
   const formatData = (row) => {
     return [
       row.type,
@@ -354,6 +391,7 @@ export default function BoardInvest() {
                   data={dataGraph}
                   defaultConfig={defaultConfig}
                   maxValue={maxValue}
+                  activeThirdField={false}
                 />
                 <div
                   className={`flex flex-row w-full md:w-3/4 mx-auto md:px-20 items-center justify-between bottom-2`}

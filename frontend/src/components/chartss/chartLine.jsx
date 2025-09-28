@@ -20,11 +20,17 @@ export function ChartLine({
   width = "100%",
   height = 225,
   isAnimationActive = true,
+  activeThirdField = true,
 }) {
   const chartConfig = { ...defaultConfig, ...config };
   const { isVisible } = useAmountVisibility();
 
-  const CustomTooltip = ({ active = false, payload = [], label = "" }) => {
+  const CustomTooltip = ({
+    active = false,
+    payload = [],
+    label = "",
+    activeThirdField = true,
+  }) => {
     if (active && payload && payload.length) {
       const year = data.find((d) => d.month === label)?.year;
       const economieMonth = payload[0]?.value - payload[1]?.value;
@@ -52,7 +58,7 @@ export function ChartLine({
                 </p>
               </div>
             ))}
-            {payload[0] && payload[1] && (
+            {payload[0] && payload[1] && activeThirdField && (
               <div className="flex flex-row justify-between gap-4">
                 <div className="flex flex-row justify-center items-center gap-1">
                   <div className="w-[5px] h-[5px]"></div>
@@ -86,50 +92,59 @@ export function ChartLine({
 
   return (
     <CardContent>
-      <ResponsiveContainer width={width} height={height}>
-        <LineChart
-          data={data}
-          margin={{ top: 20, left: 0, right: 0, bottom: 0 }}
-        >
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 10, fill: chartConfig.text.color }}
-            tickFormatter={(value) => value?.slice(0, 3)}
-            axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
-          />
+      <div className="overflow-x-auto">
+        <div style={{ minWidth: "700px", height }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
+              margin={{ top: 20, left: 0, right: 0, bottom: 0 }}
+            >
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 10, fill: chartConfig.text.color }}
+                tickFormatter={(value) => value?.slice(0, 3)}
+                axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
+              />
 
-          {!isMobile && (
-            <YAxis
-              domain={yAxisDomain}
-              ticks={ticks}
-              tickFormatter={(value) =>
-                isVisible ? formatCurrency.format(value) : "••••"
-              }
-              tick={{ fontSize: 10, fill: chartConfig.text.color }}
-              axisLine={{ stroke: chartConfig.text.color, strokeWidth: 0.1 }}
-            />
-          )}
+              {!isMobile && (
+                <YAxis
+                  domain={yAxisDomain}
+                  ticks={ticks}
+                  tickFormatter={(value) =>
+                    isVisible ? formatCurrency.format(value) : "••••"
+                  }
+                  tick={{ fontSize: 10, fill: chartConfig.text.color }}
+                  axisLine={{
+                    stroke: chartConfig.text.color,
+                    strokeWidth: 0.1,
+                  }}
+                />
+              )}
 
-          <Tooltip content={<CustomTooltip />} />
+              <Tooltip
+                content={<CustomTooltip activeThirdField={activeThirdField} />}
+              />
 
-          {Object.keys(chartConfig).map((key) =>
-            chartConfig[key].visible ? (
-              <Line
-                key={key}
-                dataKey={key}
-                type="natural"
-                stroke={chartConfig[key].color}
-                strokeWidth={1.2}
-                dot={false}
-                activeDot={false}
-                isAnimationActive={isAnimationActive}
-                animationDuration={1000}
-                animationEasing="ease-in-out"
-              ></Line>
-            ) : null
-          )}
-        </LineChart>
-      </ResponsiveContainer>
+              {Object.keys(chartConfig).map((key) =>
+                chartConfig[key].visible ? (
+                  <Line
+                    key={key}
+                    dataKey={key}
+                    type="natural"
+                    stroke={chartConfig[key].color}
+                    strokeWidth={1.2}
+                    dot={false}
+                    activeDot={false}
+                    isAnimationActive={isAnimationActive}
+                    animationDuration={1000}
+                    animationEasing="ease-in-out"
+                  />
+                ) : null
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </CardContent>
   );
 }
