@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { getLastOperations } from "../../utils/operations.js";
@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { calculTotalAmount, calculTotalByMonth } from "../../utils/calcul.js";
+import { calculTotalByMonth } from "../../utils/calcul.js";
 import { formatCurrency } from "../../utils/fonctionnel.js";
-import { currentDate, getLastMonths, months } from "../../utils/other.js";
+import { currentDate, months } from "../../utils/other.js";
 import typeCreditList from "../../../public/typeCredit.json";
 import { fetchTransactions } from "../../services/transaction.service.jsx";
 import { fetchInvestments } from "../../services/investment.service.jsx";
@@ -21,7 +21,6 @@ import Header from "../../components/headers.jsx";
 import BoxInfos from "../../components/boxs/boxInfos.jsx";
 import Container from "../../components/containers/container.jsx";
 import {
-  ChevronLeft,
   ChevronRight,
   CircleDollarSign,
   WalletCards,
@@ -42,6 +41,7 @@ import FormAddInvestmentMain from "../investments/formAddInvestmentMain.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import SkeletonBoard from "../../components/skeletonBoard.jsx";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
+import { ChartLine } from "../../components/chartss/chartLine.jsx";
 
 export default function Dashboard() {
   const { isVisible } = useAmountVisibility();
@@ -190,6 +190,35 @@ export default function Dashboard() {
 
   const amountHeritage = amountEpargn + Math.abs(amountInvest);
 
+  const data = dataAccounts?.flatMap((account) => account.monthlyStatements);
+
+  const grouped = (data ?? [])?.reduce((acc, item) => {
+    const dateObj = new Date(item.date);
+    const year = dateObj.getFullYear();
+    const monthIndex = dateObj.getMonth();
+    const key = `${year}-${monthIndex}`;
+
+    if (!acc[key]) {
+      acc[key] = {
+        month: months[monthIndex],
+        year,
+        amount: 0,
+      };
+    }
+
+    acc[key].amount += item.balance;
+
+    return acc;
+  }, {});
+
+  const sorted = Object.values(grouped).sort((a, b) => {
+    const dateA = new Date(a.year, months.indexOf(a.month));
+    const dateB = new Date(b.year, months.indexOf(b.month));
+    return dateA - dateB;
+  });
+
+  const dataGraph = sorted.slice(-12);
+
   if (loadingTransacs || loadingAccounts || loadingInvests)
     return <SkeletonBoard />;
 
@@ -323,6 +352,27 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-col lg:flex-row gap-4 h-full">
           <div className="flex flex-col w-full lg:w-4/5 gap-4">
+            <Container>
+              <h2 className="text-left">Évolution de l'épargne</h2>
+              <p className="text-left text-sm text-muted-foreground">
+                Progression de votre épargne sur les 12 derniers mois
+              </p>
+
+              <ChartLine
+                data={dataGraph}
+                defaultConfig={{
+                  amount: {
+                    label: "Montant",
+                    color: "hsl(var(--chart-12))",
+                    visible: true,
+                  },
+                  text: {
+                    color: "hsl(var(--foreground))",
+                  },
+                }}
+                maxValue={Math.max(...dataGraph.map((item) => item.amount))}
+              />
+            </Container>
             <div className="flex flex-col lg:flex-row gap-4">
               <Container custom="lg:!w-3/4">
                 <div className="flex justify-between mb-4">
@@ -352,7 +402,7 @@ export default function Dashboard() {
                       </p>
                     </div>
 
-                    <Progress value={percentEpargn} />
+                    <Progress value={percentEpargn} className="h-1" />
                     <p className="text-left text-xs text-muted-foreground">
                       <span className="font-semibold">
                         {percentEpargn.toFixed(0)} %
@@ -369,7 +419,7 @@ export default function Dashboard() {
                           : "••••"}
                       </p>
                     </div>
-                    <Progress value={percentInvest} />
+                    <Progress value={percentInvest} className="h-1" />
                     <p className="text-left text-xs text-muted-foreground">
                       <span className="font-semibold">
                         {percentInvest.toFixed(0)} %
@@ -533,7 +583,7 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-col gap-2">
                 {dataInvests
-                  ?.sort((a, b) => b.amountBuy - a.amountBuy)
+                  ?.sort((a, b) => a.amountBuy - b.amountBuy)
                   .slice(0, 4)
                   .map((item) => {
                     const category =

@@ -21,6 +21,10 @@
       "color": "hsl(var(--chart-5))"
     },
     {
+      "name": "Investissement",
+      "color": "hsl(var(--chart-7))"
+    },
+    {
       "name": "Autre",
       "color": "hsl(var(--chart-6))"
     }

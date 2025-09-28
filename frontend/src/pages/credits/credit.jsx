@@ -64,10 +64,9 @@ export default function Credit() {
     0
   );
 
-  const amountMonthly = credits?.reduce(
-    (acc, credit) => acc + (Number(credit.monthlyPayment) || 0),
-    0
-  );
+  const amountMonthly = credits
+    ?.filter((c) => c.isActive)
+    ?.reduce((acc, credit) => acc + (Number(credit.monthlyPayment) || 0), 0);
 
   const interestRateAverage = credits?.reduce(
     (acc, credit) => acc + (Number(credit.interestRate) || 0),
@@ -77,7 +76,7 @@ export default function Credit() {
   const [activeCredit, setActiveCredit] = useState(null);
 
   useEffect(() => {
-    if (!credits || credits.length === 0) return;
+    if (!credits || credits?.length === 0) return;
     const found = credits?.find((c) => c._id === activeCredit?._id);
     setActiveCredit(found ?? credits[0]);
   }, [credits]);
@@ -114,7 +113,7 @@ export default function Credit() {
                 title="Dette Totale"
                 value={amountDette}
                 isAmount
-                description={`Répartie sur ${credits.length} crédit(s)`}
+                description={`Répartie sur ${credits.filter((c) => c.isActive).length} crédit(s)`}
                 icon={<DollarSign size={15} color="grey" />}
               />
               <BoxInfos
@@ -127,7 +126,9 @@ export default function Credit() {
               <BoxInfos
                 title="Taux moyens"
                 isPercent
-                value={(interestRateAverage / credits.length).toFixed(2)}
+                value={(
+                  interestRateAverage / credits.filter((c) => c.isActive).length
+                ).toFixed(2)}
                 description="Tous crédits confondus"
                 icon={<Wallet size={15} color="grey" />}
               />
