@@ -124,12 +124,13 @@ export default function PageInvestment() {
 
   const displayData = investissements
     .filter((t) => t.transaction.type !== "dividend")
-    .map(({ _id, name, type, symbol, transaction, createdAt }) => {
+    .map(({ _id, name, type, symbol, isin, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
         type,
         symbol,
+        isin,
         name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
@@ -168,7 +169,11 @@ export default function PageInvestment() {
     return (
       <Avatar key="avatar" className="size-6">
         <AvatarImage
-          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
+          src={
+            item.isin
+              ? `https://assets.parqet.com/logos/isin/${item.isin}`
+              : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+          }
         />
       </Avatar>
     );

@@ -96,7 +96,11 @@ export function PageOrder() {
     return (
       <Avatar key="avatar" className="size-6">
         <AvatarImage
-          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
+          src={
+            item.isin
+              ? `https://assets.parqet.com/logos/isin/${item.isin}`
+              : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+          }
         />
       </Avatar>
     );
@@ -136,6 +140,7 @@ export function PageOrder() {
       name,
       type,
       symbol,
+      isin,
       amountBuy,
       amountSale,
       transaction,
@@ -146,6 +151,7 @@ export function PageOrder() {
         idInvest: _id,
         type,
         symbol,
+        isin,
         name,
         date: transaction[0]?.date,
         amount: amountSale + amountBuy,
@@ -195,7 +201,7 @@ export function PageOrder() {
               ) : (
                 <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
                   {data?.map(
-                    ({ idInvest, name, type, date, symbol, amount }) => {
+                    ({ idInvest, name, type, date, symbol, isin, amount }) => {
                       const category = type === "Crypto" ? "crypto" : "symbol";
                       const theDate = date ? new Date(date) : null;
                       const color = getHoverClass(type);
@@ -215,7 +221,11 @@ export function PageOrder() {
 
                             <Avatar className="size-8 cursor-pointer transition-all">
                               <AvatarImage
-                                src={`https://assets.parqet.com/logos/${category}/${symbol}`}
+                                src={
+                                  isin
+                                    ? `https://assets.parqet.com/logos/isin/${isin}`
+                                    : `https://assets.parqet.com/logos/${category}/${symbol}`
+                                }
                               />
                               <AvatarFallback className="font-thin text-xs">
                                 {name.toUpperCase().substring(0, 2)}

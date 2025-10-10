@@ -39,6 +39,13 @@ const validationSchema = yup.object().shape({
         .uppercase("Le symbole doit être en majuscules"),
     otherwise: (schema) => schema.notRequired(),
   }),
+  isin: yup
+    .string()
+    .matches(
+      /^(?:[A-Z]{2}[A-Z0-9]{9}[0-9])?$/,
+      "L'ISIN doit être valide (2 lettres, 9 caractères alphanumériques, 1 chiffre)"
+    )
+    .nullable(),
 });
 
 export function FormEditOrder({ transaction, refetch }) {
@@ -46,6 +53,7 @@ export function FormEditOrder({ transaction, refetch }) {
     type: transaction.type || "",
     name: transaction.name || "",
     symbol: transaction.symbol || "",
+    isin: transaction.isin || "",
   };
 
   const formik = useFormik({
@@ -64,7 +72,9 @@ export function FormEditOrder({ transaction, refetch }) {
         type: values.type,
         name: values.name,
         symbol: values.symbol,
+        isin: values.isin,
       };
+
       return await editInvestments(editData);
     },
     onSuccess: (response) => {
@@ -125,6 +135,16 @@ export function FormEditOrder({ transaction, refetch }) {
         {formik.touched.symbol && formik.errors.symbol && (
           <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.symbol}
+          </p>
+        )}
+        <Input
+          name="isin"
+          placeholder="ISIN"
+          {...formik.getFieldProps("isin")}
+        />
+        {formik.touched.isin && formik.errors.isin && (
+          <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+            {formik.errors.isin}
           </p>
         )}
       </div>

@@ -113,12 +113,13 @@ export default function PageOrderById() {
   ];
 
   const displayData = dataById.map(
-    ({ _id, name, type, symbol, transaction, createdAt }) => {
+    ({ _id, name, type, symbol, isin, transaction, createdAt }) => {
       return {
         _id: transaction._id,
         idInvest: _id,
         type,
         symbol,
+        isin,
         name: symbol ? `${name} (${symbol})` : name,
         date: transaction.date,
         amount: transaction.amount,
@@ -149,7 +150,11 @@ export default function PageOrderById() {
     return (
       <Avatar key="avatar" className="size-6">
         <AvatarImage
-          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
+          src={
+            item.isin
+              ? `https://assets.parqet.com/logos/isin/${item.isin}`
+              : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+          }
         />
       </Avatar>
     );

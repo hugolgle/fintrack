@@ -47,7 +47,6 @@ import { Check } from "lucide-react";
 import { fr } from "date-fns/locale";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Loader from "../../components/loaders/loader.jsx";
 import { alphaSort } from "../../utils/other.js";
 import { useAuth } from "../../context/authContext.jsx";
 
@@ -70,7 +69,13 @@ const validationSchema = yup.object().shape({
         .uppercase("Le symbole doit être en majuscules"),
     otherwise: (schema) => schema.notRequired(),
   }),
-
+  isin: yup
+    .string()
+    .matches(
+      /^(?:[A-Z]{2}[A-Z0-9]{9}[0-9])?$/,
+      "L'ISIN doit être valide (2 lettres, 9 caractères alphanumériques, 1 chiffre)"
+    )
+    .nullable(),
   action: yup
     .string()
     .oneOf(["true", "false"], "Action invalide")
@@ -112,6 +117,7 @@ export default function FormAddInvestmentMain({ refetch }) {
       name: "",
       type: "",
       symbol: "",
+      isin: "",
       action: "",
       amount: "",
       date: new Date(),
@@ -125,6 +131,7 @@ export default function FormAddInvestmentMain({ refetch }) {
               name: values.name,
               type: values.type,
               symbol: values.symbol,
+              isin: values.isin,
               transaction: {
                 action: values.action === "true" ? "sell" : "buy",
                 amount: values.amount,
@@ -336,6 +343,18 @@ export default function FormAddInvestmentMain({ refetch }) {
                     </p>
                   )}
                 </>
+              )}
+
+              <Input
+                id="isin"
+                name="isin"
+                placeholder="ISIN (optionnel)"
+                {...formik.getFieldProps("isin")}
+              />
+              {formik.touched.isin && formik.errors.isin && (
+                <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
+                  {formik.errors.isin}
+                </p>
               )}
 
               <Select

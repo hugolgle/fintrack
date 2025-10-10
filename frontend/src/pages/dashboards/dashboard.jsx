@@ -596,7 +596,11 @@ export default function Dashboard() {
                         <div className="flex items-center">
                           <Avatar className="size-6 mr-4">
                             <AvatarImage
-                              src={`https://assets.parqet.com/logos/${category}/${item?.symbol}`}
+                              src={
+                                item.isin
+                                  ? `https://assets.parqet.com/logos/isin/${item.isin}`
+                                  : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+                              }
                               alt={item?.name}
                             />
                           </Avatar>

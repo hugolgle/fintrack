@@ -15,12 +15,13 @@ export const fetchInvestmentById = async (id) => {
 };
 
 export const addInvestment = async (investmentData) => {
-  const { name, symbol, type, transaction } = investmentData;
+  const { name, symbol, isin, type, transaction } = investmentData;
 
   const newInvestment = {
     name,
     type,
     symbol,
+    isin,
     transaction: {
       amount: transaction.amount,
       date: transaction.date,
@@ -51,11 +52,12 @@ export const addTransaction = async (investmentId, transactionData) => {
 };
 
 export const editInvestments = async (editData) => {
-  const { id, name, symbol, type } = editData;
+  const { id, name, symbol, isin, type } = editData;
 
   const updatedInvestment = {
     name,
     symbol,
+    isin,
     type,
   };
 

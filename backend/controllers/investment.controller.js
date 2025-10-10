@@ -2,7 +2,7 @@ const InvestmentModel = require("../models/investment.model");
 
 module.exports.addInvestment = async (req, res) => {
   try {
-    const { name, type, symbol, transaction } = req.body;
+    const { name, type, symbol, transaction, isin } = req.body;
 
     if (
       !name ||
@@ -35,6 +35,7 @@ module.exports.addInvestment = async (req, res) => {
       name,
       type,
       symbol: symbol.toUpperCase(),
+      isin: isin ?? undefined,
       transaction: [
         {
           amount: newAmount,
@@ -158,6 +159,7 @@ module.exports.editInvestment = async (req, res) => {
 
     if (updates.name) investment.name = updates.name;
     if (updates.symbol) investment.symbol = updates.symbol;
+    if (updates.isin) investment.isin = updates.isin;
     if (updates.type) investment.type = updates.type;
 
     let amountBuy = 0;
