@@ -270,6 +270,7 @@ export default function BoardInvest() {
       name,
       type,
       symbol,
+      isin,
       amountBuy,
       amountSale,
       transaction,
@@ -280,6 +281,7 @@ export default function BoardInvest() {
         idInvest: _id,
         type,
         symbol,
+        isin,
         name,
         transaction,
         date: transaction[0]?.date,
@@ -326,7 +328,11 @@ export default function BoardInvest() {
     return (
       <Avatar key="avatar" className="size-6">
         <AvatarImage
-          src={`https://assets.parqet.com/logos/${category}/${item.symbol}`}
+          src={
+            item.isin
+              ? `https://assets.parqet.com/logos/isin/${item.isin}`
+              : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+          }
         />
       </Avatar>
     );

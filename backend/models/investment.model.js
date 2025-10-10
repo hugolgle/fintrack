@@ -14,6 +14,7 @@ const investmentSchema = mongoose.Schema(
     user: { type: String, required: true },
     name: { type: String, required: true },
     symbol: { type: String, required: false },
+    isin: { type: String, required: false },
     type: { type: String, required: true },
     transaction: [transactionSchema],
     amountBuy: { type: Number, required: true },
