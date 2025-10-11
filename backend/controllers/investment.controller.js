@@ -25,31 +25,27 @@ module.exports.addInvestment = async (req, res) => {
       return res.status(400).json({ message: "Cet actif existe déjà !" });
     }
 
-    let newAmount = transaction.amount;
-    if (transaction.type === "buy") {
-      newAmount = -Math.abs(transaction.amount);
-    }
-
     const investment = new InvestmentModel({
       user: req.userId,
       name,
       type,
       symbol: symbol.toUpperCase(),
       isin: isin ?? undefined,
-      transaction: [
+      cycles: [
         {
-          amount: newAmount,
-          date: transaction.date,
-          type: transaction.type,
+          transactions: [
+            {
+              amount: transaction.amount,
+              date: transaction.date,
+              type: transaction.type,
+            },
+          ],
+          amountBuy: transaction.type === "buy" ? transaction.amount : 0,
+          amountSale: transaction.type === "sell" ? transaction.amount : 0,
+          closed: false,
+          result: 0,
         },
       ],
-      amountBuy: 0,
-      amountSale: 0,
-    });
-
-    investment.transaction.forEach(({ amount, type }) => {
-      if (type === "sell") investment.amountSale += amount;
-      else if (type === "buy") investment.amountBuy += amount;
     });
 
     const updatedInvestment = await investment.save();
@@ -69,7 +65,121 @@ module.exports.addInvestment = async (req, res) => {
 module.exports.addTransaction = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, date, type } = req.body;
+    const { amount, date, type, closed } = req.body;
+
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
+    const cycle = investment.cycles.find((c) => !c.closed);
+
+    if (!investment) {
+      return res
+        .status(400)
+        .json({ message: "Cet investissement n'existe pas" });
+    }
+    const newTransaction = { amount, date, type };
+
+    if (!cycle) {
+      investment.cycles.push({
+        transactions: newTransaction,
+        amountBuy: type === "buy" ? amount : 0,
+        amountSale: type === "sell" ? amount : 0,
+        closed: false,
+        result: 0,
+      });
+    } else if (cycle) {
+      cycle.transactions.push(newTransaction);
+
+      cycle.amountBuy =
+        type === "buy" ? amount + cycle.amountBuy : cycle.amountBuy;
+      cycle.amountSale =
+        type === "sell" ? amount + cycle.amountSale : cycle.amountSale;
+
+      if (cycle.amountSale > cycle.amountBuy || closed) {
+        cycle.closed = true;
+        cycle.result = cycle.amountSale - cycle.amountBuy;
+      }
+    }
+
+    const updatedInvestment = await investment.save();
+
+    return res.status(201).json({
+      message: "Transaction ajoutée avec succès",
+      updatedInvestment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de l'ajout de la transaction",
+      error: error.message,
+    });
+  }
+};
+
+module.exports.addTransaction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, date, type, closed } = req.body;
+
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
+    const cycle = investment.cycles.find((c) => !c.closed);
+
+    if (!investment) {
+      return res
+        .status(400)
+        .json({ message: "Cet investissement n'existe pas" });
+    }
+    const newTransaction = { amount, date, type };
+
+    if (!cycle) {
+      investment.cycles.push({
+        transactions: newTransaction,
+        amountBuy: type === "buy" ? amount : 0,
+        amountSale: type === "sell" ? amount : 0,
+        closed: false,
+        result: 0,
+      });
+    } else if (cycle) {
+      cycle.transactions.push(newTransaction);
+
+      cycle.amountBuy =
+        type === "buy" ? amount + cycle.amountBuy : cycle.amountBuy;
+      cycle.amountSale =
+        type === "sell" ? amount + cycle.amountSale : cycle.amountSale;
+
+      if (cycle.amountSale > cycle.amountBuy || closed) {
+        cycle.closed = true;
+        cycle.result = cycle.amountSale - cycle.amountBuy;
+      }
+    }
+
+    const updatedInvestment = await investment.save();
+
+    return res.status(201).json({
+      message: "Transaction ajoutée avec succès",
+      updatedInvestment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de l'ajout de la transaction",
+      error: error.message,
+    });
+  }
+};
+
+module.exports.addDividend = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, date } = req.body;
+
+    if (!amount || !date) {
+      return res.status(400).json({
+        message: "Veuillez fournir toutes les informations nécessaires",
+      });
+    }
 
     const investment = await InvestmentModel.findOne({
       _id: id,
@@ -81,30 +191,18 @@ module.exports.addTransaction = async (req, res) => {
         .status(400)
         .json({ message: "Cet investissement n'existe pas" });
     }
-    let newAmount = amount;
-    if (type === "buy") {
-      newAmount = -Math.abs(amount);
-    }
-    const newTransaction = { amount: newAmount, date, type };
-    investment.transaction.push(newTransaction);
 
-    investment.amountBuy = 0;
-    investment.amountSale = 0;
-
-    investment.transaction.forEach(({ amount, type }) => {
-      if (type === "sell") investment.amountSale += amount;
-      else if (type === "buy") investment.amountBuy += amount;
-    });
+    investment.dividend.push({ amount, date });
 
     const updatedInvestment = await investment.save();
 
     return res.status(201).json({
-      message: "Transaction ajoutée avec succès",
+      message: "Dividende ajouté avec succès",
       updatedInvestment,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Erreur lors de l'ajout de la transaction",
+      message: "Erreur lors de l'ajout du dividende",
       error: error.message,
     });
   }
@@ -162,22 +260,6 @@ module.exports.editInvestment = async (req, res) => {
     if (updates.isin) investment.isin = updates.isin;
     if (updates.type) investment.type = updates.type;
 
-    let amountBuy = 0;
-    let amountSale = 0;
-    investment.transaction.forEach((t) => {
-      if (t.type === "sell") {
-        amountSale += t.amount;
-      } else if (t.type === "buy") {
-        amountBuy += t.amount;
-      }
-    });
-
-    const amountResult = amountSale - amountBuy;
-
-    investment.amountBuy = amountBuy.toString();
-    investment.amountSale = amountSale.toString();
-    investment.amountResult = amountResult.toString();
-
     const updatedInvestment = await investment.save();
 
     return res.status(200).json({
@@ -194,7 +276,13 @@ module.exports.editInvestment = async (req, res) => {
 
 module.exports.editTransaction = async (req, res) => {
   try {
-    const investment = await InvestmentModel.findById(req.params.id);
+    const { id, transactionId } = req.params;
+    const { amount, date, type, closed } = req.body;
+
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
 
     if (!investment) {
       return res
@@ -202,40 +290,51 @@ module.exports.editTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    const transactionIndex = investment.transaction.findIndex(
-      (t) => t._id.toString() === req.params.transactionId
-    );
+    let transactionFound = null;
+    let cycleIndex = -1;
+    let transactionIndex = -1;
 
-    if (transactionIndex === -1) {
+    investment.cycles.forEach((cycle, cIdx) => {
+      const tIdx = cycle.transactions.findIndex(
+        (t) => t._id.toString() === transactionId
+      );
+      if (tIdx !== -1) {
+        transactionFound = cycle.transactions[tIdx];
+        cycleIndex = cIdx;
+        transactionIndex = tIdx;
+      }
+    });
+
+    if (!transactionFound) {
       return res.status(400).json({ message: "Transaction non trouvée" });
     }
 
-    const transaction = investment.transaction[transactionIndex];
-
     const isSame =
-      (req.body.amount === undefined ||
-        req.body.amount == transaction.amount) &&
-      (req.body.date === undefined || req.body.date == transaction.date) &&
-      (req.body.type === undefined || req.body.type == transaction.type);
+      (amount === undefined || amount == transactionFound.amount) &&
+      (date === undefined || date == transactionFound.date) &&
+      (type === undefined || type == transactionFound.type);
 
     if (isSame) {
       return res.status(400).json({ message: "Aucune modification détectée" });
     }
 
-    transaction.amount =
-      req.body.type === "buy"
-        ? Math.abs(req.body.amount)
-        : req.body.amount ?? transaction.amount;
-    transaction.date = req.body.date ?? transaction.date;
-    transaction.type = req.body.type ?? transaction.type;
+    transactionFound.amount =
+      type === "buy" ? Math.abs(amount) : amount ?? transactionFound.amount;
+    transactionFound.date = date ?? transactionFound.date;
+    transactionFound.type = type ?? transactionFound.type;
 
-    investment.amountBuy = 0;
-    investment.amountSale = 0;
-
-    investment.transaction.forEach(({ amount, type }) => {
-      if (type === "sell") investment.amountSale += amount;
-      else if (type === "buy") investment.amountBuy += amount;
+    const cycle = investment.cycles[cycleIndex];
+    cycle.amountBuy = 0;
+    cycle.amountSale = 0;
+    cycle.transactions.forEach((t) => {
+      if (t.type === "sell") cycle.amountSale += t.amount;
+      else if (t.type === "buy") cycle.amountBuy += t.amount;
     });
+
+    if (cycle.amountSale > cycle.amountBuy || closed) {
+      cycle.closed = true;
+      cycle.result = cycle.amountSale - cycle.amountBuy;
+    }
 
     const updatedInvestment = await investment.save();
 
@@ -246,12 +345,126 @@ module.exports.editTransaction = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erreur lors de la modification de la transaction",
-      error,
+      error: error.message,
+    });
+  }
+};
+
+module.exports.editDividend = async (req, res) => {
+  try {
+    const { id, dividendId } = req.params;
+    const { amount, date } = req.body;
+
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
+
+    if (!investment) {
+      return res
+        .status(400)
+        .json({ message: "Cet investissement n'existe pas" });
+    }
+
+    const dividend = investment.dividend.id(dividendId);
+
+    if (!dividend) {
+      return res.status(400).json({ message: "Dividende non trouvé" });
+    }
+
+    const isSame =
+      (amount === undefined || amount == dividend.amount) &&
+      (date === undefined || date == dividend.date);
+
+    if (isSame) {
+      return res.status(400).json({ message: "Aucune modification détectée" });
+    }
+
+    if (amount !== undefined) dividend.amount = amount;
+    if (date !== undefined) dividend.date = date;
+
+    const updatedInvestment = await investment.save();
+
+    return res.status(200).json({
+      message: "Dividende modifié avec succès",
+      updatedInvestment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la modification du dividende",
+      error: error.message,
     });
   }
 };
 
 module.exports.deleteTransaction = async (req, res) => {
+  try {
+    const { id, transactionId } = req.params;
+
+    const investment = await InvestmentModel.findOne({
+      _id: id,
+      user: req.userId,
+    });
+
+    if (!investment) {
+      return res
+        .status(400)
+        .json({ message: "Cet investissement n'existe pas" });
+    }
+
+    let cycleIndex = -1;
+    let transactionIndex = -1;
+
+    investment.cycles.forEach((cycle, cIdx) => {
+      const tIdx = cycle.transactions.findIndex(
+        (t) => t._id.toString() === transactionId
+      );
+      if (tIdx !== -1) {
+        cycleIndex = cIdx;
+        transactionIndex = tIdx;
+      }
+    });
+
+    if (cycleIndex === -1 || transactionIndex === -1) {
+      return res.status(400).json({ message: "Transaction non trouvée" });
+    }
+
+    const cycle = investment.cycles[cycleIndex];
+    cycle.transactions.splice(transactionIndex, 1);
+
+    cycle.amountBuy = 0;
+    cycle.amountSale = 0;
+    cycle.transactions.forEach((t) => {
+      if (t.type === "sell") cycle.amountSale += t.amount;
+      else if (t.type === "buy") cycle.amountBuy += t.amount;
+    });
+
+    if (cycle.transactions.length === 0) {
+      investment.cycles.splice(cycleIndex, 1);
+    }
+
+    if (investment.cycles.length === 0) {
+      await investment.deleteOne();
+      return res.status(200).json({
+        message: "Investissement supprimé car il n'y a plus de transactions",
+        redirect: true,
+      });
+    }
+
+    const updatedInvestment = await investment.save();
+    return res.status(200).json({
+      message: "Transaction supprimée avec succès",
+      updatedInvestment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la suppression de la transaction",
+      error: error.message,
+    });
+  }
+};
+
+module.exports.deleteDividend = async (req, res) => {
   try {
     const investment = await InvestmentModel.findById(req.params.id);
 
@@ -261,42 +474,24 @@ module.exports.deleteTransaction = async (req, res) => {
         .json({ message: "Cet investissement n'existe pas" });
     }
 
-    const transactionIndex = investment.transaction.findIndex(
-      (t) => t._id.toString() === req.params.transactionId
+    const dividendIndex = investment.dividend.findIndex(
+      (d) => d._id.toString() === req.params.dividendId
     );
 
-    if (transactionIndex === -1) {
-      return res.status(400).json({ message: "Transaction non trouvée" });
+    if (dividendIndex === -1) {
+      return res.status(400).json({ message: "Dividende non trouvé" });
     }
 
-    investment.transaction.splice(transactionIndex, 1);
+    investment.dividend.splice(dividendIndex, 1);
+    await investment.save();
 
-    if (investment.transaction.length > 0) {
-      investment.amountBuy = 0;
-      investment.amountSale = 0;
-
-      investment.transaction.forEach(({ amount, type }) => {
-        if (type === "sell") investment.amountSale += amount;
-        else if (type === "buy") investment.amountBuy += amount;
-      });
-
-      await investment.save();
-
-      return res.status(200).json({
-        message: "Transaction supprimée avec succès",
-        updatedInvestment: investment,
-      });
-    }
-
-    // Ici : plus de transactions → on supprime l'investissement
-    await investment.deleteOne();
     return res.status(200).json({
-      message: "Investissement supprimé car il n'y a plus de transactions",
-      redirect: true,
+      message: "Dividende supprimé avec succès",
+      updatedInvestment: investment,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Erreur lors de la suppression de la transaction",
+      message: "Erreur lors de la suppression du dividende",
       error,
     });
   }

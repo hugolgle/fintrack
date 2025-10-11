@@ -18,10 +18,13 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { el, fr } from "date-fns/locale";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { editInvestmentsTransaction } from "../../services/investment.service";
+import {
+  editDividend,
+  editInvestmentsTransaction,
+} from "../../services/investment.service";
 import ButtonLoading from "../../components/buttons/buttonLoading";
 import { useState } from "react";
 
@@ -45,11 +48,15 @@ export function FormEditInvestment({ transaction, refetch }) {
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      mutationEdit.mutate(values);
+      if (transaction.action === "dividend") {
+        mutationEditDividendInvestment.mutate(values);
+      } else {
+        mutationEditTransactionInvestment.mutate(values);
+      }
     },
   });
 
-  const mutationEdit = useMutation({
+  const mutationEditTransactionInvestment = useMutation({
     mutationFn: async (values) => {
       const editData = {
         id: transaction?._id,
@@ -57,6 +64,25 @@ export function FormEditInvestment({ transaction, refetch }) {
         amount: Math.abs(values.amount),
       };
       return await editInvestmentsTransaction(editData, transaction?.idInvest);
+    },
+    onSuccess: (response) => {
+      refetch();
+      formik.resetForm();
+      toast.success(response?.data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+
+  const mutationEditDividendInvestment = useMutation({
+    mutationFn: async (values) => {
+      const editData = {
+        id: transaction?._id,
+        date: values.date.toLocaleDateString("fr-CA"),
+        amount: Math.abs(values.amount),
+      };
+      return await editDividend(editData, transaction?.idInvest);
     },
     onSuccess: (response) => {
       refetch();
@@ -138,7 +164,9 @@ export function FormEditInvestment({ transaction, refetch }) {
         <ButtonLoading
           type="submit"
           text="Modifier"
-          isPending={mutationEdit.isPending || isSaveDisabled}
+          isPending={
+            mutationEditTransactionInvestment.isPending || isSaveDisabled
+          }
         />
         <DialogClose asChild>
           <Button type="button" variant="outline">

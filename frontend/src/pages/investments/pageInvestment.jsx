@@ -139,8 +139,6 @@ export default function PageInvestment() {
       };
     });
 
-  const data = displayData;
-
   const title =
     location.pathname === ROUTES.INVESTMENT_IN_PROGRESS
       ? "Investissement en cours"
@@ -256,7 +254,7 @@ export default function PageInvestment() {
 
         <Tableau
           formatData={formatData}
-          data={data}
+          data={displayData}
           columns={columns}
           type="investments"
           isFetching={isFetching}

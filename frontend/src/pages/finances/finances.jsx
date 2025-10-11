@@ -206,7 +206,7 @@ export default function BoardTransactions() {
   const dataOperations = Array.isArray(dataTransactions)
     ? dataTransactions
     : [];
-  const lastOperations = getLastOperations(dataOperations, null, 7, false);
+  const lastOperations = getLastOperations(dataOperations, null, 4, false);
 
   const convertDate = (date) => {
     const annee = Math.floor(date / 100);
@@ -258,7 +258,7 @@ export default function BoardTransactions() {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const totalMySubscription = mySubscription.reduce(
-    (total, item) => total + (item.amount || 0),
+    (total, item) => total - (item.amount || 0),
     0
   );
 
@@ -438,7 +438,7 @@ export default function BoardTransactions() {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex flex-col gap-4 lg:w-4/5">
+              <div className="flex flex-col gap-4 w-full">
                 {/* Graphique */}
                 <Container>
                   <h2 className="text-left">Graphique</h2>
@@ -587,7 +587,7 @@ export default function BoardTransactions() {
               </div>
 
               {/* Sidebar */}
-              <div className="lg:w-1/5 flex flex-col gap-4">
+              <div className="lg:w-2/6 flex flex-col gap-4">
                 {/* Dernières transactions */}
                 <Container>
                   <h2 className="text-left mb-4">Dernières transactions</h2>
@@ -602,10 +602,10 @@ export default function BoardTransactions() {
                           <span className="truncate">{operation.title}</span>
                         </p>
                         <p
-                          className={`w-fit px-2 py-[1px] text-[10px] italic rounded-md ${
+                          className={`w-fit px-2 py-[1px] text-[10px] italic font-bold rounded-md ${
                             operation.type === TYPES.EXPENSE
-                              ? "bg-colorExpense text-red-900 dark:bg-colorExpense dark:text-red-900"
-                              : "bg-colorRevenue text-green-900 dark:bg-colorRevenue dark:text-green-900"
+                              ? "bg-colorExpense/20 text-red-500 "
+                              : "bg-colorRevenue/20 text-green-500 "
                           }`}
                         >
                           <span>
@@ -635,7 +635,9 @@ export default function BoardTransactions() {
                         <p className="text-[10px] italic text-nowrap">
                           <span>
                             {isVisible
-                              ? formatCurrency.format(operation.amount)
+                              ? formatCurrency.format(
+                                  Math.abs(operation.amount)
+                                )
                               : "••••"}
                           </span>
                         </p>

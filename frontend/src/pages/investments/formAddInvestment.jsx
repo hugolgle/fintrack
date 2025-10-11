@@ -7,7 +7,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DialogHeader,
   DialogTitle,
@@ -23,7 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { addTransaction } from "../../services/investment.service.jsx";
+import {
+  addDividend,
+  addTransaction,
+} from "../../services/investment.service.jsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
@@ -38,6 +42,7 @@ const validationSchema = yup.object().shape({
     .required("L'action est requise"),
   date: yup.date().required("La date est requise"),
   amount: yup.number().positive().required("Le montant est requis"),
+  closed: yup.boolean(),
 });
 
 export default function FormAddInvestment({ refetch }) {
@@ -59,11 +64,26 @@ export default function FormAddInvestment({ refetch }) {
     },
   });
 
+  const addDividendInvestmentMutation = useMutation({
+    mutationFn: async (postData) => {
+      const response = await addDividend(id, postData);
+      return response;
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
+
   const formik = useFormik({
     initialValues: {
       action: "",
       amount: "",
       date: new Date(),
+      closed: false,
     },
     validationSchema,
     validateOnMount: true,
@@ -72,9 +92,15 @@ export default function FormAddInvestment({ refetch }) {
         action: values.action,
         amount: values.amount,
         date: values.date.toLocaleDateString("fr-CA"),
+        closed: values.closed,
       };
 
-      addTransactionInvestmentMutation.mutate(postData);
+      if (values.action === "dividend") {
+        addDividendInvestmentMutation.mutate(postData);
+      } else {
+        addTransactionInvestmentMutation.mutate(postData);
+      }
+
       formik.resetForm();
     },
   });
@@ -145,6 +171,24 @@ export default function FormAddInvestment({ refetch }) {
           <p className="text-[10px] text-left flex items-start w-full text-red-500 -mt-4 ml-2">
             {formik.errors.amount}
           </p>
+        )}
+
+        {formik.values.action === "sell" && (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              name="closed"
+              checked={formik.values.closed}
+              onCheckedChange={(checked) =>
+                formik.setFieldValue("closed", checked)
+              }
+            />
+            <label
+              htmlFor="closed"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Clôturer le cycle
+            </label>
+          </div>
         )}
       </div>
 

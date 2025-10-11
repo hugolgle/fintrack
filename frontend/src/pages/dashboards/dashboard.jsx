@@ -104,20 +104,20 @@ export default function Dashboard() {
 
   const dataTransacsInvest = useMemo(
     () =>
-      dataInvests?.flatMap((inv) =>
-        inv.transaction
-          .filter((trans) => {
-            return trans.type !== "dividend";
-          })
-          .map((trans) => ({
-            _id: trans._id,
-            title: inv.name,
-            amount: Math.abs(trans.amount),
-            date: trans.date,
-          }))
+      dataInvests?.flatMap(
+        (inv) =>
+          inv.cycles?.flatMap((cycle) =>
+            cycle.transactions.map((trans) => ({
+              _id: trans._id,
+              title: inv.name,
+              amount: Math.abs(trans.amount),
+              date: trans.date ? new Date(trans.date) : null,
+            }))
+          ) || []
       ) || [],
     [dataInvests]
   );
+
   const amountRevenuesMonth = useMemo(
     () => calculTotalByMonth(dataTransacs, TYPES.INCOME, currentMonthYear),
     [dataTransacs, currentMonthYear]
@@ -131,19 +131,26 @@ export default function Dashboard() {
     ? dataInvests
         .filter(
           (item) =>
-            Array.isArray(item.transaction) &&
-            item.transaction.some((t) => t.type === "sell")
+            Array.isArray(item.cycles) &&
+            item.cycles.some((c) =>
+              c.transactions?.some((t) => t.type === "sell")
+            )
         )
         .reduce((total, item) => {
-          const sale = item.amountSale || 0;
-          const buy = item.amountBuy || 0;
+          const sale =
+            item.cycles?.reduce((sum, c) => sum + (c.amountSale || 0), 0) || 0;
+          const buy =
+            item.cycles?.reduce((sum, c) => sum + (c.amountBuy || 0), 0) || 0;
           return total + (sale + buy);
         }, 0)
     : 0;
+
   const amountBuy = Array.isArray(dataInvests)
     ? dataInvests.reduce((total, item) => {
-        const sale = item.amountSale || 0;
-        const buy = item.amountBuy || 0;
+        const sale =
+          item.cycles?.reduce((sum, c) => sum + (c.amountSale || 0), 0) || 0;
+        const buy =
+          item.cycles?.reduce((sum, c) => sum + (c.amountBuy || 0), 0) || 0;
         return total + (sale + buy);
       }, 0)
     : 0;
@@ -222,6 +229,11 @@ export default function Dashboard() {
   if (loadingTransacs || loadingAccounts || loadingInvests)
     return <SkeletonBoard />;
 
+  console.log(
+    dataInvests?.flatMap((investment) =>
+      investment.cycles.filter((cycle) => !cycle.closed)
+    )
+  );
   return (
     <section className="w-full">
       <Header
@@ -351,7 +363,7 @@ export default function Dashboard() {
           />
         </div>
         <div className="flex flex-col lg:flex-row gap-4 h-full">
-          <div className="flex flex-col w-full lg:w-4/5 gap-4">
+          <div className="flex flex-col w-full gap-4">
             <Container>
               <h2 className="text-left">Évolution de l'épargne</h2>
               <p className="text-left text-sm text-muted-foreground">
@@ -495,7 +507,7 @@ export default function Dashboard() {
               </Container>
             </div>
           </div>
-          <div className="lg:w-1/5 flex flex-col gap-4">
+          <div className="lg:w-2/6 flex flex-col gap-4">
             <Container>
               <div className="flex justify-between w-full mb-4">
                 <h2 className="text-nowrap">Dernières transactions</h2>
@@ -522,11 +534,11 @@ export default function Dashboard() {
                       <span className="truncate">{op.title}</span>
                     </div>
                     <p
-                      className={`px-2 py-[1px] text-[10px] italic rounded-md ${
+                      className={`px-2 py-[1px] text-[10px] font-bold italic rounded-md ${
                         op.type === TYPES.EXPENSE
-                          ? "bg-colorExpense text-red-900"
+                          ? "bg-colorExpense/20 text-red-500"
                           : op.type === TYPES.INCOME &&
-                            "bg-colorRevenue text-green-900"
+                            "bg-colorRevenue/20 text-green-500"
                       }`}
                     >
                       {isVisible ? formatCurrency.format(op.amount) : "••••"}
@@ -583,11 +595,17 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-col gap-2">
                 {dataInvests
-                  ?.sort((a, b) => a.amountBuy - b.amountBuy)
+                  ?.flatMap((investment) =>
+                    investment.cycles
+                      .filter((cycle) => !cycle.closed)
+                      .map((cycle) => ({ ...cycle, investment }))
+                  )
+                  .sort((a, b) => b.amountBuy - a.amountBuy)
                   .slice(0, 4)
                   .map((item) => {
                     const category =
                       item?.type === "Crypto" ? "crypto" : "symbol";
+
                     return (
                       <div
                         key={item._id}
@@ -597,14 +615,18 @@ export default function Dashboard() {
                           <Avatar className="size-6 mr-4">
                             <AvatarImage
                               src={
-                                item.isin
-                                  ? `https://assets.parqet.com/logos/isin/${item.isin}`
-                                  : `https://assets.parqet.com/logos/${category}/${item.symbol}`
+                                item.investment.isin
+                                  ? `https://assets.parqet.com/logos/isin/${item.investment.isin}`
+                                  : `https://assets.parqet.com/logos/${category}/${item.investment.symbol}`
                               }
-                              alt={item?.name}
+                              alt={item.investment?.name}
                             />
                           </Avatar>
-                          <p className="text-xs">{item?.name}</p>
+                          <p className="text-xs">
+                            {item.investment?.name}{" "}
+                            {item.investment.symbol &&
+                              `(${item.investment.symbol})`}
+                          </p>
                         </div>
                         <p className="text-[10px] italic text-right">
                           {isVisible

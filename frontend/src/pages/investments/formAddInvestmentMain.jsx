@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -76,17 +77,14 @@ const validationSchema = yup.object().shape({
       "L'ISIN doit être valide (2 lettres, 9 caractères alphanumériques, 1 chiffre)"
     )
     .nullable(),
-  action: yup
-    .string()
-    .oneOf(["true", "false"], "Action invalide")
-    .required("L'action est requise"),
-
+  action: yup.string().oneOf(["true", "false"], "Action invalide"),
   amount: yup
     .number()
     .required("Le montant est requis")
     .min(0, "Le montant ne peut pas être négatif")
     .max(999999, "Montant trop élevé"),
   date: yup.date().required("La date est requise"),
+  closed: yup.boolean(),
 });
 
 export default function FormAddInvestmentMain({ refetch }) {
@@ -99,7 +97,7 @@ export default function FormAddInvestmentMain({ refetch }) {
 
   const { user: dataUser } = useAuth();
 
-  const { isLoading: isLoadingInvestments, data: dataInvests } = useQuery({
+  const { data: dataInvests } = useQuery({
     queryKey: ["fetchInvestmentsModal"],
     queryFn: async () => {
       const response = await fetchInvestments();
@@ -121,6 +119,7 @@ export default function FormAddInvestmentMain({ refetch }) {
       action: "",
       amount: "",
       date: new Date(),
+      closed: false,
     },
     validationSchema,
     validateOnMount: true,
@@ -133,7 +132,7 @@ export default function FormAddInvestmentMain({ refetch }) {
               symbol: values.symbol,
               isin: values.isin,
               transaction: {
-                action: values.action === "true" ? "sell" : "buy",
+                action: "buy",
                 amount: values.amount,
                 date: values.date.toISOString(),
               },
@@ -142,6 +141,7 @@ export default function FormAddInvestmentMain({ refetch }) {
               action: values.action === "true" ? "sell" : "buy",
               amount: values.amount,
               date: values.date.toLocaleDateString("fr-CA"),
+              closed: values.action === "true" ? values.closed : false,
             };
       activeTab === "autre"
         ? addInvestmentMutation.mutate(postData)
@@ -291,6 +291,25 @@ export default function FormAddInvestmentMain({ refetch }) {
                   {formik.errors.amount}
                 </p>
               )}
+
+              {formik.values.action === "true" && (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="closed"
+                    name="closed"
+                    checked={formik.values.closed}
+                    onCheckedChange={(checked) =>
+                      formik.setFieldValue("closed", checked)
+                    }
+                  />
+                  <label
+                    htmlFor="closed"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Clôturer le cycle
+                  </label>
+                </div>
+              )}
             </div>
           </TabsContent>
 
@@ -356,21 +375,6 @@ export default function FormAddInvestmentMain({ refetch }) {
                   {formik.errors.isin}
                 </p>
               )}
-
-              <Select
-                name="action"
-                value={formik.values.action}
-                onValueChange={(value) => formik.setFieldValue("action", value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez une action" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="true">Vendre</SelectItem>
-                  <SelectItem value="false">Acheter</SelectItem>
-                </SelectContent>
-              </Select>
 
               <Popover open={openCalendarBis} onOpenChange={setOpenCalendarBis}>
                 <PopoverTrigger asChild>
