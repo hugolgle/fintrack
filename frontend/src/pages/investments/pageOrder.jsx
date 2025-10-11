@@ -52,13 +52,15 @@ export function PageOrder() {
   };
 
   const orderData = dataInvestments?.sort((a, b) => {
-    const dateA = a.transaction[0]?.date
-      ? new Date(a.transaction[0].date)
-      : new Date(0);
-    const dateB = b.transaction[0]?.date
-      ? new Date(b.transaction[0].date)
-      : new Date(0);
-    return dateB - dateA;
+    const dateA =
+      a.cycles
+        ?.flatMap((c) => c.transaction || [])
+        .sort((x, y) => new Date(y.date) - new Date(x.date))[0]?.date || 0;
+    const dateB =
+      b.cycles
+        ?.flatMap((c) => c.transaction || [])
+        .sort((x, y) => new Date(y.date) - new Date(x.date))[0]?.date || 0;
+    return new Date(dateB) - new Date(dateA);
   });
 
   const navigate = useNavigate();
@@ -84,10 +86,13 @@ export function PageOrder() {
 
   const formatData = (row) => {
     return [
-      row.type,
       row.name,
-      format(row?.date, "PP", { locale: fr }),
-      isVisible ? formatCurrency.format(row.amount) : "••••",
+      isVisible ? formatCurrency.format(row.amountBuyInProgress) : "••••",
+      isVisible ? formatCurrency.format(row.amountBuy) : "••••",
+      isVisible ? formatCurrency.format(row.amountSale) : "••••",
+      isVisible ? formatCurrency.format(row.amountResult) : "••••",
+      isVisible ? `${row.rendement.toFixed(1)} %` : "••••",
+      isVisible ? formatCurrency.format(row.dividend) : "••••",
     ];
   };
 
@@ -107,10 +112,13 @@ export function PageOrder() {
   };
 
   const columns = [
-    { id: 2, name: "Type", key: "type" },
-    { id: 4, name: "Nom", key: "name" },
-    { id: 5, name: "Date", key: "date" },
-    { id: 6, name: "Montant", key: "amount" },
+    { id: 2, name: "Nom", key: "name" },
+    { id: 3, name: "En cours", key: "amountBuyInProgress" },
+    { id: 4, name: "Montant acheté", key: "amountBuy" },
+    { id: 5, name: "Montant vendu", key: "amountSale" },
+    { id: 6, name: "Résultats", key: "amountResult" },
+    { id: 7, name: "Rendement", key: "rendement" },
+    { id: 8, name: "Dividende", key: "dividend" },
   ];
 
   const action = (item) => {
@@ -134,33 +142,56 @@ export function PageOrder() {
     );
   };
 
-  const displayData = dataInvestments.map(
-    ({
-      _id,
-      name,
-      type,
-      symbol,
-      isin,
-      amountBuy,
-      amountSale,
-      transaction,
-      createdAt,
-    }) => {
+  const displayData = dataInvestments?.map(
+    ({ _id, name, type, symbol, isin, cycles, dividend, createdAt }) => {
+      const allTransactions = cycles.flatMap(
+        (cycle) => cycle.transactions || []
+      );
+
+      const amountBuyInProgress = cycles
+        .filter((c) => !c.closed)
+        .reduce((sum, c) => sum + (c.amountBuy || 0), 0);
+
+      const amountBuy = cycles
+        .filter((c) => c.closed)
+        .reduce((sum, c) => sum + (c.amountBuy || 0), 0);
+
+      const amountSale = cycles.reduce(
+        (sum, c) => sum + (c.amountSale || 0),
+        0
+      );
+      const amountResult = cycles.reduce((sum, c) => sum + (c.result || 0), 0);
+
+      const amountDividend = dividend?.reduce(
+        (sum, d) => sum + (d.amount || 0),
+        0
+      );
+
+      const active = cycles.some((cycle) => !cycle.closed);
+
       return {
-        _id: transaction._id,
+        _id: _id,
         idInvest: _id,
         type,
         symbol,
         isin,
         name,
-        date: transaction[0]?.date,
-        amount: amountSale + amountBuy,
+        cycles,
+        date: allTransactions[0]?.date
+          ? new Date(allTransactions[0].date)
+          : null,
+        amountBuyInProgress,
+        amountBuy,
+        amountSale,
+        amountResult,
+        rendement: (amountResult / Math.abs(amountBuy)) * 100 || 0,
+        transaction: allTransactions,
+        dividend: amountDividend,
+        active: active ? "Non clos" : "Clos",
         createdAt,
       };
     }
   );
-
-  const data = displayData;
 
   return (
     <section className="w-full">
@@ -172,7 +203,7 @@ export function PageOrder() {
           navigation={
             <div className="flex items-center gap-2">
               <Label htmlFor="new" className="text-xs italic">
-                Vue Tableau
+                Vue tuile
               </Label>
               <Switch
                 id="new"
@@ -186,22 +217,26 @@ export function PageOrder() {
         <div>
           {orderData?.length > 0 ? (
             <>
-              {mode ? (
+              {!mode ? (
                 <Tableau
                   formatData={formatData}
-                  data={data}
+                  data={displayData}
                   columns={columns}
                   type="investments"
                   isFetching={isFetching}
                   action={action}
                   firstItem={avatar}
-                  fieldsFilter={[{ key: "type", fieldName: "Type" }]}
+                  fieldsFilter={[
+                    { key: "type", fieldName: "Type" },
+                    { key: "active", fieldName: "Statut" },
+                  ]}
                   dateFilter
+                  resume={false}
                 />
               ) : (
                 <div className="flex flex-wrap w-full justify-center gap-4 justify-left p-4 animate-fade">
-                  {data?.map(
-                    ({ idInvest, name, type, date, symbol, isin, amount }) => {
+                  {displayData?.map(
+                    ({ idInvest, name, type, date, symbol, isin, amountBuyInProgress }) => {
                       const category = type === "Crypto" ? "crypto" : "symbol";
                       const theDate = date ? new Date(date) : null;
                       const color = getHoverClass(type);
@@ -237,7 +272,7 @@ export function PageOrder() {
                           <div className="flex justify-between">
                             <p className="text-sm italic">
                               {isVisible
-                                ? formatCurrency.format(amount)
+                                ? formatCurrency.format(amountBuyInProgress)
                                 : "••••"}
                             </p>
                             <p className="text-sm italic">{type}</p>

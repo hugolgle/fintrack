@@ -114,26 +114,41 @@ export default function Statistic() {
 
   const amountInvestisYear = useMemo(() => {
     if (!dataInvests) return 0;
+
     return dataInvests.reduce((acc, d) => {
-      const total = d.transaction
-        .filter(
-          (t) => t.date.slice(0, 4) === `${selectedYear}` && t.type === "buy"
-        )
-        .reduce((s, t) => s + (t.amount || 0), 0);
+      const total =
+        d.cycles?.reduce((cycleSum, c) => {
+          const cycleTotal =
+            c.transactions
+              ?.filter(
+                (t) =>
+                  t.date.slice(0, 4) === `${selectedYear}` && t.type === "buy"
+              )
+              .reduce((s, t) => s + (t.amount || 0), 0) || 0;
+          return cycleSum + cycleTotal;
+        }, 0) || 0;
+
       return acc + total;
     }, 0);
   }, [dataInvests, selectedYear]);
 
   const amountInvestisMonth = useMemo(() => {
     if (!dataInvests) return 0;
+
     return dataInvests.reduce((acc, d) => {
-      const total = d.transaction
-        .filter(
-          (t) =>
-            t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}` &&
-            t.type === "buy"
-        )
-        .reduce((s, t) => s + (t.amount || 0), 0);
+      const total =
+        d.cycles?.reduce((cycleSum, c) => {
+          const cycleTotal =
+            c.transactions
+              ?.filter(
+                (t) =>
+                  t.date.slice(0, 7) === `${selectedYear}-${selectedMonth}` &&
+                  t.type === "buy"
+              )
+              .reduce((s, t) => s + (t.amount || 0), 0) || 0;
+          return cycleSum + cycleTotal;
+        }, 0) || 0;
+
       return acc + total;
     }, 0);
   }, [dataInvests, selectedYear, selectedMonth]);

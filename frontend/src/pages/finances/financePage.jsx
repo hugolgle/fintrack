@@ -362,8 +362,6 @@ export default function PageTransaction({ type }) {
     );
   };
 
-  const data = displayData;
-
   if (isLoading) return <Loader />;
 
   return (
@@ -455,7 +453,7 @@ export default function PageTransaction({ type }) {
         />
 
         <Tableau
-          data={data}
+          data={displayData}
           columns={columns}
           action={action}
           type="transactions"

@@ -40,6 +40,7 @@ export default function Tableau({
   multiselect,
   fieldsFilter,
   dateFilter,
+  resume = true,
 }) {
   const { isVisible } = useAmountVisibility();
   const [selectAllRow, setSelectAllRow] = useState(false);
@@ -364,21 +365,23 @@ export default function Tableau({
         </p>
       )}
 
-      <div className="fixed bottom-4 ring-ring text-left text-xs right-4 max-w-[90%] animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
-        {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
-          <>
-            Total sélectionnés : <br />
-            <b>{isVisible ? formatCurrency.format(amountSelect) : "••••"}</b>
-          </>
-        ) : (
-          <>
-            Total :{" "}
-            <b>{isVisible ? formatCurrency.format(amountTotal) : "••••"}</b>
-            <br />
-            <b>{displayData.length}</b> opération(s)
-          </>
-        )}
-      </div>
+      {resume && (
+        <div className="fixed bottom-4 ring-ring text-left text-xs right-4 max-w-[90%] animate-fade rounded-md z-50 bg-secondary p-3 transition-all">
+          {Object.keys(selectedRows).some((key) => selectedRows[key]) ? (
+            <>
+              Total sélectionnés : <br />
+              <b>{isVisible ? formatCurrency.format(amountSelect) : "••••"}</b>
+            </>
+          ) : (
+            <>
+              Total :{" "}
+              <b>{isVisible ? formatCurrency.format(amountTotal) : "••••"}</b>
+              <br />
+              <b>{displayData.length}</b> opération(s)
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }

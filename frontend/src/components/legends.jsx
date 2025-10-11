@@ -10,7 +10,7 @@ export const renderCustomLegend = (props) => {
   const payloadTopN = payloadSort.slice(0, topN);
 
   return (
-    <ul className="flex flex-col justify-center w-40">
+    <ul className="flex flex-col justify-center w-32">
       {payloadTopN.map((entry, index) => (
         <li key={`item-${index}`} className="flex flex-col items-center">
           {index > 0 && <Separator className="bg-secondary" />}

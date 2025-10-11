@@ -152,7 +152,9 @@ export default function Epargn() {
         ? "Retrait"
         : transaction.type === "transfer"
           ? "Transfert"
-          : "Dépôt",
+          : transaction.type === "interest"
+            ? "Intérêts"
+            : transaction.type === "deposit" && "Dépôt",
       transaction.accountName ?? transaction.fromAccount,
       transaction.toAccount ?? "-",
       new Date(transaction.date).toLocaleDateString(),

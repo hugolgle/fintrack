@@ -1,7 +1,10 @@
 import Tableau from "../../components/tables/table.jsx";
 import Header from "../../components/headers.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchInvestmentById } from "../../services/investment.service.jsx";
+import {
+  deleteDividend,
+  fetchInvestmentById,
+} from "../../services/investment.service.jsx";
 import Loader from "../../components/loaders/loader.jsx";
 import { HttpStatusCode } from "axios";
 import { useLocation } from "react-router";
@@ -42,6 +45,7 @@ import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
 
 export default function PageOrderById() {
   const { id } = useParams();
+  console.log(id);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isVisible } = useAmountVisibility();
@@ -58,11 +62,11 @@ export default function PageOrderById() {
         const message = response?.response?.data?.message || "Erreur";
         toast.warn(message);
       }
+      console.log(response);
       return response?.data;
     },
     refetchOnMount: true,
   });
-
   const mutationDeleteInvestment = useMutation({
     mutationFn: async (ids) => {
       return await deleteTransaction(ids);
@@ -80,29 +84,22 @@ export default function PageOrderById() {
     },
   });
 
-  const processTransactions = (data) => {
-    return data.flatMap((item) => {
-      if (item && item.transaction) {
-        if (Array.isArray(item.transaction)) {
-          return item.transaction.map((trans) => ({
-            ...item,
-            transaction: trans,
-          }));
-        } else {
-          return [
-            {
-              ...item,
-              transaction: item.transaction,
-            },
-          ];
-        }
-      } else {
-        return [];
+  const mutationDeleteDividend = useMutation({
+    mutationFn: async (ids) => {
+      return await deleteDividend(ids);
+    },
+    onSuccess: (response) => {
+      toast.success(response?.data?.message);
+      queryClient.invalidateQueries(["fetchInvestmentById", id]);
+      refetch();
+      if (response?.data?.redirect) {
+        navigate(ROUTES.INVESTMENT);
       }
-    });
-  };
-
-  const dataById = processTransactions([dataTransactionsByInvestment] || []);
+    },
+    onError: (error) => {
+      toast.error(error?.data?.message);
+    },
+  });
 
   const columns = [
     { id: 1, name: "Type", key: "type" },
@@ -111,31 +108,46 @@ export default function PageOrderById() {
     { id: 4, name: "Montant", key: "amount" },
     { id: 5, name: "Action", key: "type" },
   ];
-
-  const displayData = dataById.map(
-    ({ _id, name, type, symbol, isin, transaction, createdAt }) => {
-      return {
-        _id: transaction._id,
-        idInvest: _id,
-        type,
-        symbol,
-        isin,
-        name: symbol ? `${name} (${symbol})` : name,
-        date: transaction.date,
-        amount: transaction.amount,
-        action: transaction.type,
-        createdAt,
-      };
-    }
-  );
-
+  const displayDataWithDividends = [
+    ...(dataTransactionsByInvestment?.cycles?.flatMap((cycle) =>
+      (cycle.transactions || []).map((trans) => ({
+        _id: trans._id,
+        idInvest: dataTransactionsByInvestment._id,
+        type: dataTransactionsByInvestment.type,
+        symbol: dataTransactionsByInvestment.symbol,
+        isin: dataTransactionsByInvestment.isin,
+        name: dataTransactionsByInvestment.symbol
+          ? `${dataTransactionsByInvestment.name} (${dataTransactionsByInvestment.symbol})`
+          : dataTransactionsByInvestment.name,
+        date: trans.date ? new Date(trans.date) : null,
+        amount: trans.amount,
+        action: trans.type,
+        createdAt: dataTransactionsByInvestment.createdAt,
+      }))
+    ) || []),
+    ...(dataTransactionsByInvestment?.dividend?.map((div) => ({
+      _id: div._id,
+      idInvest: dataTransactionsByInvestment._id,
+      type: dataTransactionsByInvestment.type,
+      symbol: dataTransactionsByInvestment.symbol,
+      isin: dataTransactionsByInvestment.isin,
+      name: dataTransactionsByInvestment.symbol
+        ? `${dataTransactionsByInvestment.name} (${dataTransactionsByInvestment.symbol})`
+        : dataTransactionsByInvestment.name,
+      date: div.date ? new Date(div.date) : null,
+      amount: div.amount,
+      action: "dividend",
+      createdAt: dataTransactionsByInvestment.createdAt,
+    })) || []),
+  ];
+  console.log(dataTransactionsByInvestment);
   const title = dataTransactionsByInvestment?.name;
 
   const formatData = (row) => {
     return [
       row.type,
       row.name,
-      format(row.date, "PP", { locale: fr }),
+      row.date ? format(row.date, "PP", { locale: fr }) : "-",
       isVisible ? formatCurrency.format(row.amount) : "••••",
       row.action === "sell"
         ? "Vente"
@@ -196,7 +208,11 @@ export default function PageOrderById() {
 
           <DropdownMenuItem
             onClick={() => {
-              mutationDeleteInvestment.mutate(ids);
+              if (item.action === "dividend") {
+                mutationDeleteDividend.mutate(ids);
+              } else {
+                mutationDeleteInvestment.mutate(ids);
+              }
             }}
             onSelect={(e) => e.preventDefault()}
             className="text-red-500"
@@ -208,8 +224,6 @@ export default function PageOrderById() {
       </DropdownMenu>
     );
   };
-
-  const data = displayData;
 
   if (isLoading) return <Loader />;
 
@@ -263,7 +277,7 @@ export default function PageOrderById() {
 
         <Tableau
           formatData={formatData}
-          data={data}
+          data={displayDataWithDividends}
           columns={columns}
           type="investments"
           isFetching={isFetching}

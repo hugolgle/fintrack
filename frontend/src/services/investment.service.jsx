@@ -35,16 +35,46 @@ export const addInvestment = async (investmentData) => {
 };
 
 export const addTransaction = async (investmentId, transactionData) => {
-  const { amount, date, action } = transactionData;
+  const { amount, date, action, closed } = transactionData;
   const newTransaction = {
     amount,
     date,
     type: action,
+    closed,
   };
 
   return await axios.post(
     `${API_URL}/${investmentId}/transaction`,
     newTransaction,
+    {
+      withCredentials: true,
+    }
+  );
+};
+
+export const addDividend = async (investmentId, dividendData) => {
+  const { amount, date } = dividendData;
+  const newDividend = {
+    amount,
+    date,
+  };
+
+  return await axios.post(`${API_URL}/${investmentId}/dividend`, newDividend, {
+    withCredentials: true,
+  });
+};
+
+export const editDividend = async (editData, idInvestment) => {
+  const { id, date, amount } = editData;
+
+  const updatedDividend = {
+    date,
+    amount,
+  };
+
+  return await axios.put(
+    `${API_URL}/${idInvestment}/dividend/${id}`,
+    updatedDividend,
     {
       withCredentials: true,
     }
@@ -91,4 +121,10 @@ export const deleteTransaction = async (id) => {
       withCredentials: true,
     }
   );
+};
+
+export const deleteDividend = async (id) => {
+  return await axios.delete(`${API_URL}/${id.idInvest}/dividend/${id.itemId}`, {
+    withCredentials: true,
+  });
 };

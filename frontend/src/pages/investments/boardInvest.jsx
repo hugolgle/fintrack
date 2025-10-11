@@ -40,11 +40,15 @@ import Tableau from "../../components/tables/table.jsx";
 import FormAddInvestmentMain from "./formAddInvestmentMain.jsx";
 import SkeletonDashboard from "../../components/skeletonBoard.jsx";
 import { useAmountVisibility } from "../../context/AmountVisibilityContext.jsx";
+import { id } from "date-fns/locale";
 
 export default function BoardInvest() {
   const { isVisible } = useAmountVisibility();
   const navigate = useNavigate();
   const [selectNbMonth, setSelectNbMonth] = useState(12);
+  const { month: currentMonth, year: currentYear } = currentDate();
+  const currentYearMonth = `${currentYear}${currentMonth}`;
+  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
 
   const {
     isLoading,
@@ -64,50 +68,43 @@ export default function BoardInvest() {
     refetchOnMount: true,
   });
 
-  const { month: currentMonth, year: currentYear } = currentDate();
-  const currentYearMonth = `${currentYear}${currentMonth}`;
-  const [graphMonth, setGraphMonth] = useState(currentYearMonth);
+  const amountInvestsNoClosed = dataInvests
+    ?.flatMap((investment) =>
+      investment.cycles
+        .filter((cycle) => !cycle.closed)
+        .map((cycle) => cycle.amountBuy)
+    )
+    .reduce((sum, val) => sum + val, 0);
 
-  const amountResult = Array.isArray(dataInvests)
-    ? dataInvests
-        .filter(
-          (item) =>
-            Array.isArray(item.transaction) &&
-            item.transaction.some((t) => t.type === "sell")
-        )
-        .reduce((total, item) => {
-          const sale = item.amountSale || 0;
-          const buy = item.amountBuy || 0;
-          return total + (sale + buy);
-        }, 0)
-    : 0;
-  const amountBuy = Array.isArray(dataInvests)
-    ? dataInvests.reduce((total, item) => {
-        const sale = item.amountSale || 0;
-        const buy = item.amountBuy || 0;
-        return total + (sale + buy);
-      }, 0)
-    : 0;
+  const amountInvestsClosed = dataInvests
+    ?.flatMap((investment) =>
+      investment.cycles
+        .filter((cycle) => cycle.closed)
+        .map((cycle) => cycle.amountBuy)
+    )
+    .reduce((sum, val) => sum + val, 0);
 
-  const amountDividend = Array.isArray(dataInvests)
-    ? dataInvests.reduce((total, item) => {
-        const sum = item.transaction
-          ?.filter((t) => t.type === "dividend")
-          .reduce((subTotal, t) => subTotal + (t.amount || 0), 0);
-        return total + sum;
-      }, 0)
+  const amountResults = dataInvests
+    ?.flatMap((investment) => investment.cycles.map((cycle) => cycle.result))
+    .reduce((sum, val) => sum + val, 0);
+
+  const percentRendment = amountInvestsClosed
+    ? (amountResults / Math.abs(amountInvestsClosed)) * 100
     : 0;
 
-  if (isLoading) return <SkeletonDashboard />;
-
-  const totalAmountBuy = dataInvests?.reduce(
-    (total, item) => total + (item.amountBuy || 0),
-    0
-  );
+  const totalAmountBuy =
+    dataInvests
+      ?.flatMap((investment) =>
+        investment.cycles.map((cycle) => cycle.amountBuy)
+      )
+      .reduce((sum, val) => sum + val, 0) || 0;
 
   const categorySums = dataInvests?.reduce((acc, investment) => {
     const type = investment.type;
-    const amountBuy = investment.amountBuy || 0;
+    const amountBuy =
+      investment.cycles
+        ?.filter((cycle) => !cycle.closed)
+        .reduce((sum, cycle) => sum + (cycle.amountBuy || 0), 0) || 0;
 
     if (acc[type]) {
       acc[type].amount += amountBuy;
@@ -122,7 +119,7 @@ export default function BoardInvest() {
 
   const chartDataByType = Object.values(categorySums ?? {}).map(
     (category, key) => {
-      const pourcentage = (category.amount / totalAmountBuy) * 100;
+      const pourcentage = (category.amount / amountInvestsNoClosed) * 100 || 0;
       return {
         name: category.category,
         amount: category.amount,
@@ -138,42 +135,55 @@ export default function BoardInvest() {
   const montantInvestSaleByMonth = [];
   const montantInvestDividendByMonth = [];
   const dataTransacInvest = dataInvests?.flatMap((investment) =>
-    investment.transaction.map((trans) => ({
-      title: investment.name,
-      amount: trans.amount,
-      date: new Date(trans.date),
-      type: trans.type,
-    }))
+    investment.cycles.flatMap((cycle) => cycle.transactions)
   );
+
+  const amountDividend =
+    dataInvests?.reduce((total, invest) => {
+      const sumDividends =
+        invest.dividend?.reduce((a, b) => a + b.amount, 0) || 0;
+      return total + sumDividends;
+    }, 0) || 0;
 
   monthsGraph.forEach(({ code }) => {
     const targetYear = parseInt(code.slice(0, 4));
     const targetMonth = parseInt(code.slice(4, 6));
 
     const montantInvestsBuy = dataTransacInvest
-      ?.filter(
-        ({ date, type }) =>
-          date.getFullYear() === targetYear &&
-          date.getMonth() + 1 === targetMonth &&
+      ?.filter(({ date, type }) => {
+        const d = new Date(date);
+        return (
+          !isNaN(d) &&
+          d.getFullYear() === targetYear &&
+          d.getMonth() + 1 === targetMonth &&
           type === "buy"
-      )
+        );
+      })
       .reduce((total, { amount }) => total + amount, 0);
+
     const montantInvestsSell = dataTransacInvest
-      ?.filter(
-        ({ date, type }) =>
-          date.getFullYear() === targetYear &&
-          date.getMonth() + 1 === targetMonth &&
+      ?.filter(({ date, type }) => {
+        const d = new Date(date);
+        return (
+          !isNaN(d) &&
+          d.getFullYear() === targetYear &&
+          d.getMonth() + 1 === targetMonth &&
           type === "sell"
-      )
-      .filter(({ type }) => type === "sell")
+        );
+      })
       .reduce((total, { amount }) => total + amount, 0);
-    const montantInvestsDividend = dataTransacInvest
-      ?.filter(
-        ({ date, type }) =>
-          date.getFullYear() === targetYear &&
-          date.getMonth() + 1 === targetMonth &&
-          type === "dividend"
-      )
+
+    const montantInvestsDividend = (
+      dataInvests?.flatMap((inv) => inv.dividend) || []
+    )
+      .filter(({ date }) => {
+        const d = new Date(date);
+        return (
+          !isNaN(d) &&
+          d.getFullYear() === targetYear &&
+          d.getMonth() + 1 === targetMonth
+        );
+      })
       .reduce((total, { amount }) => total + amount, 0);
 
     montantInvestByMonth.push(Math.abs(montantInvestsBuy));
@@ -246,60 +256,114 @@ export default function BoardInvest() {
   const maxValue = Math.max(
     ...dataGraph.map((item) => Math.max(item.amountBuy, item.amountSale))
   );
+
   const formatData = (row) => {
     return [
-      row.type,
       row.name,
-      isVisible ? formatCurrency.format(row.amount) : "••••",
-      isVisible ? formatCurrency.format(row.amountSale) : "••••",
-      isVisible ? formatCurrency.format(row.amountSale + row.amount) : "••••",
+      isVisible ? formatCurrency.format(row.amountBuyInProgress) : "••••",
       isVisible
-        ? formatCurrency.format(
-            row.transaction
-              .filter((t) => t.type === "dividend")
-              .reduce((total, t) => total + (t.amount || 0), 0)
-          )
+        ? row.amountBuy
+          ? formatCurrency.format(row.amountBuy)
+          : "-"
         : "••••",
-      `${(((row.amountSale + row.amount) / Math.abs(row.amount)) * 100).toFixed(2)}%`,
+      isVisible
+        ? row.amountSale
+          ? formatCurrency.format(row.amountSale)
+          : "-"
+        : "••••",
+      isVisible ? (
+        row.amountResult > 0 ? (
+          <p className="text-green-500">
+            {formatCurrency.format(row.amountResult)}
+          </p>
+        ) : row.amountResult < 0 ? (
+          <p className="text-red-500">
+            {formatCurrency.format(row.amountResult)}
+          </p>
+        ) : (
+          <p>-</p>
+        )
+      ) : (
+        "••••"
+      ),
+      isVisible ? (
+        row.rendement > 0 ? (
+          <p className="text-green-500">{row.rendement.toFixed(1)} %</p>
+        ) : row.rendement < 0 ? (
+          <p className="text-red-500">{row.rendement.toFixed(1)} %</p>
+        ) : (
+          <p>-</p>
+        )
+      ) : (
+        "••••"
+      ),
+      isVisible
+        ? row.dividend
+          ? formatCurrency.format(row.dividend)
+          : "-"
+        : "••••",
     ];
   };
 
-  const displayData = dataInvests.map(
-    ({
-      _id,
-      name,
-      type,
-      symbol,
-      isin,
-      amountBuy,
-      amountSale,
-      transaction,
-      createdAt,
-    }) => {
+  const displayData = dataInvests?.map(
+    ({ _id, name, type, symbol, isin, cycles, dividend, createdAt }) => {
+      const allTransactions = cycles.flatMap(
+        (cycle) => cycle.transaction || []
+      );
+
+      const amountBuyInProgress = cycles
+        .filter((c) => !c.closed)
+        .reduce((sum, c) => sum + (c.amountBuy || 0), 0);
+
+      const amountBuy = cycles
+        .filter((c) => c.closed)
+        .reduce((sum, c) => sum + (c.amountBuy || 0), 0);
+
+      const amountSale = cycles.reduce(
+        (sum, c) => sum + (c.amountSale || 0),
+        0
+      );
+      const amountResult = cycles.reduce((sum, c) => sum + (c.result || 0), 0);
+
+      const amountDividend = dividend?.reduce(
+        (sum, d) => sum + (d.amount || 0),
+        0
+      );
+
+      const active = cycles.some((cycle) => !cycle.closed);
+
       return {
-        _id: transaction._id,
+        _id: _id,
         idInvest: _id,
         type,
         symbol,
         isin,
         name,
-        transaction,
-        date: transaction[0]?.date,
-        amount: amountBuy,
+        cycles,
+        date: allTransactions[0]?.date
+          ? new Date(allTransactions[0].date)
+          : null,
+        amountBuyInProgress,
+        amountBuy,
         amountSale,
+        amountResult,
+        rendement: (amountResult / Math.abs(amountBuy)) * 100 || 0,
+        transaction: allTransactions,
+        dividend: amountDividend,
+        active: active ? "Non clos" : "Clos",
         createdAt,
       };
     }
   );
 
   const columns = [
-    { id: 1, name: "Type", key: "type" },
     { id: 2, name: "Nom", key: "name" },
-    { id: 3, name: "Montant acheté", key: "amount" },
-    { id: 4, name: "Montant vendu", key: "amountSale" },
-    { id: 5, name: "Résultats", key: "amountResult" },
-    { id: 6, name: "Dividende", key: "dividend" },
+    { id: 3, name: "En cours", key: "amountBuyInProgress" },
+    { id: 4, name: "Montant acheté", key: "amountBuy" },
+    { id: 5, name: "Montant vendu", key: "amountSale" },
+    { id: 6, name: "Résultats", key: "amountResult" },
     { id: 7, name: "Rendement", key: "rendement" },
+    { id: 8, name: "Dividende", key: "dividend" },
   ];
 
   const action = (item) => {
@@ -338,7 +402,7 @@ export default function BoardInvest() {
     );
   };
 
-  const data = displayData;
+  if (isLoading) return <SkeletonDashboard />;
 
   return (
     <section className="w-full">
@@ -370,14 +434,14 @@ export default function BoardInvest() {
             <div className="flex flex-col lg:flex-row gap-4">
               <BoxInfos
                 title="Valeur totale"
-                value={Math.abs(amountBuy - amountResult)}
+                value={Math.abs(amountInvestsNoClosed)}
                 icon={<Pickaxe size={15} color="grey" />}
                 isAmount
                 type="investment"
               />
               <BoxInfos
                 title="Gains/Pertes"
-                value={amountResult}
+                value={amountResults}
                 icon={<ArrowUp size={15} color="grey" />}
                 isAmount
                 type="investment"
@@ -436,7 +500,7 @@ export default function BoardInvest() {
                   </Tabs>
                 </div>
               </Container>
-              <div className="lg:w-2/5 flex flex-col gap-4">
+              <div className="lg:w-2/6 flex flex-col gap-4">
                 <Container>
                   <h2 className="mb-4 text-left">Statistiques</h2>
                   <div className="h-full flex flex-col gap-2">
@@ -445,6 +509,29 @@ export default function BoardInvest() {
                       <p className="text-xs">
                         {isVisible
                           ? formatCurrency.format(amountDividend)
+                          : "••••"}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm">Résultat</p>
+                      <p className="text-xs">
+                        {isVisible
+                          ? formatCurrency.format(amountResults)
+                          : "••••"}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm">Rendement</p>
+                      <p className="text-xs">
+                        {isVisible ? `${percentRendment.toFixed(1)} %` : "••••"}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm">Capital investi</p>
+                      <p className="text-xs">
+                        {isVisible
+                          ? formatCurrency.format(totalAmountBuy)
                           : "••••"}
                       </p>
                     </div>
@@ -482,13 +569,17 @@ export default function BoardInvest() {
               </div>
               <Tableau
                 formatData={formatData}
-                data={data}
+                data={displayData}
                 columns={columns}
                 type="investments"
                 isFetching={isFetching}
                 action={action}
                 firstItem={avatar}
-                fieldsFilter={[{ key: "type", fieldName: "Type" }]}
+                fieldsFilter={[
+                  { key: "type", fieldName: "Type" },
+                  { key: "active", fieldName: "Statut" },
+                ]}
+                resume={false}
               />
             </Container>
           </div>
